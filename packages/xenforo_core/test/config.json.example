@@ -1,0 +1,23 @@
+{
+  "baseUrl": "https://example.com",
+  "pluginUrl": "https://example.com",
+  "username": "testuser",
+  "password": "testpass",
+  "moderatorUsername": "moderator",
+  "moderatorPassword": "modpass",
+  "forumId": "1",
+  "topicId": "1",
+  "postId": "1",
+  "userId": "1",
+  "conversationId": "1",
+  "messageId": "1",
+  "attachmentId": "1",
+  "groupId": "1",
+  "testUrl": "https://example.com/forum/topic/1",
+  "forumPassword": "forumpass",
+  "email": "test@example.com",
+  "token": "",
+  "code": "",
+  "privateMessagingType": "conversations"
+}
+

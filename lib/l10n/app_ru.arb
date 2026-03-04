@@ -1,0 +1,932 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Forum App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  
+  "loginTitle": "Вход",
+  "usernameLabel": "Имя пользователя",
+  "passwordLabel": "Пароль",
+  "loginButton": "Войти",
+  "signInWithPasskey": "Sign in with Passkey",
+  "usePasskey": "Use Passkey",
+  "passkeyContinuePrompt": "Use your passkey to continue",
+  "forgotPassword": "Забыли пароль?",
+  "pleaseEnterUsername": "Пожалуйста, введите ваше имя пользователя",
+  "pleaseEnterPassword": "Пожалуйста, введите ваш пароль",
+  "credentialsSentToDomain": "Ваше имя пользователя и пароль будут отправлены на {domain}",
+  "@credentialsSentToDomain": {
+    "description": "Message about credentials being sent to forum domain",
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "createAccount": "Создать аккаунт",
+  "alreadyHaveAccount": "Уже есть аккаунт? ",
+  "logIn": "Войти",
+  "continueButton": "Продолжить",
+  "registrationNotAvailable": "Регистрация недоступна",
+  "registrationNotAvailableMessage": "Регистрация в настоящее время недоступна. Форум может быть закрыт или регистрация может быть отключена.",
+  "webRegistrationRequired": "Требуется регистрация через веб",
+  "webRegistrationRequiredMessage": "Этот форум требует регистрации через веб-браузер. Пожалуйста, нажмите кнопку ниже, чтобы открыть страницу регистрации.",
+  "openRegistrationPage": "Открыть страницу регистрации",
+  "loadingAdditionalFields": "Загрузка дополнительных полей...",
+  "pleaseSelectDateOfBirth": "Пожалуйста, выберите вашу дату рождения",
+  "pleaseEnterLocation": "Пожалуйста, введите ваше местоположение",
+  "pleaseIndicateEmailPreference": "Пожалуйста, укажите ваши предпочтения по электронной почте",
+  "pleaseFillAllRequiredFields": "Пожалуйста, заполните все обязательные поля",
+  "pleaseAcceptTermsOfService": "Пожалуйста, примите Условия использования",
+  "pleaseAcceptPrivacyPolicy": "Пожалуйста, примите Политику конфиденциальности",
+  "registrationError": "Ошибка регистрации",
+  "registrationFailed": "Регистрация не удалась. Пожалуйста, проверьте вашу информацию.",
+  "registrationFailedTryAgain": "Регистрация не удалась. Пожалуйста, попробуйте снова.",
+  "registrationInfo": "Информация о регистрации",
+  "openWebsite": "Открыть веб-сайт",
+  "couldNotOpenForumWebsite": "Не удалось открыть веб-сайт форума. Пожалуйста, попробуйте посетить: {url}",
+  "@couldNotOpenForumWebsite": {
+    "description": "Error message when cannot open forum website",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "registrationSuccessfulEmailConfirm": "Регистрация успешна! Пожалуйста, проверьте вашу электронную почту, чтобы подтвердить ваш аккаунт перед входом.",
+  "registrationSuccessfulPendingApproval": "Регистрация успешна! Ваш аккаунт ожидает одобрения. Вы будете уведомлены, когда ваш аккаунт будет одобрен.",
+  "registrationSuccessfulAutoLogin": "Регистрация успешна! Вы автоматически вошли в систему.",
+  "welcome": "Добро пожаловать!",
+  "registrationSuccessful": "Регистрация успешна",
+  "pleaseLoginWithNewAccount": "Пожалуйста, войдите с вашим новым аккаунтом.",
+  
+  "forgotPasswordTitle": "Забыли пароль",
+  "usernameOrEmailLabel": "Имя пользователя или электронная почта",
+  "pleaseEnterUsernameOrEmail": "Пожалуйста, введите ваше имя пользователя или электронную почту",
+  "sendResetLink": "Отправить ссылку для сброса",
+  "resetLinkSent": "Ссылка для сброса отправлена",
+  "passwordResetInstructionsSent": "Инструкции по сбросу пароля были отправлены на ваш зарегистрированный адрес электронной почты.",
+  "resetFailed": "Сброс не удался",
+  "unableToSendResetLink": "Не удалось отправить ссылку для сброса. Пожалуйста, попробуйте снова.",
+  "errorSendingResetLink": "Произошла ошибка при отправке ссылки для сброса. Пожалуйста, проверьте ваше соединение и попробуйте снова.",
+  
+  "errorTitle": "Ошибка",
+  "okButton": "ОК",
+  "retryButton": "Повторить",
+  "copyToClipboard": "Копировать в буфер обмена",
+  "copied": "Скопировано",
+  "errorMessageCopiedToClipboard": "Сообщение об ошибке скопировано в буфер обмена",
+  "dismiss": "Закрыть",
+  "cancel": "Отмена",
+  "tryAgain": "Попробовать снова",
+  "getHelp": "Получить помощь",
+  "somethingWentWrong": "Что-то пошло не так",
+  "unexpectedErrorOccurred": "Произошла неожиданная ошибка. Пожалуйста, попробуйте снова.",
+  "noInternetConnection": "Нет подключения к интернету",
+  "checkInternetConnection": "Пожалуйста, проверьте ваше подключение к интернету и попробуйте снова.",
+  "authenticationRequired": "Требуется аутентификация",
+  "pleaseLoginToContinue": "Пожалуйста, войдите, чтобы продолжить.",
+  "forumError": "Ошибка форума",
+  "anErrorOccurred": "Произошла ошибка",
+  
+  "accountPendingApproval": "Ваш аккаунт ожидает одобрения. Вы можете просматривать форум, но не можете публиковать сообщения, пока модератор не одобрит ваш аккаунт.",
+  "checkEmailToConfirm": "Пожалуйста, проверьте вашу электронную почту, чтобы подтвердить ваш аккаунт. Нажмите на ссылку подтверждения в письме, которое мы вам отправили.",
+  "checkNewEmailToConfirm": "Пожалуйста, проверьте ваш новый адрес электронной почты, чтобы подтвердить изменение. Ваш старый адрес электронной почты останется активным, пока вы не подтвердите новый.",
+  "emailAddressInvalid": "Ваш адрес электронной почты кажется недействительным или отклоняет письма. Пожалуйста, обновите ваш адрес электронной почты в настройках аккаунта.",
+  "accountDisabled": "Ваш аккаунт был отключен. Пожалуйста, свяжитесь с администратором для получения помощи.",
+  "accountRegistrationRejected": "Регистрация вашего аккаунта была отклонена. Пожалуйста, свяжитесь с администратором для получения дополнительной информации.",
+  "welcomeToForumCopilot": "Добро пожаловать в Forum Copilot!",
+  "successfullyLoggedOut": "Вы успешно вышли из системы",
+  "accountStatusRequiresAttention": "Статус вашего аккаунта требует внимания. Пожалуйста, свяжитесь с администратором, если у вас есть вопросы.",
+  "updateEmail": "Обновить электронную почту",
+  "resend": "Отправить снова",
+  
+  "noLatestTopics": "Нет последних тем",
+  "noRecentTopicsToDisplay": "Нет последних тем для отображения. Вернитесь позже для новых обсуждений.",
+  "signInToViewLatestTopics": "Войдите, чтобы просмотреть последние темы",
+  "youNeedToBeSignedInToViewLatestTopics": "Вам нужно войти, чтобы просмотреть последние темы",
+  
+  "noUnreadTopics": "Нет непрочитанных тем",
+  "thereAreNoUnreadTopics": "Нет непрочитанных тем. Вернитесь позже для новых обсуждений.",
+  "youAreAllCaughtUp": "Вы все просмотрели!",
+  "signInToViewUnreadTopics": "Войдите, чтобы просмотреть непрочитанные темы",
+  "youNeedToBeSignedInToViewUnreadTopics": "Вам нужно войти, чтобы просмотреть ваши непрочитанные темы",
+  
+  "noSubscribedTopics": "Нет подписанных тем",
+  "noSubscribedTopicsMessage": "Вы не подписались ни на одну тему. Нажмите кнопку звездочки на теме, чтобы подписаться и получать уведомления о новых обновлениях.",
+  "signInToViewSubscribedTopics": "Войдите, чтобы просмотреть подписанные темы",
+  "youNeedToBeSignedInToViewSubscribedTopics": "Вам нужно войти, чтобы просмотреть ваши подписанные темы",
+  
+  "noParticipatedTopics": "Нет тем с участием",
+  "topicsYouParticipatedIn": "Темы, в которых вы участвовали, будут показаны здесь.",
+  "signInToViewParticipatedTopics": "Войдите, чтобы просмотреть темы с участием",
+  "youNeedToBeSignedInToViewParticipatedTopics": "Вам нужно войти, чтобы просмотреть темы, в которых вы участвовали",
+  
+  "latest": "Последние",
+  "unread": "Непрочитанные",
+  "subscribed": "Подписанные",
+  "participated": "С участием",
+  
+  "connectionTimedOut": "Время соединения истекло. Сайт может быть недоступен или недостижим.",
+  "failedToConnectToSite": "Не удалось подключиться к сайту. Сайт может быть недоступен или недостижим.",
+  "connectionFailed": "Ошибка подключения",
+  "failedToConnectToSiteName": "Не удалось подключиться к {siteName}",
+  "@failedToConnectToSiteName": {
+    "description": "Error message when failed to connect to a site",
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "loading": "Загрузка...",
+  "newConversation": "Новый разговор",
+  "newMessage": "Новое сообщение",
+  
+  "appSettings": "Настройки приложения",
+  "searchSites": "Поиск сайтов",
+  "language": "Язык",
+  "systemDefault": "Системный по умолчанию",
+  "followSystemLanguage": "Следовать языку системы",
+  
+  "all": "Все",
+  "topicsOnly": "Только темы",
+  "titlesOnly": "Только заголовки",
+  
+  "failedToShareTopic": "Не удалось поделиться темой: {error}",
+  "@failedToShareTopic": {
+    "description": "Error message when sharing topic fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToSubscribe": "Пожалуйста, войдите, чтобы {action} эту тему",
+  "@pleaseLoginToSubscribe": {
+    "description": "Message asking user to login to subscribe/unsubscribe",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeTo": "подписаться на",
+  "unsubscribeFrom": "отписаться от",
+  "failedToSubscribeToThread": "Не удалось {action} тему",
+  "@failedToSubscribeToThread": {
+    "description": "Error message when subscribe/unsubscribe fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youCannotReplyToThisThread": "Вы не можете ответить на эту тему",
+  "pleaseWaitForThreadToLoad": "Пожалуйста, подождите, пока тема загрузится",
+  
+  "softDelete": "Мягкое удаление",
+  "postCanBeRestoredLater": "Сообщение можно восстановить позже",
+  "hardDelete": "Жесткое удаление",
+  "postWillBePermanentlyDeleted": "Сообщение будет удалено навсегда",
+  "reasonForDeletion": "Причина удаления",
+  "enterReasonForDeletingPost": "Введите причину удаления этого сообщения",
+  "pleaseEnterReasonForDeletion": "Пожалуйста, введите причину удаления",
+  
+  "reportPost": "Пожаловаться на сообщение",
+  "pleaseProvideReasonForReporting": "Пожалуйста, укажите причину жалобы на это сообщение.",
+  "reason": "Причина",
+  "enterReasonForReportingPost": "Введите причину жалобы на это сообщение",
+  "pleaseEnterReason": "Пожалуйста, введите причину",
+  "submitReport": "Отправить жалобу",
+  
+  "selectedActions": "Выбранные действия:",
+  "thisActionCannotBeUndone": "Это действие нельзя отменить.",
+  
+  "participantsLabel": "Участники",
+  "usernameHasBeenInvited": "{username} был приглашен в разговор",
+  "@usernameHasBeenInvited": {
+    "description": "Message when user is invited to conversation",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInvitingUser": "Ошибка приглашения пользователя: {error}",
+  "@errorInvitingUser": {
+    "description": "Error message when inviting user fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newTopic": "Новая тема",
+  "markRead": "Отметить как прочитанное",
+  
+  "reportUser": "Пожаловаться на пользователя",
+  "pleaseSelectReasonForReportingUser": "Пожалуйста, выберите причину жалобы на этого пользователя.",
+  "spamOrAdvertising": "Спам или реклама",
+  "harassmentOrBullying": "Преследование или издевательство",
+  "inappropriateContent": "Неуместный контент",
+  "impersonationOrFakeAccount": "Подделка личности или фальшивый аккаунт",
+  "otherPleaseSpecify": "Другое (пожалуйста, укажите)",
+  "pleaseSpecifyReason": "Пожалуйста, укажите причину",
+  "enterReasonForReportingUser": "Введите причину жалобы на этого пользователя",
+  "pleaseSelectReason": "Пожалуйста, выберите причину",
+  
+  "banUser": "Заблокировать пользователя",
+  "unbanUser": "Разблокировать пользователя",
+  "pleaseSelectReasonForBanningUser": "Пожалуйста, выберите причину блокировки {username}",
+  "@pleaseSelectReasonForBanningUser": {
+    "description": "Message asking to select reason for banning user",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "violationOfCommunityGuidelines": "Нарушение правил сообщества",
+  "harassmentOrAbusiveBehavior": "Преследование или оскорбительное поведение",
+  "postingInappropriateContent": "Публикация неуместного контента",
+  "accountCompromiseOrSecurityIssue": "Компрометация аккаунта или проблема безопасности",
+  "enterReasonForBanningUser": "Введите причину блокировки этого пользователя",
+  "banUntil": "Заблокировать до",
+  "selectDate": "Выбрать дату",
+  
+  "moreOptions": "Дополнительные опции",
+  "leaveConversation": "Покинуть разговор",
+  "reportConversation": "Пожаловаться на разговор",
+  
+  "topicClosed": "Тема закрыта",
+  "topicOpened": "Тема открыта",
+  "topicStickied": "Тема закреплена",
+  "topicUnstickied": "Тема откреплена",
+  
+  "cannotEditMessage": "Невозможно отредактировать это сообщение: {error}",
+  "@cannotEditMessage": {
+    "description": "Error message when cannot edit message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSpamClean": "Подтвердить очистку спама",
+  "handleThreads": "Управление темами",
+  "deleteMessages": "Удалить сообщения",
+  "deleteConversations": "Удалить разговоры",
+  
+  "myForums": "Мои Форумы",
+  "recentlyVisited": "Недавно Посещенные",
+  "explore": "Исследовать",
+  "forumCopilot": "Forum Copilot",
+  
+  "noConversations": "Нет разговоров",
+  "noConversationsMessage": "У вас пока нет разговоров. Начните новый разговор, чтобы начать обмен сообщениями.",
+  
+  "imageSavedToGallery": "Изображение сохранено в галерею!",
+  "failedToSaveImage": "Ошибка при сохранении изображения: {error}",
+  "@failedToSaveImage": {
+    "description": "Error message when saving image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "userProfile": "Профиль Пользователя",
+  "deletePost": "Удалить Сообщение",
+  "loginRequired": "Требуется Вход",
+  
+  "spamCleaner": "Очиститель Спама",
+  "tryAgain": "Попробовать Снова",
+  "sendMessage": "Отправить Сообщение",
+  "memberSince": "Участник С",
+  "lastActivity": "Последняя Активность",
+  "likesReceived": "Полученные Лайки",
+  "likesGiven": "Данные Лайки",
+  "showMore": "Показать Больше",
+  "cleanSpam": "Очистить Спам",
+  
+  "failedToSaveMessage": "Ошибка при сохранении сообщения",
+  "failedToSaveConversation": "Ошибка при сохранении разговора",
+  "failedToSaveSetting": "Ошибка при сохранении настройки",
+  "failedToSavePost": "Ошибка при сохранении сообщения",
+  "errorLoadingSites": "Ошибка при загрузке сайтов: {error}",
+  "@errorLoadingSites": {
+    "description": "Error message when loading explore sites fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "connectingTo": "Подключение к {domainName}...",
+  "@connectingTo": {
+    "description": "Message shown when connecting to a site",
+    "placeholders": {
+      "domainName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "members": "Участники",
+  "allMembers": "Все Участники",
+  "online": "Онлайн",
+  "noMembersFound": "Участники не найдены",
+  "searchForMembers": "Поиск участников",
+  "enterUsernameToFindMembers": "Введите имя пользователя, чтобы найти участников форума",
+  "noMembersOnline": "В настоящее время нет участников в сети",
+  "enterUsernameToSearch": "Введите имя пользователя для поиска...",
+  "lookupMembers": "Поиск Участников",
+  "addMembers": "Добавить Участников",
+  "membersAddedSuccessfully": "Участники успешно добавлены",
+  "errorAddingMembers": "Ошибка при добавлении участников: {error}",
+  "@errorAddingMembers": {
+    "description": "Error message when adding members fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadOnlineUsers": "Ошибка при загрузке пользователей в сети",
+  "noUsersOnline": "Нет пользователей в сети",
+  "membersCount": "{count} Участников",
+  "@membersCount": {
+    "description": "Number of members with label",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "noSubject": "Без темы",
+  
+  "search": "Поиск",
+  "moreOptions": "Дополнительные опции",
+  "logout": "Выйти",
+  "areYouSureYouWantToLogout": "Вы уверены, что хотите выйти?",
+  "register": "Зарегистрироваться",
+  "signIn": "Войти",
+  "markForumRead": "Отметить Форум как Прочитанный",
+  "notificationTest": "Тест Уведомлений",
+  "forum": "Форум",
+  "profile": "Профиль",
+  "messages": "Сообщения",
+  "add": "Добавить",
+  "dismiss": "Закрыть",
+  "retry": "Повторить",
+  "delete": "Удалить",
+  "deleteMessage": "Удалить Сообщение",
+  "areYouSureYouWantToDeleteThisMessage": "Вы уверены, что хотите удалить это сообщение?",
+  "failedToDeleteMessage": "Ошибка при удалении сообщения: {error}",
+  "@failedToDeleteMessage": {
+    "description": "Error message when deleting message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingPost": "Удаление сообщения...",
+  "failedToUnlikePost": "Ошибка при снятии лайка с сообщения: {error}",
+  "@failedToUnlikePost": {
+    "description": "Error message when unliking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikePost": "Ошибка при лайке сообщения: {error}",
+  "@failedToLikePost": {
+    "description": "Error message when liking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToThankPost": "Ошибка при благодарности сообщению: {error}",
+  "@failedToThankPost": {
+    "description": "Error message when thanking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToViewMessages": "Войдите, чтобы просмотреть сообщения",
+  "youNeedToBeSignedInToViewConversations": "Вам нужно войти, чтобы просмотреть ваши разговоры.",
+  "errorLoadingConversations": "Ошибка при загрузке разговоров: {error}",
+  "@errorLoadingConversations": {
+    "description": "Error message when loading conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLeaveConversation": "Ошибка при выходе из разговора: {error}",
+  "@failedToLeaveConversation": {
+    "description": "Error message when leaving conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreConversations": "Ошибка при загрузке дополнительных разговоров: {error}",
+  "@errorLoadingMoreConversations": {
+    "description": "Error message when loading more conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMessageOptional": "Пригласительное Сообщение (необязательно)",
+  "iWouldLikeToAddYouToThisConversation": "Я хотел бы добавить вас в этот разговор.",
+  "searchFailed": "Поиск не удался",
+  "trySearchingWithDifferentUsername": "Попробуйте поискать с другим именем пользователя",
+  "enterUsernameToSearch": "Введите имя пользователя для поиска...",
+  "noSitesFound": "Сайты не найдены.",
+  "userInformationNotAvailable": "Информация о пользователе недоступна",
+  "birthday": "День рождения",
+  "posts": "Сообщения",
+  "following": "Подписки",
+  "followers": "Подписчики",
+  "about": "О себе",
+  "location": "Местоположение",
+  "website": "Веб-сайт",
+  "signature": "Подпись",
+  "next": "Далее",
+  "permanent": "Постоянный",
+  "temporary": "Временный",
+  "setBanDurationFor": "Установить длительность бана для {username}",
+  "@setBanDurationFor": {
+    "description": "Message asking to set ban duration",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectEndDateForTemporaryBan": "Пожалуйста, выберите дату окончания временного бана",
+  "back": "Назад",
+  "unban": "Разблокировать",
+  "confirm": "Подтвердить",
+  "spamClean": "Очистить Спам {username}",
+  "@spamClean": {
+    "description": "Title for spam clean dialog",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "selectActionsToPerform": "Выберите действия для выполнения:",
+  "moveOrDeleteThreadsBasedOnAdminSettings": "Переместить или удалить темы на основе настроек администратора",
+  "messageUpdatedSuccessfully": "Сообщение успешно обновлено",
+  "error": "Ошибка: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveAttachment": "Ошибка при удалении вложения: {error}",
+  "@failedToRemoveAttachment": {
+    "description": "Error message when removing attachment fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadMessage": "Ошибка при загрузке сообщения: {error}",
+  "@failedToLoadMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editMessage": "Редактировать Сообщение",
+  "removeAttachment": "Удалить Вложение",
+  "areYouSureYouWantToRemoveThisAttachment": "Вы уверены, что хотите удалить это вложение?",
+  "none": "Нет",
+  "attachFile": "Прикрепить Файл",
+  "uploadImage": "Загрузить Изображение",
+  "formatting": "Форматирование",
+  "bold": "Жирный",
+  "italic": "Курсив",
+  "underline": "Подчеркнутый",
+  "strikethrough": "Зачеркнутый",
+  "link": "Ссылка",
+  "image": "Изображение",
+  "video": "Видео",
+  "quote": "Цитата",
+  "code": "Код",
+  "spoiler": "Спойлер",
+  "bulletList": "Маркированный Список",
+  "numberedList": "Нумерованный Список",
+  "listItem": "Элемент Списка",
+  "participants": "Участники ({count})",
+  "@participants": {
+    "description": "Participants count with label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsUnread": "Отметить как непрочитанное",
+  "invite": "Пригласить",
+  "welcomeBack": "С возвращением!",
+  "signInToAccessYourProfile": "Войдите, чтобы получить доступ к своему профилю и управлять аккаунтом",
+  "enterYourUsername": "Введите ваше имя пользователя",
+  "enterYourPassword": "Введите ваш пароль",
+  "dontHaveAnAccount": "Нет аккаунта?",
+  "enterKeywordsToSearchTopics": "Введите ключевые слова для поиска тем...",
+  "pleaseFillInAllRequiredFields": "Пожалуйста, заполните все обязательные поля",
+  "undelete": "Восстановить",
+  "refresh": "Обновить",
+  "share": "Поделиться",
+  "viewOnWeb": "Открыть в браузере",
+  "unlock": "Разблокировать",
+  "lock": "Заблокировать",
+  "stick": "Закрепить",
+  "unstick": "Открепить",
+  "reply": "Ответить",
+  "vote": "Голосовать",
+  "votesCount": "{count} голосов",
+  "pollClosed": "Опрос закрыт",
+  "pollEndsOn": "Заканчивается {date}",
+  "voteToSeeResults": "Проголосуйте, чтобы увидеть результаты",
+  "viewFullPoll": "Полный опрос",
+  "pollOptionsCount": "{count} вариантов",
+  "reactedBy": "Отреагировали",
+  "enterKeywordsToFindTopicsAndPosts": "Введите ключевые слова для поиска тем и сообщений",
+  "enterKeywordsOrDomainToFindForums": "Введите ключевые слова или домен для поиска форумов",
+  "enterKeywordsOrDomainNamesToFindForums": "Введите ключевые слова или доменные имена для поиска форумов",
+  "language": "Язык",
+  "systemDefault": "По умолчанию системы",
+  "followSystemLanguage": "Следовать языку системы",
+  "appearance": "Внешний вид",
+  "followSystemTheme": "Следовать теме системы",
+  "light": "Светлая",
+  "dark": "Тёмная",
+  "version": "версия {version} ({buildNumber})",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "forumSettings": "Настройки форума",
+  "noSettingsAvailable": "Настройки недоступны",
+  "settingsCategoriesWillAppearHere": "Категории настроек появятся здесь, когда будут доступны.",
+  "spamCleaner": "Очистка спама",
+  "unableToLoadProfile": "Не удалось загрузить профиль",
+  "banned": "ЗАБЛОКИРОВАН",
+  "sendMessage": "Отправить сообщение",
+  "showMore": "Показать больше",
+  "reportUser": "Пожаловаться на пользователя",
+  "submitReport": "Отправить жалобу",
+  "reportSubmittedSuccessfully": "Жалоба успешно отправлена",
+  "failedToSubmitReport": "Не удалось отправить жалобу",
+  "searchForForums": "Поиск форумов",
+  "searchForums": "Поиск форумов",
+  "deleteTopic": "Удалить тему",
+  "softDelete": "Мягкое удаление",
+  "topicCanBeRestoredLater": "Тему можно восстановить позже",
+  "hardDelete": "Жёсткое удаление",
+  "topicWillBePermanentlyDeleted": "Тема будет удалена навсегда",
+  "reasonForDeletion": "Причина удаления",
+  "enterReasonForDeletingTopic": "Введите причину удаления этой темы",
+  "pleaseEnterReasonForDeletion": "Пожалуйста, введите причину удаления",
+  "pleaseSelectEndDate": "Пожалуйста, выберите дату окончания",
+  "banUser": "Заблокировать пользователя",
+  "userBannedSuccessfully": "Пользователь успешно заблокирован",
+  "failedToBanUser": "Не удалось заблокировать пользователя",
+  "userUnbannedSuccessfully": "Пользователь успешно разблокирован",
+  "failedToUnbanUser": "Не удалось разблокировать пользователя",
+  "spamCleanUser": "Очистить спам пользователя",
+  "deletePrivateConversations": "Удалить приватные разговоры",
+  "banTheUserAccount": "Заблокировать учётную запись пользователя",
+  "cleanSpam": "Очистить спам",
+  "handledThreads": "Обработанные темы",
+  "deletedMessages": "Удалённые сообщения",
+  "deletedConversations": "Удалённые разговоры",
+  "bannedUser": "Заблокированный пользователь",
+  "successfullyCleanedSpam": "Спам успешно очищен для {username}. Действия: {actions}",
+  "@successfullyCleanedSpam": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "actions": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMessage": "Ошибка загрузки сообщения: {error}",
+  "@errorLoadingMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotFound": "Сообщение не найдено",
+  
+  "home": "Главная",
+  "notifications": "Уведомления",
+  "forums": "Форумы",
+  "markAllForumsAsRead": "Отметить все форумы как прочитанные?",
+  "markAllForumsAsReadMessage": "Это отметит все форумы и темы как прочитанные. Это действие нельзя отменить.",
+  "markAsRead": "Отметить как прочитанное",
+  
+  "content": "Содержание",
+  "insertImage": "Вставить изображение",
+  "howWouldYouLikeToInsertImage": "Как вы хотите вставить это изображение?",
+  "thumbnail": "Миниатюра",
+  "fullSize": "Полный размер",
+  "alignLeft": "Выровнять по левому краю",
+  "alignCenter": "Выровнять по центру",
+  "alignRight": "Выровнять по правому краю",
+  "pleaseEnterTitle": "Пожалуйста, введите заголовок",
+  "pleaseEnterContent": "Пожалуйста, введите содержимое",
+  "uploading": "Загрузка...",
+  "uploaded": "Загружено",
+  "mentionUser": "Упомянуть пользователя",
+  
+  "loggingIn": "Вход в систему...",
+  "submittingReport": "Отправка отчёта...",
+  "banningUser": "Блокировка пользователя...",
+  "unbanningUser": "Разблокировка пользователя...",
+  "cleaningSpam": "Очистка спама...",
+  
+  "enterSubject": "Введите тему",
+  "typeYourMessageHere": "Введите ваше сообщение здесь",
+  "writeYourMessage": "Напишите ваше сообщение...",
+  "writeYourReply": "Напишите ваш ответ...",
+  "messageSentSuccessfully": "Сообщение успешно отправлено",
+  "replySentSuccessfully": "Ответ успешно отправлен",
+  "conversationCreatedSuccessfully": "Разговор успешно создан",
+  "conversationMarkedAsUnread": "Разговор отмечен как непрочитанный",
+  "messageMarkedAsUnread": "Сообщение отмечено как непрочитанное",
+  "conversationClosed": "Разговор закрыт",
+  "conversationOpened": "Разговор открыт",
+  "pleaseLoginToLikeMessages": "Пожалуйста, войдите, чтобы лайкать сообщения",
+  "loadEarlierMessages": "Загрузить более ранние сообщения",
+  "failedToLoadQuote": "Не удалось загрузить цитату: \n{error}",
+  "@failedToLoadQuote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadFile": "Не удалось загрузить файл: {error}",
+  "@failedToUploadFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "Не удалось загрузить изображение: {error}",
+  "@failedToUploadImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendMessage": "Не удалось отправить сообщение: {error}",
+  "@failedToSendMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendReply": "Не удалось отправить ответ: {error}",
+  "@failedToSendReply": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkAsUnread": "Не удалось отметить сообщение как непрочитанное: {error}",
+  "@failedToMarkAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkConversationAsUnread": "Не удалось отметить разговор как непрочитанный: {error}",
+  "@failedToMarkConversationAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCloseConversation": "Не удалось закрыть разговор: {error}",
+  "@failedToCloseConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenConversation": "Не удалось открыть разговор: {error}",
+  "@failedToOpenConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJumpToMessage": "Не удалось перейти к сообщению: {error}",
+  "@failedToJumpToMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goToTop": "Перейти вверх",
+  "goToBottom": "Перейти вниз",
+  "replyAll": "Ответить всем",
+  "forward": "Переслать",
+  
+  "noForumsFound": "Форумы не найдены.",
+  "pleaseSelectPrefix": "Пожалуйста, выберите префикс",
+  "pleaseLoginToAccessContent": "Пожалуйста, войдите, чтобы получить доступ к этому содержимому и взаимодействовать с сообщениями.",
+  
+  "searchUsers": "Поиск пользователей...",
+  "writeYourTitle": "Напишите ваш заголовок...",
+  "writeYourContent": "Напишите ваше содержимое...",
+  "selectAnOption": "Выберите опцию",
+  "enterConversationTitle": "Введите заголовок разговора",
+  "enterCode": "Введите {count}-значный код",
+  "@enterCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "edit": "Редактировать",
+  "report": "Пожаловаться",
+  "unfollow": "Отписаться",
+  "follow": "Подписаться",
+  
+  "goToForums": "Перейти к форумам",
+  "remove": "Удалить",
+  
+  "subject": "Тема",
+  "message": "Сообщение",
+  "titleCannotBeEmpty": "Заголовок не может быть пустым",
+  "conversationUpdatedSuccessfully": "Разговор успешно обновлён",
+  "goBack": "Назад",
+  "signInToViewMessages": "Войдите, чтобы просмотреть сообщения",
+  "privateMessagesNotAvailable": "Приватные сообщения недоступны",
+  "failedToLoadPost": "Не удалось загрузить сообщение: \n{error}",
+  "@failedToLoadPost": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreMessages": "Ошибка при загрузке дополнительных сообщений: {error}",
+  "@errorLoadingMoreMessages": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikeOrUnlikeMessage": "Не удалось {action} сообщение: {error}",
+  "@failedToLikeOrUnlikeMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like": "лайкнуть",
+  "unlike": "убрать лайк",
+  "optimizeImage": "Оптимизировать изображение",
+  "optimizeAndUpload": "Оптимизировать и загрузить",
+  "downloading": "Загрузка {filename}...",
+  "@downloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "openingShareSheet": "Открытие листа общего доступа для {filename}",
+  "@openingShareSheet": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDownloading": "Ошибка при загрузке {filename}: {error}",
+  "@errorDownloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "enterANumber": "Введите число",
+  
+  "failedToNavigateToForum": "Не удалось перейти к форуму",
+  "failedToNavigateToForumName": "Не удалось перейти к {forumName}",
+  "@failedToNavigateToForumName": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveConversation": "Не удалось сохранить разговор",
+  
+  "forumNotFound": "Форум не найден: {forumName}",
+  "@forumNotFound": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "forumNotFoundById": "Форум не найден: {forumId}",
+  "@forumNotFoundById": {
+    "placeholders": {
+      "forumId": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenLink": "Не удалось открыть ссылку: {error}",
+  "@couldNotOpenLink": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "translate": "Перевести",
+  "showOriginal": "Показать оригинал",
+  "translating": "Перевод...",
+  "translated": "Переведено",
+  "translatedContent": "Переведённый контент",
+  "selectLanguage": "Выберите язык",
+  "translateTo": "Перевести на:",
+  "deviceLanguage": "Язык устройства",
+  "noPostsToTranslate": "Нет постов для перевода",
+  "translationFailed": "Ошибка перевода",
+  
+  "likePost": "Нравится",
+  "unlikePost": "Больше не нравится",
+  "thankPost": "Поблагодарить",
+  "showLikes": "Показать лайки",
+  "showThanks": "Показать благодарности",
+  "quotePost": "Цитировать пост"
+}

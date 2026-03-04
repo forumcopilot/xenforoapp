@@ -1,0 +1,50 @@
+name: xenforo_core
+description: XenForo connector implementation for ForumCopilot SDK
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # ForumCopilot SDK
+  forumcopilot_sdk:
+    path: ../forumcopilot_sdk
+  
+  # HTTP client
+  http: ^1.6.0
+  
+  # JSON serialization
+  json_annotation: ^4.9.0
+  
+  # OAuth2 support
+  oauth2: ^2.0.2
+  
+  # Shared preferences for token storage
+  shared_preferences: ^2.5.1
+  
+  # Crypto for hashing
+  crypto: ^3.0.3
+  
+  # Dart mappable for serialization
+  dart_mappable: ^4.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  test: ^1.24.0
+  
+  # JSON serialization code generation
+  json_serializable: ^6.7.1
+  build_runner: ^2.10.4
+  
+  # Dart mappable code generation
+  dart_mappable_builder: ^4.3.1+1
+
+flutter:
+  uses-material-design: true

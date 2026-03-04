@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <template type="admin" title="option_template_fc_site_info_iframe" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:formrow
+	label="{$option.title}"
+	explain="{$explainHtml}"
+	hint="{$hintHtml}"
+	html="{$listedHtml}"
+	rowclass="{$rowClass}">
+	<div class="fc-site-edit-iframe-container" style="border: 1px solid var(--xf-borderColor, #d1d1d1); border-radius: 4px; overflow: hidden; background: var(--xf-contentBg, #fff);">
+		<iframe 
+			src="{$iframe_url}" 
+			class="fc-site-edit-iframe" 
+			style="width: 100%; border: none; min-height: 800px; display: block;"
+			title="Edit Forum Information"
+			allow="clipboard-read; clipboard-write"
+			id="fc-site-edit-iframe">
+		</iframe>
+	</div>
+	<script>
+		(function() {
+			var iframe = document.getElementById('fc-site-edit-iframe');
+			if (!iframe) return;
+			
+			// Listen for resize messages from iframe
+			window.addEventListener('message', function(event) {
+				// Verify origin if needed (for production, check event.origin)
+				if (event.data && event.data.type === 'iframe-resize' && event.data.height) {
+					iframe.style.height = event.data.height + 'px';
+				}
+			});
+			
+			// Set initial height
+			iframe.onload = function() {
+				// Give iframe time to render
+				setTimeout(function() {
+					iframe.contentWindow.postMessage({ type: 'request-height' }, '*');
+				}, 500);
+			};
+		})();
+	</script>
+</xf:formrow>]]></template>
+    <template type="admin" title="fc_option" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:title>{{ phrase('option_group.fc_options') }}</xf:title>
+
+<xf:if is="!$fc_site_id">
+	<div class="blockMessage blockMessage--warning">
+		{{ phrase('fc_site_not_registered') }}
+	</div>
+</xf:if>
+
+<xf:form action="{{ link('options/groups', {'group_id': 'fc_options'}) }}" method="post" class="block" data-xf-init="form-submit-loader">
+	<xf:csrf />
+	
+	<div class="block-container">
+		<h2 class="block-header">{{ phrase('fc_push_notifications') }}</h2>
+		
+		<div class="block-body">
+			<xf:checkboxrow label="{{ phrase('fc_push_enabled') }}" explain="{{ phrase('fc_push_enabled_explain') }}">
+				<xf:option name="fc_push_enabled" selected="{$fc_push_enabled}" />
+			</xf:checkboxrow>
+			
+			<xf:formrow label="{{ phrase('fc_push_api_url') }}" explain="{{ phrase('fc_push_api_url_explain') }}">
+				<xf:textbox name="fc_push_api_url" value="{$fc_push_api_url}" />
+			</xf:formrow>
+			
+			<xf:formrow label="{{ phrase('fc_push_api_key') }}" explain="{{ phrase('fc_push_api_key_explain') }}">
+				<xf:textbox name="fc_push_api_key" value="{$fc_push_api_key}" type="password" />
+			</xf:formrow>
+		</div>
+	</div>
+	
+	<div class="block-container">
+		<h2 class="block-header">{{ phrase('fc_smart_banner') }}</h2>
+		
+		<div class="block-body">
+			<xf:checkboxrow label="{{ phrase('option.fc_smart_banner_enabled') }}" explain="{{ phrase('option_explain.fc_smart_banner_enabled') }}">
+				<xf:option name="fc_smart_banner_enabled" selected="{$fc_smart_banner_enabled}" />
+			</xf:checkboxrow>
+		</div>
+	</div>
+	
+	<xf:submitrow icon="save" />
+</xf:form>]]></template>
+</templates>
+

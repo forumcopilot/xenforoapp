@@ -1,0 +1,1412 @@
+{
+  "@@locale": "nl",
+  "appTitle": "Forum App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  
+  "loginTitle": "Inloggen",
+  "usernameLabel": "Gebruikersnaam",
+  "passwordLabel": "Wachtwoord",
+  "loginButton": "Inloggen",
+  "signInWithPasskey": "Sign in with Passkey",
+  "usePasskey": "Use Passkey",
+  "passkeyContinuePrompt": "Use your passkey to continue",
+  "forgotPassword": "Wachtwoord vergeten?",
+  "pleaseEnterUsername": "Voer uw gebruikersnaam in",
+  "pleaseEnterPassword": "Voer uw wachtwoord in",
+  "credentialsSentToDomain": "Uw gebruikersnaam en wachtwoord worden naar {domain} gestuurd",
+  "@credentialsSentToDomain": {
+    "description": "Message about credentials being sent to forum domain",
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "createAccount": "Account aanmaken",
+  "alreadyHaveAccount": "Heeft u al een account? ",
+  "logIn": "Inloggen",
+  "continueButton": "Doorgaan",
+  "registrationNotAvailable": "Registratie niet beschikbaar",
+  "registrationNotAvailableMessage": "Registratie is momenteel niet beschikbaar. Het forum kan gesloten zijn of registratie kan zijn uitgeschakeld.",
+  "webRegistrationRequired": "Webregistratie vereist",
+  "webRegistrationRequiredMessage": "Dit forum vereist registratie via de webbrowser. Klik op de knop hieronder om de registratiepagina te openen.",
+  "openRegistrationPage": "Registratiepagina openen",
+  "loadingAdditionalFields": "Extra velden laden...",
+  "pleaseSelectDateOfBirth": "Selecteer uw geboortedatum",
+  "pleaseEnterLocation": "Voer uw locatie in",
+  "pleaseIndicateEmailPreference": "Geef uw e-mailvoorkeur op",
+  "pleaseFillAllRequiredFields": "Vul alle verplichte velden in",
+  "pleaseAcceptTermsOfService": "Accepteer de servicevoorwaarden",
+  "pleaseAcceptPrivacyPolicy": "Accepteer het privacybeleid",
+  "registrationError": "Registratiefout",
+  "registrationFailed": "Registratie mislukt. Controleer uw gegevens.",
+  "registrationFailedTryAgain": "Registratie mislukt. Probeer het opnieuw.",
+  "registrationInfo": "Registratiegegevens",
+  "openWebsite": "Website openen",
+  "couldNotOpenForumWebsite": "Kon de forumwebsite niet openen. Probeer: {url}",
+  "@couldNotOpenForumWebsite": {
+    "description": "Error message when cannot open forum website",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "registrationSuccessfulEmailConfirm": "Registratie geslaagd! Controleer uw e-mail om uw account te bevestigen voordat u inlogt.",
+  "registrationSuccessfulPendingApproval": "Registratie geslaagd! Uw account wacht op goedkeuring. U wordt op de hoogte gesteld wanneer uw account is goedgekeurd.",
+  "registrationSuccessfulAutoLogin": "Registratie geslaagd! U bent automatisch ingelogd.",
+  "welcome": "Welkom!",
+  "registrationSuccessful": "Registratie geslaagd",
+  "pleaseLoginWithNewAccount": "Log in met uw nieuwe account.",
+  
+  "forgotPasswordTitle": "Wachtwoord vergeten",
+  "usernameOrEmailLabel": "Gebruikersnaam of e-mail",
+  "pleaseEnterUsernameOrEmail": "Voer uw gebruikersnaam of e-mail in",
+  "sendResetLink": "Resetlink verzenden",
+  "resetLinkSent": "Resetlink verzonden",
+  "passwordResetInstructionsSent": "Instructies voor het resetten van uw wachtwoord zijn naar uw geregistreerde e-mailadres gestuurd.",
+  "resetFailed": "Reset mislukt",
+  "unableToSendResetLink": "Kon resetlink niet verzenden. Probeer het opnieuw.",
+  "errorSendingResetLink": "Er is een fout opgetreden bij het verzenden van de resetlink. Controleer uw verbinding en probeer het opnieuw.",
+  
+  "errorTitle": "Fout",
+  "okButton": "OK",
+  "retryButton": "Opnieuw",
+  "copyToClipboard": "Kopiëren naar klembord",
+  "copied": "Gekopieerd",
+  "errorMessageCopiedToClipboard": "Foutbericht gekopieerd naar klembord",
+  "dismiss": "Sluiten",
+  "cancel": "Annuleren",
+  "tryAgain": "Opnieuw proberen",
+  "getHelp": "Hulp krijgen",
+  "somethingWentWrong": "Er is iets misgegaan",
+  "unexpectedErrorOccurred": "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
+  "noInternetConnection": "Geen internetverbinding",
+  "checkInternetConnection": "Controleer uw internetverbinding en probeer het opnieuw.",
+  "authenticationRequired": "Authenticatie vereist",
+  "pleaseLoginToContinue": "Log in om door te gaan.",
+  "forumError": "Forumfout",
+  "anErrorOccurred": "Er is een fout opgetreden",
+  
+  "accountPendingApproval": "Uw account wacht op goedkeuring. U kunt het forum bekijken maar niet posten tot een moderator uw account goedkeurt.",
+  "checkEmailToConfirm": "Controleer uw e-mail om uw account te bevestigen. Klik op de bevestigingslink in de e-mail die we u hebben gestuurd.",
+  "checkNewEmailToConfirm": "Controleer uw nieuwe e-mailadres om de wijziging te bevestigen. Uw oude e-mail blijft actief tot u de nieuwe bevestigt.",
+  "emailAddressInvalid": "Uw e-mailadres lijkt ongeldig of weigert e-mails. Werk uw e-mailadres bij in de accountinstellingen.",
+  "accountDisabled": "Uw account is uitgeschakeld. Neem contact op met een beheerder voor hulp.",
+  "accountRegistrationRejected": "Uw registratie is afgewezen. Neem contact op met een beheerder voor meer informatie.",
+  "welcomeToForumCopilot": "Welkom bij Forum Copilot!",
+  "successfullyLoggedOut": "U bent succesvol uitgelogd",
+  "accountStatusRequiresAttention": "Uw accountstatus vereist aandacht. Neem contact op met een beheerder bij vragen.",
+  "updateEmail": "E-mail bijwerken",
+  "resend": "Opnieuw verzenden",
+  
+  "noLatestTopics": "Geen nieuwste onderwerpen",
+  "noRecentTopicsToDisplay": "Er zijn geen recente onderwerpen om weer te geven. Kom later terug voor nieuwe discussies.",
+  "signInToViewLatestTopics": "Log in om nieuwste onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewLatestTopics": "U moet ingelogd zijn om nieuwste onderwerpen te bekijken",
+  
+  "noUnreadTopics": "Geen ongelezen onderwerpen",
+  "thereAreNoUnreadTopics": "Er zijn geen ongelezen onderwerpen. Kom later terug voor nieuwe discussies.",
+  "youAreAllCaughtUp": "U bent helemaal bij!",
+  "signInToViewUnreadTopics": "Log in om ongelezen onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewUnreadTopics": "U moet ingelogd zijn om uw ongelezen onderwerpen te bekijken",
+  
+  "noSubscribedTopics": "Geen geabonneerde onderwerpen",
+  "noSubscribedTopicsMessage": "U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.",
+  "signInToViewSubscribedTopics": "Log in om geabonneerde onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewSubscribedTopics": "U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken",
+  
+  "noParticipatedTopics": "Geen onderwerpen waaraan u hebt deelgenomen",
+  "topicsYouParticipatedIn": "Onderwerpen waaraan u hebt deelgenomen worden hier getoond.",
+  "signInToViewParticipatedTopics": "Log in om onderwerpen waaraan u hebt deelgenomen te bekijken",
+  "youNeedToBeSignedInToViewParticipatedTopics": "U moet ingelogd zijn om onderwerpen waaraan u hebt deelgenomen te bekijken",
+  
+  "latest": "Nieuwste",
+  "unread": "Ongelezen",
+  "subscribed": "Geabonneerd",
+  "participated": "Deelgenomen",
+  
+  "connectionTimedOut": "Verbinding time-out. De site kan offline of onbereikbaar zijn.",
+  "failedToConnectToSite": "Kon geen verbinding maken met de site. De site kan offline of onbereikbaar zijn.",
+  "connectionFailed": "Verbinding mislukt",
+  "failedToConnectToSiteName": "Kon geen verbinding maken met {siteName}",
+  "@failedToConnectToSiteName": {
+    "description": "Error message when failed to connect to a site",
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "loading": "Laden...",
+  "newConversation": "Nieuw gesprek",
+  "newMessage": "Nieuw bericht",
+  
+  "appSettings": "App-instellingen",
+  "searchSites": "Sites zoeken",
+  "language": "Taal",
+  "systemDefault": "Systeemstandaard",
+  "followSystemLanguage": "Systeemtaal volgen",
+  
+  "all": "Alles",
+  "topicsOnly": "Alleen onderwerpen",
+  "titlesOnly": "Alleen titels",
+  
+  "failedToShareTopic": "Kon onderwerp niet delen: {error}",
+  "@failedToShareTopic": {
+    "description": "Error message when sharing topic fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToSubscribe": "Log in om {action} dit onderwerp",
+  "@pleaseLoginToSubscribe": {
+    "description": "Message asking user to login to subscribe/unsubscribe",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeTo": "abonneren op",
+  "unsubscribeFrom": "abonnement opzeggen van",
+  "failedToSubscribeToThread": "Kon {action} onderwerp niet",
+  "@failedToSubscribeToThread": {
+    "description": "Error message when subscribe/unsubscribe fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youCannotReplyToThisThread": "U kunt niet op dit onderwerp reageren",
+  "pleaseWaitForThreadToLoad": "Wacht tot het onderwerp is geladen",
+  
+  "softDelete": "Zacht verwijderen",
+  "postCanBeRestoredLater": "Bericht kan later worden hersteld",
+  "hardDelete": "Definitief verwijderen",
+  "postWillBePermanentlyDeleted": "Bericht wordt permanent verwijderd",
+  "reasonForDeletion": "Reden voor verwijdering",
+  "enterReasonForDeletingPost": "Voer de reden voor het verwijderen van dit bericht in",
+  "pleaseEnterReasonForDeletion": "Voer een reden voor verwijdering in",
+  
+  "reportPost": "Bericht melden",
+  "pleaseProvideReasonForReporting": "Geef een reden op voor het melden van dit bericht.",
+  "reason": "Reden",
+  "enterReasonForReportingPost": "Voer de reden voor het melden van dit bericht in",
+  "pleaseEnterReason": "Voer een reden in",
+  "submitReport": "Melding verzenden",
+  
+  "selectedActions": "Geselecteerde acties:",
+  "thisActionCannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
+  
+  "participantsLabel": "Deelnemers",
+  "@participantsLabel": {
+    "description": "Label for participants (without count)"
+  },
+  "usernameHasBeenInvited": "{username} is uitgenodigd voor het gesprek",
+  "@usernameHasBeenInvited": {
+    "description": "Message when user is invited to conversation",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInvitingUser": "Fout bij uitnodigen van gebruiker: {error}",
+  "@errorInvitingUser": {
+    "description": "Error message when inviting user fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newTopic": "Nieuw onderwerp",
+  "markRead": "Als gelezen markeren",
+  
+  "reportUser": "Gebruiker melden",
+  "pleaseSelectReasonForReportingUser": "Selecteer een reden voor het melden van deze gebruiker.",
+  "spamOrAdvertising": "Spam of reclame",
+  "harassmentOrBullying": "Intimidatie of pesten",
+  "inappropriateContent": "Ongepaste inhoud",
+  "impersonationOrFakeAccount": "Impersonatie of nepaccount",
+  "otherPleaseSpecify": "Anders (geef op)",
+  "pleaseSpecifyReason": "Geef de reden op",
+  "enterReasonForReportingUser": "Voer de reden voor het melden van deze gebruiker in",
+  "pleaseSelectReason": "Selecteer een reden",
+  "submitReport": "Melding verzenden",
+  
+  "banUser": "Gebruiker blokkeren",
+  "unbanUser": "Blokkering opheffen",
+  "pleaseSelectReasonForBanningUser": "Selecteer een reden voor het blokkeren van {username}",
+  "@pleaseSelectReasonForBanningUser": {
+    "description": "Message asking to select reason for banning user",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "violationOfCommunityGuidelines": "Overtreding van de communityrichtlijnen",
+  "harassmentOrAbusiveBehavior": "Intimidatie of misbruik",
+  "postingInappropriateContent": "Plaatsen van ongepaste inhoud",
+  "accountCompromiseOrSecurityIssue": "Accountcompromittering of beveiligingsprobleem",
+  "enterReasonForBanningUser": "Voer de reden voor het blokkeren van deze gebruiker in",
+  "banUntil": "Blokkeren tot",
+  "selectDate": "Selecteer datum",
+  "unbanUser": "Blokkering opheffen",
+  
+  "moreOptions": "Meer opties",
+  "leaveConversation": "Gesprek verlaten",
+  "reportConversation": "Gesprek melden",
+  
+  "topicClosed": "Onderwerp gesloten",
+  "topicOpened": "Onderwerp geopend",
+  "topicStickied": "Onderwerp vastgezet",
+  "topicUnstickied": "Onderwerp losgemaakt",
+  
+  "cannotEditMessage": "Dit bericht kan niet worden bewerkt: {error}",
+  "@cannotEditMessage": {
+    "description": "Error message when cannot edit message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSpamClean": "Spam opruimen bevestigen",
+  "handleThreads": "Onderwerpen afhandelen",
+  "deleteMessages": "Berichten verwijderen",
+  "deleteConversations": "Gesprekken verwijderen",
+  
+  "myForums": "Mijn forums",
+  "recentlyVisited": "Recent bezocht",
+  "explore": "Ontdekken",
+  "forumCopilot": "Forum Copilot",
+  
+  "noConversations": "Geen gesprekken",
+  "noConversationsMessage": "U heeft nog geen gesprekken. Start een nieuw gesprek om te beginnen.",
+  
+  "imageSavedToGallery": "Afbeelding opgeslagen in galerij!",
+  "failedToSaveImage": "Kon afbeelding niet opslaan: {error}",
+  "@failedToSaveImage": {
+    "description": "Error message when saving image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "userProfile": "Gebruikersprofiel",
+  "deletePost": "Bericht verwijderen",
+  "loginRequired": "Inloggen vereist",
+  
+  "spamCleaner": "Spam opruimer",
+  "tryAgain": "Opnieuw proberen",
+  "sendMessage": "Bericht verzenden",
+  "memberSince": "Lid sinds",
+  "lastActivity": "Laatste activiteit",
+  "likesReceived": "Ontvangen likes",
+  "likesGiven": "Gegeven likes",
+  "showMore": "Meer tonen",
+  "cleanSpam": "Spam opruimen",
+  
+  "failedToSaveMessage": "Kon bericht niet opslaan",
+  "failedToSaveConversation": "Kon gesprek niet opslaan",
+  "failedToSaveSetting": "Kon instelling niet opslaan",
+  "failedToSavePost": "Kon bericht niet opslaan",
+  "errorLoadingSites": "Fout bij laden van sites: {error}",
+  "@errorLoadingSites": {
+    "description": "Error message when loading explore sites fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "connectingTo": "Verbinden met {domainName}...",
+  "@connectingTo": {
+    "description": "Message shown when connecting to a site",
+    "placeholders": {
+      "domainName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "members": "Leden",
+  "allMembers": "Alle leden",
+  "online": "Online",
+  "noMembersFound": "Geen leden gevonden",
+  "searchForMembers": "Leden zoeken",
+  "enterUsernameToFindMembers": "Voer een gebruikersnaam in om forumleden te vinden",
+  "noMembersOnline": "Er zijn momenteel geen leden online",
+  "enterUsernameToSearch": "Voer gebruikersnaam in om te zoeken...",
+  "lookupMembers": "Leden opzoeken",
+  "addMembers": "Leden toevoegen",
+  "membersAddedSuccessfully": "Leden succesvol toegevoegd",
+  "errorAddingMembers": "Fout bij toevoegen van leden: {error}",
+  "@errorAddingMembers": {
+    "description": "Error message when adding members fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadOnlineUsers": "Kon online gebruikers niet laden",
+  "noUsersOnline": "Geen gebruikers online",
+  "membersCount": "{count} leden",
+  "@membersCount": {
+    "description": "Number of members with label",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "noSubject": "Geen onderwerp",
+  
+  "search": "Zoeken",
+  "moreOptions": "Meer opties",
+  "logout": "Uitloggen",
+  "areYouSureYouWantToLogout": "Weet u zeker dat u wilt uitloggen?",
+  "register": "Registreren",
+  "signIn": "Inloggen",
+  "markForumRead": "Forum als gelezen markeren",
+  "notificationTest": "Meldingstest",
+  "forum": "Forum",
+  "profile": "Profiel",
+  "messages": "Berichten",
+  "add": "Toevoegen",
+  "dismiss": "Sluiten",
+  "retry": "Opnieuw",
+  "delete": "Verwijderen",
+  "deleteMessage": "Bericht verwijderen",
+  "areYouSureYouWantToDeleteThisMessage": "Weet u zeker dat u dit bericht wilt verwijderen?",
+  "failedToDeleteMessage": "Kon bericht niet verwijderen: {error}",
+  "@failedToDeleteMessage": {
+    "description": "Error message when deleting message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingPost": "Bericht verwijderen...",
+  "failedToUnlikePost": "Kon bericht niet unliken: {error}",
+  "@failedToUnlikePost": {
+    "description": "Error message when unliking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikePost": "Kon bericht niet liken: {error}",
+  "@failedToLikePost": {
+    "description": "Error message when liking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToThankPost": "Kon bericht niet bedanken: {error}",
+  "@failedToThankPost": {
+    "description": "Error message when thanking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToViewMessages": "Log in om berichten te bekijken",
+  "youNeedToBeSignedInToViewConversations": "U moet ingelogd zijn om uw gesprekken te bekijken.",
+  "errorLoadingConversations": "Fout bij laden van gesprekken: {error}",
+  "@errorLoadingConversations": {
+    "description": "Error message when loading conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLeaveConversation": "Kon gesprek niet verlaten: {error}",
+  "@failedToLeaveConversation": {
+    "description": "Error message when leaving conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreConversations": "Fout bij laden van meer gesprekken: {error}",
+  "errorLoadingMoreMessages": "Fout bij laden van meer berichten: {error}",
+  "@errorLoadingMoreMessages": {
+    "description": "Error message when loading more messages fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@errorLoadingMoreConversations": {
+    "description": "Error message when loading more conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMessageOptional": "Uitnodigingsbericht (optioneel)",
+  "iWouldLikeToAddYouToThisConversation": "Ik wil u aan dit gesprek toevoegen.",
+  "searchFailed": "Zoeken mislukt",
+  "trySearchingWithDifferentUsername": "Probeer te zoeken met een andere gebruikersnaam",
+  "enterUsernameToSearch": "Voer gebruikersnaam in om te zoeken...",
+  "noSitesFound": "Geen sites gevonden.",
+  "userInformationNotAvailable": "Gebruikersinformatie niet beschikbaar",
+  "birthday": "Verjaardag",
+  "posts": "Berichten",
+  "following": "Volgend",
+  "followers": "Volgers",
+  "about": "Over",
+  "location": "Locatie",
+  "website": "Website",
+  "signature": "Handtekening",
+  "next": "Volgende",
+  "permanent": "Permanent",
+  "temporary": "Tijdelijk",
+  "setBanDurationFor": "Stel de blokkeerduur in voor {username}",
+  "@setBanDurationFor": {
+    "description": "Message asking to set ban duration",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectEndDateForTemporaryBan": "Selecteer een einddatum voor tijdelijke blokkering",
+  "back": "Terug",
+  "unban": "Blokkering opheffen",
+  "confirm": "Bevestigen",
+  "spamClean": "Spam opruimen {username}",
+  "@spamClean": {
+    "description": "Title for spam clean dialog",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "selectActionsToPerform": "Selecteer de uit te voeren acties:",
+  "handleThreads": "Onderwerpen afhandelen",
+  "moveOrDeleteThreadsBasedOnAdminSettings": "Verplaats of verwijder onderwerpen op basis van beheerderinstellingen",
+  "deleteMessages": "Berichten verwijderen",
+  "deleteConversations": "Gesprekken verwijderen",
+  "messageUpdatedSuccessfully": "Bericht succesvol bijgewerkt",
+  "error": "Fout: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveAttachment": "Kon bijlage niet verwijderen: {error}",
+  "@failedToRemoveAttachment": {
+    "description": "Error message when removing attachment fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadMessage": "Kon bericht niet laden: {error}",
+  "@failedToLoadMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editMessage": "Bericht bewerken",
+  "removeAttachment": "Bijlage verwijderen",
+  "areYouSureYouWantToRemoveThisAttachment": "Weet u zeker dat u deze bijlage wilt verwijderen?",
+  "none": "Geen",
+  "attachFile": "Bestand bijvoegen",
+  "uploadImage": "Afbeelding uploaden",
+  "formatting": "Opmaak",
+  "bold": "Vet",
+  "italic": "Cursief",
+  "underline": "Onderstreept",
+  "strikethrough": "Doorgehaald",
+  "link": "Link",
+  "image": "Afbeelding",
+  "video": "Video",
+  "quote": "Citaat",
+  "code": "Code",
+  "spoiler": "Spoiler",
+  "bulletList": "Opsomming",
+  "numberedList": "Genummerde lijst",
+  "listItem": "Lijstitem",
+  "participants": "Deelnemers ({count})",
+  "@participants": {
+    "description": "Participants count with label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsUnread": "Als ongelezen markeren",
+  "invite": "Uitnodigen",
+  "welcomeBack": "Welkom terug",
+  "signInToAccessYourProfile": "Log in om uw profiel te openen en uw account te beheren",
+  "enterYourUsername": "Voer uw gebruikersnaam in",
+  "enterYourPassword": "Voer uw wachtwoord in",
+  "dontHaveAnAccount": "Heeft u geen account?",
+  "enterKeywordsToSearchTopics": "Voer zoekwoorden in om onderwerpen te zoeken...",
+  "pleaseFillInAllRequiredFields": "Vul alle verplichte velden in",
+  "undelete": "Verwijdering ongedaan maken",
+  
+  "signInToViewUnreadTopics": "Log in om ongelezen onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewUnreadTopics": "U moet ingelogd zijn om uw ongelezen onderwerpen te bekijken.",
+  "signInToViewSubscribedTopics": "Log in om geabonneerde onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewSubscribedTopics": "U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken.",
+  "signInToViewParticipatedTopics": "Log in om onderwerpen waaraan u hebt deelgenomen te bekijken",
+  "youNeedToBeSignedInToViewParticipatedTopics": "U moet ingelogd zijn om onderwerpen waaraan u hebt deelgenomen te bekijken.",
+  "signInToViewLatestTopics": "Log in om nieuwste onderwerpen te bekijken",
+  "youNeedToBeSignedInToViewLatestTopics": "U moet ingelogd zijn om nieuwste onderwerpen te bekijken.",
+  "markAsUnread": "Als ongelezen markeren",
+  "invite": "Uitnodigen",
+  "welcomeBack": "Welkom terug",
+  "signInToAccessYourProfile": "Log in om uw profiel te openen en uw account te beheren",
+  "enterYourUsername": "Voer uw gebruikersnaam in",
+  "enterYourPassword": "Voer uw wachtwoord in",
+  "dontHaveAnAccount": "Heeft u geen account?",
+  "refresh": "Vernieuwen",
+  "@refresh": {
+    "description": "Menu item to refresh content"
+  },
+  "share": "Delen",
+  "@share": {
+    "description": "Menu item to share content"
+  },
+  "viewOnWeb": "Bekijken op web",
+  "@viewOnWeb": {
+    "description": "Menu item to view content on web browser"
+  },
+  "unlock": "Ontgrendelen",
+  "@unlock": {
+    "description": "Menu item to unlock a topic"
+  },
+  "lock": "Vergrendelen",
+  "@lock": {
+    "description": "Menu item to lock a topic"
+  },
+  "stick": "Vastzetten",
+  "@stick": {
+    "description": "Menu item to stick/pin a topic"
+  },
+  "unstick": "Losmaken",
+  "@unstick": {
+    "description": "Menu item to unstick/unpin a topic"
+  },
+  "reply": "Beantwoorden",
+  "@reply": {
+    "description": "Button to reply to a post or message"
+  },
+  "vote": "Stemmen",
+  "votesCount": "{count} stemmen",
+  "pollClosed": "Peiling gesloten",
+  "pollEndsOn": "Eindigt op {date}",
+  "voteToSeeResults": "Stem om resultaten te zien",
+  "viewFullPoll": "Volledige peiling bekijken",
+  "pollOptionsCount": "{count} opties",
+  "reactedBy": "Gereageerd door",
+  "@reactedBy": {
+    "description": "Label showing who reacted to a post or message"
+  },
+  "enterKeywordsToFindTopicsAndPosts": "Voer zoekwoorden in om onderwerpen en berichten te vinden",
+  "@enterKeywordsToFindTopicsAndPosts": {
+    "description": "Hint text for searching topics and posts"
+  },
+  "enterKeywordsOrDomainToFindForums": "Voer zoekwoorden of domein in om forums te vinden",
+  "@enterKeywordsOrDomainToFindForums": {
+    "description": "Hint text for searching forums by keywords or domain"
+  },
+  "enterKeywordsOrDomainNamesToFindForums": "Voer zoekwoorden of domeinnamen in om forums te vinden",
+  "@enterKeywordsOrDomainNamesToFindForums": {
+    "description": "Description text for searching forums"
+  },
+  "language": "Taal",
+  "@language": {
+    "description": "Settings section title for language selection"
+  },
+  "systemDefault": "Systeemstandaard",
+  "@systemDefault": {
+    "description": "Option to use system default settings"
+  },
+  "followSystemLanguage": "Systeemtaal volgen",
+  "@followSystemLanguage": {
+    "description": "Description for system default language option"
+  },
+  "appearance": "Weergave",
+  "@appearance": {
+    "description": "Settings section title for appearance/theme"
+  },
+  "followSystemTheme": "Systeemthema volgen",
+  "@followSystemTheme": {
+    "description": "Description for system default theme option"
+  },
+  "light": "Licht",
+  "@light": {
+    "description": "Light theme option"
+  },
+  "dark": "Donker",
+  "@dark": {
+    "description": "Dark theme option"
+  },
+  "version": "versie {version} ({buildNumber})",
+  "@version": {
+    "description": "App version display",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "forumSettings": "Foruminstellingen",
+  "@forumSettings": {
+    "description": "Title for forum settings page"
+  },
+  "noSettingsAvailable": "Geen instellingen beschikbaar",
+  "@noSettingsAvailable": {
+    "description": "Message when no settings are available"
+  },
+  "settingsCategoriesWillAppearHere": "Instellingcategorieën verschijnen hier wanneer beschikbaar.",
+  "@settingsCategoriesWillAppearHere": {
+    "description": "Message explaining when settings categories will appear"
+  },
+  "spamCleaner": "Spam opruimer",
+  "@spamCleaner": {
+    "description": "Menu item for spam cleaner tool"
+  },
+  "unableToLoadProfile": "Kon profiel niet laden",
+  "@unableToLoadProfile": {
+    "description": "Error message when profile cannot be loaded"
+  },
+  "banned": "GEBLOKKEERD",
+  "@banned": {
+    "description": "Badge text for banned users"
+  },
+  "sendMessage": "Bericht verzenden",
+  "@sendMessage": {
+    "description": "Button to send a message to a user"
+  },
+  "showMore": "Meer tonen",
+  "@showMore": {
+    "description": "Button to show more content"
+  },
+  "reportUser": "Gebruiker melden",
+  "@reportUser": {
+    "description": "Title for report user dialog"
+  },
+  "submitReport": "Melding verzenden",
+  "@submitReport": {
+    "description": "Button to submit a report"
+  },
+  "reportSubmittedSuccessfully": "Melding succesvol verzonden",
+  "@reportSubmittedSuccessfully": {
+    "description": "Success message after submitting a report"
+  },
+  "failedToSubmitReport": "Kon melding niet verzenden",
+  "@failedToSubmitReport": {
+    "description": "Error message when report submission fails"
+  },
+  "searchForForums": "Forums zoeken",
+  "@searchForForums": {
+    "description": "Placeholder text for forum search"
+  },
+  "searchForums": "Forums zoeken",
+  "@searchForums": {
+    "description": "Title for the search forums page"
+  },
+  "deleteTopic": "Onderwerp verwijderen",
+  "@deleteTopic": {
+    "description": "Title for delete topic dialog"
+  },
+  "softDelete": "Zacht verwijderen",
+  "@softDelete": {
+    "description": "Option for soft delete (can be restored)"
+  },
+  "topicCanBeRestoredLater": "Onderwerp kan later worden hersteld",
+  "@topicCanBeRestoredLater": {
+    "description": "Description for soft delete option"
+  },
+  "hardDelete": "Definitief verwijderen",
+  "@hardDelete": {
+    "description": "Option for hard delete (permanent)"
+  },
+  "topicWillBePermanentlyDeleted": "Onderwerp wordt permanent verwijderd",
+  "@topicWillBePermanentlyDeleted": {
+    "description": "Description for hard delete option"
+  },
+  "reasonForDeletion": "Reden voor verwijdering",
+  "@reasonForDeletion": {
+    "description": "Label for deletion reason field"
+  },
+  "enterReasonForDeletingTopic": "Voer de reden voor het verwijderen van dit onderwerp in",
+  "@enterReasonForDeletingTopic": {
+    "description": "Hint text for deletion reason field"
+  },
+  "pleaseEnterReasonForDeletion": "Voer een reden voor verwijdering in",
+  "@pleaseEnterReasonForDeletion": {
+    "description": "Validation message for deletion reason"
+  },
+  "pleaseSelectEndDate": "Selecteer een einddatum",
+  "@pleaseSelectEndDate": {
+    "description": "Error message when end date is not selected"
+  },
+  "banUser": "Gebruiker blokkeren",
+  "@banUser": {
+    "description": "Button to ban a user"
+  },
+  "userBannedSuccessfully": "Gebruiker succesvol geblokkeerd",
+  "@userBannedSuccessfully": {
+    "description": "Success message after banning a user"
+  },
+  "failedToBanUser": "Kon gebruiker niet blokkeren",
+  "@failedToBanUser": {
+    "description": "Error message when banning user fails"
+  },
+  "userUnbannedSuccessfully": "Gebruiker succesvol gedeblokkeerd",
+  "@userUnbannedSuccessfully": {
+    "description": "Success message after unbanning a user"
+  },
+  "failedToUnbanUser": "Kon blokkering niet opheffen",
+  "@failedToUnbanUser": {
+    "description": "Error message when unbanning user fails"
+  },
+  "spamCleanUser": "Spam opruimen gebruiker",
+  "@spamCleanUser": {
+    "description": "Title for spam clean user dialog"
+  },
+  "deletePrivateConversations": "Privégesprekken verwijderen",
+  "@deletePrivateConversations": {
+    "description": "Option to delete private conversations in spam clean"
+  },
+  "banTheUserAccount": "Gebruikersaccount blokkeren",
+  "@banTheUserAccount": {
+    "description": "Option to ban user account in spam clean"
+  },
+  "cleanSpam": "Spam opruimen",
+  "@cleanSpam": {
+    "description": "Button to execute spam clean"
+  },
+  "handledThreads": "Onderwerpen afgehandeld",
+  "@handledThreads": {
+    "description": "Action performed: handled threads"
+  },
+  "deletedMessages": "Berichten verwijderd",
+  "@deletedMessages": {
+    "description": "Action performed: deleted messages"
+  },
+  "deletedConversations": "Gesprekken verwijderd",
+  "@deletedConversations": {
+    "description": "Action performed: deleted conversations"
+  },
+  "bannedUser": "Gebruiker geblokkeerd",
+  "@bannedUser": {
+    "description": "Action performed: banned user"
+  },
+  "successfullyCleanedSpam": "Spam succesvol opgeruimd voor {username}. Acties: {actions}",
+  "@successfullyCleanedSpam": {
+    "description": "Success message after spam clean",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "actions": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMessage": "Fout bij laden van bericht: {error}",
+  "@errorLoadingMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotFound": "Bericht niet gevonden",
+  "@messageNotFound": {
+    "description": "Message when message is not found"
+  },
+  
+  "home": "Start",
+  "@home": {
+    "description": "Home tab title"
+  },
+  "notifications": "Meldingen",
+  "@notifications": {
+    "description": "Notifications tab title"
+  },
+  "forums": "Forums",
+  "@forums": {
+    "description": "Forums tab title (plural)"
+  },
+  "markAllForumsAsRead": "Alle forums als gelezen markeren?",
+  "@markAllForumsAsRead": {
+    "description": "Dialog title for marking all forums as read"
+  },
+  "markAllForumsAsReadMessage": "Dit markeert alle forums en onderwerpen als gelezen. Deze actie kan niet ongedaan worden gemaakt.",
+  "@markAllForumsAsReadMessage": {
+    "description": "Message explaining mark all forums as read action"
+  },
+  "markAsRead": "Als gelezen markeren",
+  "@markAsRead": {
+    "description": "Button text to mark as read"
+  },
+  
+  "content": "Inhoud",
+  "@content": {
+    "description": "Content label for message compose"
+  },
+  "insertImage": "Afbeelding invoegen",
+  "@insertImage": {
+    "description": "Dialog title for inserting image"
+  },
+  "howWouldYouLikeToInsertImage": "Hoe wilt u deze afbeelding invoegen?",
+  "@howWouldYouLikeToInsertImage": {
+    "description": "Question asking how to insert image"
+  },
+  "thumbnail": "Miniatuur",
+  "@thumbnail": {
+    "description": "Option to insert image as thumbnail"
+  },
+  "fullSize": "Volledige grootte",
+  "@fullSize": {
+    "description": "Option to insert image at full size"
+  },
+  "alignLeft": "Links uitlijnen",
+  "@alignLeft": {
+    "description": "Text alignment option: left"
+  },
+  "alignCenter": "Centreren",
+  "@alignCenter": {
+    "description": "Text alignment option: center"
+  },
+  "alignRight": "Rechts uitlijnen",
+  "@alignRight": {
+    "description": "Text alignment option: right"
+  },
+  "pleaseEnterTitle": "Voer een titel in",
+  "@pleaseEnterTitle": {
+    "description": "Validation message when title is empty"
+  },
+  "pleaseEnterContent": "Voer inhoud in",
+  "@pleaseEnterContent": {
+    "description": "Validation message when content is empty"
+  },
+  "uploading": "Uploaden...",
+  "@uploading": {
+    "description": "Status message when uploading file"
+  },
+  "uploaded": "Geüpload",
+  "@uploaded": {
+    "description": "Status message when file is uploaded"
+  },
+  "mentionUser": "Gebruiker vermelden",
+  "@mentionUser": {
+    "description": "Tooltip for mention user button"
+  },
+  
+  "loggingIn": "Inloggen...",
+  "@loggingIn": {
+    "description": "Status message when logging in"
+  },
+  "submittingReport": "Melding verzenden...",
+  "@submittingReport": {
+    "description": "Status message when submitting report"
+  },
+  "banningUser": "Gebruiker blokkeren...",
+  "@banningUser": {
+    "description": "Status message when banning user"
+  },
+  "unbanningUser": "Blokkering opheffen...",
+  "@unbanningUser": {
+    "description": "Status message when unbanning user"
+  },
+  "cleaningSpam": "Spam opruimen...",
+  "@cleaningSpam": {
+    "description": "Status message when cleaning spam"
+  },
+  
+  "enterSubject": "Voer onderwerp in",
+  "@enterSubject": {
+    "description": "Hint text for subject field"
+  },
+  "typeYourMessageHere": "Typ hier uw bericht",
+  "@typeYourMessageHere": {
+    "description": "Hint text for message field"
+  },
+  "writeYourMessage": "Schrijf uw bericht...",
+  "@writeYourMessage": {
+    "description": "Hint text for writing message"
+  },
+  "writeYourReply": "Schrijf uw antwoord...",
+  "@writeYourReply": {
+    "description": "Hint text for writing reply"
+  },
+  "messageSentSuccessfully": "Bericht succesvol verzonden",
+  "@messageSentSuccessfully": {
+    "description": "Success message after sending message"
+  },
+  "replySentSuccessfully": "Antwoord succesvol verzonden",
+  "@replySentSuccessfully": {
+    "description": "Success message after sending reply"
+  },
+  "conversationCreatedSuccessfully": "Gesprek succesvol aangemaakt",
+  "@conversationCreatedSuccessfully": {
+    "description": "Success message after creating conversation"
+  },
+  "conversationMarkedAsUnread": "Gesprek als ongelezen gemarkeerd",
+  "@conversationMarkedAsUnread": {
+    "description": "Success message when marking conversation as unread"
+  },
+  "messageMarkedAsUnread": "Bericht als ongelezen gemarkeerd",
+  "@messageMarkedAsUnread": {
+    "description": "Success message when marking message as unread"
+  },
+  "conversationClosed": "Gesprek gesloten",
+  "@conversationClosed": {
+    "description": "Success message when closing conversation"
+  },
+  "conversationOpened": "Gesprek geopend",
+  "@conversationOpened": {
+    "description": "Success message when opening conversation"
+  },
+  "pleaseLoginToLikeMessages": "Log in om berichten te liken",
+  "@pleaseLoginToLikeMessages": {
+    "description": "Message asking user to login to like messages"
+  },
+  "loadEarlierMessages": "Eerdere berichten laden",
+  "@loadEarlierMessages": {
+    "description": "Button to load earlier messages"
+  },
+  "failedToLoadQuote": "Failed to load quote: \n{error}",
+  "@failedToLoadQuote": {
+    "description": "Error message when loading quote fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadFile": "Kon bestand niet uploaden: {error}",
+  "@failedToUploadFile": {
+    "description": "Error message when uploading file fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "Kon afbeelding niet uploaden: {error}",
+  "@failedToUploadImage": {
+    "description": "Error message when uploading image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendMessage": "Kon bericht niet verzenden: {error}",
+  "@failedToSendMessage": {
+    "description": "Error message when sending message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendReply": "Kon antwoord niet verzenden: {error}",
+  "@failedToSendReply": {
+    "description": "Error message when sending reply fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkAsUnread": "Kon bericht niet als ongelezen markeren: {error}",
+  "@failedToMarkAsUnread": {
+    "description": "Error message when marking message as unread fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkConversationAsUnread": "Kon gesprek niet als ongelezen markeren: {error}",
+  "@failedToMarkConversationAsUnread": {
+    "description": "Error message when marking conversation as unread fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCloseConversation": "Kon gesprek niet sluiten: {error}",
+  "@failedToCloseConversation": {
+    "description": "Error message when closing conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenConversation": "Kon gesprek niet openen: {error}",
+  "@failedToOpenConversation": {
+    "description": "Error message when opening conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJumpToMessage": "Kon niet naar bericht springen: {error}",
+  "@failedToJumpToMessage": {
+    "description": "Error message when jumping to message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goToTop": "Naar boven",
+  "@goToTop": {
+    "description": "Tooltip for go to top button"
+  },
+  "goToBottom": "Naar beneden",
+  "@goToBottom": {
+    "description": "Tooltip for go to bottom button"
+  },
+  "replyAll": "Allen beantwoorden",
+  "@replyAll": {
+    "description": "Tooltip for reply all button"
+  },
+  "forward": "Doorsturen",
+  "@forward": {
+    "description": "Tooltip for forward button"
+  },
+  
+  "noForumsFound": "Geen forums gevonden.",
+  "@noForumsFound": {
+    "description": "Message when no forums are found"
+  },
+  "pleaseSelectPrefix": "Selecteer een voorvoegsel",
+  "@pleaseSelectPrefix": {
+    "description": "Validation message when prefix is required but not selected"
+  },
+  "pleaseLoginToAccessContent": "Log in om deze inhoud te bekijken en te reageren op berichten.",
+  "@pleaseLoginToAccessContent": {
+    "description": "Message asking user to login to access content"
+  },
+  
+  "searchUsers": "Gebruikers zoeken...",
+  "@searchUsers": {
+    "description": "Hint text for searching users"
+  },
+  "writeYourTitle": "Schrijf uw titel...",
+  "@writeYourTitle": {
+    "description": "Hint text for title field"
+  },
+  "writeYourContent": "Schrijf uw inhoud...",
+  "@writeYourContent": {
+    "description": "Hint text for content field"
+  },
+  "selectAnOption": "Selecteer een optie",
+  "@selectAnOption": {
+    "description": "Hint text for select field"
+  },
+  "enterConversationTitle": "Voer gesprekstitel in",
+  "@enterConversationTitle": {
+    "description": "Hint text for conversation title field"
+  },
+  "enterCode": "Voer {count}-cijferige code in",
+  "@enterCode": {
+    "description": "Hint text for code input field",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "edit": "Bewerken",
+  "@edit": {
+    "description": "Button text to edit"
+  },
+  "report": "Melden",
+  "@report": {
+    "description": "Button text to report"
+  },
+  "unfollow": "Ontvolgen",
+  "@unfollow": {
+    "description": "Button text to unfollow"
+  },
+  "follow": "Volgen",
+  "@follow": {
+    "description": "Button text to follow"
+  },
+  
+  "goToForums": "Naar forums",
+  "@goToForums": {
+    "description": "Button text to go to forums"
+  },
+  "remove": "Verwijderen",
+  "@remove": {
+    "description": "Button text to remove"
+  },
+  
+  "subject": "Onderwerp",
+  "@subject": {
+    "description": "Label for subject field"
+  },
+  "message": "Bericht",
+  "@message": {
+    "description": "Label for message field"
+  },
+  "titleCannotBeEmpty": "Titel mag niet leeg zijn",
+  "@titleCannotBeEmpty": {
+    "description": "Validation message when title is empty"
+  },
+  "conversationUpdatedSuccessfully": "Gesprek succesvol bijgewerkt",
+  "@conversationUpdatedSuccessfully": {
+    "description": "Success message when conversation is updated"
+  },
+  "goBack": "Terug",
+  "@goBack": {
+    "description": "Button text to go back"
+  },
+  "signInToViewMessages": "Log in om berichten te bekijken",
+  "@signInToViewMessages": {
+    "description": "Message asking user to sign in to view messages"
+  },
+  "privateMessagesNotAvailable": "Privéberichten niet beschikbaar",
+  "@privateMessagesNotAvailable": {
+    "description": "Message when private messages are not available"
+  },
+  "failedToLoadPost": "Failed to load post: \n{error}",
+  "@failedToLoadPost": {
+    "description": "Error message when loading post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikeOrUnlikeMessage": "Kon bericht niet {action}: {error}",
+  "@failedToLikeOrUnlikeMessage": {
+    "description": "Error message when liking/unliking message fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like": "liken",
+  "@like": {
+    "description": "Action verb: like"
+  },
+  "unlike": "unliken",
+  "@unlike": {
+    "description": "Action verb: unlike"
+  },
+  "optimizeImage": "Afbeelding optimaliseren",
+  "@optimizeImage": {
+    "description": "Title for image optimization dialog"
+  },
+  "optimizeAndUpload": "Optimaliseren en uploaden",
+  "@optimizeAndUpload": {
+    "description": "Button text to optimize and upload image"
+  },
+  "downloading": "Downloaden {filename}...",
+  "@downloading": {
+    "description": "Status message when downloading file",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "openingShareSheet": "Deelmenu openen voor {filename}",
+  "@openingShareSheet": {
+    "description": "Status message when opening share sheet",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDownloading": "Fout bij downloaden {filename}: {error}",
+  "@errorDownloading": {
+    "description": "Error message when downloading file fails",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "enterANumber": "Voer een getal in",
+  "@enterANumber": {
+    "description": "Hint text for number input field"
+  },
+  
+  "failedToNavigateToForum": "Kon niet naar forum navigeren",
+  "@failedToNavigateToForum": {
+    "description": "Error message when navigation to forum fails"
+  },
+  "failedToNavigateToForumName": "Kon niet navigeren naar {forumName}",
+  "@failedToNavigateToForumName": {
+    "description": "Error message when navigation to specific forum fails",
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveConversation": "Kon gesprek niet opslaan",
+  "@failedToSaveConversation": {
+    "description": "Error message when saving conversation fails"
+  },
+  
+  "forumNotFound": "Forum niet gevonden: {forumName}",
+  "@forumNotFound": {
+    "description": "Error message when forum is not found",
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "forumNotFoundById": "Forum niet gevonden: {forumId}",
+  "@forumNotFoundById": {
+    "description": "Error message when forum is not found by ID",
+    "placeholders": {
+      "forumId": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenLink": "Kon link niet openen: {error}",
+  "@couldNotOpenLink": {
+    "description": "Error message when opening link fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "likePost": "Bericht liken",
+  "@likePost": {
+    "description": "Accessibility label for like button"
+  },
+  "unlikePost": "Bericht unliken",
+  "@unlikePost": {
+    "description": "Accessibility label for unlike button"
+  },
+  "thankPost": "Bericht bedanken",
+  "@thankPost": {
+    "description": "Accessibility label for thank button"
+  },
+  "showLikes": "Likes tonen",
+  "@showLikes": {
+    "description": "Accessibility hint for showing likes list"
+  },
+  "showThanks": "Bedankingen tonen",
+  "@showThanks": {
+    "description": "Accessibility hint for showing thanks list"
+  },
+  "quotePost": "Bericht citeren",
+  "@quotePost": {
+    "description": "Accessibility label for quote button"
+  },
+  "attachFile": "Bestand bijvoegen",
+  "@attachFile": {
+    "description": "Accessibility label for attach file button"
+  },
+  "uploadImage": "Afbeelding uploaden",
+  "@uploadImage": {
+    "description": "Accessibility label for upload image button"
+  },
+  
+  "translate": "Vertalen",
+  "@translate": {
+    "description": "Menu item to translate thread content"
+  },
+  "showOriginal": "Origineel tonen",
+  "@showOriginal": {
+    "description": "Button to show original content instead of translation"
+  },
+  "translating": "Vertalen...",
+  "@translating": {
+    "description": "Loading indicator while translating"
+  },
+  "translated": "Vertaald",
+  "@translated": {
+    "description": "Badge shown on translated content"
+  },
+  "translatedContent": "Vertaalde inhoud",
+  "@translatedContent": {
+    "description": "Label for translated content"
+  },
+  "selectLanguage": "Taal selecteren",
+  "@selectLanguage": {
+    "description": "Title for language selection dialog"
+  },
+  "translateTo": "Vertalen naar:",
+  "@translateTo": {
+    "description": "Label for target language selection"
+  },
+  "deviceLanguage": "Apparaattaal",
+  "@deviceLanguage": {
+    "description": "Indicator that a language is the device default"
+  },
+  "noPostsToTranslate": "Geen berichten om te vertalen",
+  "@noPostsToTranslate": {
+    "description": "Message when there are no posts available for translation"
+  },
+  "translationFailed": "Vertalen mislukt",
+  "@translationFailed": {
+    "description": "Error message when translation fails"
+  }
+}

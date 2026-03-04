@@ -1,0 +1,933 @@
+{
+  "@@locale": "it",
+  "appTitle": "Forum App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  
+  "loginTitle": "Accedi",
+  "usernameLabel": "Nome utente",
+  "passwordLabel": "Password",
+  "loginButton": "Accedi",
+  "signInWithPasskey": "Sign in with Passkey",
+  "usePasskey": "Use Passkey",
+  "passkeyContinuePrompt": "Use your passkey to continue",
+  "forgotPassword": "Password dimenticata?",
+  "pleaseEnterUsername": "Inserisci il tuo nome utente",
+  "pleaseEnterPassword": "Inserisci la tua password",
+  "credentialsSentToDomain": "Il tuo nome utente e password saranno inviati a {domain}",
+  "@credentialsSentToDomain": {
+    "description": "Message about credentials being sent to forum domain",
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "createAccount": "Crea account",
+  "alreadyHaveAccount": "Hai già un account? ",
+  "logIn": "Accedi",
+  "continueButton": "Continua",
+  "registrationNotAvailable": "Registrazione non disponibile",
+  "registrationNotAvailableMessage": "La registrazione non è attualmente disponibile. Il forum potrebbe essere chiuso o la registrazione potrebbe essere disabilitata.",
+  "webRegistrationRequired": "Registrazione web richiesta",
+  "webRegistrationRequiredMessage": "Questo forum richiede la registrazione tramite il browser web. Fai clic sul pulsante qui sotto per aprire la pagina di registrazione.",
+  "openRegistrationPage": "Apri pagina di registrazione",
+  "loadingAdditionalFields": "Caricamento campi aggiuntivi...",
+  "pleaseSelectDateOfBirth": "Seleziona la tua data di nascita",
+  "pleaseEnterLocation": "Inserisci la tua posizione",
+  "pleaseIndicateEmailPreference": "Indica la tua preferenza email",
+  "pleaseFillAllRequiredFields": "Compila tutti i campi obbligatori",
+  "pleaseAcceptTermsOfService": "Accetta i Termini di Servizio",
+  "pleaseAcceptPrivacyPolicy": "Accetta l'Informativa sulla Privacy",
+  "registrationError": "Errore di registrazione",
+  "registrationFailed": "Registrazione fallita. Controlla le tue informazioni.",
+  "registrationFailedTryAgain": "Registrazione fallita. Riprova.",
+  "registrationInfo": "Informazioni di registrazione",
+  "openWebsite": "Apri sito web",
+  "couldNotOpenForumWebsite": "Impossibile aprire il sito web del forum. Prova a visitare: {url}",
+  "@couldNotOpenForumWebsite": {
+    "description": "Error message when cannot open forum website",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "registrationSuccessfulEmailConfirm": "Registrazione completata! Controlla la tua email per confermare il tuo account prima di accedere.",
+  "registrationSuccessfulPendingApproval": "Registrazione completata! Il tuo account è in attesa di approvazione. Riceverai una notifica quando il tuo account sarà approvato.",
+  "registrationSuccessfulAutoLogin": "Registrazione completata! Sei stato automaticamente connesso.",
+  "welcome": "Benvenuto!",
+  "registrationSuccessful": "Registrazione completata",
+  "pleaseLoginWithNewAccount": "Accedi con il tuo nuovo account.",
+  
+  "forgotPasswordTitle": "Password dimenticata",
+  "usernameOrEmailLabel": "Nome utente o email",
+  "pleaseEnterUsernameOrEmail": "Inserisci il tuo nome utente o email",
+  "sendResetLink": "Invia link di reset",
+  "resetLinkSent": "Link di reset inviato",
+  "passwordResetInstructionsSent": "Le istruzioni per reimpostare la password sono state inviate al tuo indirizzo email registrato.",
+  "resetFailed": "Reset fallito",
+  "unableToSendResetLink": "Impossibile inviare il link di reset. Riprova.",
+  "errorSendingResetLink": "Si è verificato un errore durante l'invio del link di reset. Controlla la tua connessione e riprova.",
+  
+  "errorTitle": "Errore",
+  "okButton": "OK",
+  "retryButton": "Riprova",
+  "copyToClipboard": "Copia negli appunti",
+  "copied": "Copiato",
+  "errorMessageCopiedToClipboard": "Messaggio di errore copiato negli appunti",
+  "dismiss": "Chiudi",
+  "cancel": "Annulla",
+  "tryAgain": "Riprova",
+  "getHelp": "Ottieni aiuto",
+  "somethingWentWrong": "Qualcosa è andato storto",
+  "unexpectedErrorOccurred": "Si è verificato un errore imprevisto. Riprova.",
+  "noInternetConnection": "Nessuna connessione Internet",
+  "checkInternetConnection": "Controlla la tua connessione Internet e riprova.",
+  "authenticationRequired": "Autenticazione richiesta",
+  "pleaseLoginToContinue": "Accedi per continuare.",
+  "forumError": "Errore del forum",
+  "anErrorOccurred": "Si è verificato un errore",
+  
+  "accountPendingApproval": "Il tuo account è in attesa di approvazione. Puoi navigare nel forum ma non puoi pubblicare finché un moderatore non approva il tuo account.",
+  "checkEmailToConfirm": "Controlla la tua email per confermare il tuo account. Fai clic sul link di conferma nell'email che ti abbiamo inviato.",
+  "checkNewEmailToConfirm": "Controlla il tuo nuovo indirizzo email per confermare la modifica. La tua vecchia email rimarrà attiva finché non confermi la nuova.",
+  "emailAddressInvalid": "Il tuo indirizzo email sembra essere non valido o sta rimbalzando le email. Aggiorna il tuo indirizzo email nelle impostazioni dell'account.",
+  "accountDisabled": "Il tuo account è stato disabilitato. Contatta un amministratore per assistenza.",
+  "accountRegistrationRejected": "La registrazione del tuo account è stata rifiutata. Contatta un amministratore per maggiori informazioni.",
+  "welcomeToForumCopilot": "Benvenuto in Forum Copilot!",
+  "successfullyLoggedOut": "Hai effettuato il logout con successo",
+  "accountStatusRequiresAttention": "Lo stato del tuo account richiede attenzione. Contatta un amministratore se hai domande.",
+  "updateEmail": "Aggiorna email",
+  "resend": "Invia di nuovo",
+  
+  "noLatestTopics": "Nessun argomento recente",
+  "noRecentTopicsToDisplay": "Non ci sono argomenti recenti da visualizzare. Torna più tardi per nuove discussioni.",
+  "signInToViewLatestTopics": "Accedi per visualizzare gli argomenti recenti",
+  "youNeedToBeSignedInToViewLatestTopics": "Devi accedere per visualizzare gli argomenti recenti",
+  
+  "noUnreadTopics": "Nessun argomento non letto",
+  "thereAreNoUnreadTopics": "Non ci sono argomenti non letti. Torna più tardi per nuove discussioni.",
+  "youAreAllCaughtUp": "Sei aggiornato!",
+  "signInToViewUnreadTopics": "Accedi per visualizzare gli argomenti non letti",
+  "youNeedToBeSignedInToViewUnreadTopics": "Devi accedere per visualizzare i tuoi argomenti non letti",
+  
+  "noSubscribedTopics": "Nessun argomento sottoscritto",
+  "noSubscribedTopicsMessage": "Non ti sei iscritto ad alcun argomento. Tocca il pulsante stella su un argomento per iscriverti e ricevere notifiche per nuovi aggiornamenti.",
+  "signInToViewSubscribedTopics": "Accedi per visualizzare gli argomenti sottoscritti",
+  "youNeedToBeSignedInToViewSubscribedTopics": "Devi accedere per visualizzare i tuoi argomenti sottoscritti",
+  
+  "noParticipatedTopics": "Nessun argomento partecipato",
+  "topicsYouParticipatedIn": "Gli argomenti a cui hai partecipato verranno mostrati qui.",
+  "signInToViewParticipatedTopics": "Accedi per visualizzare gli argomenti partecipati",
+  "youNeedToBeSignedInToViewParticipatedTopics": "Devi accedere per visualizzare gli argomenti a cui hai partecipato",
+  
+  "latest": "Recenti",
+  "unread": "Non letti",
+  "subscribed": "Sottoscritti",
+  "participated": "Partecipati",
+  
+  "connectionTimedOut": "Connessione scaduta. Il sito potrebbe essere offline o irraggiungibile.",
+  "failedToConnectToSite": "Impossibile connettersi al sito. Il sito potrebbe essere offline o irraggiungibile.",
+  "connectionFailed": "Connessione fallita",
+  "failedToConnectToSiteName": "Impossibile connettersi a {siteName}",
+  "@failedToConnectToSiteName": {
+    "description": "Error message when failed to connect to a site",
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "loading": "Caricamento...",
+  "newConversation": "Nuova conversazione",
+  "newMessage": "Nuovo messaggio",
+  
+  "appSettings": "Impostazioni app",
+  "searchSites": "Cerca siti",
+  "language": "Lingua",
+  "systemDefault": "Predefinito di sistema",
+  "followSystemLanguage": "Segui la lingua di sistema",
+  
+  "all": "Tutti",
+  "topicsOnly": "Solo argomenti",
+  "titlesOnly": "Solo titoli",
+  
+  "failedToShareTopic": "Impossibile condividere l'argomento: {error}",
+  "@failedToShareTopic": {
+    "description": "Error message when sharing topic fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToSubscribe": "Accedi per {action} questo thread",
+  "@pleaseLoginToSubscribe": {
+    "description": "Message asking user to login to subscribe/unsubscribe",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeTo": "iscriverti a",
+  "unsubscribeFrom": "disiscriverti da",
+  "failedToSubscribeToThread": "Impossibile {action} thread",
+  "@failedToSubscribeToThread": {
+    "description": "Error message when subscribe/unsubscribe fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youCannotReplyToThisThread": "Non puoi rispondere a questo thread",
+  "pleaseWaitForThreadToLoad": "Attendi che il thread si carichi",
+  
+  "softDelete": "Eliminazione soft",
+  "postCanBeRestoredLater": "Il post può essere ripristinato in seguito",
+  "hardDelete": "Eliminazione permanente",
+  "postWillBePermanentlyDeleted": "Il post verrà eliminato permanentemente",
+  "reasonForDeletion": "Motivo dell'eliminazione",
+  "enterReasonForDeletingPost": "Inserisci il motivo per eliminare questo post",
+  "pleaseEnterReasonForDeletion": "Inserisci un motivo per l'eliminazione",
+  
+  "reportPost": "Segnala post",
+  "pleaseProvideReasonForReporting": "Fornisci un motivo per segnalare questo post.",
+  "reason": "Motivo",
+  "enterReasonForReportingPost": "Inserisci il motivo per segnalare questo post",
+  "pleaseEnterReason": "Inserisci un motivo",
+  "submitReport": "Invia segnalazione",
+  
+  "selectedActions": "Azioni selezionate:",
+  "thisActionCannotBeUndone": "Questa azione non può essere annullata.",
+  
+  "participantsLabel": "Partecipanti",
+  "usernameHasBeenInvited": "{username} è stato invitato alla conversazione",
+  "@usernameHasBeenInvited": {
+    "description": "Message when user is invited to conversation",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInvitingUser": "Errore nell'invitare l'utente: {error}",
+  "@errorInvitingUser": {
+    "description": "Error message when inviting user fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newTopic": "Nuovo argomento",
+  "markRead": "Segna come letto",
+  
+  "reportUser": "Segnala Utente",
+  "pleaseSelectReasonForReportingUser": "Seleziona un motivo per segnalare questo utente.",
+  "spamOrAdvertising": "Spam o pubblicità",
+  "harassmentOrBullying": "Molestie o bullismo",
+  "inappropriateContent": "Contenuto inappropriato",
+  "impersonationOrFakeAccount": "Impersonificazione o account falso",
+  "otherPleaseSpecify": "Altro (specifica)",
+  "pleaseSpecifyReason": "Specifica il motivo",
+  "enterReasonForReportingUser": "Inserisci il motivo per segnalare questo utente",
+  "pleaseSelectReason": "Seleziona un motivo",
+  
+  "banUser": "Banna Utente",
+  "unbanUser": "Sbanna Utente",
+  "pleaseSelectReasonForBanningUser": "Seleziona un motivo per bannare {username}",
+  "@pleaseSelectReasonForBanningUser": {
+    "description": "Messaggio che chiede di selezionare motivo per bannare utente",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "violationOfCommunityGuidelines": "Violazione delle linee guida della comunità",
+  "harassmentOrAbusiveBehavior": "Molestie o comportamento abusivo",
+  "postingInappropriateContent": "Pubblicazione di contenuto inappropriato",
+  "accountCompromiseOrSecurityIssue": "Compromissione dell'account o problema di sicurezza",
+  "enterReasonForBanningUser": "Inserisci il motivo per bannare questo utente",
+  "banUntil": "Banna fino a",
+  "selectDate": "Seleziona data",
+  "unbanUser": "Sbanna Utente",
+  
+  "moreOptions": "Altre opzioni",
+  "leaveConversation": "Lascia conversazione",
+  "reportConversation": "Segnala conversazione",
+  
+  "topicClosed": "Argomento chiuso",
+  "topicOpened": "Argomento aperto",
+  "topicStickied": "Argomento in evidenza",
+  "topicUnstickied": "Argomento rimosso da evidenza",
+  
+  "cannotEditMessage": "Impossibile modificare questo messaggio: {error}",
+  "@cannotEditMessage": {
+    "description": "Messaggio di errore quando non è possibile modificare il messaggio",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSpamClean": "Conferma Pulizia Spam",
+  "handleThreads": "Gestisci Thread",
+  "deleteMessages": "Elimina Messaggi",
+  "deleteConversations": "Elimina Conversazioni",
+  
+  "myForums": "I Miei Forum",
+  "recentlyVisited": "Visitati di Recente",
+  "explore": "Esplora",
+  "forumCopilot": "Forum Copilot",
+  
+  "noConversations": "Nessuna conversazione",
+  "noConversationsMessage": "Non hai ancora conversazioni. Avvia una nuova conversazione per iniziare a inviare messaggi.",
+  
+  "imageSavedToGallery": "Immagine salvata nella galleria!",
+  "failedToSaveImage": "Impossibile salvare l'immagine: {error}",
+  "@failedToSaveImage": {
+    "description": "Error message when saving image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "userProfile": "Profilo Utente",
+  "deletePost": "Elimina Post",
+  "loginRequired": "Accesso Richiesto",
+  
+  "spamCleaner": "Pulitore Spam",
+  "tryAgain": "Riprova",
+  "sendMessage": "Invia Messaggio",
+  "memberSince": "Membro Dal",
+  "lastActivity": "Ultima Attività",
+  "likesReceived": "Mi Piace Ricevuti",
+  "likesGiven": "Mi Piace Dati",
+  "showMore": "Mostra di Più",
+  "cleanSpam": "Pulisci Spam",
+  
+  "failedToSaveMessage": "Impossibile salvare il messaggio",
+  "failedToSaveConversation": "Impossibile salvare la conversazione",
+  "failedToSaveSetting": "Impossibile salvare l'impostazione",
+  "failedToSavePost": "Impossibile salvare il post",
+  "errorLoadingSites": "Errore nel caricamento dei siti: {error}",
+  "@errorLoadingSites": {
+    "description": "Error message when loading explore sites fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "connectingTo": "Connessione a {domainName}...",
+  "@connectingTo": {
+    "description": "Message shown when connecting to a site",
+    "placeholders": {
+      "domainName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "members": "Membri",
+  "allMembers": "Tutti i Membri",
+  "online": "Online",
+  "noMembersFound": "Nessun membro trovato",
+  "searchForMembers": "Cerca membri",
+  "enterUsernameToFindMembers": "Inserisci un nome utente per trovare membri del forum",
+  "noMembersOnline": "Al momento non ci sono membri online",
+  "enterUsernameToSearch": "Inserisci nome utente per cercare...",
+  "lookupMembers": "Cerca Membri",
+  "addMembers": "Aggiungi Membri",
+  "membersAddedSuccessfully": "Membri aggiunti con successo",
+  "errorAddingMembers": "Errore nell'aggiunta di membri: {error}",
+  "@errorAddingMembers": {
+    "description": "Error message when adding members fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadOnlineUsers": "Impossibile caricare gli utenti online",
+  "noUsersOnline": "Nessun utente online",
+  "membersCount": "{count} Membri",
+  "@membersCount": {
+    "description": "Number of members with label",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "noSubject": "Nessun oggetto",
+  
+  "search": "Cerca",
+  "moreOptions": "Altre opzioni",
+  "logout": "Esci",
+  "areYouSureYouWantToLogout": "Sei sicuro di voler uscire?",
+  "register": "Registrati",
+  "signIn": "Accedi",
+  "markForumRead": "Segna Forum come Letto",
+  "notificationTest": "Test Notifiche",
+  "forum": "Forum",
+  "profile": "Profilo",
+  "messages": "Messaggi",
+  "add": "Aggiungi",
+  "dismiss": "Chiudi",
+  "retry": "Riprova",
+  "delete": "Elimina",
+  "deleteMessage": "Elimina Messaggio",
+  "areYouSureYouWantToDeleteThisMessage": "Sei sicuro di voler eliminare questo messaggio?",
+  "failedToDeleteMessage": "Impossibile eliminare il messaggio: {error}",
+  "@failedToDeleteMessage": {
+    "description": "Error message when deleting message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingPost": "Eliminazione post...",
+  "failedToUnlikePost": "Impossibile rimuovere il like dal post: {error}",
+  "@failedToUnlikePost": {
+    "description": "Error message when unliking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikePost": "Impossibile mettere like al post: {error}",
+  "@failedToLikePost": {
+    "description": "Error message when liking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToThankPost": "Impossibile ringraziare il post: {error}",
+  "@failedToThankPost": {
+    "description": "Error message when thanking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToViewMessages": "Accedi per visualizzare i messaggi",
+  "youNeedToBeSignedInToViewConversations": "Devi accedere per visualizzare le tue conversazioni.",
+  "errorLoadingConversations": "Errore nel caricamento delle conversazioni: {error}",
+  "@errorLoadingConversations": {
+    "description": "Error message when loading conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLeaveConversation": "Impossibile lasciare la conversazione: {error}",
+  "@failedToLeaveConversation": {
+    "description": "Error message when leaving conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreConversations": "Errore nel caricamento di altre conversazioni: {error}",
+  "@errorLoadingMoreConversations": {
+    "description": "Error message when loading more conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMessageOptional": "Messaggio di Invito (opzionale)",
+  "iWouldLikeToAddYouToThisConversation": "Vorrei aggiungerti a questa conversazione.",
+  "searchFailed": "Ricerca fallita",
+  "trySearchingWithDifferentUsername": "Prova a cercare con un nome utente diverso",
+  "enterUsernameToSearch": "Inserisci nome utente per cercare...",
+  "noSitesFound": "Nessun sito trovato.",
+  "userInformationNotAvailable": "Informazioni utente non disponibili",
+  "birthday": "Compleanno",
+  "posts": "Post",
+  "following": "Seguiti",
+  "followers": "Follower",
+  "about": "Informazioni",
+  "location": "Posizione",
+  "website": "Sito web",
+  "signature": "Firma",
+  "next": "Avanti",
+  "permanent": "Permanente",
+  "temporary": "Temporaneo",
+  "setBanDurationFor": "Imposta la durata del ban per {username}",
+  "@setBanDurationFor": {
+    "description": "Message asking to set ban duration",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectEndDateForTemporaryBan": "Seleziona una data di fine per il ban temporaneo",
+  "back": "Indietro",
+  "unban": "Rimuovi Ban",
+  "confirm": "Conferma",
+  "spamClean": "Pulisci Spam di {username}",
+  "@spamClean": {
+    "description": "Title for spam clean dialog",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "selectActionsToPerform": "Seleziona le azioni da eseguire:",
+  "moveOrDeleteThreadsBasedOnAdminSettings": "Sposta o elimina thread in base alle impostazioni dell'amministratore",
+  "messageUpdatedSuccessfully": "Messaggio aggiornato con successo",
+  "error": "Errore: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveAttachment": "Impossibile rimuovere l'allegato: {error}",
+  "@failedToRemoveAttachment": {
+    "description": "Error message when removing attachment fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadMessage": "Impossibile caricare il messaggio: {error}",
+  "@failedToLoadMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editMessage": "Modifica Messaggio",
+  "removeAttachment": "Rimuovi Allegato",
+  "areYouSureYouWantToRemoveThisAttachment": "Sei sicuro di voler rimuovere questo allegato?",
+  "none": "Nessuno",
+  "attachFile": "Allega File",
+  "uploadImage": "Carica Immagine",
+  "formatting": "Formattazione",
+  "bold": "Grassetto",
+  "italic": "Corsivo",
+  "underline": "Sottolineato",
+  "strikethrough": "Barrato",
+  "link": "Collegamento",
+  "image": "Immagine",
+  "video": "Video",
+  "quote": "Citazione",
+  "code": "Codice",
+  "spoiler": "Spoiler",
+  "bulletList": "Elenco Puntato",
+  "numberedList": "Elenco Numerato",
+  "listItem": "Elemento Elenco",
+  "participants": "Partecipanti ({count})",
+  "@participants": {
+    "description": "Participants count with label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsUnread": "Segna come non letto",
+  "invite": "Invita",
+  "welcomeBack": "Bentornato!",
+  "signInToAccessYourProfile": "Accedi per accedere al tuo profilo e gestire il tuo account",
+  "enterYourUsername": "Inserisci il tuo nome utente",
+  "enterYourPassword": "Inserisci la tua password",
+  "dontHaveAnAccount": "Non hai un account?",
+  "enterKeywordsToSearchTopics": "Inserisci parole chiave per cercare argomenti...",
+  "pleaseFillInAllRequiredFields": "Compila tutti i campi obbligatori",
+  "undelete": "Ripristina",
+  "refresh": "Aggiorna",
+  "share": "Condividi",
+  "viewOnWeb": "Visualizza sul Web",
+  "unlock": "Sblocca",
+  "lock": "Blocca",
+  "stick": "Appunta",
+  "unstick": "Rimuovi appuntamento",
+  "reply": "Rispondi",
+  "vote": "Vota",
+  "votesCount": "{count} voti",
+  "pollClosed": "Sondaggio chiuso",
+  "pollEndsOn": "Scade il {date}",
+  "voteToSeeResults": "Vota per vedere i risultati",
+  "viewFullPoll": "Sondaggio completo",
+  "pollOptionsCount": "{count} opzioni",
+  "reactedBy": "Reagito da",
+  "enterKeywordsToFindTopicsAndPosts": "Inserisci parole chiave per trovare argomenti e post",
+  "enterKeywordsOrDomainToFindForums": "Inserisci parole chiave o dominio per trovare forum",
+  "enterKeywordsOrDomainNamesToFindForums": "Inserisci parole chiave o nomi di dominio per trovare forum",
+  "language": "Lingua",
+  "systemDefault": "Predefinito di sistema",
+  "followSystemLanguage": "Segui la lingua di sistema",
+  "appearance": "Aspetto",
+  "followSystemTheme": "Segui il tema di sistema",
+  "light": "Chiaro",
+  "dark": "Scuro",
+  "version": "versione {version} ({buildNumber})",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "forumSettings": "Impostazioni Forum",
+  "noSettingsAvailable": "Nessuna impostazione disponibile",
+  "settingsCategoriesWillAppearHere": "Le categorie di impostazioni appariranno qui quando disponibili.",
+  "spamCleaner": "Pulizia Spam",
+  "unableToLoadProfile": "Impossibile caricare il profilo",
+  "banned": "BANNITO",
+  "sendMessage": "Invia messaggio",
+  "showMore": "Mostra di più",
+  "reportUser": "Segnala utente",
+  "submitReport": "Invia segnalazione",
+  "reportSubmittedSuccessfully": "Segnalazione inviata con successo",
+  "failedToSubmitReport": "Invio segnalazione fallito",
+  "searchForForums": "Cerca forum",
+  "searchForums": "Cerca Forum",
+  "deleteTopic": "Elimina argomento",
+  "softDelete": "Eliminazione soft",
+  "topicCanBeRestoredLater": "L'argomento può essere ripristinato in seguito",
+  "hardDelete": "Eliminazione permanente",
+  "topicWillBePermanentlyDeleted": "L'argomento sarà eliminato permanentemente",
+  "reasonForDeletion": "Motivo dell'eliminazione",
+  "enterReasonForDeletingTopic": "Inserisci il motivo per eliminare questo argomento",
+  "pleaseEnterReasonForDeletion": "Inserisci un motivo per l'eliminazione",
+  "pleaseSelectEndDate": "Seleziona una data di fine",
+  "banUser": "Banna utente",
+  "userBannedSuccessfully": "Utente bannato con successo",
+  "failedToBanUser": "Impossibile bannare l'utente",
+  "userUnbannedSuccessfully": "Utente sbannato con successo",
+  "failedToUnbanUser": "Impossibile sbannare l'utente",
+  "spamCleanUser": "Pulisci spam utente",
+  "deletePrivateConversations": "Elimina conversazioni private",
+  "banTheUserAccount": "Banna l'account utente",
+  "cleanSpam": "Pulisci spam",
+  "handledThreads": "Argomenti gestiti",
+  "deletedMessages": "Messaggi eliminati",
+  "deletedConversations": "Conversazioni eliminate",
+  "bannedUser": "Utente bannato",
+  "successfullyCleanedSpam": "Spam pulito con successo per {username}. Azioni: {actions}",
+  "@successfullyCleanedSpam": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "actions": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMessage": "Errore nel caricamento del messaggio: {error}",
+  "@errorLoadingMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotFound": "Messaggio non trovato",
+  
+  "home": "Home",
+  "notifications": "Notifiche",
+  "forums": "Forum",
+  "markAllForumsAsRead": "Segnare tutti i forum come letti?",
+  "markAllForumsAsReadMessage": "Questo segnerà tutti i forum e gli argomenti come letti. Questa azione non può essere annullata.",
+  "markAsRead": "Segna come letto",
+  
+  "content": "Contenuto",
+  "insertImage": "Inserisci immagine",
+  "howWouldYouLikeToInsertImage": "Come vorresti inserire questa immagine?",
+  "thumbnail": "Miniatura",
+  "fullSize": "Dimensione piena",
+  "alignLeft": "Allinea a sinistra",
+  "alignCenter": "Allinea al centro",
+  "alignRight": "Allinea a destra",
+  "pleaseEnterTitle": "Inserisci un titolo",
+  "pleaseEnterContent": "Inserisci del contenuto",
+  "uploading": "Caricamento...",
+  "uploaded": "Caricato",
+  "mentionUser": "Menziona utente",
+  
+  "loggingIn": "Accesso in corso...",
+  "submittingReport": "Invio report...",
+  "banningUser": "Ban utente...",
+  "unbanningUser": "Rimozione ban utente...",
+  "cleaningSpam": "Pulizia spam...",
+  
+  "enterSubject": "Inserisci oggetto",
+  "typeYourMessageHere": "Scrivi il tuo messaggio qui",
+  "writeYourMessage": "Scrivi il tuo messaggio...",
+  "writeYourReply": "Scrivi la tua risposta...",
+  "messageSentSuccessfully": "Messaggio inviato con successo",
+  "replySentSuccessfully": "Risposta inviata con successo",
+  "conversationCreatedSuccessfully": "Conversazione creata con successo",
+  "conversationMarkedAsUnread": "Conversazione segnata come non letta",
+  "messageMarkedAsUnread": "Messaggio segnato come non letto",
+  "conversationClosed": "Conversazione chiusa",
+  "conversationOpened": "Conversazione aperta",
+  "pleaseLoginToLikeMessages": "Accedi per mettere mi piace ai messaggi",
+  "loadEarlierMessages": "Carica messaggi precedenti",
+  "failedToLoadQuote": "Errore nel caricamento della citazione: \n{error}",
+  "@failedToLoadQuote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadFile": "Errore nel caricamento del file: {error}",
+  "@failedToUploadFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "Errore nel caricamento dell'immagine: {error}",
+  "@failedToUploadImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendMessage": "Errore nell'invio del messaggio: {error}",
+  "@failedToSendMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendReply": "Errore nell'invio della risposta: {error}",
+  "@failedToSendReply": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkAsUnread": "Errore nel segnare il messaggio come non letto: {error}",
+  "@failedToMarkAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkConversationAsUnread": "Errore nel segnare la conversazione come non letta: {error}",
+  "@failedToMarkConversationAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCloseConversation": "Errore nella chiusura della conversazione: {error}",
+  "@failedToCloseConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenConversation": "Errore nell'apertura della conversazione: {error}",
+  "@failedToOpenConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJumpToMessage": "Errore nel saltare al messaggio: {error}",
+  "@failedToJumpToMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goToTop": "Vai in alto",
+  "goToBottom": "Vai in basso",
+  "replyAll": "Rispondi a tutti",
+  "forward": "Inoltra",
+  
+  "noForumsFound": "Nessun forum trovato.",
+  "pleaseSelectPrefix": "Seleziona un prefisso",
+  "pleaseLoginToAccessContent": "Accedi per accedere a questo contenuto e interagire con i post.",
+  
+  "searchUsers": "Cerca utenti...",
+  "writeYourTitle": "Scrivi il tuo titolo...",
+  "writeYourContent": "Scrivi il tuo contenuto...",
+  "selectAnOption": "Seleziona un'opzione",
+  "enterConversationTitle": "Inserisci il titolo della conversazione",
+  "enterCode": "Inserisci codice a {count} cifre",
+  "@enterCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "edit": "Modifica",
+  "report": "Segnala",
+  "unfollow": "Smetti di seguire",
+  "follow": "Segui",
+  
+  "goToForums": "Vai ai Forum",
+  "remove": "Rimuovi",
+  
+  "subject": "Oggetto",
+  "message": "Messaggio",
+  "titleCannotBeEmpty": "Il titolo non può essere vuoto",
+  "conversationUpdatedSuccessfully": "Conversazione aggiornata con successo",
+  "goBack": "Indietro",
+  "signInToViewMessages": "Accedi per visualizzare i messaggi",
+  "privateMessagesNotAvailable": "I messaggi privati non sono disponibili",
+  "failedToLoadPost": "Errore nel caricamento del post: \n{error}",
+  "@failedToLoadPost": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreMessages": "Errore nel caricamento di altri messaggi: {error}",
+  "@errorLoadingMoreMessages": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikeOrUnlikeMessage": "Errore nel {action} messaggio: {error}",
+  "@failedToLikeOrUnlikeMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like": "mettere mi piace a",
+  "unlike": "togliere mi piace a",
+  "optimizeImage": "Ottimizza immagine",
+  "optimizeAndUpload": "Ottimizza e carica",
+  "downloading": "Download di {filename}...",
+  "@downloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "openingShareSheet": "Apertura foglio di condivisione per {filename}",
+  "@openingShareSheet": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDownloading": "Errore nel download di {filename}: {error}",
+  "@errorDownloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "enterANumber": "Inserisci un numero",
+  
+  "failedToNavigateToForum": "Errore nella navigazione al forum",
+  "failedToNavigateToForumName": "Errore nella navigazione a {forumName}",
+  "@failedToNavigateToForumName": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveConversation": "Errore nel salvataggio della conversazione",
+  
+  "forumNotFound": "Forum non trovato: {forumName}",
+  "@forumNotFound": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "forumNotFoundById": "Forum non trovato: {forumId}",
+  "@forumNotFoundById": {
+    "placeholders": {
+      "forumId": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenLink": "Impossibile aprire il link: {error}",
+  "@couldNotOpenLink": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "translate": "Traduci",
+  "showOriginal": "Mostra originale",
+  "translating": "Traduzione in corso...",
+  "translated": "Tradotto",
+  "translatedContent": "Contenuto tradotto",
+  "selectLanguage": "Seleziona lingua",
+  "translateTo": "Traduci in:",
+  "deviceLanguage": "Lingua del dispositivo",
+  "noPostsToTranslate": "Nessun post da tradurre",
+  "translationFailed": "Traduzione fallita",
+  
+  "likePost": "Mi piace",
+  "unlikePost": "Non mi piace più",
+  "thankPost": "Ringrazia post",
+  "showLikes": "Mostra mi piace",
+  "showThanks": "Mostra ringraziamenti",
+  "quotePost": "Cita post"
+}

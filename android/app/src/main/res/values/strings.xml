@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="asset_statements">[{\"include\":\"https://forum.example.com/.well-known/assetlinks.json\"}]</string>
+</resources>

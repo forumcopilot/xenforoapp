@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class_extensions>
+    <extension from_class="XF\Entity\UserOption" to_class="ForumCopilot\XF\Entity\UserOption" execute_order="10" active="1"/>
+    <extension from_class="XF\Pub\Controller\AccountController" to_class="ForumCopilot\XF\Pub\Controller\AccountController" execute_order="10" active="1"/>
+    <extension from_class="XF\Repository\UserAlertRepository" to_class="ForumCopilot\XF\Repository\UserAlertRepository" execute_order="10" active="1"/>
+    <extension from_class="XF\Template\Templater" to_class="ForumCopilot\XF\Template\Templater" execute_order="10" active="1"/>
+    <extension from_class="XF\Admin\Controller\Option" to_class="ForumCopilot\XF\Admin\Controller\Option" execute_order="10" active="1"/>
+    <extension from_class="XF\Service\Conversation\PusherService" to_class="ForumCopilot\XF\Service\Conversation\PusherService" execute_order="10" active="1"/>
+    <extension from_class="XF\Service\User\TfaService" to_class="ForumCopilot\XF\Service\User\TfaService" execute_order="10" active="1"/>
+</class_extensions>
+

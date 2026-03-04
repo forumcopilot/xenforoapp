@@ -1,0 +1,932 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Forum App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  
+  "loginTitle": "登录",
+  "usernameLabel": "用户名",
+  "passwordLabel": "密码",
+  "loginButton": "登录",
+  "signInWithPasskey": "Sign in with Passkey",
+  "usePasskey": "Use Passkey",
+  "passkeyContinuePrompt": "Use your passkey to continue",
+  "forgotPassword": "忘记密码？",
+  "pleaseEnterUsername": "请输入您的用户名",
+  "pleaseEnterPassword": "请输入您的密码",
+  "credentialsSentToDomain": "您的用户名和密码将发送到 {domain}",
+  "@credentialsSentToDomain": {
+    "description": "Message about credentials being sent to forum domain",
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "createAccount": "创建账户",
+  "alreadyHaveAccount": "已有账户？ ",
+  "logIn": "登录",
+  "continueButton": "继续",
+  "registrationNotAvailable": "注册不可用",
+  "registrationNotAvailableMessage": "目前无法注册。论坛可能已关闭或注册可能已禁用。",
+  "webRegistrationRequired": "需要网页注册",
+  "webRegistrationRequiredMessage": "此论坛需要通过网页浏览器注册。请点击下面的按钮打开注册页面。",
+  "openRegistrationPage": "打开注册页面",
+  "loadingAdditionalFields": "正在加载其他字段...",
+  "pleaseSelectDateOfBirth": "请选择您的出生日期",
+  "pleaseEnterLocation": "请输入您的位置",
+  "pleaseIndicateEmailPreference": "请指明您的电子邮件偏好",
+  "pleaseFillAllRequiredFields": "请填写所有必填字段",
+  "pleaseAcceptTermsOfService": "请接受服务条款",
+  "pleaseAcceptPrivacyPolicy": "请接受隐私政策",
+  "registrationError": "注册错误",
+  "registrationFailed": "注册失败。请检查您的信息。",
+  "registrationFailedTryAgain": "注册失败。请重试。",
+  "registrationInfo": "注册信息",
+  "openWebsite": "打开网站",
+  "couldNotOpenForumWebsite": "无法打开论坛网站。请尝试访问: {url}",
+  "@couldNotOpenForumWebsite": {
+    "description": "Error message when cannot open forum website",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "registrationSuccessfulEmailConfirm": "注册成功！请在登录前检查您的电子邮件以确认您的账户。",
+  "registrationSuccessfulPendingApproval": "注册成功！您的账户正在等待批准。您的账户获得批准后，您将收到通知。",
+  "registrationSuccessfulAutoLogin": "注册成功！您已自动登录。",
+  "welcome": "欢迎！",
+  "registrationSuccessful": "注册成功",
+  "pleaseLoginWithNewAccount": "请使用您的新账户登录。",
+  
+  "forgotPasswordTitle": "忘记密码",
+  "usernameOrEmailLabel": "用户名或电子邮件",
+  "pleaseEnterUsernameOrEmail": "请输入您的用户名或电子邮件",
+  "sendResetLink": "发送重置链接",
+  "resetLinkSent": "重置链接已发送",
+  "passwordResetInstructionsSent": "密码重置说明已发送到您注册的电子邮件地址。",
+  "resetFailed": "重置失败",
+  "unableToSendResetLink": "无法发送重置链接。请重试。",
+  "errorSendingResetLink": "发送重置链接时发生错误。请检查您的连接并重试。",
+  
+  "errorTitle": "错误",
+  "okButton": "确定",
+  "retryButton": "重试",
+  "copyToClipboard": "复制到剪贴板",
+  "copied": "已复制",
+  "errorMessageCopiedToClipboard": "错误消息已复制到剪贴板",
+  "dismiss": "关闭",
+  "cancel": "取消",
+  "tryAgain": "重试",
+  "getHelp": "获取帮助",
+  "somethingWentWrong": "出现问题",
+  "unexpectedErrorOccurred": "发生意外错误。请重试。",
+  "noInternetConnection": "无互联网连接",
+  "checkInternetConnection": "请检查您的互联网连接并重试。",
+  "authenticationRequired": "需要身份验证",
+  "pleaseLoginToContinue": "请登录以继续。",
+  "forumError": "论坛错误",
+  "anErrorOccurred": "发生错误",
+  
+  "accountPendingApproval": "您的账户正在等待批准。您可以浏览论坛，但在版主批准您的账户之前无法发帖。",
+  "checkEmailToConfirm": "请检查您的电子邮件以确认您的账户。点击我们发送给您的电子邮件中的确认链接。",
+  "checkNewEmailToConfirm": "请检查您的新电子邮件地址以确认更改。在您确认新电子邮件之前，旧电子邮件将保持活动状态。",
+  "emailAddressInvalid": "您的电子邮件地址似乎无效或正在退回邮件。请在账户设置中更新您的电子邮件地址。",
+  "accountDisabled": "您的账户已被禁用。请联系管理员寻求帮助。",
+  "accountRegistrationRejected": "您的账户注册已被拒绝。请联系管理员了解更多信息。",
+  "welcomeToForumCopilot": "欢迎使用 Forum Copilot！",
+  "successfullyLoggedOut": "您已成功退出登录",
+  "accountStatusRequiresAttention": "您的账户状态需要注意。如有疑问，请联系管理员。",
+  "updateEmail": "更新电子邮件",
+  "resend": "重新发送",
+  
+  "noLatestTopics": "无最新主题",
+  "noRecentTopicsToDisplay": "没有要显示的最新主题。稍后再来查看新讨论。",
+  "signInToViewLatestTopics": "登录以查看最新主题",
+  "youNeedToBeSignedInToViewLatestTopics": "您需要登录才能查看最新主题",
+  
+  "noUnreadTopics": "无未读主题",
+  "thereAreNoUnreadTopics": "没有未读主题。稍后再来查看新讨论。",
+  "youAreAllCaughtUp": "您已全部查看完毕！",
+  "signInToViewUnreadTopics": "登录以查看未读主题",
+  "youNeedToBeSignedInToViewUnreadTopics": "您需要登录才能查看未读主题",
+  
+  "noSubscribedTopics": "无订阅主题",
+  "noSubscribedTopicsMessage": "您没有订阅任何主题。点击主题上的星形按钮以订阅并接收新更新通知。",
+  "signInToViewSubscribedTopics": "登录以查看订阅主题",
+  "youNeedToBeSignedInToViewSubscribedTopics": "您需要登录才能查看订阅主题",
+  
+  "noParticipatedTopics": "无参与主题",
+  "topicsYouParticipatedIn": "您参与的主题将显示在这里。",
+  "signInToViewParticipatedTopics": "登录以查看参与的主题",
+  "youNeedToBeSignedInToViewParticipatedTopics": "您需要登录才能查看您参与的主题",
+  
+  "latest": "最新",
+  "unread": "未读",
+  "subscribed": "已订阅",
+  "participated": "已参与",
+  
+  "connectionTimedOut": "连接超时。网站可能已关闭或无法访问。",
+  "failedToConnectToSite": "无法连接到网站。网站可能已关闭或无法访问。",
+  "connectionFailed": "连接失败",
+  "failedToConnectToSiteName": "无法连接到 {siteName}",
+  "@failedToConnectToSiteName": {
+    "description": "Error message when failed to connect to a site",
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "loading": "加载中...",
+  "newConversation": "新对话",
+  "newMessage": "新消息",
+  
+  "appSettings": "应用设置",
+  "searchSites": "搜索网站",
+  "language": "语言",
+  "systemDefault": "系统默认",
+  "followSystemLanguage": "跟随系统语言",
+  
+  "all": "全部",
+  "topicsOnly": "仅主题",
+  "titlesOnly": "仅标题",
+  
+  "failedToShareTopic": "分享主题失败: {error}",
+  "@failedToShareTopic": {
+    "description": "Error message when sharing topic fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToSubscribe": "请登录以{action}此主题",
+  "@pleaseLoginToSubscribe": {
+    "description": "Message asking user to login to subscribe/unsubscribe",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeTo": "订阅",
+  "unsubscribeFrom": "取消订阅",
+  "failedToSubscribeToThread": "无法{action}主题",
+  "@failedToSubscribeToThread": {
+    "description": "Error message when subscribe/unsubscribe fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youCannotReplyToThisThread": "您无法回复此主题",
+  "pleaseWaitForThreadToLoad": "请等待主题加载",
+  
+  "softDelete": "软删除",
+  "postCanBeRestoredLater": "帖子稍后可以恢复",
+  "hardDelete": "硬删除",
+  "postWillBePermanentlyDeleted": "帖子将被永久删除",
+  "reasonForDeletion": "删除原因",
+  "enterReasonForDeletingPost": "输入删除此帖子的原因",
+  "pleaseEnterReasonForDeletion": "请输入删除原因",
+  
+  "reportPost": "举报帖子",
+  "pleaseProvideReasonForReporting": "请提供举报此帖子的原因。",
+  "reason": "原因",
+  "enterReasonForReportingPost": "输入举报此帖子的原因",
+  "pleaseEnterReason": "请输入原因",
+  "submitReport": "提交举报",
+  
+  "selectedActions": "选定的操作:",
+  "thisActionCannotBeUndone": "此操作无法撤销。",
+  
+  "participantsLabel": "参与者",
+  "usernameHasBeenInvited": "{username} 已被邀请加入对话",
+  "@usernameHasBeenInvited": {
+    "description": "Message when user is invited to conversation",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInvitingUser": "邀请用户时出错: {error}",
+  "@errorInvitingUser": {
+    "description": "Error message when inviting user fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newTopic": "新主题",
+  "markRead": "标记为已读",
+  
+  "reportUser": "举报用户",
+  "pleaseSelectReasonForReportingUser": "请选择举报此用户的原因。",
+  "spamOrAdvertising": "垃圾邮件或广告",
+  "harassmentOrBullying": "骚扰或欺凌",
+  "inappropriateContent": "不当内容",
+  "impersonationOrFakeAccount": "冒充或虚假账户",
+  "otherPleaseSpecify": "其他（请说明）",
+  "pleaseSpecifyReason": "请说明原因",
+  "enterReasonForReportingUser": "输入举报此用户的原因",
+  "pleaseSelectReason": "请选择原因",
+  
+  "banUser": "封禁用户",
+  "unbanUser": "解除封禁",
+  "pleaseSelectReasonForBanningUser": "请选择封禁 {username} 的原因",
+  "@pleaseSelectReasonForBanningUser": {
+    "description": "Message asking to select reason for banning user",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "violationOfCommunityGuidelines": "违反社区准则",
+  "harassmentOrAbusiveBehavior": "骚扰或虐待行为",
+  "postingInappropriateContent": "发布不当内容",
+  "accountCompromiseOrSecurityIssue": "账户泄露或安全问题",
+  "enterReasonForBanningUser": "输入封禁此用户的原因",
+  "banUntil": "封禁至",
+  "selectDate": "选择日期",
+  
+  "moreOptions": "更多选项",
+  "leaveConversation": "离开对话",
+  "reportConversation": "举报对话",
+  
+  "topicClosed": "主题已关闭",
+  "topicOpened": "主题已打开",
+  "topicStickied": "主题已置顶",
+  "topicUnstickied": "主题已取消置顶",
+  
+  "cannotEditMessage": "无法编辑此消息: {error}",
+  "@cannotEditMessage": {
+    "description": "Error message when cannot edit message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSpamClean": "确认清理垃圾邮件",
+  "handleThreads": "处理主题",
+  "deleteMessages": "删除消息",
+  "deleteConversations": "删除对话",
+  
+  "myForums": "我的论坛",
+  "recentlyVisited": "最近访问",
+  "explore": "探索",
+  "forumCopilot": "Forum Copilot",
+  
+  "noConversations": "无对话",
+  "noConversationsMessage": "您还没有对话。开始新对话以开始发送消息。",
+  
+  "imageSavedToGallery": "图片已保存到相册！",
+  "failedToSaveImage": "保存图片失败: {error}",
+  "@failedToSaveImage": {
+    "description": "Error message when saving image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "userProfile": "用户资料",
+  "deletePost": "删除帖子",
+  "loginRequired": "需要登录",
+  
+  "spamCleaner": "垃圾邮件清理器",
+  "tryAgain": "重试",
+  "sendMessage": "发送消息",
+  "memberSince": "注册日期",
+  "lastActivity": "最后活动",
+  "likesReceived": "收到的赞",
+  "likesGiven": "给出的赞",
+  "showMore": "显示更多",
+  "cleanSpam": "清理垃圾邮件",
+  
+  "failedToSaveMessage": "保存消息失败",
+  "failedToSaveConversation": "保存对话失败",
+  "failedToSaveSetting": "保存设置失败",
+  "failedToSavePost": "保存帖子失败",
+  "errorLoadingSites": "加载网站错误: {error}",
+  "@errorLoadingSites": {
+    "description": "Error message when loading explore sites fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "connectingTo": "正在连接到 {domainName}...",
+  "@connectingTo": {
+    "description": "Message shown when connecting to a site",
+    "placeholders": {
+      "domainName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "members": "成员",
+  "allMembers": "所有成员",
+  "online": "在线",
+  "noMembersFound": "未找到成员",
+  "searchForMembers": "搜索成员",
+  "enterUsernameToFindMembers": "输入用户名以查找论坛成员",
+  "noMembersOnline": "当前没有成员在线",
+  "enterUsernameToSearch": "输入用户名以搜索...",
+  "lookupMembers": "查找成员",
+  "addMembers": "添加成员",
+  "membersAddedSuccessfully": "成员已成功添加",
+  "errorAddingMembers": "添加成员时出错: {error}",
+  "@errorAddingMembers": {
+    "description": "Error message when adding members fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadOnlineUsers": "加载在线用户失败",
+  "noUsersOnline": "没有用户在线",
+  "membersCount": "{count} 成员",
+  "@membersCount": {
+    "description": "Number of members with label",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "noSubject": "无主题",
+  
+  "search": "搜索",
+  "moreOptions": "更多选项",
+  "logout": "退出登录",
+  "areYouSureYouWantToLogout": "您确定要退出登录吗？",
+  "register": "注册",
+  "signIn": "登录",
+  "markForumRead": "标记论坛为已读",
+  "notificationTest": "通知测试",
+  "forum": "论坛",
+  "profile": "资料",
+  "messages": "消息",
+  "add": "添加",
+  "dismiss": "关闭",
+  "retry": "重试",
+  "delete": "删除",
+  "deleteMessage": "删除消息",
+  "areYouSureYouWantToDeleteThisMessage": "您确定要删除此消息吗？",
+  "failedToDeleteMessage": "删除消息失败: {error}",
+  "@failedToDeleteMessage": {
+    "description": "Error message when deleting message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingPost": "正在删除帖子...",
+  "failedToUnlikePost": "取消点赞帖子失败: {error}",
+  "@failedToUnlikePost": {
+    "description": "Error message when unliking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikePost": "点赞帖子失败: {error}",
+  "@failedToLikePost": {
+    "description": "Error message when liking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToThankPost": "感谢帖子失败: {error}",
+  "@failedToThankPost": {
+    "description": "Error message when thanking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToViewMessages": "登录以查看消息",
+  "youNeedToBeSignedInToViewConversations": "您需要登录才能查看您的对话。",
+  "errorLoadingConversations": "加载对话错误: {error}",
+  "@errorLoadingConversations": {
+    "description": "Error message when loading conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLeaveConversation": "离开对话失败: {error}",
+  "@failedToLeaveConversation": {
+    "description": "Error message when leaving conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreConversations": "加载更多对话错误: {error}",
+  "@errorLoadingMoreConversations": {
+    "description": "Error message when loading more conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMessageOptional": "邀请消息（可选）",
+  "iWouldLikeToAddYouToThisConversation": "我想将您添加到此对话中。",
+  "searchFailed": "搜索失败",
+  "trySearchingWithDifferentUsername": "尝试使用不同的用户名搜索",
+  "enterUsernameToSearch": "输入用户名以搜索...",
+  "noSitesFound": "未找到网站。",
+  "userInformationNotAvailable": "用户信息不可用",
+  "birthday": "生日",
+  "posts": "帖子",
+  "following": "关注中",
+  "followers": "粉丝",
+  "about": "关于",
+  "location": "位置",
+  "website": "网站",
+  "signature": "签名",
+  "next": "下一步",
+  "permanent": "永久",
+  "temporary": "临时",
+  "setBanDurationFor": "设置 {username} 的封禁期限",
+  "@setBanDurationFor": {
+    "description": "Message asking to set ban duration",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectEndDateForTemporaryBan": "请选择临时封禁的结束日期",
+  "back": "返回",
+  "unban": "解除封禁",
+  "confirm": "确认",
+  "spamClean": "清理 {username} 的垃圾邮件",
+  "@spamClean": {
+    "description": "Title for spam clean dialog",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "selectActionsToPerform": "选择要执行的操作:",
+  "moveOrDeleteThreadsBasedOnAdminSettings": "根据管理员设置移动或删除主题",
+  "messageUpdatedSuccessfully": "消息更新成功",
+  "error": "错误: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveAttachment": "删除附件失败: {error}",
+  "@failedToRemoveAttachment": {
+    "description": "Error message when removing attachment fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadMessage": "加载消息失败: {error}",
+  "@failedToLoadMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editMessage": "编辑消息",
+  "removeAttachment": "删除附件",
+  "areYouSureYouWantToRemoveThisAttachment": "您确定要删除此附件吗？",
+  "none": "无",
+  "attachFile": "附加文件",
+  "uploadImage": "上传图片",
+  "formatting": "格式",
+  "bold": "粗体",
+  "italic": "斜体",
+  "underline": "下划线",
+  "strikethrough": "删除线",
+  "link": "链接",
+  "image": "图片",
+  "video": "视频",
+  "quote": "引用",
+  "code": "代码",
+  "spoiler": "剧透",
+  "bulletList": "项目符号列表",
+  "numberedList": "编号列表",
+  "listItem": "列表项",
+  "participants": "参与者 ({count})",
+  "@participants": {
+    "description": "Participants count with label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsUnread": "标记为未读",
+  "invite": "邀请",
+  "welcomeBack": "欢迎回来！",
+  "signInToAccessYourProfile": "登录以访问您的资料并管理您的账户",
+  "enterYourUsername": "输入您的用户名",
+  "enterYourPassword": "输入您的密码",
+  "dontHaveAnAccount": "没有账户？",
+  "enterKeywordsToSearchTopics": "输入关键词以搜索主题...",
+  "pleaseFillInAllRequiredFields": "请填写所有必填字段",
+  "undelete": "恢复",
+  "refresh": "刷新",
+  "share": "分享",
+  "viewOnWeb": "在网页中查看",
+  "unlock": "解锁",
+  "lock": "锁定",
+  "stick": "置顶",
+  "unstick": "取消置顶",
+  "reply": "回复",
+  "vote": "投票",
+  "votesCount": "{count} 票",
+  "pollClosed": "投票已结束",
+  "pollEndsOn": "截止于 {date}",
+  "voteToSeeResults": "投票后查看结果",
+  "viewFullPoll": "查看完整投票",
+  "pollOptionsCount": "{count} 个选项",
+  "reactedBy": "已反应",
+  "enterKeywordsToFindTopicsAndPosts": "输入关键词以查找主题和帖子",
+  "enterKeywordsOrDomainToFindForums": "输入关键词或域名以查找论坛",
+  "enterKeywordsOrDomainNamesToFindForums": "输入关键词或域名以查找论坛",
+  "language": "语言",
+  "systemDefault": "系统默认",
+  "followSystemLanguage": "跟随系统语言",
+  "appearance": "外观",
+  "followSystemTheme": "跟随系统主题",
+  "light": "浅色",
+  "dark": "深色",
+  "version": "版本 {version} ({buildNumber})",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "forumSettings": "论坛设置",
+  "noSettingsAvailable": "没有可用设置",
+  "settingsCategoriesWillAppearHere": "设置类别在可用时将显示在此处。",
+  "spamCleaner": "垃圾清理",
+  "unableToLoadProfile": "无法加载个人资料",
+  "banned": "已封禁",
+  "sendMessage": "发送消息",
+  "showMore": "显示更多",
+  "reportUser": "举报用户",
+  "submitReport": "提交举报",
+  "reportSubmittedSuccessfully": "举报提交成功",
+  "failedToSubmitReport": "提交举报失败",
+  "searchForForums": "搜索论坛",
+  "searchForums": "搜索论坛",
+  "deleteTopic": "删除主题",
+  "softDelete": "软删除",
+  "topicCanBeRestoredLater": "主题可以稍后恢复",
+  "hardDelete": "硬删除",
+  "topicWillBePermanentlyDeleted": "主题将被永久删除",
+  "reasonForDeletion": "删除原因",
+  "enterReasonForDeletingTopic": "输入删除此主题的原因",
+  "pleaseEnterReasonForDeletion": "请输入删除原因",
+  "pleaseSelectEndDate": "请选择结束日期",
+  "banUser": "封禁用户",
+  "userBannedSuccessfully": "用户封禁成功",
+  "failedToBanUser": "封禁用户失败",
+  "userUnbannedSuccessfully": "用户解封成功",
+  "failedToUnbanUser": "解封用户失败",
+  "spamCleanUser": "清理用户垃圾信息",
+  "deletePrivateConversations": "删除私密对话",
+  "banTheUserAccount": "封禁用户账户",
+  "cleanSpam": "清理垃圾信息",
+  "handledThreads": "已处理的线程",
+  "deletedMessages": "已删除的消息",
+  "deletedConversations": "已删除的对话",
+  "bannedUser": "已封禁的用户",
+  "successfullyCleanedSpam": "成功清理 {username} 的垃圾信息。操作: {actions}",
+  "@successfullyCleanedSpam": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "actions": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMessage": "加载消息时出错: {error}",
+  "@errorLoadingMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotFound": "未找到消息",
+  
+  "home": "首页",
+  "notifications": "通知",
+  "forums": "论坛",
+  "markAllForumsAsRead": "将所有论坛标记为已读？",
+  "markAllForumsAsReadMessage": "这将把所有论坛和主题标记为已读。此操作无法撤销。",
+  "markAsRead": "标记为已读",
+  
+  "content": "内容",
+  "insertImage": "插入图片",
+  "howWouldYouLikeToInsertImage": "您想如何插入此图片？",
+  "thumbnail": "缩略图",
+  "fullSize": "完整尺寸",
+  "alignLeft": "左对齐",
+  "alignCenter": "居中对齐",
+  "alignRight": "右对齐",
+  "pleaseEnterTitle": "请输入标题",
+  "pleaseEnterContent": "请输入内容",
+  "uploading": "上传中...",
+  "uploaded": "已上传",
+  "mentionUser": "提及用户",
+  
+  "loggingIn": "登录中...",
+  "submittingReport": "提交报告中...",
+  "banningUser": "封禁用户中...",
+  "unbanningUser": "解封用户中...",
+  "cleaningSpam": "清理垃圾信息中...",
+  
+  "enterSubject": "输入主题",
+  "typeYourMessageHere": "在此输入您的消息",
+  "writeYourMessage": "编写您的消息...",
+  "writeYourReply": "编写您的回复...",
+  "messageSentSuccessfully": "消息发送成功",
+  "replySentSuccessfully": "回复发送成功",
+  "conversationCreatedSuccessfully": "对话创建成功",
+  "conversationMarkedAsUnread": "对话已标记为未读",
+  "messageMarkedAsUnread": "消息已标记为未读",
+  "conversationClosed": "对话已关闭",
+  "conversationOpened": "对话已打开",
+  "pleaseLoginToLikeMessages": "请登录以点赞消息",
+  "loadEarlierMessages": "加载更早的消息",
+  "failedToLoadQuote": "加载引用失败: \n{error}",
+  "@failedToLoadQuote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadFile": "上传文件失败: {error}",
+  "@failedToUploadFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "上传图片失败: {error}",
+  "@failedToUploadImage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendMessage": "发送消息失败: {error}",
+  "@failedToSendMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendReply": "发送回复失败: {error}",
+  "@failedToSendReply": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkAsUnread": "标记消息为未读失败: {error}",
+  "@failedToMarkAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkConversationAsUnread": "标记对话为未读失败: {error}",
+  "@failedToMarkConversationAsUnread": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCloseConversation": "关闭对话失败: {error}",
+  "@failedToCloseConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenConversation": "打开对话失败: {error}",
+  "@failedToOpenConversation": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJumpToMessage": "跳转到消息失败: {error}",
+  "@failedToJumpToMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goToTop": "返回顶部",
+  "goToBottom": "跳到底部",
+  "replyAll": "全部回复",
+  "forward": "转发",
+  
+  "noForumsFound": "未找到论坛。",
+  "pleaseSelectPrefix": "请选择前缀",
+  "pleaseLoginToAccessContent": "请登录以访问此内容并与帖子互动。",
+  
+  "searchUsers": "搜索用户...",
+  "writeYourTitle": "编写您的标题...",
+  "writeYourContent": "编写您的内容...",
+  "selectAnOption": "选择选项",
+  "enterConversationTitle": "输入对话标题",
+  "enterCode": "输入{count}位代码",
+  "@enterCode": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "edit": "编辑",
+  "report": "举报",
+  "unfollow": "取消关注",
+  "follow": "关注",
+  
+  "goToForums": "前往论坛",
+  "remove": "删除",
+  
+  "subject": "主题",
+  "message": "消息",
+  "titleCannotBeEmpty": "标题不能为空",
+  "conversationUpdatedSuccessfully": "对话更新成功",
+  "goBack": "返回",
+  "signInToViewMessages": "请登录以查看消息",
+  "privateMessagesNotAvailable": "私信不可用",
+  "failedToLoadPost": "加载帖子失败: \n{error}",
+  "@failedToLoadPost": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreMessages": "加载更多消息时出错: {error}",
+  "@errorLoadingMoreMessages": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikeOrUnlikeMessage": "对消息{action}失败: {error}",
+  "@failedToLikeOrUnlikeMessage": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like": "点赞",
+  "unlike": "取消点赞",
+  "optimizeImage": "优化图片",
+  "optimizeAndUpload": "优化并上传",
+  "downloading": "正在下载{filename}...",
+  "@downloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "openingShareSheet": "正在为{filename}打开分享表",
+  "@openingShareSheet": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDownloading": "下载{filename}时出错: {error}",
+  "@errorDownloading": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "enterANumber": "输入数字",
+  
+  "failedToNavigateToForum": "导航到论坛失败",
+  "failedToNavigateToForumName": "导航到{forumName}失败",
+  "@failedToNavigateToForumName": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveConversation": "保存对话失败",
+  
+  "forumNotFound": "未找到论坛: {forumName}",
+  "@forumNotFound": {
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "forumNotFoundById": "未找到论坛: {forumId}",
+  "@forumNotFoundById": {
+    "placeholders": {
+      "forumId": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenLink": "无法打开链接: {error}",
+  "@couldNotOpenLink": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "translate": "翻译",
+  "showOriginal": "显示原文",
+  "translating": "翻译中...",
+  "translated": "已翻译",
+  "translatedContent": "翻译内容",
+  "selectLanguage": "选择语言",
+  "translateTo": "翻译为:",
+  "deviceLanguage": "设备语言",
+  "noPostsToTranslate": "没有可翻译的帖子",
+  "translationFailed": "翻译失败",
+  
+  "likePost": "点赞帖子",
+  "unlikePost": "取消点赞",
+  "thankPost": "感谢帖子",
+  "showLikes": "显示点赞",
+  "showThanks": "显示感谢",
+  "quotePost": "引用帖子"
+}

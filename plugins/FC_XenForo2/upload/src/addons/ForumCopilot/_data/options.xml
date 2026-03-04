@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<options>
+    <option option_id="fc_site_info_form" edit_format="callback" data_type="string" can_backup="0">
+        <default_value></default_value>
+        <edit_format_params>ForumCopilot\Option\SiteInfoForm::renderForm</edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options" display_order="1"/>
+    </option>
+    <option option_id="fc_push_enabled" edit_format="onoff" data_type="boolean" can_backup="1">
+        <default_value>1</default_value>
+        <edit_format_params></edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options" display_order="2"/>
+    </option>
+    <option option_id="fc_push_api_url" edit_format="textbox" data_type="string" can_backup="1">
+        <default_value>https://push.forumcopilot.com</default_value>
+        <edit_format_params></edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options" display_order="3"/>
+    </option>
+    <option option_id="fc_push_api_key" edit_format="textbox" data_type="string" can_backup="1">
+        <default_value></default_value>
+        <edit_format_params></edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options" display_order="4"/>
+    </option>
+    <option option_id="fc_site_id" edit_format="textbox" data_type="string" can_backup="1">
+        <default_value></default_value>
+        <edit_format_params></edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options_debug" display_order="5"/>
+    </option>
+    <option option_id="fc_smart_banner_enabled" edit_format="onoff" data_type="boolean" can_backup="1">
+        <default_value>1</default_value>
+        <edit_format_params></edit_format_params>
+        <sub_options></sub_options>
+        <relation group_id="fc_options" display_order="5"/>
+    </option>
+</options>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<option_groups>
+    <group group_id="fc_options" display_order="19000" debug_only="0">
+        <title>ForumCopilot Options</title>
+        <description>Configure ForumCopilot push notification settings for mobile app integration</description>
+    </group>
+    <group group_id="fc_options_debug" display_order="19001" debug_only="1">
+        <title>ForumCopilot Internal Options</title>
+        <description>Internal ForumCopilot options (debug mode only)</description>
+    </group>
+</option_groups>

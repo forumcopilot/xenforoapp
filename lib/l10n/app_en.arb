@@ -1,0 +1,1448 @@
+{
+  "@@locale": "en",
+  "appTitle": "Forum App",
+  "@appTitle": {
+    "description": "The application title"
+  },
+  
+  "loginTitle": "Login",
+  "usernameLabel": "Username",
+  "passwordLabel": "Password",
+  "loginButton": "Login",
+  "signInWithPasskey": "Sign in with Passkey",
+  "usePasskey": "Use Passkey",
+  "passkeyContinuePrompt": "Use your passkey to continue",
+  "forgotPassword": "Forgot password?",
+  "pleaseEnterUsername": "Please enter your username",
+  "pleaseEnterPassword": "Please enter your password",
+  "credentialsSentToDomain": "Your username and password will be sent to {domain}",
+  "@credentialsSentToDomain": {
+    "description": "Message about credentials being sent to forum domain",
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "createAccount": "Create Account",
+  "alreadyHaveAccount": "Already have an account? ",
+  "logIn": "Log In",
+  "continueButton": "Continue",
+  "registrationNotAvailable": "Registration Not Available",
+  "registrationNotAvailableMessage": "Registration is currently not available. The forum may be closed or registration may be disabled.",
+  "webRegistrationRequired": "Web Registration Required",
+  "webRegistrationRequiredMessage": "This forum requires registration through the web browser. Please click the button below to open the registration page.",
+  "openRegistrationPage": "Open Registration Page",
+  "loadingAdditionalFields": "Loading additional fields...",
+  "pleaseSelectDateOfBirth": "Please select your date of birth",
+  "pleaseEnterLocation": "Please enter your location",
+  "pleaseIndicateEmailPreference": "Please indicate your email preference",
+  "pleaseFillAllRequiredFields": "Please fill in all required fields",
+  "pleaseAcceptTermsOfService": "Please accept the Terms of Service",
+  "pleaseAcceptPrivacyPolicy": "Please accept the Privacy Policy",
+  "registrationError": "Registration Error",
+  "registrationFailed": "Registration failed. Please check your information.",
+  "registrationFailedTryAgain": "Registration failed. Please try again.",
+  "registrationInfo": "Registration Info",
+  "openWebsite": "Open Website",
+  "couldNotOpenForumWebsite": "Could not open the forum website. Please try visiting: {url}",
+  "@couldNotOpenForumWebsite": {
+    "description": "Error message when cannot open forum website",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "registrationSuccessfulEmailConfirm": "Registration successful! Please check your email to confirm your account before logging in.",
+  "registrationSuccessfulPendingApproval": "Registration successful! Your account is pending approval. You will be notified when your account is approved.",
+  "registrationSuccessfulAutoLogin": "Registration successful! You have been automatically logged in.",
+  "welcome": "Welcome!",
+  "registrationSuccessful": "Registration Successful",
+  "pleaseLoginWithNewAccount": "Please log in with your new account.",
+  
+  "forgotPasswordTitle": "Forgot Password",
+  "usernameOrEmailLabel": "Username or Email",
+  "pleaseEnterUsernameOrEmail": "Please enter your username or email",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Reset Link Sent",
+  "passwordResetInstructionsSent": "Password reset instructions have been sent to your registered email address.",
+  "resetFailed": "Reset Failed",
+  "unableToSendResetLink": "Unable to send reset link. Please try again.",
+  "errorSendingResetLink": "An error occurred while sending the reset link. Please check your connection and try again.",
+  
+  "errorTitle": "Error",
+  "okButton": "OK",
+  "retryButton": "Retry",
+  "copyToClipboard": "Copy to Clipboard",
+  "copied": "Copied",
+  "errorMessageCopiedToClipboard": "Error message copied to clipboard",
+  "dismiss": "Dismiss",
+  "cancel": "Cancel",
+  "tryAgain": "Try Again",
+  "getHelp": "Get Help",
+  "somethingWentWrong": "Something went wrong",
+  "unexpectedErrorOccurred": "An unexpected error occurred. Please try again.",
+  "noInternetConnection": "No Internet Connection",
+  "checkInternetConnection": "Please check your internet connection and try again.",
+  "authenticationRequired": "Authentication Required",
+  "pleaseLoginToContinue": "Please log in to continue.",
+  "forumError": "Forum Error",
+  "anErrorOccurred": "An error occurred",
+  
+  "accountPendingApproval": "Your account is pending approval. You can browse the forum but cannot post until a moderator approves your account.",
+  "checkEmailToConfirm": "Please check your email to confirm your account. Click the confirmation link in the email we sent you.",
+  "checkNewEmailToConfirm": "Please check your new email address to confirm the change. Your old email will remain active until you confirm the new one.",
+  "emailAddressInvalid": "Your email address appears to be invalid or is bouncing emails. Please update your email address in account settings.",
+  "accountDisabled": "Your account has been disabled. Please contact an administrator for assistance.",
+  "accountRegistrationRejected": "Your account registration was rejected. Please contact an administrator for more information.",
+  "welcomeToForumCopilot": "Welcome to Forum Copilot!",
+  "successfullyLoggedOut": "You have been successfully logged out",
+  "accountStatusRequiresAttention": "Your account status requires attention. Please contact an administrator if you have questions.",
+  "updateEmail": "Update Email",
+  "resend": "Resend",
+  
+  "noLatestTopics": "No Latest Topics",
+  "noRecentTopicsToDisplay": "There are no recent topics to display. Check back later for new discussions.",
+  "signInToViewLatestTopics": "Sign in to view latest topics",
+  "youNeedToBeSignedInToViewLatestTopics": "You need to be signed in to view latest topics",
+  
+  "noUnreadTopics": "No Unread Topics",
+  "thereAreNoUnreadTopics": "There are no unread topics. Check back later for new discussions.",
+  "youAreAllCaughtUp": "You're all caught up!",
+  "signInToViewUnreadTopics": "Sign in to view unread topics",
+  "youNeedToBeSignedInToViewUnreadTopics": "You need to be signed in to view your unread topics",
+  
+  "noSubscribedTopics": "No Subscribed Topics",
+  "noSubscribedTopicsMessage": "You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.",
+  "signInToViewSubscribedTopics": "Sign in to view subscribed topics",
+  "youNeedToBeSignedInToViewSubscribedTopics": "You need to be signed in to view your subscribed topics",
+  
+  "noParticipatedTopics": "No Participated Topics",
+  "topicsYouParticipatedIn": "Topics that you have participated in will be shown here.",
+  "signInToViewParticipatedTopics": "Sign in to view participated topics",
+  "youNeedToBeSignedInToViewParticipatedTopics": "You need to be signed in to view topics you have participated in",
+  
+  "latest": "Latest",
+  "unread": "Unread",
+  "subscribed": "Subscribed",
+  "participated": "Participated",
+  
+  "connectionTimedOut": "Connection timed out. The site may be down or unreachable.",
+  "failedToConnectToSite": "Failed to connect to site. The site may be down or unreachable.",
+  "connectionFailed": "Connection Failed",
+  "failedToConnectToSiteName": "Failed to connect to {siteName}",
+  "@failedToConnectToSiteName": {
+    "description": "Error message when failed to connect to a site",
+    "placeholders": {
+      "siteName": {
+        "type": "String"
+      }
+    }
+  },
+  "loading": "Loading...",
+  "newConversation": "New Conversation",
+  "newMessage": "New Message",
+  
+  "appSettings": "App Settings",
+  "searchSites": "Search Sites",
+  "language": "Language",
+  "systemDefault": "System Default",
+  "followSystemLanguage": "Follow system language",
+  
+  "all": "All",
+  "topicsOnly": "Topics Only",
+  "titlesOnly": "Titles Only",
+  
+  "failedToShareTopic": "Failed to share topic: {error}",
+  "@failedToShareTopic": {
+    "description": "Error message when sharing topic fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseLoginToSubscribe": "Please login to {action} this thread",
+  "@pleaseLoginToSubscribe": {
+    "description": "Message asking user to login to subscribe/unsubscribe",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "subscribeTo": "subscribe to",
+  "unsubscribeFrom": "unsubscribe from",
+  "failedToSubscribeToThread": "Failed to {action} thread",
+  "@failedToSubscribeToThread": {
+    "description": "Error message when subscribe/unsubscribe fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "youCannotReplyToThisThread": "You cannot reply to this thread",
+  "pleaseWaitForThreadToLoad": "Please wait for the thread to load",
+  
+  "softDelete": "Soft Delete",
+  "postCanBeRestoredLater": "Post can be restored later",
+  "hardDelete": "Hard Delete",
+  "postWillBePermanentlyDeleted": "Post will be permanently deleted",
+  "reasonForDeletion": "Reason for deletion",
+  "enterReasonForDeletingPost": "Enter the reason for deleting this post",
+  "pleaseEnterReasonForDeletion": "Please enter a reason for deletion",
+  
+  "reportPost": "Report Post",
+  "pleaseProvideReasonForReporting": "Please provide a reason for reporting this post.",
+  "reason": "Reason",
+  "enterReasonForReportingPost": "Enter the reason for reporting this post",
+  "pleaseEnterReason": "Please enter a reason",
+  "submitReport": "Submit Report",
+  
+  "selectedActions": "Selected actions:",
+  "thisActionCannotBeUndone": "This action cannot be undone.",
+  
+  "participantsLabel": "Participants",
+  "@participantsLabel": {
+    "description": "Label for participants (without count)"
+  },
+  "usernameHasBeenInvited": "{username} has been invited to the conversation",
+  "@usernameHasBeenInvited": {
+    "description": "Message when user is invited to conversation",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInvitingUser": "Error inviting user: {error}",
+  "@errorInvitingUser": {
+    "description": "Error message when inviting user fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newTopic": "New Topic",
+  "markRead": "Mark Read",
+  
+  "reportUser": "Report User",
+  "pleaseSelectReasonForReportingUser": "Please select a reason for reporting this user.",
+  "spamOrAdvertising": "Spam or advertising",
+  "harassmentOrBullying": "Harassment or bullying",
+  "inappropriateContent": "Inappropriate content",
+  "impersonationOrFakeAccount": "Impersonation or fake account",
+  "otherPleaseSpecify": "Other (please specify)",
+  "pleaseSpecifyReason": "Please specify the reason",
+  "enterReasonForReportingUser": "Enter the reason for reporting this user",
+  "pleaseSelectReason": "Please select a reason",
+  "submitReport": "Submit Report",
+  
+  "banUser": "Ban User",
+  "unbanUser": "Unban User",
+  "pleaseSelectReasonForBanningUser": "Please select a reason for banning {username}",
+  "@pleaseSelectReasonForBanningUser": {
+    "description": "Message asking to select reason for banning user",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "violationOfCommunityGuidelines": "Violation of community guidelines",
+  "harassmentOrAbusiveBehavior": "Harassment or abusive behavior",
+  "postingInappropriateContent": "Posting inappropriate content",
+  "accountCompromiseOrSecurityIssue": "Account compromise or security issue",
+  "enterReasonForBanningUser": "Enter the reason for banning this user",
+  "banUntil": "Ban until",
+  "selectDate": "Select date",
+  "unbanUser": "Unban User",
+  
+  "moreOptions": "More options",
+  "leaveConversation": "Leave conversation",
+  "reportConversation": "Report conversation",
+  
+  "topicClosed": "Topic closed",
+  "topicOpened": "Topic opened",
+  "topicStickied": "Topic stickied",
+  "topicUnstickied": "Topic unstickied",
+  
+  "cannotEditMessage": "Cannot edit this message: {error}",
+  "@cannotEditMessage": {
+    "description": "Error message when cannot edit message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmSpamClean": "Confirm Spam Clean",
+  "handleThreads": "Handle Threads",
+  "deleteMessages": "Delete Messages",
+  "deleteConversations": "Delete Conversations",
+  
+  "myForums": "My Forums",
+  "recentlyVisited": "Recently Visited",
+  "explore": "Explore",
+  "forumCopilot": "Forum Copilot",
+  
+  "noConversations": "No conversations",
+  "noConversationsMessage": "You have no conversations yet. Start a new conversation to begin messaging.",
+  
+  "imageSavedToGallery": "Image saved to gallery!",
+  "failedToSaveImage": "Failed to save image: {error}",
+  "@failedToSaveImage": {
+    "description": "Error message when saving image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "userProfile": "User Profile",
+  "deletePost": "Delete Post",
+  "loginRequired": "Login Required",
+  
+  "spamCleaner": "Spam Cleaner",
+  "tryAgain": "Try Again",
+  "sendMessage": "Send Message",
+  "memberSince": "Member Since",
+  "lastActivity": "Last Activity",
+  "likesReceived": "Likes Received",
+  "likesGiven": "Likes Given",
+  "showMore": "Show More",
+  "cleanSpam": "Clean Spam",
+  
+  "failedToSaveMessage": "Failed to save message",
+  "failedToSaveConversation": "Failed to save conversation",
+  "failedToSaveSetting": "Failed to save setting",
+  "failedToSavePost": "Failed to save post",
+  "errorLoadingSites": "Error loading sites: {error}",
+  "@errorLoadingSites": {
+    "description": "Error message when loading explore sites fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "connectingTo": "Connecting to {domainName}...",
+  "@connectingTo": {
+    "description": "Message shown when connecting to a site",
+    "placeholders": {
+      "domainName": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "members": "Members",
+  "allMembers": "All Members",
+  "online": "Online",
+  "noMembersFound": "No members found",
+  "searchForMembers": "Search for members",
+  "enterUsernameToFindMembers": "Enter a username to find forum members",
+  "noMembersOnline": "No members are currently online",
+  "enterUsernameToSearch": "Enter username to search...",
+  "lookupMembers": "Lookup Members",
+  "addMembers": "Add Members",
+  "membersAddedSuccessfully": "Members added successfully",
+  "errorAddingMembers": "Error adding members: {error}",
+  "@errorAddingMembers": {
+    "description": "Error message when adding members fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadOnlineUsers": "Failed to load online users",
+  "noUsersOnline": "No users online",
+  "membersCount": "{count} Members",
+  "@membersCount": {
+    "description": "Number of members with label",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "compact"
+      }
+    }
+  },
+  "noSubject": "No subject",
+  
+  "search": "Search",
+  "moreOptions": "More options",
+  "logout": "Logout",
+  "areYouSureYouWantToLogout": "Are you sure you want to logout?",
+  "register": "Register",
+  "signIn": "Sign In",
+  "markForumRead": "Mark Forum Read",
+  "notificationTest": "Notification Test",
+  "forum": "Forum",
+  "profile": "Profile",
+  "messages": "Messages",
+  "add": "Add",
+  "dismiss": "Dismiss",
+  "retry": "Retry",
+  "delete": "Delete",
+  "deleteMessage": "Delete Message",
+  "areYouSureYouWantToDeleteThisMessage": "Are you sure you want to delete this message?",
+  "failedToDeleteMessage": "Failed to delete message: {error}",
+  "@failedToDeleteMessage": {
+    "description": "Error message when deleting message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deletingPost": "Deleting post...",
+  "failedToUnlikePost": "Failed to unlike post: {error}",
+  "@failedToUnlikePost": {
+    "description": "Error message when unliking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikePost": "Failed to like post: {error}",
+  "@failedToLikePost": {
+    "description": "Error message when liking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToThankPost": "Failed to thank post: {error}",
+  "@failedToThankPost": {
+    "description": "Error message when thanking post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "signInToViewMessages": "Sign in to view messages",
+  "youNeedToBeSignedInToViewConversations": "You need to be signed in to view your conversations.",
+  "errorLoadingConversations": "Error loading conversations: {error}",
+  "@errorLoadingConversations": {
+    "description": "Error message when loading conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLeaveConversation": "Failed to leave conversation: {error}",
+  "@failedToLeaveConversation": {
+    "description": "Error message when leaving conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMoreConversations": "Error loading more conversations: {error}",
+  "errorLoadingMoreMessages": "Error loading more messages: {error}",
+  "@errorLoadingMoreMessages": {
+    "description": "Error message when loading more messages fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@errorLoadingMoreConversations": {
+    "description": "Error message when loading more conversations fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMessageOptional": "Invite Message (optional)",
+  "iWouldLikeToAddYouToThisConversation": "I would like to add you to this conversation.",
+  "searchFailed": "Search failed",
+  "trySearchingWithDifferentUsername": "Try searching with a different username",
+  "enterUsernameToSearch": "Enter username to search...",
+  "noSitesFound": "No sites found.",
+  "userInformationNotAvailable": "User information not available",
+  "birthday": "Birthday",
+  "posts": "Posts",
+  "following": "Following",
+  "followers": "Followers",
+  "about": "About",
+  "location": "Location",
+  "website": "Website",
+  "signature": "Signature",
+  "next": "Next",
+  "permanent": "Permanent",
+  "temporary": "Temporary",
+  "setBanDurationFor": "Set the ban duration for {username}",
+  "@setBanDurationFor": {
+    "description": "Message asking to set ban duration",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectEndDateForTemporaryBan": "Please select an end date for temporary ban",
+  "back": "Back",
+  "unban": "Unban",
+  "confirm": "Confirm",
+  "spamClean": "Spam Clean {username}",
+  "@spamClean": {
+    "description": "Title for spam clean dialog",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "selectActionsToPerform": "Select the actions to perform:",
+  "handleThreads": "Handle Threads",
+  "moveOrDeleteThreadsBasedOnAdminSettings": "Move or delete threads based on admin settings",
+  "deleteMessages": "Delete Messages",
+  "deleteConversations": "Delete Conversations",
+  "messageUpdatedSuccessfully": "Message updated successfully",
+  "error": "Error: {error}",
+  "@error": {
+    "description": "Generic error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemoveAttachment": "Failed to remove attachment: {error}",
+  "@failedToRemoveAttachment": {
+    "description": "Error message when removing attachment fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadMessage": "Failed to load message: {error}",
+  "@failedToLoadMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editMessage": "Edit Message",
+  "removeAttachment": "Remove Attachment",
+  "areYouSureYouWantToRemoveThisAttachment": "Are you sure you want to remove this attachment?",
+  "none": "None",
+  "attachFile": "Attach File",
+  "uploadImage": "Upload Image",
+  "formatting": "Formatting",
+  "bold": "Bold",
+  "italic": "Italic",
+  "underline": "Underline",
+  "strikethrough": "Strikethrough",
+  "link": "Link",
+  "image": "Image",
+  "video": "Video",
+  "quote": "Quote",
+  "code": "Code",
+  "spoiler": "Spoiler",
+  "bulletList": "Bullet List",
+  "numberedList": "Numbered List",
+  "listItem": "List Item",
+  "participants": "Participants ({count})",
+  "@participants": {
+    "description": "Participants count with label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAsUnread": "Mark as unread",
+  "invite": "Invite",
+  "welcomeBack": "Welcome Back",
+  "signInToAccessYourProfile": "Sign in to access your profile and manage your account",
+  "enterYourUsername": "Enter your username",
+  "enterYourPassword": "Enter your password",
+  "dontHaveAnAccount": "Don't have an account?",
+  "enterKeywordsToSearchTopics": "Enter keywords to search topics...",
+  "pleaseFillInAllRequiredFields": "Please fill in all required fields",
+  "undelete": "Undelete",
+  
+  "signInToViewUnreadTopics": "Sign in to view unread topics",
+  "youNeedToBeSignedInToViewUnreadTopics": "You need to be signed in to view your unread topics.",
+  "signInToViewSubscribedTopics": "Sign in to view subscribed topics",
+  "youNeedToBeSignedInToViewSubscribedTopics": "You need to be signed in to view your subscribed topics.",
+  "signInToViewParticipatedTopics": "Sign in to view participated topics",
+  "youNeedToBeSignedInToViewParticipatedTopics": "You need to be signed in to view topics you have participated in.",
+  "signInToViewLatestTopics": "Sign in to view latest topics",
+  "youNeedToBeSignedInToViewLatestTopics": "You need to be signed in to view latest topics.",
+  "markAsUnread": "Mark as unread",
+  "invite": "Invite",
+  "welcomeBack": "Welcome Back",
+  "signInToAccessYourProfile": "Sign in to access your profile and manage your account",
+  "enterYourUsername": "Enter your username",
+  "enterYourPassword": "Enter your password",
+  "dontHaveAnAccount": "Don't have an account?",
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Menu item to refresh content"
+  },
+  "share": "Share",
+  "@share": {
+    "description": "Menu item to share content"
+  },
+  "viewOnWeb": "View on Web",
+  "@viewOnWeb": {
+    "description": "Menu item to view content on web browser"
+  },
+  "unlock": "Unlock",
+  "@unlock": {
+    "description": "Menu item to unlock a topic"
+  },
+  "lock": "Lock",
+  "@lock": {
+    "description": "Menu item to lock a topic"
+  },
+  "stick": "Stick",
+  "@stick": {
+    "description": "Menu item to stick/pin a topic"
+  },
+  "unstick": "Unstick",
+  "@unstick": {
+    "description": "Menu item to unstick/unpin a topic"
+  },
+  "reply": "Reply",
+  "@reply": {
+    "description": "Button to reply to a post or message"
+  },
+  "vote": "Vote",
+  "@vote": {
+    "description": "Button to submit poll vote"
+  },
+  "votesCount": "{count} votes",
+  "@votesCount": {
+    "description": "Poll footer showing total vote count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pollClosed": "Poll closed",
+  "@pollClosed": {
+    "description": "Poll footer when poll is closed"
+  },
+  "pollEndsOn": "Ends {date}",
+  "@pollEndsOn": {
+    "description": "Poll footer showing close date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "voteToSeeResults": "Vote to see results",
+  "@voteToSeeResults": {
+    "description": "Hint when results are hidden until user votes"
+  },
+  "viewFullPoll": "View full poll",
+  "@viewFullPoll": {
+    "description": "Mini poll bar: tap to scroll to first post and see full poll"
+  },
+  "pollOptionsCount": "{count} options",
+  "@pollOptionsCount": {
+    "description": "Mini poll bar subtitle when no votes yet",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reactedBy": "Reacted by",
+  "@reactedBy": {
+    "description": "Label showing who reacted to a post or message"
+  },
+  "enterKeywordsToFindTopicsAndPosts": "Enter keywords to find topics and posts",
+  "@enterKeywordsToFindTopicsAndPosts": {
+    "description": "Hint text for searching topics and posts"
+  },
+  "enterKeywordsOrDomainToFindForums": "Enter keywords or domain to find forums",
+  "@enterKeywordsOrDomainToFindForums": {
+    "description": "Hint text for searching forums by keywords or domain"
+  },
+  "enterKeywordsOrDomainNamesToFindForums": "Enter keywords or domain names to find forums",
+  "@enterKeywordsOrDomainNamesToFindForums": {
+    "description": "Description text for searching forums"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Settings section title for language selection"
+  },
+  "systemDefault": "System Default",
+  "@systemDefault": {
+    "description": "Option to use system default settings"
+  },
+  "followSystemLanguage": "Follow system language",
+  "@followSystemLanguage": {
+    "description": "Description for system default language option"
+  },
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Settings section title for appearance/theme"
+  },
+  "followSystemTheme": "Follow system theme",
+  "@followSystemTheme": {
+    "description": "Description for system default theme option"
+  },
+  "light": "Light",
+  "@light": {
+    "description": "Light theme option"
+  },
+  "dark": "Dark",
+  "@dark": {
+    "description": "Dark theme option"
+  },
+  "version": "version {version} ({buildNumber})",
+  "@version": {
+    "description": "App version display",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "buildNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "forumSettings": "Forum Settings",
+  "@forumSettings": {
+    "description": "Title for forum settings page"
+  },
+  "noSettingsAvailable": "No settings available",
+  "@noSettingsAvailable": {
+    "description": "Message when no settings are available"
+  },
+  "settingsCategoriesWillAppearHere": "Settings categories will appear here when available.",
+  "@settingsCategoriesWillAppearHere": {
+    "description": "Message explaining when settings categories will appear"
+  },
+  "spamCleaner": "Spam Cleaner",
+  "@spamCleaner": {
+    "description": "Menu item for spam cleaner tool"
+  },
+  "unableToLoadProfile": "Unable to Load Profile",
+  "@unableToLoadProfile": {
+    "description": "Error message when profile cannot be loaded"
+  },
+  "banned": "BANNED",
+  "@banned": {
+    "description": "Badge text for banned users"
+  },
+  "sendMessage": "Send Message",
+  "@sendMessage": {
+    "description": "Button to send a message to a user"
+  },
+  "showMore": "Show More",
+  "@showMore": {
+    "description": "Button to show more content"
+  },
+  "reportUser": "Report User",
+  "@reportUser": {
+    "description": "Title for report user dialog"
+  },
+  "submitReport": "Submit Report",
+  "@submitReport": {
+    "description": "Button to submit a report"
+  },
+  "reportSubmittedSuccessfully": "Report submitted successfully",
+  "@reportSubmittedSuccessfully": {
+    "description": "Success message after submitting a report"
+  },
+  "failedToSubmitReport": "Failed to submit report",
+  "@failedToSubmitReport": {
+    "description": "Error message when report submission fails"
+  },
+  "searchForForums": "Search for forums",
+  "@searchForForums": {
+    "description": "Placeholder text for forum search"
+  },
+  "searchForums": "Search Forums",
+  "@searchForums": {
+    "description": "Title for the search forums page"
+  },
+  "deleteTopic": "Delete Topic",
+  "@deleteTopic": {
+    "description": "Title for delete topic dialog"
+  },
+  "softDelete": "Soft Delete",
+  "@softDelete": {
+    "description": "Option for soft delete (can be restored)"
+  },
+  "topicCanBeRestoredLater": "Topic can be restored later",
+  "@topicCanBeRestoredLater": {
+    "description": "Description for soft delete option"
+  },
+  "hardDelete": "Hard Delete",
+  "@hardDelete": {
+    "description": "Option for hard delete (permanent)"
+  },
+  "topicWillBePermanentlyDeleted": "Topic will be permanently deleted",
+  "@topicWillBePermanentlyDeleted": {
+    "description": "Description for hard delete option"
+  },
+  "reasonForDeletion": "Reason for deletion",
+  "@reasonForDeletion": {
+    "description": "Label for deletion reason field"
+  },
+  "enterReasonForDeletingTopic": "Enter the reason for deleting this topic",
+  "@enterReasonForDeletingTopic": {
+    "description": "Hint text for deletion reason field"
+  },
+  "pleaseEnterReasonForDeletion": "Please enter a reason for deletion",
+  "@pleaseEnterReasonForDeletion": {
+    "description": "Validation message for deletion reason"
+  },
+  "pleaseSelectEndDate": "Please select an end date",
+  "@pleaseSelectEndDate": {
+    "description": "Error message when end date is not selected"
+  },
+  "banUser": "Ban User",
+  "@banUser": {
+    "description": "Button to ban a user"
+  },
+  "userBannedSuccessfully": "User banned successfully",
+  "@userBannedSuccessfully": {
+    "description": "Success message after banning a user"
+  },
+  "failedToBanUser": "Failed to ban user",
+  "@failedToBanUser": {
+    "description": "Error message when banning user fails"
+  },
+  "userUnbannedSuccessfully": "User unbanned successfully",
+  "@userUnbannedSuccessfully": {
+    "description": "Success message after unbanning a user"
+  },
+  "failedToUnbanUser": "Failed to unban user",
+  "@failedToUnbanUser": {
+    "description": "Error message when unbanning user fails"
+  },
+  "spamCleanUser": "Spam Clean User",
+  "@spamCleanUser": {
+    "description": "Title for spam clean user dialog"
+  },
+  "deletePrivateConversations": "Delete private conversations",
+  "@deletePrivateConversations": {
+    "description": "Option to delete private conversations in spam clean"
+  },
+  "banTheUserAccount": "Ban the user account",
+  "@banTheUserAccount": {
+    "description": "Option to ban user account in spam clean"
+  },
+  "cleanSpam": "Clean Spam",
+  "@cleanSpam": {
+    "description": "Button to execute spam clean"
+  },
+  "handledThreads": "Handled threads",
+  "@handledThreads": {
+    "description": "Action performed: handled threads"
+  },
+  "deletedMessages": "Deleted messages",
+  "@deletedMessages": {
+    "description": "Action performed: deleted messages"
+  },
+  "deletedConversations": "Deleted conversations",
+  "@deletedConversations": {
+    "description": "Action performed: deleted conversations"
+  },
+  "bannedUser": "Banned user",
+  "@bannedUser": {
+    "description": "Action performed: banned user"
+  },
+  "successfullyCleanedSpam": "Successfully cleaned spam for {username}. Actions: {actions}",
+  "@successfullyCleanedSpam": {
+    "description": "Success message after spam clean",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      },
+      "actions": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingMessage": "Error loading message: {error}",
+  "@errorLoadingMessage": {
+    "description": "Error message when loading message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "messageNotFound": "Message not found",
+  "@messageNotFound": {
+    "description": "Message when message is not found"
+  },
+  
+  "home": "Home",
+  "@home": {
+    "description": "Home tab title"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications tab title"
+  },
+  "forums": "Forums",
+  "@forums": {
+    "description": "Forums tab title (plural)"
+  },
+  "markAllForumsAsRead": "Mark All Forums as Read?",
+  "@markAllForumsAsRead": {
+    "description": "Dialog title for marking all forums as read"
+  },
+  "markAllForumsAsReadMessage": "This will mark all forums and topics as read. This action cannot be undone.",
+  "@markAllForumsAsReadMessage": {
+    "description": "Message explaining mark all forums as read action"
+  },
+  "markAsRead": "Mark as Read",
+  "@markAsRead": {
+    "description": "Button text to mark as read"
+  },
+  
+  "content": "Content",
+  "@content": {
+    "description": "Content label for message compose"
+  },
+  "insertImage": "Insert Image",
+  "@insertImage": {
+    "description": "Dialog title for inserting image"
+  },
+  "howWouldYouLikeToInsertImage": "How would you like to insert this image?",
+  "@howWouldYouLikeToInsertImage": {
+    "description": "Question asking how to insert image"
+  },
+  "thumbnail": "Thumbnail",
+  "@thumbnail": {
+    "description": "Option to insert image as thumbnail"
+  },
+  "fullSize": "Full Size",
+  "@fullSize": {
+    "description": "Option to insert image at full size"
+  },
+  "alignLeft": "Align Left",
+  "@alignLeft": {
+    "description": "Text alignment option: left"
+  },
+  "alignCenter": "Align Center",
+  "@alignCenter": {
+    "description": "Text alignment option: center"
+  },
+  "alignRight": "Align Right",
+  "@alignRight": {
+    "description": "Text alignment option: right"
+  },
+  "pleaseEnterTitle": "Please enter a title",
+  "@pleaseEnterTitle": {
+    "description": "Validation message when title is empty"
+  },
+  "pleaseEnterContent": "Please enter some content",
+  "@pleaseEnterContent": {
+    "description": "Validation message when content is empty"
+  },
+  "uploading": "Uploading...",
+  "@uploading": {
+    "description": "Status message when uploading file"
+  },
+  "uploaded": "Uploaded",
+  "@uploaded": {
+    "description": "Status message when file is uploaded"
+  },
+  "mentionUser": "Mention User",
+  "@mentionUser": {
+    "description": "Tooltip for mention user button"
+  },
+  
+  "loggingIn": "Logging in...",
+  "@loggingIn": {
+    "description": "Status message when logging in"
+  },
+  "submittingReport": "Submitting report...",
+  "@submittingReport": {
+    "description": "Status message when submitting report"
+  },
+  "banningUser": "Banning user...",
+  "@banningUser": {
+    "description": "Status message when banning user"
+  },
+  "unbanningUser": "Unbanning user...",
+  "@unbanningUser": {
+    "description": "Status message when unbanning user"
+  },
+  "cleaningSpam": "Cleaning spam...",
+  "@cleaningSpam": {
+    "description": "Status message when cleaning spam"
+  },
+  
+  "enterSubject": "Enter subject",
+  "@enterSubject": {
+    "description": "Hint text for subject field"
+  },
+  "typeYourMessageHere": "Type your message here",
+  "@typeYourMessageHere": {
+    "description": "Hint text for message field"
+  },
+  "writeYourMessage": "Write your message...",
+  "@writeYourMessage": {
+    "description": "Hint text for writing message"
+  },
+  "writeYourReply": "Write your reply...",
+  "@writeYourReply": {
+    "description": "Hint text for writing reply"
+  },
+  "messageSentSuccessfully": "Message sent successfully",
+  "@messageSentSuccessfully": {
+    "description": "Success message after sending message"
+  },
+  "replySentSuccessfully": "Reply sent successfully",
+  "@replySentSuccessfully": {
+    "description": "Success message after sending reply"
+  },
+  "conversationCreatedSuccessfully": "Conversation created successfully",
+  "@conversationCreatedSuccessfully": {
+    "description": "Success message after creating conversation"
+  },
+  "conversationMarkedAsUnread": "Conversation marked as unread",
+  "@conversationMarkedAsUnread": {
+    "description": "Success message when marking conversation as unread"
+  },
+  "messageMarkedAsUnread": "Message marked as unread",
+  "@messageMarkedAsUnread": {
+    "description": "Success message when marking message as unread"
+  },
+  "conversationClosed": "Conversation closed",
+  "@conversationClosed": {
+    "description": "Success message when closing conversation"
+  },
+  "conversationOpened": "Conversation opened",
+  "@conversationOpened": {
+    "description": "Success message when opening conversation"
+  },
+  "pleaseLoginToLikeMessages": "Please login to like messages",
+  "@pleaseLoginToLikeMessages": {
+    "description": "Message asking user to login to like messages"
+  },
+  "loadEarlierMessages": "Load Earlier Messages",
+  "@loadEarlierMessages": {
+    "description": "Button to load earlier messages"
+  },
+  "failedToLoadQuote": "Failed to load quote: \n{error}",
+  "@failedToLoadQuote": {
+    "description": "Error message when loading quote fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadFile": "Failed to upload file: {error}",
+  "@failedToUploadFile": {
+    "description": "Error message when uploading file fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUploadImage": "Failed to upload image: {error}",
+  "@failedToUploadImage": {
+    "description": "Error message when uploading image fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendMessage": "Failed to send message: {error}",
+  "@failedToSendMessage": {
+    "description": "Error message when sending message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSendReply": "Failed to send reply: {error}",
+  "@failedToSendReply": {
+    "description": "Error message when sending reply fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkAsUnread": "Failed to mark message as unread: {error}",
+  "@failedToMarkAsUnread": {
+    "description": "Error message when marking message as unread fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToMarkConversationAsUnread": "Failed to mark conversation as unread: {error}",
+  "@failedToMarkConversationAsUnread": {
+    "description": "Error message when marking conversation as unread fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCloseConversation": "Failed to close conversation: {error}",
+  "@failedToCloseConversation": {
+    "description": "Error message when closing conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToOpenConversation": "Failed to open conversation: {error}",
+  "@failedToOpenConversation": {
+    "description": "Error message when opening conversation fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToJumpToMessage": "Failed to jump to message: {error}",
+  "@failedToJumpToMessage": {
+    "description": "Error message when jumping to message fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "goToTop": "Go to top",
+  "@goToTop": {
+    "description": "Tooltip for go to top button"
+  },
+  "goToBottom": "Go to bottom",
+  "@goToBottom": {
+    "description": "Tooltip for go to bottom button"
+  },
+  "replyAll": "Reply All",
+  "@replyAll": {
+    "description": "Tooltip for reply all button"
+  },
+  "forward": "Forward",
+  "@forward": {
+    "description": "Tooltip for forward button"
+  },
+  
+  "noForumsFound": "No forums found.",
+  "@noForumsFound": {
+    "description": "Message when no forums are found"
+  },
+  "pleaseSelectPrefix": "Please select a prefix",
+  "@pleaseSelectPrefix": {
+    "description": "Validation message when prefix is required but not selected"
+  },
+  "pleaseLoginToAccessContent": "Please login to access this content and interact with posts.",
+  "@pleaseLoginToAccessContent": {
+    "description": "Message asking user to login to access content"
+  },
+  
+  "searchUsers": "Search users...",
+  "@searchUsers": {
+    "description": "Hint text for searching users"
+  },
+  "writeYourTitle": "Write your title...",
+  "@writeYourTitle": {
+    "description": "Hint text for title field"
+  },
+  "writeYourContent": "Write your content...",
+  "@writeYourContent": {
+    "description": "Hint text for content field"
+  },
+  "selectAnOption": "Select an option",
+  "@selectAnOption": {
+    "description": "Hint text for select field"
+  },
+  "enterConversationTitle": "Enter conversation title",
+  "@enterConversationTitle": {
+    "description": "Hint text for conversation title field"
+  },
+  "enterCode": "Enter {count}-digit code",
+  "@enterCode": {
+    "description": "Hint text for code input field",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "edit": "Edit",
+  "@edit": {
+    "description": "Button text to edit"
+  },
+  "report": "Report",
+  "@report": {
+    "description": "Button text to report"
+  },
+  "unfollow": "Unfollow",
+  "@unfollow": {
+    "description": "Button text to unfollow"
+  },
+  "follow": "Follow",
+  "@follow": {
+    "description": "Button text to follow"
+  },
+  
+  "goToForums": "Go to Forums",
+  "@goToForums": {
+    "description": "Button text to go to forums"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Button text to remove"
+  },
+  
+  "subject": "Subject",
+  "@subject": {
+    "description": "Label for subject field"
+  },
+  "message": "Message",
+  "@message": {
+    "description": "Label for message field"
+  },
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "@titleCannotBeEmpty": {
+    "description": "Validation message when title is empty"
+  },
+  "conversationUpdatedSuccessfully": "Conversation updated successfully",
+  "@conversationUpdatedSuccessfully": {
+    "description": "Success message when conversation is updated"
+  },
+  "goBack": "Go Back",
+  "@goBack": {
+    "description": "Button text to go back"
+  },
+  "signInToViewMessages": "Sign in to view messages",
+  "@signInToViewMessages": {
+    "description": "Message asking user to sign in to view messages"
+  },
+  "privateMessagesNotAvailable": "Private messages not available",
+  "@privateMessagesNotAvailable": {
+    "description": "Message when private messages are not available"
+  },
+  "failedToLoadPost": "Failed to load post: \n{error}",
+  "@failedToLoadPost": {
+    "description": "Error message when loading post fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLikeOrUnlikeMessage": "Failed to {action} message: {error}",
+  "@failedToLikeOrUnlikeMessage": {
+    "description": "Error message when liking/unliking message fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like": "like",
+  "@like": {
+    "description": "Action verb: like"
+  },
+  "unlike": "unlike",
+  "@unlike": {
+    "description": "Action verb: unlike"
+  },
+  "optimizeImage": "Optimize Image",
+  "@optimizeImage": {
+    "description": "Title for image optimization dialog"
+  },
+  "optimizeAndUpload": "Optimize and Upload",
+  "@optimizeAndUpload": {
+    "description": "Button text to optimize and upload image"
+  },
+  "downloading": "Downloading {filename}...",
+  "@downloading": {
+    "description": "Status message when downloading file",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "openingShareSheet": "Opening share sheet for {filename}",
+  "@openingShareSheet": {
+    "description": "Status message when opening share sheet",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDownloading": "Error downloading {filename}: {error}",
+  "@errorDownloading": {
+    "description": "Error message when downloading file fails",
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "enterANumber": "Enter a number",
+  "@enterANumber": {
+    "description": "Hint text for number input field"
+  },
+  
+  "failedToNavigateToForum": "Failed to navigate to forum",
+  "@failedToNavigateToForum": {
+    "description": "Error message when navigation to forum fails"
+  },
+  "failedToNavigateToForumName": "Failed to navigate to {forumName}",
+  "@failedToNavigateToForumName": {
+    "description": "Error message when navigation to specific forum fails",
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSaveConversation": "Failed to save conversation",
+  "@failedToSaveConversation": {
+    "description": "Error message when saving conversation fails"
+  },
+  
+  "forumNotFound": "Forum not found: {forumName}",
+  "@forumNotFound": {
+    "description": "Error message when forum is not found",
+    "placeholders": {
+      "forumName": {
+        "type": "String"
+      }
+    }
+  },
+  "forumNotFoundById": "Forum not found: {forumId}",
+  "@forumNotFoundById": {
+    "description": "Error message when forum is not found by ID",
+    "placeholders": {
+      "forumId": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenLink": "Could not open link: {error}",
+  "@couldNotOpenLink": {
+    "description": "Error message when opening link fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "likePost": "Like post",
+  "@likePost": {
+    "description": "Accessibility label for like button"
+  },
+  "unlikePost": "Unlike post",
+  "@unlikePost": {
+    "description": "Accessibility label for unlike button"
+  },
+  "thankPost": "Thank post",
+  "@thankPost": {
+    "description": "Accessibility label for thank button"
+  },
+  "showLikes": "Show likes",
+  "@showLikes": {
+    "description": "Accessibility hint for showing likes list"
+  },
+  "showThanks": "Show thanks",
+  "@showThanks": {
+    "description": "Accessibility hint for showing thanks list"
+  },
+  "quotePost": "Quote post",
+  "@quotePost": {
+    "description": "Accessibility label for quote button"
+  },
+  "attachFile": "Attach file",
+  "@attachFile": {
+    "description": "Accessibility label for attach file button"
+  },
+  "uploadImage": "Upload image",
+  "@uploadImage": {
+    "description": "Accessibility label for upload image button"
+  },
+  
+  "translate": "Translate",
+  "@translate": {
+    "description": "Menu item to translate thread content"
+  },
+  "showOriginal": "Show Original",
+  "@showOriginal": {
+    "description": "Button to show original content instead of translation"
+  },
+  "translating": "Translating...",
+  "@translating": {
+    "description": "Loading indicator while translating"
+  },
+  "translated": "Translated",
+  "@translated": {
+    "description": "Badge shown on translated content"
+  },
+  "translatedContent": "Translated content",
+  "@translatedContent": {
+    "description": "Label for translated content"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Title for language selection dialog"
+  },
+  "translateTo": "Translate to:",
+  "@translateTo": {
+    "description": "Label for target language selection"
+  },
+  "deviceLanguage": "Device language",
+  "@deviceLanguage": {
+    "description": "Indicator that a language is the device default"
+  },
+  "noPostsToTranslate": "No posts to translate",
+  "@noPostsToTranslate": {
+    "description": "Message when there are no posts available for translation"
+  },
+  "translationFailed": "Translation failed",
+  "@translationFailed": {
+    "description": "Error message when translation fails"
+  }
+}

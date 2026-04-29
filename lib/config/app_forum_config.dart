@@ -29,7 +29,22 @@ class AppForumConfig {
   static const String? backgroundUrl = null;
 
   /// Optional push backend base URL (leave empty to disable app push backend).
-  /// Example: https://push.example.com/api
+  ///
+  /// You have two ways to enable push notifications:
+  ///
+  ///   1. **Run your own push backend.** Set this to your server's base URL
+  ///      (e.g. `https://push.example.com/api`) and provide your own Firebase
+  ///      project. Your backend stores FCM tokens registered by the app and
+  ///      relays notification events from the XenForo `forumcopilot.php`
+  ///      plugin to FCM/APNs.
+  ///
+  ///   2. **Use ForumCopilot Push (hosted).** A managed service that does the
+  ///      above for you — you skip running a backend and managing your own
+  ///      Firebase project. You provide your iOS bundle ID, Android package
+  ///      name, and an APNs auth key (`.p8`); ForumCopilot issues the
+  ///      `GoogleService-Info.plist` / `google-services.json` your build
+  ///      needs. Set this URL to the endpoint shown in your ForumCopilot
+  ///      dashboard. See https://forumcopilot.com for sign-up and pricing.
   static const String pushApiBaseUrl = '';
 
   /// Android package name used for passkey assetlinks validation.

@@ -25,10 +25,7 @@ class ProfileTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 3,
       shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_rounded),
-        onPressed: () => Navigator.of(context).maybePop(),
-      ),
+      automaticallyImplyLeading: false,
       title: Text(
         AppLocalizations.of(context)?.profile ?? 'Profile',
         style: textTheme.titleLarge?.copyWith(

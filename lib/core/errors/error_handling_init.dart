@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'error_handler.dart';
 import 'app_exceptions.dart';
 import '../logging/app_logger.dart';
@@ -12,7 +10,6 @@ class ErrorHandlingInit {
 
   /// Initialize the error handling system
   static Future<void> initialize({
-    bool enableCrashReporting = true,
     bool enableErrorDialogs = kDebugMode,
     bool enableDebugLogs = kDebugMode,
   }) async {
@@ -34,14 +31,8 @@ class ErrorHandlingInit {
 
       // Initialize the error handler
       await ErrorHandler.initialize(
-        enableReporting: enableCrashReporting,
         showErrorDialogs: enableErrorDialogs,
       );
-
-      // Setup Firebase Crashlytics if available
-      if (enableCrashReporting) {
-        await _setupCrashlytics();
-      }
 
       // Setup global error handlers
       await _setupGlobalErrorHandlers();
@@ -55,58 +46,6 @@ class ErrorHandlingInit {
         stackTrace: stackTrace,
       );
       rethrow;
-    }
-  }
-
-  /// Setup Firebase Crashlytics
-  static Future<void> _setupCrashlytics() async {
-    try {
-      // Check if Firebase is initialized before trying to use Crashlytics
-      try {
-        Firebase.app(); // This will throw if Firebase is not initialized
-      } catch (e) {
-        AppLogger.debug('Firebase not initialized yet, skipping Crashlytics setup');
-        AppLogger.debug('Crashlytics will be initialized after Firebase is ready');
-        return; // Exit early if Firebase isn't initialized yet
-      }
-
-      // Set up crashlytics
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-
-      // Set user identifier if available
-      // await FirebaseCrashlytics.instance.setUserIdentifier('user_id');
-
-      AppLogger.info('Firebase Crashlytics initialized');
-    } catch (e, stackTrace) {
-      AppLogger.warning(
-        'Failed to initialize Firebase Crashlytics',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      // Don't rethrow - crashlytics is optional
-    }
-  }
-
-  /// Initialize Crashlytics after Firebase is ready (called from Firebase initialization)
-  static Future<void> initializeCrashlyticsAfterFirebase() async {
-    try {
-      // Check if Firebase is initialized
-      Firebase.app(); // This will throw if Firebase is not initialized
-
-      // Set up crashlytics
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-
-      // Set user identifier if available
-      // await FirebaseCrashlytics.instance.setUserIdentifier('user_id');
-
-      AppLogger.info('Firebase Crashlytics initialized after Firebase Core');
-    } catch (e, stackTrace) {
-      AppLogger.warning(
-        'Failed to initialize Firebase Crashlytics after Firebase Core',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      // Don't rethrow - crashlytics is optional
     }
   }
 

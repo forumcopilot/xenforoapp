@@ -1,6 +1,5 @@
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 /// Centralized logging system for the Forum Copilot app
 ///
@@ -143,24 +142,6 @@ class AppLogger {
       if (stackTrace != null) {
         debugPrint('Stack trace: $stackTrace');
       }
-    }
-
-    // Report to crash analytics for errors and fatal logs
-    if (error != null && (_currentLevel <= _levelError)) {
-      _reportToCrashAnalytics(error, stackTrace, message);
-    }
-  }
-
-  /// Report to crash analytics
-  static void _reportToCrashAnalytics(dynamic error, StackTrace? stackTrace, String message) {
-    try {
-      FirebaseCrashlytics.instance.recordError(
-        error,
-        stackTrace,
-        fatal: false,
-      );
-    } catch (e) {
-      // Ignore errors in crash reporting
     }
   }
 

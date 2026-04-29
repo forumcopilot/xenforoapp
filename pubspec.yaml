@@ -46,7 +46,6 @@ dependencies:
   shimmer: ^3.0.0
   firebase_core: ^4.2.1
   firebase_messaging: ^16.0.4
-  firebase_crashlytics: ^5.0.5
   flutter_local_notifications: ^20.1.0
   uuid: ^4.5.2
   package_info_plus: ^8.3.0

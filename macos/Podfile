@@ -1,4 +1,4 @@
-platform :osx, '10.15'
+platform :osx, '13.5'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,12 +39,11 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
-    # Fix deployment target - Firebase requires 10.15, flutter_local_notifications requires 10.14
-    # Set all pods to 10.15 to satisfy both requirements
+    # passkeys_darwin and recent Firebase Promises require macOS 13.5+
     target.build_configurations.each do |config|
       current_target = config.build_settings['MACOSX_DEPLOYMENT_TARGET']
-      if current_target.nil? || current_target.to_f < 10.15
-        config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '10.15'
+      if current_target.nil? || current_target.to_f < 13.5
+        config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '13.5'
       end
     end
   end

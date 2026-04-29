@@ -191,6 +191,7 @@ class TopicListItem extends StatelessWidget {
                   if (topic.hasPoll) 1,
                 ].length;
                 final showLabels = statusIconCount == 1;
+                final metaColor = colorScheme.onSurfaceVariant.withOpacity(0.72);
                 
                 return Padding(
                   padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
@@ -205,13 +206,13 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.tag,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             SizedBox(width: DesignTokens.spacingXS),
                             Text(
                               topic.prefix!,
                               style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                                color: metaColor,
                                 letterSpacing: DesignTokens.letterSpacingWide,
                               ),
                             ),
@@ -225,13 +226,13 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.comment_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             SizedBox(width: DesignTokens.spacingXS),
                             Text(
                               formatNumber(context, topic.replyCount),
                               style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                                color: metaColor,
                                 letterSpacing: DesignTokens.letterSpacingWide,
                               ),
                             ),
@@ -245,13 +246,13 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.visibility_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             SizedBox(width: DesignTokens.spacingXS),
                             Text(
                               formatNumber(context, topic.viewCount),
                               style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                                color: metaColor,
                                 letterSpacing: DesignTokens.letterSpacingWide,
                               ),
                             ),
@@ -265,14 +266,14 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               topicIcon,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
                                 'Announcement',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
                                 ),
                               ),
@@ -286,14 +287,14 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.push_pin_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
                                 'Pinned',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
                                 ),
                               ),
@@ -307,14 +308,14 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.watch_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
                                 'Subscribed',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
                                 ),
                               ),
@@ -328,14 +329,14 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.lock_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
                                 'Locked',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
                                 ),
                               ),
@@ -350,14 +351,14 @@ class TopicListItem extends StatelessWidget {
                             Icon(
                               Icons.poll_outlined,
                               size: textTheme.bodySmall?.fontSize ?? 12,
-                              color: colorScheme.onSurfaceVariant,
+                              color: metaColor,
                             ),
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
                                 'Poll',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
                                 ),
                               ),

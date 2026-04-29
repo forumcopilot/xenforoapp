@@ -1563,4 +1563,43 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get translationFailed => 'Ошибка перевода';
+
+  @override
+  String get twoFactorAuthentication => 'Двухфакторная аутентификация';
+
+  @override
+  String get authenticationCodeLabel => 'Код аутентификации';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode => 'Введите код аутентификации';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'Код должен содержать $count цифр';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => 'Код должен содержать только цифры';
+
+  @override
+  String get verifyButton => 'Проверить';
+
+  @override
+  String get attachments => 'Вложения';
+
+  @override
+  String get replyOptions => 'Параметры ответа';
+
+  @override
+  String get replyWithQuote => 'Ответить с цитатой';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'Файл сохранен в Загрузки: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'Файл сохранен в Документы: $filename';
+  }
 }

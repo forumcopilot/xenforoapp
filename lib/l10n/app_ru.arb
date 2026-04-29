@@ -928,5 +928,16 @@
   "thankPost": "Поблагодарить",
   "showLikes": "Показать лайки",
   "showThanks": "Показать благодарности",
-  "quotePost": "Цитировать пост"
+  "quotePost": "Цитировать пост",
+  "twoFactorAuthentication": "Двухфакторная аутентификация",
+  "authenticationCodeLabel": "Код аутентификации",
+  "pleaseEnterYourAuthenticationCode": "Введите код аутентификации",
+  "codeMustBeDigits": "Код должен содержать {count} цифр",
+  "codeMustContainOnlyNumbers": "Код должен содержать только цифры",
+  "verifyButton": "Проверить",
+  "attachments": "Вложения",
+  "replyOptions": "Параметры ответа",
+  "replyWithQuote": "Ответить с цитатой",
+  "fileSavedToDownloads": "Файл сохранен в Загрузки: {filename}",
+  "fileSavedToDocuments": "Файл сохранен в Документы: {filename}"
 }

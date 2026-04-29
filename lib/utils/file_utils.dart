@@ -74,7 +74,8 @@ String getFileType(String filename) {
 String formatFileSize(int bytes) {
   if (bytes < 1024) return '$bytes B';
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-  if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  if (bytes < 1024 * 1024 * 1024)
+    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
 }
 
@@ -212,19 +213,27 @@ Color getFileTypeColor(String filenameOrType) {
 /// Returns true if the filename has an image file extension.
 bool isImageFile(String filename) {
   final extension = filename.split('.').last.toLowerCase();
-  return [
-    'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'heic', 'heif'
-  ].contains(extension);
+  return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'heic', 'heif']
+      .contains(extension);
+}
+
+/// Returns true if the filename or URL has a video file extension.
+bool isVideoFile(String filenameOrUrl) {
+  final uri = Uri.tryParse(filenameOrUrl);
+  final source = uri?.path.isNotEmpty == true ? uri!.path : filenameOrUrl;
+  final extension = source.split('.').last.toLowerCase();
+  return ['mp4', 'mov', 'avi', 'wmv', 'flv', 'mkv', 'webm', 'm4v']
+      .contains(extension);
 }
 
 /// Downloads a file from the given URL and saves it appropriately for each platform.
 /// - iOS: Uses Share Sheet to let user save to Files app
 /// - Android/macOS/Desktop: Saves to Downloads folder
 /// Uses the app's cookie-aware HTTP client to ensure authentication cookies are included.
-/// 
+///
 /// [url] - The URL of the file to download
 /// [filename] - The desired filename for the downloaded file
-/// 
+///
 /// Returns the path to the downloaded file (or empty string on iOS after sharing).
 /// Throws an exception if the download fails.
 Future<String> downloadFileToDownloads(String url, String filename) async {
@@ -234,7 +243,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
   }
   try {
     final uri = Uri.parse(url);
-    
+
     // Download the file using cookie-aware HTTP client
     final response = await FCHttpClient.get<List<int>>(
       uri,
@@ -257,7 +266,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
       final deviceInfo = DeviceInfoPlugin();
       final androidInfo = await deviceInfo.androidInfo;
       final sdkInt = androidInfo.version.sdkInt;
-      
+
       // On Android 10+ (API 29+), scoped storage prevents direct access to public Downloads
       // Use app's external storage instead (accessible via Files app, no permission needed)
       if (sdkInt >= 29) {
@@ -276,7 +285,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
             '/sdcard/Download',
             '/storage/sdcard0/Download',
           ];
-          
+
           Directory? foundDir;
           for (final path in possiblePaths) {
             final dir = Directory(path);
@@ -285,7 +294,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
               break;
             }
           }
-          
+
           if (foundDir != null) {
             downloadDir = foundDir;
           } else {
@@ -310,7 +319,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
       if (homeDir.isNotEmpty) {
         final downloadsPath = '$homeDir/Downloads';
         downloadDir = Directory(downloadsPath);
-        
+
         // If Downloads doesn't exist, create it
         if (!await downloadDir.exists()) {
           try {
@@ -326,11 +335,12 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
     } else {
       // For other platforms (Windows, Linux), use Downloads if available
       // Otherwise fallback to Documents
-      final homeDir = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '';
+      final homeDir = Platform.environment['HOME'] ??
+          Platform.environment['USERPROFILE'] ??
+          '';
       if (homeDir.isNotEmpty) {
-        final downloadsPath = Platform.isWindows 
-            ? '$homeDir\\Downloads' 
-            : '$homeDir/Downloads';
+        final downloadsPath =
+            Platform.isWindows ? '$homeDir\\Downloads' : '$homeDir/Downloads';
         downloadDir = Directory(downloadsPath);
         if (!await downloadDir.exists()) {
           // Fallback to Documents if Downloads doesn't exist
@@ -362,26 +372,29 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
     // Sanitize filename to remove any invalid characters
     final sanitizedFilename = _sanitizeFilename(filename);
     final filePath = '${downloadDir.path}/$sanitizedFilename';
-    
+
     // Handle filename conflicts by appending a number
     final file = File(filePath);
     if (await file.exists()) {
       int counter = 1;
       String newPath;
-      final nameWithoutExt = sanitizedFilename.substring(0, sanitizedFilename.lastIndexOf('.'));
-      final ext = sanitizedFilename.substring(sanitizedFilename.lastIndexOf('.'));
-      
+      final nameWithoutExt =
+          sanitizedFilename.substring(0, sanitizedFilename.lastIndexOf('.'));
+      final ext =
+          sanitizedFilename.substring(sanitizedFilename.lastIndexOf('.'));
+
       do {
         newPath = '${downloadDir.path}/$nameWithoutExt ($counter)$ext';
         counter++;
       } while (await File(newPath).exists());
-      
+
       try {
         await File(newPath).writeAsBytes(bytes);
         return newPath;
       } catch (e) {
         // If write fails (e.g., permission denied), try Documents directory
-        if (Platform.isMacOS && e.toString().contains('Operation not permitted')) {
+        if (Platform.isMacOS &&
+            e.toString().contains('Operation not permitted')) {
           final documentsDir = await getApplicationDocumentsDirectory();
           final fallbackPath = '${documentsDir.path}/$sanitizedFilename';
           await File(fallbackPath).writeAsBytes(bytes);
@@ -395,7 +408,8 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
         return filePath;
       } catch (e) {
         // If write fails (e.g., permission denied), try Documents directory
-        if (Platform.isMacOS && e.toString().contains('Operation not permitted')) {
+        if (Platform.isMacOS &&
+            e.toString().contains('Operation not permitted')) {
           final documentsDir = await getApplicationDocumentsDirectory();
           final fallbackPath = '${documentsDir.path}/$sanitizedFilename';
           await File(fallbackPath).writeAsBytes(bytes);
@@ -414,7 +428,7 @@ Future<String> downloadFileToDownloads(String url, String filename) async {
 Future<String> _downloadFileIOS(String url, String filename) async {
   try {
     final uri = Uri.parse(url);
-    
+
     // Download the file using cookie-aware HTTP client
     final response = await FCHttpClient.get<List<int>>(
       uri,
@@ -435,15 +449,15 @@ Future<String> _downloadFileIOS(String url, String filename) async {
     final sanitizedFilename = _sanitizeFilename(filename);
     final filePath = '${tempDir.path}/$sanitizedFilename';
     final file = File(filePath);
-    
+
     await file.writeAsBytes(bytes);
-    
+
     // Use Share Sheet to let user save to Files app
     await Share.shareXFiles(
       [XFile(filePath)],
       subject: filename,
     );
-    
+
     // Return empty string since file location is determined by user's choice
     // The file in temp directory will be cleaned up by the system
     return '';
@@ -456,7 +470,7 @@ Future<String> _downloadFileIOS(String url, String filename) async {
 String _sanitizeFilename(String filename) {
   // Remove invalid characters based on platform
   String sanitized = filename;
-  
+
   if (Platform.isWindows) {
     // Windows invalid characters: < > : " / \ | ? *
     sanitized = sanitized.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
@@ -464,17 +478,17 @@ String _sanitizeFilename(String filename) {
     // Unix-like systems invalid characters: / and null
     sanitized = sanitized.replaceAll('/', '_').replaceAll('\x00', '_');
   }
-  
+
   // Remove leading/trailing spaces and dots (Windows doesn't allow these)
   sanitized = sanitized.trim();
   if (Platform.isWindows) {
     sanitized = sanitized.replaceAll(RegExp(r'^\.+|\.+$'), '');
   }
-  
+
   // Ensure filename is not empty
   if (sanitized.isEmpty) {
     sanitized = 'download_${DateTime.now().millisecondsSinceEpoch}';
   }
-  
+
   return sanitized;
-} 
+}

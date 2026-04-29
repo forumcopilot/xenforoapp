@@ -123,12 +123,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
         // Force hide loader completely - call hide multiple times to ensure counter reaches 0
         // This is necessary because show() might have been called multiple times
         if (showGlobalLoader && Get.isRegistered<GlobalLoaderController>()) {
-          int hideAttempts = 0;
-          const maxHideAttempts = 10; // Safety limit
-          while (GlobalLoaderController.to.isLoading && hideAttempts < maxHideAttempts) {
-            GlobalLoaderController.to.hide();
-            hideAttempts++;
-          }
+          GlobalLoaderController.to.forceHide();
         }
 
         // Log error but don't show dialog (we'll show our custom dialog instead)
@@ -158,12 +153,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       } finally {
         // Ensure loader is hidden (safe to call even if already hidden)
         if (showGlobalLoader && Get.isRegistered<GlobalLoaderController>()) {
-          int hideAttempts = 0;
-          const maxHideAttempts = 10; // Safety limit
-          while (GlobalLoaderController.to.isLoading && hideAttempts < maxHideAttempts) {
-            GlobalLoaderController.to.hide();
-            hideAttempts++;
-          }
+          GlobalLoaderController.to.forceHide();
         }
       }
     } else {

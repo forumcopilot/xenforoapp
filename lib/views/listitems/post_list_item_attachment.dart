@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/attachment_item_widget.dart';
 import '../widgets/attachment_big_thumbnail_grid.dart';
+import '../widgets/full_screen_video_viewer.dart';
 import '../../utils/file_utils.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import '../../theme/design_tokens.dart';
@@ -19,7 +20,7 @@ class PostListItemAttachment extends StatelessWidget {
     required this.actions,
     required this.context,
     this.isInline = false,
-    this.title = 'Inline Attachments',
+    this.title = 'Attachments',
   });
 
   @override
@@ -44,10 +45,12 @@ class PostListItemAttachment extends StatelessWidget {
         margin: EdgeInsets.only(top: DesignTokens.spacingS),
         padding: DesignTokens.paddingS,
         decoration: BoxDecoration(
-          color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+          color:
+              colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
           border: Border.all(
-            color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+            color:
+                colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
             width: DesignTokens.borderWidthThin,
           ),
         ),
@@ -63,10 +66,32 @@ class PostListItemAttachment extends StatelessWidget {
                 isInline: isInline,
                 showDownloadIcon: !isInline,
                 onTap: isImage
-                    ? (att.canViewUrl == true ? () => actions?.onShowImage?.call(att.url, context, att.id) : () => actions?.onLoginRequired?.call(context))
+                    ? (att.canViewUrl == true
+                        ? () =>
+                            actions?.onShowImage?.call(att.url, context, att.id)
+                        : () => actions?.onLoginRequired?.call(context))
                     : isInline
                         ? null
-                        : (att.canViewUrl == true ? () => _downloadAttachment(context, att.url, att.filename) : () => actions?.onLoginRequired?.call(context)),
+                        : (att.canViewUrl == true
+                            ? () {
+                                if (isVideoFile(att.filename) ||
+                                    isVideoFile(att.url)) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FullScreenVideoViewer(
+                                        videoUrl: att.url,
+                                        title: att.filename,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  _downloadAttachment(
+                                      context, att.url, att.filename);
+                                }
+                              }
+                            : () => actions?.onLoginRequired?.call(context)),
               );
             }).toList(),
           ],
@@ -75,7 +100,8 @@ class PostListItemAttachment extends StatelessWidget {
     );
   }
 
-  Future<void> _downloadAttachment(BuildContext context, String url, String filename) async {
+  Future<void> _downloadAttachment(
+      BuildContext context, String url, String filename) async {
     // Show loading indicator
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -91,7 +117,8 @@ class PostListItemAttachment extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(AppLocalizations.of(context)?.downloading(filename) ?? 'Downloading $filename...'),
+              child: Text(AppLocalizations.of(context)?.downloading(filename) ??
+                  'Downloading $filename...'),
             ),
           ],
         ),
@@ -110,7 +137,10 @@ class PostListItemAttachment extends StatelessWidget {
         if (filePath.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Opening share sheet for $filename'),
+              content: Text(
+                AppLocalizations.of(context)?.openingShareSheet(filename) ??
+                    'Opening share sheet for $filename',
+              ),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Theme.of(context).colorScheme.primary,
               duration: const Duration(seconds: 2),
@@ -118,8 +148,14 @@ class PostListItemAttachment extends StatelessWidget {
           );
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
-          final isInDownloads = filePath.contains('/Downloads/') || (filePath.contains('Downloads') && !filePath.contains('Containers'));
-          final locationMessage = isInDownloads ? 'File saved to Downloads: $filename' : 'File saved to Documents: $filename';
+          final isInDownloads = filePath.contains('/Downloads/') ||
+              (filePath.contains('Downloads') &&
+                  !filePath.contains('Containers'));
+          final locationMessage = isInDownloads
+              ? (AppLocalizations.of(context)?.fileSavedToDownloads(filename) ??
+                  'File saved to Downloads: $filename')
+              : (AppLocalizations.of(context)?.fileSavedToDocuments(filename) ??
+                  'File saved to Documents: $filename');
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -136,7 +172,9 @@ class PostListItemAttachment extends StatelessWidget {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorDownloading(filename, e.toString()) ?? 'Error downloading $filename: $e'),
+            content: Text(AppLocalizations.of(context)
+                    ?.errorDownloading(filename, e.toString()) ??
+                'Error downloading $filename: $e'),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Theme.of(context).colorScheme.error,
             duration: const Duration(seconds: 4),

@@ -1555,4 +1555,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get translationFailed => 'Translation failed';
+
+  @override
+  String get twoFactorAuthentication => 'Two-Factor Authentication';
+
+  @override
+  String get authenticationCodeLabel => 'Authentication Code';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode =>
+      'Please enter your authentication code';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'Code must be $count digits';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => 'Code must contain only numbers';
+
+  @override
+  String get verifyButton => 'Verify';
+
+  @override
+  String get attachments => 'Attachments';
+
+  @override
+  String get replyOptions => 'Reply Options';
+
+  @override
+  String get replyWithQuote => 'Reply with Quote';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'File saved to Downloads: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'File saved to Documents: $filename';
+  }
 }

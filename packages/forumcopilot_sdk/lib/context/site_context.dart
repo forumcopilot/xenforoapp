@@ -28,6 +28,10 @@ class SiteContext {
 
   String? lastCallRequest;
   FCCallResult? _lastCallResponse;
+  /// Set synchronously by XenForo [getConfig] from the same response map as that call.
+  /// Use this instead of [lastCallFcIsLogin] when validating session right after getConfig,
+  /// because [lastCallFcIsLogin] reflects the last API call globally and races with concurrency.
+  bool? lastGetConfigFcIsLogin;
   String? _dynamicToken;
   String? username;
   String? password;
@@ -86,6 +90,7 @@ class SiteContext {
       ),
     );
     _lastCallResponse = null;
+    lastGetConfigFcIsLogin = null;
     loginDataOutput = null;
     lastSuccessfulLoginMethod = null;
     FCCache.clearSiteCache(siteKey);

@@ -1444,5 +1444,58 @@
   "translationFailed": "Translation failed",
   "@translationFailed": {
     "description": "Error message when translation fails"
+  },
+  "twoFactorAuthentication": "Two-Factor Authentication",
+  "@twoFactorAuthentication": {
+    "description": "Title for the two-factor auth dialog"
+  },
+  "authenticationCodeLabel": "Authentication Code",
+  "@authenticationCodeLabel": {
+    "description": "Label for the auth code input field"
+  },
+  "pleaseEnterYourAuthenticationCode": "Please enter your authentication code",
+  "@pleaseEnterYourAuthenticationCode": {
+    "description": "Validation message when auth code is empty"
+  },
+  "codeMustBeDigits": "Code must be {count} digits",
+  "@codeMustBeDigits": {
+    "description": "Validation message when code does not match required digits",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "codeMustContainOnlyNumbers": "Code must contain only numbers",
+  "@codeMustContainOnlyNumbers": {
+    "description": "Validation message when code has non-digit characters"
+  },
+  "verifyButton": "Verify",
+  "@verifyButton": {
+    "description": "Verify action label on the TFA dialog"
+  },
+  "attachments": "Attachments",
+  "@attachments": {
+    "description": "Attachments label"
+  },
+  "replyOptions": "Reply Options",
+  "@replyOptions": {
+    "description": "Title for the reply options menu"
+  },
+  "replyWithQuote": "Reply with Quote",
+  "@replyWithQuote": {
+    "description": "Reply-with-quote action label"
+  },
+  "fileSavedToDownloads": "File saved to Downloads: {filename}",
+  "@fileSavedToDownloads": {
+    "description": "Success message when file is saved to Downloads",
+    "placeholders": {
+      "filename": {"type": "String"}
+    }
+  },
+  "fileSavedToDocuments": "File saved to Documents: {filename}",
+  "@fileSavedToDocuments": {
+    "description": "Success message when file is saved to Documents",
+    "placeholders": {
+      "filename": {"type": "String"}
+    }
   }
 }

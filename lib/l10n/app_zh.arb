@@ -928,5 +928,16 @@
   "thankPost": "感谢帖子",
   "showLikes": "显示点赞",
   "showThanks": "显示感谢",
-  "quotePost": "引用帖子"
+  "quotePost": "引用帖子",
+  "twoFactorAuthentication": "双重身份验证",
+  "authenticationCodeLabel": "验证码",
+  "pleaseEnterYourAuthenticationCode": "请输入验证码",
+  "codeMustBeDigits": "验证码必须为 {count} 位数字",
+  "codeMustContainOnlyNumbers": "验证码只能包含数字",
+  "verifyButton": "验证",
+  "attachments": "附件",
+  "replyOptions": "回复选项",
+  "replyWithQuote": "引用回复",
+  "fileSavedToDownloads": "文件已保存到下载：{filename}",
+  "fileSavedToDocuments": "文件已保存到文档：{filename}"
 }

@@ -1566,4 +1566,45 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get translationFailed => 'Falha na tradução';
+
+  @override
+  String get twoFactorAuthentication => 'Autenticação de dois fatores';
+
+  @override
+  String get authenticationCodeLabel => 'Código de autenticação';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode =>
+      'Digite seu código de autenticação';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'O código deve ter $count dígitos';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers =>
+      'O código deve conter apenas números';
+
+  @override
+  String get verifyButton => 'Verificar';
+
+  @override
+  String get attachments => 'Anexos';
+
+  @override
+  String get replyOptions => 'Opcoes de resposta';
+
+  @override
+  String get replyWithQuote => 'Responder com citacao';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'Arquivo salvo em Downloads: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'Arquivo salvo em Documentos: $filename';
+  }
 }

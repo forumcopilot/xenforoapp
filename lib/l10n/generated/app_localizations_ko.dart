@@ -1506,4 +1506,43 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get translationFailed => '번역 실패';
+
+  @override
+  String get twoFactorAuthentication => '2단계 인증';
+
+  @override
+  String get authenticationCodeLabel => '인증 코드';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode => '인증 코드를 입력하세요';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return '코드는 $count자리여야 합니다';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => '코드는 숫자만 포함해야 합니다';
+
+  @override
+  String get verifyButton => '확인';
+
+  @override
+  String get attachments => '첨부파일';
+
+  @override
+  String get replyOptions => '답글 옵션';
+
+  @override
+  String get replyWithQuote => '인용하여 답글';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return '파일이 다운로드에 저장되었습니다: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return '파일이 문서에 저장되었습니다: $filename';
+  }
 }

@@ -15,11 +15,16 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
     print('   📋 Parameters: url=$url, forceRefresh=$forceRefresh');
 
     try {
+      siteContext.lastGetConfigFcIsLogin = null;
       // Call plugin API with getConfig method
       final response = await callPluginApi('getConfig', {
         'url': url,
         'forceRefresh': forceRefresh,
       });
+
+      final fcIsLoginFromThisGetConfig =
+          response.remove('_fc_plugin_internal_fc_is_login') as bool? ?? false;
+      siteContext.lastGetConfigFcIsLogin = fcIsLoginFromThisGetConfig;
 
       // Log the full JSON response for debugging
       print('✅ [XENFORO_CONFIG] getConfig response:');

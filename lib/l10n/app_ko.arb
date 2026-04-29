@@ -928,5 +928,16 @@
   "thankPost": "게시물 감사",
   "showLikes": "좋아요 보기",
   "showThanks": "감사 보기",
-  "quotePost": "게시물 인용"
+  "quotePost": "게시물 인용",
+  "twoFactorAuthentication": "2단계 인증",
+  "authenticationCodeLabel": "인증 코드",
+  "pleaseEnterYourAuthenticationCode": "인증 코드를 입력하세요",
+  "codeMustBeDigits": "코드는 {count}자리여야 합니다",
+  "codeMustContainOnlyNumbers": "코드는 숫자만 포함해야 합니다",
+  "verifyButton": "확인",
+  "attachments": "첨부파일",
+  "replyOptions": "답글 옵션",
+  "replyWithQuote": "인용하여 답글",
+  "fileSavedToDownloads": "파일이 다운로드에 저장되었습니다: {filename}",
+  "fileSavedToDocuments": "파일이 문서에 저장되었습니다: {filename}"
 }

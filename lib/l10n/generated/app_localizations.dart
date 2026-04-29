@@ -2845,6 +2845,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Translation failed'**
   String get translationFailed;
+
+  /// Title for the two-factor auth dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Two-Factor Authentication'**
+  String get twoFactorAuthentication;
+
+  /// Label for the auth code input field
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Code'**
+  String get authenticationCodeLabel;
+
+  /// Validation message when auth code is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your authentication code'**
+  String get pleaseEnterYourAuthenticationCode;
+
+  /// Validation message when code does not match required digits
+  ///
+  /// In en, this message translates to:
+  /// **'Code must be {count} digits'**
+  String codeMustBeDigits(int count);
+
+  /// Validation message when code has non-digit characters
+  ///
+  /// In en, this message translates to:
+  /// **'Code must contain only numbers'**
+  String get codeMustContainOnlyNumbers;
+
+  /// Verify action label on the TFA dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verifyButton;
+
+  /// Attachments label
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get attachments;
+
+  /// Title for the reply options menu
+  ///
+  /// In en, this message translates to:
+  /// **'Reply Options'**
+  String get replyOptions;
+
+  /// Reply-with-quote action label
+  ///
+  /// In en, this message translates to:
+  /// **'Reply with Quote'**
+  String get replyWithQuote;
+
+  /// Success message when file is saved to Downloads
+  ///
+  /// In en, this message translates to:
+  /// **'File saved to Downloads: {filename}'**
+  String fileSavedToDownloads(String filename);
+
+  /// Success message when file is saved to Documents
+  ///
+  /// In en, this message translates to:
+  /// **'File saved to Documents: {filename}'**
+  String fileSavedToDocuments(String filename);
 }
 
 class _AppLocalizationsDelegate

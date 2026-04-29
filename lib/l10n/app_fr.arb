@@ -904,5 +904,16 @@
   "thankPost": "Remercier le message",
   "showLikes": "Afficher les j'aime",
   "showThanks": "Afficher les remerciements",
-  "quotePost": "Citer le message"
+  "quotePost": "Citer le message",
+  "twoFactorAuthentication": "Authentification à deux facteurs",
+  "authenticationCodeLabel": "Code d'authentification",
+  "pleaseEnterYourAuthenticationCode": "Veuillez saisir votre code d'authentification",
+  "codeMustBeDigits": "Le code doit contenir {count} chiffres",
+  "codeMustContainOnlyNumbers": "Le code doit contenir uniquement des chiffres",
+  "verifyButton": "Vérifier",
+  "attachments": "Pièces jointes",
+  "replyOptions": "Options de reponse",
+  "replyWithQuote": "Repondre avec citation",
+  "fileSavedToDownloads": "Fichier enregistré dans Téléchargements : {filename}",
+  "fileSavedToDocuments": "Fichier enregistré dans Documents : {filename}"
 }

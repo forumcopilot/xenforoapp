@@ -904,5 +904,16 @@
   "thankPost": "投稿に感謝",
   "showLikes": "いいねを表示",
   "showThanks": "感謝を表示",
-  "quotePost": "投稿を引用"
+  "quotePost": "投稿を引用",
+  "twoFactorAuthentication": "2 要素認証",
+  "authenticationCodeLabel": "認証コード",
+  "pleaseEnterYourAuthenticationCode": "認証コードを入力してください",
+  "codeMustBeDigits": "コードは {count} 桁で入力してください",
+  "codeMustContainOnlyNumbers": "コードは数字のみを含めてください",
+  "verifyButton": "確認",
+  "attachments": "添付ファイル",
+  "replyOptions": "返信オプション",
+  "replyWithQuote": "引用して返信",
+  "fileSavedToDownloads": "ファイルをダウンロードに保存しました: {filename}",
+  "fileSavedToDocuments": "ファイルをドキュメントに保存しました: {filename}"
 }

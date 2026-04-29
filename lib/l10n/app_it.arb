@@ -929,5 +929,16 @@
   "thankPost": "Ringrazia post",
   "showLikes": "Mostra mi piace",
   "showThanks": "Mostra ringraziamenti",
-  "quotePost": "Cita post"
+  "quotePost": "Cita post",
+  "twoFactorAuthentication": "Autenticazione a due fattori",
+  "authenticationCodeLabel": "Codice di autenticazione",
+  "pleaseEnterYourAuthenticationCode": "Inserisci il tuo codice di autenticazione",
+  "codeMustBeDigits": "Il codice deve contenere {count} cifre",
+  "codeMustContainOnlyNumbers": "Il codice deve contenere solo numeri",
+  "verifyButton": "Verifica",
+  "attachments": "Allegati",
+  "replyOptions": "Opzioni di risposta",
+  "replyWithQuote": "Rispondi con citazione",
+  "fileSavedToDownloads": "File salvato in Download: {filename}",
+  "fileSavedToDocuments": "File salvato in Documenti: {filename}"
 }

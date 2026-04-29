@@ -1575,4 +1575,44 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get translationFailed => 'Übersetzung fehlgeschlagen';
+
+  @override
+  String get twoFactorAuthentication => 'Zwei-Faktor-Authentifizierung';
+
+  @override
+  String get authenticationCodeLabel => 'Authentifizierungscode';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode =>
+      'Bitte geben Sie Ihren Authentifizierungscode ein';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'Der Code muss $count Ziffern enthalten';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => 'Der Code darf nur Zahlen enthalten';
+
+  @override
+  String get verifyButton => 'Bestätigen';
+
+  @override
+  String get attachments => 'Anhänge';
+
+  @override
+  String get replyOptions => 'Antwortoptionen';
+
+  @override
+  String get replyWithQuote => 'Mit Zitat antworten';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'Datei in Downloads gespeichert: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'Datei in Dokumente gespeichert: $filename';
+  }
 }

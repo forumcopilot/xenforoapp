@@ -1408,5 +1408,16 @@
   "translationFailed": "Vertalen mislukt",
   "@translationFailed": {
     "description": "Error message when translation fails"
-  }
+  },
+  "twoFactorAuthentication": "Tweefactorauthenticatie",
+  "authenticationCodeLabel": "Authenticatiecode",
+  "pleaseEnterYourAuthenticationCode": "Voer uw authenticatiecode in",
+  "codeMustBeDigits": "Code moet {count} cijfers bevatten",
+  "codeMustContainOnlyNumbers": "Code mag alleen cijfers bevatten",
+  "verifyButton": "Verifiëren",
+  "attachments": "Bijlagen",
+  "replyOptions": "Antwoordopties",
+  "replyWithQuote": "Antwoord met citaat",
+  "fileSavedToDownloads": "Bestand opgeslagen in Downloads: {filename}",
+  "fileSavedToDocuments": "Bestand opgeslagen in Documenten: {filename}"
 }

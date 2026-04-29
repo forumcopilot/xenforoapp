@@ -1489,4 +1489,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get translationFailed => '翻译失败';
+
+  @override
+  String get twoFactorAuthentication => '双重身份验证';
+
+  @override
+  String get authenticationCodeLabel => '验证码';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode => '请输入验证码';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return '验证码必须为 $count 位数字';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => '验证码只能包含数字';
+
+  @override
+  String get verifyButton => '验证';
+
+  @override
+  String get attachments => '附件';
+
+  @override
+  String get replyOptions => '回复选项';
+
+  @override
+  String get replyWithQuote => '引用回复';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return '文件已保存到下载：$filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return '文件已保存到文档：$filename';
+  }
 }

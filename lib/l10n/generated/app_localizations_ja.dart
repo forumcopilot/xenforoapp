@@ -1513,4 +1513,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get translationFailed => '翻訳に失敗しました';
+
+  @override
+  String get twoFactorAuthentication => '2 要素認証';
+
+  @override
+  String get authenticationCodeLabel => '認証コード';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode => '認証コードを入力してください';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'コードは $count 桁で入力してください';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => 'コードは数字のみを含めてください';
+
+  @override
+  String get verifyButton => '確認';
+
+  @override
+  String get attachments => '添付ファイル';
+
+  @override
+  String get replyOptions => '返信オプション';
+
+  @override
+  String get replyWithQuote => '引用して返信';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'ファイルをダウンロードに保存しました: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'ファイルをドキュメントに保存しました: $filename';
+  }
 }

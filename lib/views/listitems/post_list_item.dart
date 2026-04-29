@@ -6,6 +6,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import '../widgets/custom_bb_stylesheet.dart';
 import '../widgets/link_preview_card.dart';
 import '../widgets/video_card.dart';
+import '../widgets/full_screen_video_viewer.dart';
 import '../widgets/twitter_card.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../widgets/post_actions.dart';
@@ -51,7 +52,8 @@ class PostActions {
   final Future<void> Function(String postId)? onReply;
 
   /// Called when quoting a post
-  final Future<void> Function(String postId, String authorName, String postText)? onQuote;
+  final Future<void> Function(
+      String postId, String authorName, String postText)? onQuote;
 
   /// Called when editing a post
   final Future<void> Function(String postId, String currentText)? onEdit;
@@ -63,7 +65,8 @@ class PostActions {
   final Future<void> Function(String postId)? onReport;
 
   /// Called when viewing an image in the post
-  final Function(String imageUrl, BuildContext context, String heroTag)? onShowImage;
+  final Function(String imageUrl, BuildContext context, String heroTag)?
+      onShowImage;
 
   /// Called when the post needs to be refreshed
   final VoidCallback? onRefresh;
@@ -95,13 +98,17 @@ class PostListItem extends StatefulWidget {
   final void Function(String userId, String userName)? onAvatarTap;
   final PostController postController;
   final bool isHighlighted;
+
   /// Poll for the thread. When non-null and this is the first post, the poll card is shown above the body.
   final FCPoll? poll;
+
   /// Called after a successful vote to update the thread's poll in state.
   final void Function(FCPoll updatedPoll)? onVoteSuccess;
+
   /// Optional translated content to display instead of original post content.
   /// When provided, the post will show translated text with a visual indicator.
   final String? translatedContent;
+
   /// Whether translation is currently in progress for this thread.
   final bool isTranslating;
   // Note: postDateString is not currently used, but if needed, use formatTimeAgo with context
@@ -141,7 +148,8 @@ class _PostListItemState extends State<PostListItem> {
   void initState() {
     super.initState();
     _postsController = widget.postController;
-    _postActionsHandler = PostActionsHandler(_postsController, widget.siteContext);
+    _postActionsHandler =
+        PostActionsHandler(_postsController, widget.siteContext);
     // Set the default refresh callback for attachment login prompts
     _postActionsHandler.setDefaultRefreshCallback(widget.actions?.onRefresh);
     _isLiked = widget.post.isLiked;
@@ -159,7 +167,9 @@ class _PostListItemState extends State<PostListItem> {
   _PostContentData _extractPostContentData() {
     // Use translated content if available, otherwise use original
     final originalText = widget.translatedContent ?? widget.post.content;
-    String processedText = BBCodeProcessor.processText(originalText, siteContext: widget.siteContext).trimRight();
+    String processedText = BBCodeProcessor.processText(originalText,
+            siteContext: widget.siteContext)
+        .trimRight();
     final urls = <String>{};
     final youtubeUrls = <String>{};
     final twitterUrls = <String>{};
@@ -182,7 +192,8 @@ class _PostListItemState extends State<PostListItem> {
 
     // Then extract from BBCode tags in processed text
     // Inline YouTube
-    final youtubeTagRegex = RegExp(r'\[youtube\](.*?)\[/youtube\]', caseSensitive: false);
+    final youtubeTagRegex =
+        RegExp(r'\[youtube\](.*?)\[/youtube\]', caseSensitive: false);
     for (final match in youtubeTagRegex.allMatches(processedText)) {
       final url = match.group(1)!;
       inlineYoutubeUrls.add(url);
@@ -190,7 +201,8 @@ class _PostListItemState extends State<PostListItem> {
       youtubeUrls.remove(url);
     }
     // Inline Twitter
-    final twitterTagRegex = RegExp(r'\[twitter\](.*?)\[/twitter\]', caseSensitive: false);
+    final twitterTagRegex =
+        RegExp(r'\[twitter\](.*?)\[/twitter\]', caseSensitive: false);
     for (final match in twitterTagRegex.allMatches(processedText)) {
       final url = match.group(1)!;
       inlineTwitterUrls.add(url);
@@ -198,20 +210,23 @@ class _PostListItemState extends State<PostListItem> {
       twitterUrls.remove(url);
     }
     // [url] tags
-    final bbCodeRegex = RegExp(r'\[url(?:=([^\]]+))?\](.*?)\[/url\]', caseSensitive: false);
+    final bbCodeRegex =
+        RegExp(r'\[url(?:=([^\]]+))?\](.*?)\[/url\]', caseSensitive: false);
     for (final match in bbCodeRegex.allMatches(processedText)) {
       final url = match.group(1) ?? match.group(2)!;
       final linkText = match.group(2); // The visible text inside [url]...[/url]
 
       // Skip mention URLs (link text starts with @ and has no spaces)
       if (_isMentionUrl(linkText)) {
-        AppLogger.debug('PostListItem: Skipping mention URL from preview: url=$url, linkText=$linkText');
+        AppLogger.debug(
+            'PostListItem: Skipping mention URL from preview: url=$url, linkText=$linkText');
         continue;
       }
 
       if (url.toLowerCase().startsWith('mailto:')) continue;
       if (match.group(1) != null && match.group(1) != match.group(2)) continue;
-      if (inlineYoutubeUrls.contains(url) || inlineTwitterUrls.contains(url)) continue;
+      if (inlineYoutubeUrls.contains(url) || inlineTwitterUrls.contains(url))
+        continue;
       if (BBCodeProcessor.isYoutubeUrl(url)) {
         youtubeUrls.add(url);
       } else if (BBCodeProcessor.isTwitterUrl(url)) {
@@ -222,12 +237,14 @@ class _PostListItemState extends State<PostListItem> {
     }
 
     // Inline attachments
-    final inlineAttachmentResult = BBCodeProcessor.replaceInlineAttachmentUrlsAndFilter(
+    final inlineAttachmentResult =
+        BBCodeProcessor.replaceInlineAttachmentUrlsAndFilter(
       processedText,
       widget.post.inlineAttachments,
     );
     processedText = inlineAttachmentResult.text;
-    final filteredInlineAttachments = inlineAttachmentResult.remainingInlineAttachments;
+    final filteredInlineAttachments =
+        inlineAttachmentResult.remainingInlineAttachments;
     // Limit
     final limitedUrls = urls.take(10).toList();
     final limitedYoutubeUrls = youtubeUrls.take(10).toList();
@@ -264,7 +281,8 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
-  Widget _buildPostContent(BuildContext context, _PostContentData data, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildPostContent(BuildContext context, _PostContentData data,
+      ColorScheme colorScheme, TextTheme textTheme) {
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) {
         AppLogger.debug('BBCode URL tapped: $url');
@@ -273,7 +291,8 @@ class _PostListItemState extends State<PostListItem> {
         final mentionMatch = RegExp(r'@(\w+)').firstMatch(url);
         if (mentionMatch != null) {
           final username = mentionMatch.group(1);
-          AppLogger.debug('BBCode URL contains mention pattern, username: $username');
+          AppLogger.debug(
+              'BBCode URL contains mention pattern, username: $username');
           if (username != null && username.isNotEmpty) {
             Navigator.push(
               context,
@@ -305,16 +324,22 @@ class _PostListItemState extends State<PostListItem> {
                   Get.put(LoginController());
                 }
                 final loginController = Get.find<LoginController>();
-                final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
-                if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                final loginResult = await loginController
+                    .attemptAutomaticLogin(widget.siteContext);
+                if (!loginResult.success &&
+                    loginResult.hadCredentials &&
+                    Get.currentRoute != '/LoginPage') {
+                  await Get.to(
+                      () => LoginPage(siteContext: widget.siteContext));
                 }
                 if (!widget.siteContext.isLoggedIn) {
-                  AppLogger.debug('PostListItem: proceeding to thread as guest after login screen');
+                  AppLogger.debug(
+                      'PostListItem: proceeding to thread as guest after login screen');
                 }
               }
               if (postId != null) {
-                final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
+                final String effectiveTopicId =
+                    topicId.isNotEmpty ? topicId : postId;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -386,13 +411,20 @@ class _PostListItemState extends State<PostListItem> {
         if (canView) {
           if (isImage) {
             if (widget.actions?.onShowImage != null) {
-              widget.actions!.onShowImage!(url, context, url.hashCode.toString());
+              widget.actions!.onShowImage!(
+                  url, context, url.hashCode.toString());
             } else {
               AppLogger.debug('No onShowImage action defined');
             }
+          } else if (isVideoFile(url)) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FullScreenVideoViewer(videoUrl: url),
+              ),
+            );
           } else {
-            AppLogger.debug('Download: $url');
-            // TODO: Implement actual download logic
+            UrlUtils.handleUrlTap(url, context);
           }
         } else {
           AppLogger.debug('BBCode Attachment tapped - login required');
@@ -410,16 +442,23 @@ class _PostListItemState extends State<PostListItem> {
     // Check if attachments/images are the last items - if so, reduce bottom padding
     // to avoid excessive white space between images and social buttons
     // Attachments and filteredInlineAttachments always come last (after text, videos, links)
-    final bool hasAttachments = data.attachments.isNotEmpty || data.filteredInlineAttachments.isNotEmpty;
+    final bool hasAttachments = data.attachments.isNotEmpty ||
+        data.filteredInlineAttachments.isNotEmpty;
     // Check if attachments are all images (using same logic as PostListItemAttachment)
     final bool allAttachmentsAreImages = hasAttachments &&
-        (data.attachments.isEmpty || data.attachments.every((att) => isImageFile(att.filename))) &&
-        (data.filteredInlineAttachments.isEmpty || data.filteredInlineAttachments.every((att) => isImageFile(att.filename)));
+        (data.attachments.isEmpty ||
+            data.attachments.every((att) => isImageFile(att.filename))) &&
+        (data.filteredInlineAttachments.isEmpty ||
+            data.filteredInlineAttachments
+                .every((att) => isImageFile(att.filename)));
     // Reduce bottom padding when images are the last items since PostListItemSocial
     // already adds spacingM (12px) before the social buttons
-    final double bottomPadding = allAttachmentsAreImages ? DesignTokens.spacingM : DesignTokens.spacingXL;
+    final double bottomPadding = allAttachmentsAreImages
+        ? DesignTokens.spacingM
+        : DesignTokens.spacingXL;
     return Padding(
-      padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, bottomPadding),
+      padding: EdgeInsets.fromLTRB(
+          DesignTokens.spacingL, 0.0, DesignTokens.spacingL, bottomPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -435,7 +474,8 @@ class _PostListItemState extends State<PostListItem> {
               ),
             ),
             // Show prefix badge below the topic title if available
-            if (widget.topicPrefix != null && widget.topicPrefix!.isNotEmpty) ...[
+            if (widget.topicPrefix != null &&
+                widget.topicPrefix!.isNotEmpty) ...[
               const SizedBox(height: DesignTokens.spacingS),
               Container(
                 padding: EdgeInsets.symmetric(
@@ -462,7 +502,9 @@ class _PostListItemState extends State<PostListItem> {
           ],
           // Poll card (first post only): below title/prefix, above body. onVoteSuccess updates
           // the thread's poll in PostController so the UI reflects the new vote without reloading.
-          if (widget.post.postNumber == 1 && widget.poll != null && widget.onVoteSuccess != null) ...[
+          if (widget.post.postNumber == 1 &&
+              widget.poll != null &&
+              widget.onVoteSuccess != null) ...[
             ThreadPollCard(
               poll: widget.poll!,
               topicId: widget.threadId,
@@ -488,7 +530,8 @@ class _PostListItemState extends State<PostListItem> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (widget.isTranslating && widget.translatedContent == null) ...[
+                  if (widget.isTranslating &&
+                      widget.translatedContent == null) ...[
                     SizedBox(
                       width: DesignTokens.iconSizeXS,
                       height: DesignTokens.iconSizeXS,
@@ -507,10 +550,13 @@ class _PostListItemState extends State<PostListItem> {
                   const SizedBox(width: DesignTokens.spacingXS),
                   Text(
                     widget.isTranslating && widget.translatedContent == null
-                        ? (AppLocalizations.of(context)?.translating ?? 'Translating...')
-                        : (AppLocalizations.of(context)?.translated ?? 'Translated'),
+                        ? (AppLocalizations.of(context)?.translating ??
+                            'Translating...')
+                        : (AppLocalizations.of(context)?.translated ??
+                            'Translated'),
                     style: textTheme.labelSmall?.copyWith(
-                      color: widget.isTranslating && widget.translatedContent == null
+                      color: widget.isTranslating &&
+                              widget.translatedContent == null
                           ? colorScheme.secondary
                           : colorScheme.primary,
                       fontWeight: DesignTokens.fontWeightMedium,
@@ -523,8 +569,10 @@ class _PostListItemState extends State<PostListItem> {
           Builder(
             builder: (context) {
               final processor = BBCodeProcessor();
-              String textToRender = processor.getValidBBCodeText(data.processedText);
-              if (textToRender == data.processedText && !processor.isBBCodeStructurallyValid(textToRender)) {
+              String textToRender =
+                  processor.getValidBBCodeText(data.processedText);
+              if (textToRender == data.processedText &&
+                  !processor.isBBCodeStructurallyValid(textToRender)) {
                 return Text(
                   data.processedText,
                   style: textTheme.bodyMedium?.copyWith(
@@ -539,7 +587,8 @@ class _PostListItemState extends State<PostListItem> {
                   stylesheet: stylesheet,
                 );
               } catch (error, stackTrace) {
-                debugPrint('BBCode parsing error in post: \n$error\nStackTrace: $stackTrace');
+                debugPrint(
+                    'BBCode parsing error in post: \n$error\nStackTrace: $stackTrace');
                 debugPrint('Post content that caused error:\n$textToRender');
                 // If BBCode parsing fails, display as plain text instead of rich text
                 return Text(
@@ -569,8 +618,13 @@ class _PostListItemState extends State<PostListItem> {
             StyleBuilders.divider(colorScheme: colorScheme),
             const SizedBox(height: DesignTokens.spacingS),
             ...data.limitedUrls
-                .where((url) => !BBCodeProcessor.isEmail(url) && !BBCodeProcessor.isYoutubeUrl(url) && !BBCodeProcessor.isTwitterUrl(url) && !UrlUtils.isSameDomain(widget.siteContext, url))
-                .map((url) => LinkPreviewCard(url: url, siteContext: widget.siteContext)),
+                .where((url) =>
+                    !BBCodeProcessor.isEmail(url) &&
+                    !BBCodeProcessor.isYoutubeUrl(url) &&
+                    !BBCodeProcessor.isTwitterUrl(url) &&
+                    !UrlUtils.isSameDomain(widget.siteContext, url))
+                .map((url) =>
+                    LinkPreviewCard(url: url, siteContext: widget.siteContext)),
           ],
           if (data.attachments.isNotEmpty) ...[
             const SizedBox(height: DesignTokens.spacingS),
@@ -579,7 +633,7 @@ class _PostListItemState extends State<PostListItem> {
               actions: widget.actions,
               context: context,
               isInline: false,
-              title: 'Attachments',
+              title: AppLocalizations.of(context)?.attachments ?? 'Attachments',
             ),
           ],
           if (data.filteredInlineAttachments.isNotEmpty) ...[
@@ -600,7 +654,11 @@ class _PostListItemState extends State<PostListItem> {
             onThank: _handleThankAction,
             onShowLikes: _showLikesBottomSheet,
             onShowThanks: _showThanksBottomSheet,
-            trailing: (widget.siteContext.isLoggedIn && (_postsController.threadDataOutput.value?.topic.canReply ?? false)) ? _buildReplyButtonWithMenu(context, colorScheme, textTheme) : null,
+            trailing: (widget.siteContext.isLoggedIn &&
+                    (_postsController.threadDataOutput.value?.topic.canReply ??
+                        false))
+                ? _buildReplyButtonWithMenu(context, colorScheme, textTheme)
+                : null,
           ),
         ],
       ),
@@ -624,7 +682,9 @@ class _PostListItemState extends State<PostListItem> {
 
     // Determine background color based on highlight state
     // Use a more visible highlight color
-    final backgroundColor = widget.isHighlighted ? colorScheme.primaryContainer.withOpacity(0.4) : colorScheme.surface;
+    final backgroundColor = widget.isHighlighted
+        ? colorScheme.primaryContainer.withOpacity(0.4)
+        : colorScheme.surface;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
@@ -644,9 +704,11 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
-  Widget _buildReplyButtonWithMenu(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildReplyButtonWithMenu(
+      BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+    final iconColor =
+        colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
 
     return GestureDetector(
       onTap: () {
@@ -658,7 +720,7 @@ class _PostListItemState extends State<PostListItem> {
                 borderRadius: BorderRadius.circular(DesignTokens.radiusL),
               ),
               title: Text(
-                'Reply Options',
+                AppLocalizations.of(context)?.replyOptions ?? 'Reply Options',
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -667,9 +729,10 @@ class _PostListItemState extends State<PostListItem> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
-                    leading: Icon(Icons.reply_rounded, color: colorScheme.primary),
+                    leading:
+                        Icon(Icons.reply_rounded, color: colorScheme.primary),
                     title: Text(
-                      'Reply',
+                      AppLocalizations.of(context)?.reply ?? 'Reply',
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -680,9 +743,11 @@ class _PostListItemState extends State<PostListItem> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.format_quote_rounded, color: colorScheme.primary),
+                    leading: Icon(Icons.format_quote_rounded,
+                        color: colorScheme.primary),
                     title: Text(
-                      'Reply with Quote',
+                      AppLocalizations.of(context)?.replyWithQuote ??
+                          'Reply with Quote',
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -732,7 +797,9 @@ class _PostListItemState extends State<PostListItem> {
           value: 'edit',
           child: Row(
             children: [
-              Icon(Icons.edit, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.primary),
+              Icon(Icons.edit,
+                  size: DesignTokens.iconSizeM,
+                  color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: DesignTokens.spacingM),
               Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
             ],
@@ -746,7 +813,9 @@ class _PostListItemState extends State<PostListItem> {
           value: 'delete',
           child: Row(
             children: [
-              Icon(Icons.delete, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.error),
+              Icon(Icons.delete,
+                  size: DesignTokens.iconSizeM,
+                  color: Theme.of(context).colorScheme.error),
               const SizedBox(width: DesignTokens.spacingM),
               Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
             ],
@@ -760,7 +829,9 @@ class _PostListItemState extends State<PostListItem> {
           value: 'report',
           child: Row(
             children: [
-              Icon(Icons.flag, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.flag,
+                  size: DesignTokens.iconSizeM,
+                  color: Theme.of(context).colorScheme.secondary),
               const SizedBox(width: DesignTokens.spacingM),
               Text(AppLocalizations.of(context)?.report ?? 'Report'),
             ],
@@ -774,7 +845,8 @@ class _PostListItemState extends State<PostListItem> {
   void _handleQuote() async {
     if (widget.actions?.onQuote != null) {
       AppLogger.debug('Post Quote action: ${widget.post.id}');
-      await widget.actions!.onQuote!(widget.post.id, widget.post.authorName, widget.post.content);
+      await widget.actions!.onQuote!(
+          widget.post.id, widget.post.authorName, widget.post.content);
     }
   }
 
@@ -807,11 +879,13 @@ class _PostListItemState extends State<PostListItem> {
   }
 
   void _showLikesBottomSheet() {
-    PostListItemSocial.showLikesBottomSheet(context, widget.post, widget.siteContext);
+    PostListItemSocial.showLikesBottomSheet(
+        context, widget.post, widget.siteContext);
   }
 
   void _showThanksBottomSheet() {
-    PostListItemSocial.showThanksBottomSheet(context, widget.post, widget.siteContext);
+    PostListItemSocial.showThanksBottomSheet(
+        context, widget.post, widget.siteContext);
   }
 
   void _handleLikeAction() async {

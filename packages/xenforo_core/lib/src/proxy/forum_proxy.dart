@@ -10,9 +10,11 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
   XenForoForumProxy(SiteContext context) : super(context);
 
   @override
-  Future<FCForumDataResult> getForumAsync(bool returnDescription, String forumId, bool forceRefresh) async {
+  Future<FCForumDataResult> getForumAsync(
+      bool returnDescription, String forumId, bool forceRefresh) async {
     print('✅ [XENFORO_FORUM] getForum called via plugin API');
-    print('   📋 Parameters: returnDescription=$returnDescription, forumId=$forumId, forceRefresh=$forceRefresh');
+    print(
+        '   📋 Parameters: returnDescription=$returnDescription, forumId=$forumId, forceRefresh=$forceRefresh');
 
     try {
       // Call plugin API with getForum method
@@ -36,9 +38,11 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         return _convertForumData(forumData);
       }).toList();
 
-      print('✅ [XENFORO_FORUM] getForum completed: ${forums.length} forums converted');
+      print(
+          '✅ [XENFORO_FORUM] getForum completed: ${forums.length} forums converted');
       if (forums.isEmpty && (response['result'] == true)) {
-        print('⚠️ [XENFORO_FORUM] Warning: result is true but forums list is empty');
+        print(
+            '⚠️ [XENFORO_FORUM] Warning: result is true but forums list is empty');
       }
 
       return FCForumDataResult(
@@ -176,7 +180,10 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
   FCForum _convertForumData(Map<String, dynamic> forumData) {
     // Convert subForums to childForums recursively
     final subForums = forumData['subForums'] as List<dynamic>? ?? [];
-    final childForums = subForums.map((childData) => _convertForumData(childData as Map<String, dynamic>)).toList();
+    final childForums = subForums
+        .map(
+            (childData) => _convertForumData(childData as Map<String, dynamic>))
+        .toList();
 
     // Determine if this is a sub-forum container
     // A category or forum with children but no threads/posts is a container
@@ -193,7 +200,9 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
       isSubscribed: false, // Not provided in API response
       canSubscribe: true, // Not provided in API response
       canPost: forumData['canPost'] == true,
-      canViewContent: forumData['canViewContent'] != false, // Defaults to true if not provided
+      canUpload: forumData['canUpload'] != false,
+      canViewContent: forumData['canViewContent'] !=
+          false, // Defaults to true if not provided
       externalUrl: forumData['url']?.toString(),
       isLinkForum: forumData['isLinkForum'] == true,
       isSubForumContainer: isSubForumContainer,

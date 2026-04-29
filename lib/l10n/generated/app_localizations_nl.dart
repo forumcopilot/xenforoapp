@@ -1556,4 +1556,44 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get translationFailed => 'Vertalen mislukt';
+
+  @override
+  String get twoFactorAuthentication => 'Tweefactorauthenticatie';
+
+  @override
+  String get authenticationCodeLabel => 'Authenticatiecode';
+
+  @override
+  String get pleaseEnterYourAuthenticationCode =>
+      'Voer uw authenticatiecode in';
+
+  @override
+  String codeMustBeDigits(int count) {
+    return 'Code moet $count cijfers bevatten';
+  }
+
+  @override
+  String get codeMustContainOnlyNumbers => 'Code mag alleen cijfers bevatten';
+
+  @override
+  String get verifyButton => 'Verifiëren';
+
+  @override
+  String get attachments => 'Bijlagen';
+
+  @override
+  String get replyOptions => 'Antwoordopties';
+
+  @override
+  String get replyWithQuote => 'Antwoord met citaat';
+
+  @override
+  String fileSavedToDownloads(String filename) {
+    return 'Bestand opgeslagen in Downloads: $filename';
+  }
+
+  @override
+  String fileSavedToDocuments(String filename) {
+    return 'Bestand opgeslagen in Documenten: $filename';
+  }
 }

@@ -24,16 +24,31 @@ import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
 
+/// Stable reason codes for push/login diagnostics (Crashlytics).
+abstract class PushLoginReasonCode {
+  static const String sessionValid = 'session_valid';
+  static const String noCookies = 'no_cookies';
+  static const String cookiesInvalidSession = 'cookies_invalid_session';
+  static const String noCredentials = 'no_credentials';
+  static const String tfaRequired = 'tfa_required';
+  static const String apiAuthInvalid = 'api_401_403';
+  static const String transientError = 'transient_error';
+  static const String loginOk = 'login_ok';
+}
+
 /// Result of automatic login attempt
 class AutoLoginResult {
   final bool success;
   final String? errorMessage;
   final bool hadCredentials; // Whether credentials were attempted
+  /// Stable reason code for diagnostics (e.g. no_cookies, tfa_required).
+  final String reasonCode;
 
   AutoLoginResult({
     required this.success,
     this.errorMessage,
     required this.hadCredentials,
+    required this.reasonCode,
   });
 }
 
@@ -45,6 +60,24 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       _passkey_platform.isPasskeySupportedByPlatform;
   static bool get isIOSPlatform => _passkey_platform.isIOSPlatform;
   static bool get isAndroidPlatform => _passkey_platform.isAndroidPlatform;
+
+  void _showLoginFailureSnackbar(String message) {
+    Future.microtask(() {
+      final context = Get.context;
+      if (context != null && context.mounted) {
+        Get.snackbar(
+          'Login result',
+          message,
+          backgroundColor: Get.theme.colorScheme.primaryContainer,
+          colorText: Get.theme.colorScheme.onPrimaryContainer,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(12),
+          borderRadius: 8,
+        );
+      }
+    });
+  }
 
   /// Handles login process for both login page and profile tab
   /// Returns true if login was successful, false otherwise
@@ -81,21 +114,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? 'Login succeeded' : 'Login failed');
-      Future.microtask(() {
-        final context = Get.context;
-        if (context != null && context.mounted) {
-          Get.snackbar(
-            'Login result',
-            loginResultMessage,
-            backgroundColor: Get.theme.colorScheme.primaryContainer,
-            colorText: Get.theme.colorScheme.onPrimaryContainer,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
-            margin: const EdgeInsets.all(12),
-            borderRadius: 8,
-          );
-        }
-      });
+      if (!loginResult.result) {
+        _showLoginFailureSnackbar(loginResultMessage);
+      }
 
       // Check if 2FA is required
       if (loginResult.tfaRequired == true) {
@@ -154,21 +175,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                     : (tfaLoginResult.result
                         ? 'Login succeeded'
                         : 'Login failed');
-            Future.microtask(() {
-              final context = Get.context;
-              if (context != null && context.mounted) {
-                Get.snackbar(
-                  'Login result',
-                  tfaResultMessage,
-                  backgroundColor: Get.theme.colorScheme.primaryContainer,
-                  colorText: Get.theme.colorScheme.onPrimaryContainer,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 2),
-                  margin: const EdgeInsets.all(12),
-                  borderRadius: 8,
-                );
-              }
-            });
+            if (!tfaLoginResult.result) {
+              _showLoginFailureSnackbar(tfaResultMessage);
+            }
 
             if (tfaLoginResult.result && tfaLoginResult.user != null) {
               // TFA verification successful, continue with normal success flow
@@ -264,22 +273,6 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             loginResult.resultText!.trim().isNotEmpty) {
           await _showLoginInfoDialog(
               loginResult.resultText!, Get.theme.colorScheme);
-        } else if (showSuccessMessage) {
-          // Use Future.microtask to ensure the toast is shown after the state update completes
-          Future.microtask(() {
-            Get.snackbar(
-              'Welcome!',
-              'You have been successfully logged in',
-              backgroundColor: Get.theme.colorScheme.primaryContainer,
-              colorText: Get.theme.colorScheme.onPrimaryContainer,
-              snackPosition: SnackPosition.BOTTOM,
-              duration: const Duration(seconds: 2),
-              icon: Icon(
-                Icons.check_circle_rounded,
-                color: Get.theme.colorScheme.onPrimaryContainer,
-              ),
-            );
-          });
         }
 
         return true;
@@ -375,21 +368,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? 'Login succeeded' : 'Login failed');
-      Future.microtask(() {
-        final context = Get.context;
-        if (context != null && context.mounted) {
-          Get.snackbar(
-            'Login result',
-            loginResultMessage,
-            backgroundColor: Get.theme.colorScheme.primaryContainer,
-            colorText: Get.theme.colorScheme.onPrimaryContainer,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
-            margin: const EdgeInsets.all(12),
-            borderRadius: 8,
-          );
-        }
-      });
+      if (!loginResult.result) {
+        _showLoginFailureSnackbar(loginResultMessage);
+      }
 
       if (loginResult.result && loginResult.user != null) {
         // Update baseForumInfo with login data
@@ -436,21 +417,6 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             loginResult.resultText!.trim().isNotEmpty) {
           await _showLoginInfoDialog(
               loginResult.resultText!, Get.theme.colorScheme);
-        } else if (showSuccessMessage) {
-          Future.microtask(() {
-            Get.snackbar(
-              'Welcome!',
-              'You have been successfully logged in',
-              backgroundColor: Get.theme.colorScheme.primaryContainer,
-              colorText: Get.theme.colorScheme.onPrimaryContainer,
-              snackPosition: SnackPosition.BOTTOM,
-              duration: const Duration(seconds: 2),
-              icon: Icon(
-                Icons.check_circle_rounded,
-                color: Get.theme.colorScheme.onPrimaryContainer,
-              ),
-            );
-          });
         }
 
         return true;
@@ -492,6 +458,15 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       }
       await _showLoginErrorDialog(
         'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+        Get.theme.colorScheme,
+      );
+      return false;
+    } on NoCredentialsAvailableException catch (_) {
+      if (showLoader) {
+        GlobalLoaderController.to.hide();
+      }
+      await _showLoginErrorDialog(
+        'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.',
         Get.theme.colorScheme,
       );
       return false;
@@ -559,14 +534,19 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             AppLogger.debug(
                 '🔐 [AUTO_LOGIN] Cookies found for domain, validating session...');
 
-            // Make a lightweight API call to validate session using existing cookies
+            // Make a network call to validate session using existing cookies.
+            // forceRefresh: true is required so the proxy writes lastGetConfigFcIsLogin
+            // onto the current SiteContext. With forceRefresh: false a cache hit can
+            // return stale data from a previous SiteContext, leaving lastGetConfigFcIsLogin
+            // null on the fresh context and causing the check below to silently fail.
             try {
               final configProxy = SiteProxyService.getConfigProxy();
-              await configProxy.getConfig(pluginUrl, forceRefresh: false);
+              await configProxy.getConfig(pluginUrl, forceRefresh: true);
 
-              // Check if we're already logged in via fc_is_login header
-              // The header is extracted and stored in siteContext by BaseXenForoProxy
-              final isLoggedIn = siteContext.lastCallFcIsLogin;
+              // Prefer fc_is_login from this getConfig response. lastCallFcIsLogin reflects
+              // the last API call on SiteContext and can race when other proxies run in parallel.
+              final isLoggedIn =
+                  siteContext.lastGetConfigFcIsLogin ?? siteContext.lastCallFcIsLogin;
 
               if (isLoggedIn) {
                 AppLogger.info(
@@ -579,15 +559,27 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 // The loginDataOutput will be populated on the next API call that returns user data
                 AppLogger.debug(
                     '🔐 [AUTO_LOGIN] Skipping login - using existing valid session');
-                return AutoLoginResult(success: true, hadCredentials: false);
+                return AutoLoginResult(
+                  success: true,
+                  hadCredentials: false,
+                  reasonCode: PushLoginReasonCode.sessionValid,
+                );
               } else {
                 AppLogger.debug(
                     '🔐 [AUTO_LOGIN] Cookies exist but session is not valid (fc_is_login=false)');
               }
             } catch (e) {
-              AppLogger.debug(
-                  '🔐 [AUTO_LOGIN] Error validating session with cookies: $e');
-              // Continue to login attempt below
+              // Network error (e.g. Cloudflare challenge) during session validation.
+              // Do NOT fall through to password login: that would trigger a 2FA dialog
+              // even though the user may have a perfectly valid session that just
+              // couldn't be verified due to the transient network issue.
+              AppLogger.warning(
+                  '🔐 [AUTO_LOGIN] Network error validating session – aborting auto-login to avoid spurious 2FA: $e');
+              return AutoLoginResult(
+                success: false,
+                hadCredentials: false,
+                reasonCode: PushLoginReasonCode.transientError,
+              );
             }
           } else {
             AppLogger.debug('🔐 [AUTO_LOGIN] No cookies found for domain');
@@ -645,14 +637,22 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               siteContext.loginDataOutput = null;
               await siteContext.saveToDevice();
               siteContext.updateLoginState();
-              return AutoLoginResult(success: false, hadCredentials: false);
+              return AutoLoginResult(
+                success: false,
+                hadCredentials: false,
+                reasonCode: PushLoginReasonCode.noCredentials,
+              );
             }
           } else {
             AppLogger.debug('🔐 [AUTO_LOGIN] No current site available');
             siteContext.loginDataOutput = null;
             await siteContext.saveToDevice();
             siteContext.updateLoginState();
-            return AutoLoginResult(success: false, hadCredentials: false);
+            return AutoLoginResult(
+              success: false,
+              hadCredentials: false,
+              reasonCode: PushLoginReasonCode.noCredentials,
+            );
           }
         } catch (e) {
           AppLogger.debug(
@@ -660,7 +660,11 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           siteContext.loginDataOutput = null;
           await siteContext.saveToDevice();
           siteContext.updateLoginState();
-          return AutoLoginResult(success: false, hadCredentials: false);
+          return AutoLoginResult(
+            success: false,
+            hadCredentials: false,
+            reasonCode: PushLoginReasonCode.transientError,
+          );
         }
       }
 
@@ -677,21 +681,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? 'Login succeeded' : 'Login failed');
-      Future.microtask(() {
-        final context = Get.context;
-        if (context != null && context.mounted) {
-          Get.snackbar(
-            'Login result',
-            loginResultMessage,
-            backgroundColor: Get.theme.colorScheme.primaryContainer,
-            colorText: Get.theme.colorScheme.onPrimaryContainer,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
-            margin: const EdgeInsets.all(12),
-            borderRadius: 8,
-          );
-        }
-      });
+      if (!loginResult.result) {
+        _showLoginFailureSnackbar(loginResultMessage);
+      }
 
       // Check if 2FA is required for auto-login
       if (loginResult.tfaRequired == true) {
@@ -703,9 +695,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             (tfaLoginResult.result == false &&
                 tfaLoginResult.tfaRequired == true)) {
           if (Get.isRegistered<GlobalLoaderController>()) {
-            while (GlobalLoaderController.to.isLoading) {
-              GlobalLoaderController.to.hide();
-            }
+            GlobalLoaderController.to.forceHide();
           }
           final tfaResult = await TFAInputDialog.show(
             providers: loginResult.providers,
@@ -719,6 +709,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               success: false,
               errorMessage: 'TFA verification cancelled',
               hadCredentials: true,
+              reasonCode: PushLoginReasonCode.tfaRequired,
             );
           }
 
@@ -749,21 +740,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                     : (tfaLoginResult.result
                         ? 'Login succeeded'
                         : 'Login failed');
-            Future.microtask(() {
-              final context = Get.context;
-              if (context != null && context.mounted) {
-                Get.snackbar(
-                  'Login result',
-                  tfaResultMessage,
-                  backgroundColor: Get.theme.colorScheme.primaryContainer,
-                  colorText: Get.theme.colorScheme.onPrimaryContainer,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 2),
-                  margin: const EdgeInsets.all(12),
-                  borderRadius: 8,
-                );
-              }
-            });
+            if (!tfaLoginResult.result) {
+              _showLoginFailureSnackbar(tfaResultMessage);
+            }
 
             if (tfaLoginResult.result && tfaLoginResult.user != null) {
               // TFA verification successful, continue with normal success flow
@@ -809,6 +788,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             success: false,
             errorMessage: errorMessage ?? 'TFA verification failed',
             hadCredentials: true,
+            reasonCode: PushLoginReasonCode.tfaRequired,
           );
         }
       }
@@ -856,7 +836,11 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               '🔔 [AUTO_LOGIN] ❌ Error during push notification registration');
         }
 
-        return AutoLoginResult(success: true, hadCredentials: true);
+        return AutoLoginResult(
+          success: true,
+          hadCredentials: true,
+          reasonCode: PushLoginReasonCode.loginOk,
+        );
       } else {
         // Login failed - clear credentials only on explicit auth-invalid outcomes
         final errorMessage = loginResult.resultText?.trim().isNotEmpty == true
@@ -873,10 +857,14 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               '🔐 [AUTO_LOGIN] Keeping credentials after non-auth login failure: $errorMessage');
         }
         // Don't show toast here - let SiteController show dialog instead
+        final reasonCode = _isExplicitAuthInvalidError(errorMessage)
+            ? PushLoginReasonCode.apiAuthInvalid
+            : PushLoginReasonCode.transientError;
         return AutoLoginResult(
           success: false,
           errorMessage: errorMessage,
           hadCredentials: true,
+          reasonCode: reasonCode,
         );
       }
     } on AuthenticationException catch (e) {
@@ -889,6 +877,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: e.toString(),
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.apiAuthInvalid,
       );
     } on FCApiException catch (e, stackTrace) {
       await handleError(
@@ -911,10 +900,16 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         AppLogger.warning(
             '🔐 [AUTO_LOGIN] Keeping credentials after API error: status=${e.statusCode} message=$apiMessage');
       }
+      final reasonCode = (_isExplicitAuthInvalidError(apiMessage) ||
+              e.statusCode == 401 ||
+              e.statusCode == 403)
+          ? PushLoginReasonCode.apiAuthInvalid
+          : PushLoginReasonCode.transientError;
       return AutoLoginResult(
         success: false,
         errorMessage: apiMessage,
         hadCredentials: true,
+        reasonCode: reasonCode,
       );
     } catch (e, stackTrace) {
       await handleError(e, stackTrace,
@@ -925,6 +920,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: 'Login failed due to network error',
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.transientError,
       );
     }
   }
@@ -936,6 +932,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: 'Passkey auto-login is not available on this platform.',
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.transientError,
       );
     }
 
@@ -957,6 +954,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           success: false,
           errorMessage: message,
           hadCredentials: true,
+          reasonCode: PushLoginReasonCode.transientError,
         );
       }
 
@@ -994,7 +992,11 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               '🔔 [AUTO_LOGIN] ❌ Error during push notification registration (passkey)');
         }
 
-        return AutoLoginResult(success: true, hadCredentials: true);
+        return AutoLoginResult(
+          success: true,
+          hadCredentials: true,
+          reasonCode: PushLoginReasonCode.loginOk,
+        );
       }
 
       final message = loginResult.resultText?.trim().isNotEmpty == true
@@ -1007,6 +1009,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: message,
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.transientError,
       );
     } on PasskeyAuthCancelledException {
       siteContext.loginDataOutput = null;
@@ -1016,6 +1019,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: 'Passkey authentication cancelled',
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.tfaRequired,
       );
     } on DomainNotAssociatedException {
       siteContext.loginDataOutput = null;
@@ -1026,6 +1030,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         errorMessage:
             'This forum is not yet set up for passkey access on this app.',
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.transientError,
       );
     } on PermissionException catch (e) {
       siteContext.loginDataOutput = null;
@@ -1035,6 +1040,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: e.toString(),
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.apiAuthInvalid,
       );
     } on AuthenticationException catch (e) {
       siteContext.loginDataOutput = null;
@@ -1044,6 +1050,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: e.toString(),
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.apiAuthInvalid,
       );
     } on FCApiException catch (e, stackTrace) {
       await handleError(
@@ -1056,10 +1063,14 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       await siteContext.saveToDevice();
       siteContext.updateLoginState();
       final message = e.message.trim().isNotEmpty ? e.message : e.toString();
+      final reasonCode = (e.statusCode == 401 || e.statusCode == 403)
+          ? PushLoginReasonCode.apiAuthInvalid
+          : PushLoginReasonCode.transientError;
       return AutoLoginResult(
         success: false,
         errorMessage: message,
         hadCredentials: true,
+        reasonCode: reasonCode,
       );
     } catch (e, stackTrace) {
       await handleError(
@@ -1077,6 +1088,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             errorMessage:
                 'This forum is not yet set up for passkey access on this app.',
             hadCredentials: true,
+            reasonCode: PushLoginReasonCode.transientError,
           );
         }
       }
@@ -1087,6 +1099,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         success: false,
         errorMessage: 'Passkey login failed',
         hadCredentials: true,
+        reasonCode: PushLoginReasonCode.transientError,
       );
     } finally {
       siteContext.passkeyLoginInProgress = false;

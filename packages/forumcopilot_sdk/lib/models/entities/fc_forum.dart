@@ -39,6 +39,9 @@ class FCForum with FCForumMappable {
   /// Indicates if the user can post in this forum
   bool canPost;
 
+  /// Indicates if the user can upload attachments in this forum
+  bool canUpload;
+
   /// Indicates if the user can view topics/content in this forum
   /// If false, the app should not call getTopics/getTopTopic etc. for this forum
   bool canViewContent;
@@ -67,6 +70,7 @@ class FCForum with FCForumMappable {
     this.isSubscribed = false,
     this.canSubscribe = true,
     this.canPost = true,
+    this.canUpload = true,
     this.canViewContent = true,
     this.externalUrl,
     this.isLinkForum = false,

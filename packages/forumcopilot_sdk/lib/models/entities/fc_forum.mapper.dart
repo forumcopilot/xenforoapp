@@ -2,6 +2,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -85,6 +86,13 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     opt: true,
     def: true,
   );
+  static bool _$canUpload(FCForum v) => v.canUpload;
+  static const Field<FCForum, bool> _f$canUpload = Field(
+    'canUpload',
+    _$canUpload,
+    opt: true,
+    def: true,
+  );
   static bool _$canViewContent(FCForum v) => v.canViewContent;
   static const Field<FCForum, bool> _f$canViewContent = Field(
     'canViewContent',
@@ -133,6 +141,7 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     #isSubscribed: _f$isSubscribed,
     #canSubscribe: _f$canSubscribe,
     #canPost: _f$canPost,
+    #canUpload: _f$canUpload,
     #canViewContent: _f$canViewContent,
     #externalUrl: _f$externalUrl,
     #isLinkForum: _f$isLinkForum,
@@ -153,6 +162,7 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
       isSubscribed: data.dec(_f$isSubscribed),
       canSubscribe: data.dec(_f$canSubscribe),
       canPost: data.dec(_f$canPost),
+      canUpload: data.dec(_f$canUpload),
       canViewContent: data.dec(_f$canViewContent),
       externalUrl: data.dec(_f$externalUrl),
       isLinkForum: data.dec(_f$isLinkForum),
@@ -232,6 +242,7 @@ abstract class FCForumCopyWith<$R, $In extends FCForum, $Out>
     bool? isSubscribed,
     bool? canSubscribe,
     bool? canPost,
+    bool? canUpload,
     bool? canViewContent,
     String? externalUrl,
     bool? isLinkForum,
@@ -269,6 +280,7 @@ class _FCForumCopyWithImpl<$R, $Out>
     bool? isSubscribed,
     bool? canSubscribe,
     bool? canPost,
+    bool? canUpload,
     bool? canViewContent,
     Object? externalUrl = $none,
     bool? isLinkForum,
@@ -287,6 +299,7 @@ class _FCForumCopyWithImpl<$R, $Out>
       if (isSubscribed != null) #isSubscribed: isSubscribed,
       if (canSubscribe != null) #canSubscribe: canSubscribe,
       if (canPost != null) #canPost: canPost,
+      if (canUpload != null) #canUpload: canUpload,
       if (canViewContent != null) #canViewContent: canViewContent,
       if (externalUrl != $none) #externalUrl: externalUrl,
       if (isLinkForum != null) #isLinkForum: isLinkForum,
@@ -308,6 +321,7 @@ class _FCForumCopyWithImpl<$R, $Out>
     isSubscribed: data.get(#isSubscribed, or: $value.isSubscribed),
     canSubscribe: data.get(#canSubscribe, or: $value.canSubscribe),
     canPost: data.get(#canPost, or: $value.canPost),
+    canUpload: data.get(#canUpload, or: $value.canUpload),
     canViewContent: data.get(#canViewContent, or: $value.canViewContent),
     externalUrl: data.get(#externalUrl, or: $value.externalUrl),
     isLinkForum: data.get(#isLinkForum, or: $value.isLinkForum),

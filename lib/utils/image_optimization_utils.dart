@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:forumcopilot_sdk/models/entities/fc_attachment_data.dart';
@@ -55,11 +54,15 @@ Future<XFile> optimizeImage(
     int targetWidth = currentWidth;
     int targetHeight = currentHeight;
 
-    if (constraints.width != null && constraints.width! > 0 && currentWidth > constraints.width!) {
+    if (constraints.width != null &&
+        constraints.width! > 0 &&
+        currentWidth > constraints.width!) {
       needsDimensionResize = true;
       targetWidth = constraints.width!;
     }
-    if (constraints.height != null && constraints.height! > 0 && currentHeight > constraints.height!) {
+    if (constraints.height != null &&
+        constraints.height! > 0 &&
+        currentHeight > constraints.height!) {
       needsDimensionResize = true;
       targetHeight = constraints.height!;
     }
@@ -67,8 +70,12 @@ Future<XFile> optimizeImage(
     // Step 3: Calculate new dimensions maintaining aspect ratio
     if (needsDimensionResize) {
       double scaleFactor = 1.0;
-      final widthLimit = constraints.width != null && constraints.width! > 0 ? constraints.width! : null;
-      final heightLimit = constraints.height != null && constraints.height! > 0 ? constraints.height! : null;
+      final widthLimit = constraints.width != null && constraints.width! > 0
+          ? constraints.width!
+          : null;
+      final heightLimit = constraints.height != null && constraints.height! > 0
+          ? constraints.height!
+          : null;
 
       if (widthLimit != null && heightLimit != null) {
         // Both dimensions have limits - use the more restrictive one
@@ -87,7 +94,8 @@ Future<XFile> optimizeImage(
 
     // Step 4: Determine format conversion
     final extension = imageFile.path.split('.').last.toLowerCase();
-    final jpgAllowed = constraints.extensions?.any((e) => e == 'jpg' || e == 'jpeg') == true;
+    final jpgAllowed =
+        constraints.extensions?.any((e) => e == 'jpg' || e == 'jpeg') == true;
 
     // Convert to JPG if:
     // 1. Original format is PNG/WebP/GIF/HEIC and JPG is allowed (size reduction or compatibility)
@@ -97,16 +105,20 @@ Future<XFile> optimizeImage(
     final isGif = extension == 'gif';
     final isHeic = extension == 'heic' || extension == 'heif';
     final isJpg = extension == 'jpg' || extension == 'jpeg';
-    final isFormatSupported = constraints.extensions?.contains(extension) == true;
+    final isFormatSupported =
+        constraints.extensions?.contains(extension) == true;
 
-    final shouldConvertToJpg = jpgAllowed && !isJpg && (isPng || isWebp || isGif || isHeic || !isFormatSupported);
+    final shouldConvertToJpg = jpgAllowed &&
+        !isJpg &&
+        (isPng || isWebp || isGif || isHeic || !isFormatSupported);
 
     // Step 5: Apply optimizations
     XFile optimizedFile = imageFile;
 
     // Resize if needed
     if (needsDimensionResize) {
-      optimizedFile = await resizeImage(optimizedFile, targetWidth, targetHeight);
+      optimizedFile =
+          await resizeImage(optimizedFile, targetWidth, targetHeight);
     }
 
     // Convert format if beneficial
@@ -118,7 +130,8 @@ Future<XFile> optimizeImage(
     if (constraints.size != null && constraints.size! > 0) {
       final optimizedSize = await optimizedFile.length();
       if (optimizedSize > constraints.size!) {
-        optimizedFile = await compressImageToSize(optimizedFile, constraints.size!);
+        optimizedFile =
+            await compressImageToSize(optimizedFile, constraints.size!);
       }
     }
 
@@ -127,7 +140,8 @@ Future<XFile> optimizeImage(
     debugPrint('Error optimizing image (file system): $e');
     if (e.osError != null) {
       if (e.osError!.errorCode == 2) {
-        throw Exception('Image file not found. The file may have been moved or deleted.');
+        throw Exception(
+            'Image file not found. The file may have been moved or deleted.');
       } else if (e.osError!.errorCode == 13) {
         throw Exception('Permission denied. Cannot read the image file.');
       } else if (e.osError!.errorCode == 28) {
@@ -137,22 +151,28 @@ Future<XFile> optimizeImage(
     throw Exception('Cannot access image file: ${e.message}');
   } on FormatException catch (e) {
     debugPrint('Error optimizing image (format): $e');
-    throw Exception('Image format is corrupted or not supported. Please try a different image.');
+    throw Exception(
+        'Image format is corrupted or not supported. Please try a different image.');
   } catch (e) {
     debugPrint('Error optimizing image: $e');
     final errorMessage = e.toString();
 
     // Provide user-friendly messages for common errors
     if (errorMessage.contains('Failed to resize image')) {
-      throw Exception('Failed to resize image. The image may be corrupted or in an unsupported format.');
+      throw Exception(
+          'Failed to resize image. The image may be corrupted or in an unsupported format.');
     } else if (errorMessage.contains('Failed to convert image to JPG')) {
-      throw Exception('Failed to convert image to JPG format. The image may be corrupted.');
+      throw Exception(
+          'Failed to convert image to JPG format. The image may be corrupted.');
     } else if (errorMessage.contains('Failed to compress image')) {
-      throw Exception('Failed to compress image. There may be insufficient disk space or the image is corrupted.');
+      throw Exception(
+          'Failed to compress image. There may be insufficient disk space or the image is corrupted.');
     } else if (errorMessage.contains('instantiateImageCodec')) {
-      throw Exception('Cannot decode image. The file may be corrupted or in an unsupported format.');
+      throw Exception(
+          'Cannot decode image. The file may be corrupted or in an unsupported format.');
     } else if (errorMessage.contains('readAsBytes')) {
-      throw Exception('Cannot read image file. The file may have been moved or deleted.');
+      throw Exception(
+          'Cannot read image file. The file may have been moved or deleted.');
     } else {
       // Extract clean error message
       String cleanMessage = errorMessage;
@@ -172,12 +192,15 @@ Future<ui.Image> loadImageFromFile(XFile file) async {
     final frame = await codec.getNextFrame();
     return frame.image;
   } on FileSystemException catch (e) {
-    throw FileSystemException('Cannot read image file: ${e.message}', e.path, e.osError);
+    throw FileSystemException(
+        'Cannot read image file: ${e.message}', e.path, e.osError);
   } on FormatException catch (e) {
-    throw FormatException('Image format is corrupted or not supported: ${e.message}');
+    throw FormatException(
+        'Image format is corrupted or not supported: ${e.message}');
   } catch (e) {
     if (e.toString().contains('instantiateImageCodec')) {
-      throw FormatException('Cannot decode image. The file may be corrupted or in an unsupported format.');
+      throw FormatException(
+          'Cannot decode image. The file may be corrupted or in an unsupported format.');
     }
     rethrow;
   }
@@ -187,22 +210,27 @@ Future<ui.Image> loadImageFromFile(XFile file) async {
 Future<XFile> resizeImage(XFile file, int maxWidth, int maxHeight) async {
   try {
     final tempDir = await getTemporaryDirectory();
-    final fileName = path.basename(file.path);
-    final targetPath = '${tempDir.path}/resized_$fileName';
+    final originalBaseName = path.basenameWithoutExtension(file.path);
+    final outputFormat = _outputFormatForPath(file.path);
+    final outputExtension = _outputExtensionForFormat(outputFormat);
+    final targetFileName = 'resized_$originalBaseName$outputExtension';
+    final targetPath = '${tempDir.path}/$targetFileName';
 
     final result = await FlutterImageCompress.compressAndGetFile(
       file.path,
       targetPath,
+      format: outputFormat,
       minWidth: maxWidth,
       minHeight: maxHeight,
       quality: 100, // Don't compress during resize, just resize
     );
 
     if (result == null) {
-      throw Exception('Failed to resize image. The image may be corrupted or in an unsupported format.');
+      throw Exception(
+          'Failed to resize image. The image may be corrupted or in an unsupported format.');
     }
 
-    return XFile(result.path, name: fileName);
+    return XFile(result.path, name: targetFileName);
   } on FileSystemException catch (e) {
     if (e.osError?.errorCode == 28) {
       throw Exception('Insufficient disk space to resize image.');
@@ -221,7 +249,7 @@ Future<XFile> convertToJpg(XFile file, {int quality = 85}) async {
   try {
     final tempDir = await getTemporaryDirectory();
     final originalName = path.basenameWithoutExtension(file.path);
-    final targetPath = '${tempDir.path}/${originalName}.jpg';
+    final targetPath = '${tempDir.path}/$originalName.jpg';
 
     final result = await FlutterImageCompress.compressAndGetFile(
       file.path,
@@ -231,10 +259,11 @@ Future<XFile> convertToJpg(XFile file, {int quality = 85}) async {
     );
 
     if (result == null) {
-      throw Exception('Failed to convert image to JPG. The image may be corrupted or in an unsupported format.');
+      throw Exception(
+          'Failed to convert image to JPG. The image may be corrupted or in an unsupported format.');
     }
 
-    return XFile(result.path, name: '${originalName}.jpg');
+    return XFile(result.path, name: '$originalName.jpg');
   } on FileSystemException catch (e) {
     if (e.osError?.errorCode == 28) {
       throw Exception('Insufficient disk space to convert image.');
@@ -281,20 +310,25 @@ Future<XFile> compressImageToSize(XFile file, int maxSizeBytes) async {
 Future<XFile> compressImage(XFile file, {required int quality}) async {
   try {
     final tempDir = await getTemporaryDirectory();
-    final fileName = path.basename(file.path);
-    final targetPath = '${tempDir.path}/compressed_$fileName';
+    final originalBaseName = path.basenameWithoutExtension(file.path);
+    final outputFormat = _outputFormatForPath(file.path);
+    final outputExtension = _outputExtensionForFormat(outputFormat);
+    final targetFileName = 'compressed_$originalBaseName$outputExtension';
+    final targetPath = '${tempDir.path}/$targetFileName';
 
     final result = await FlutterImageCompress.compressAndGetFile(
       file.path,
       targetPath,
+      format: outputFormat,
       quality: quality,
     );
 
     if (result == null) {
-      throw Exception('Failed to compress image. The image may be corrupted or there may be insufficient disk space.');
+      throw Exception(
+          'Failed to compress image. The image may be corrupted or there may be insufficient disk space.');
     }
 
-    return XFile(result.path, name: fileName);
+    return XFile(result.path, name: targetFileName);
   } on FileSystemException catch (e) {
     if (e.osError?.errorCode == 28) {
       throw Exception('Insufficient disk space to compress image.');
@@ -305,6 +339,33 @@ Future<XFile> compressImage(XFile file, {required int quality}) async {
       rethrow;
     }
     throw Exception('Failed to compress image: $e');
+  }
+}
+
+CompressFormat _outputFormatForPath(String filePath) {
+  switch (path.extension(filePath).toLowerCase()) {
+    case '.png':
+      return CompressFormat.png;
+    case '.webp':
+      return CompressFormat.webp;
+    case '.jpg':
+    case '.jpeg':
+      return CompressFormat.jpeg;
+    default:
+      return CompressFormat.jpeg;
+  }
+}
+
+String _outputExtensionForFormat(CompressFormat format) {
+  switch (format) {
+    case CompressFormat.png:
+      return '.png';
+    case CompressFormat.webp:
+      return '.webp';
+    case CompressFormat.heic:
+      return '.heic';
+    case CompressFormat.jpeg:
+      return '.jpg';
   }
 }
 
@@ -323,11 +384,15 @@ Future<ImageOptimizationPlan> calculateOptimizationPlan(
   int? targetWidth;
   int? targetHeight;
 
-  if (constraints.width != null && constraints.width! > 0 && currentWidth > constraints.width!) {
+  if (constraints.width != null &&
+      constraints.width! > 0 &&
+      currentWidth > constraints.width!) {
     needsResize = true;
     targetWidth = constraints.width;
   }
-  if (constraints.height != null && constraints.height! > 0 && currentHeight > constraints.height!) {
+  if (constraints.height != null &&
+      constraints.height! > 0 &&
+      currentHeight > constraints.height!) {
     needsResize = true;
     targetHeight = constraints.height;
   }
@@ -350,7 +415,8 @@ Future<ImageOptimizationPlan> calculateOptimizationPlan(
 
   // Check if format conversion is needed
   final extension = file.path.split('.').last.toLowerCase();
-  final jpgAllowed = constraints.extensions?.any((e) => e == 'jpg' || e == 'jpeg') == true;
+  final jpgAllowed =
+      constraints.extensions?.any((e) => e == 'jpg' || e == 'jpeg') == true;
   final isPng = extension == 'png';
   final isWebp = extension == 'webp';
   final isGif = extension == 'gif';
@@ -358,10 +424,14 @@ Future<ImageOptimizationPlan> calculateOptimizationPlan(
   final isJpg = extension == 'jpg' || extension == 'jpeg';
   final isFormatSupported = constraints.extensions?.contains(extension) == true;
 
-  final needsFormatConversion = jpgAllowed && !isJpg && (isPng || isWebp || isGif || isHeic || !isFormatSupported);
+  final needsFormatConversion = jpgAllowed &&
+      !isJpg &&
+      (isPng || isWebp || isGif || isHeic || !isFormatSupported);
 
   // Check if compression is needed
-  final needsCompression = constraints.size != null && constraints.size! > 0 && currentSize > constraints.size!;
+  final needsCompression = constraints.size != null &&
+      constraints.size! > 0 &&
+      currentSize > constraints.size!;
 
   // Estimate final size (rough estimate)
   int? estimatedSize;
@@ -369,7 +439,8 @@ Future<ImageOptimizationPlan> calculateOptimizationPlan(
     // Rough estimate: resizing reduces size proportionally, JPG conversion reduces by ~50-70%
     double sizeMultiplier = 1.0;
     if (needsResize && targetWidth != null && targetHeight != null) {
-      final areaRatio = (targetWidth * targetHeight) / (currentWidth * currentHeight);
+      final areaRatio =
+          (targetWidth * targetHeight) / (currentWidth * currentHeight);
       sizeMultiplier *= areaRatio;
     }
     if (needsFormatConversion) {

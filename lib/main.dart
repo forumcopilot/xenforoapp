@@ -47,18 +47,18 @@ void main() async {
     await ForumcopilotSdk.ensureInitialized(
       buildContext: globalNavigatorKey.currentContext,
       onCloudflareStart: () {
-        // Disable global spinner before Cloudflare UI
+        // Reset any active global loader before showing the Cloudflare webview.
         if (Get.isRegistered<GlobalLoaderController>()) {
-          GlobalLoaderController.to.hide();
+          GlobalLoaderController.to.forceHide();
         }
         AppLogger.debug('Cloudflare challenge detected - disabling global spinner');
       },
       onCloudflareEnd: () {
-        // Re-enable global spinner after Cloudflare UI
+        // Ensure the Cloudflare flow cannot leave the global loader stuck on.
         if (Get.isRegistered<GlobalLoaderController>()) {
-          GlobalLoaderController.to.show();
+          GlobalLoaderController.to.forceHide();
         }
-        AppLogger.debug('Cloudflare challenge finished - enabling global spinner');
+        AppLogger.debug('Cloudflare challenge finished - reset global spinner');
       },
     );
     AppLogger.info('ForumcopilotSdk initialized successfully');

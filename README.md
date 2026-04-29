@@ -178,3 +178,11 @@ Before publishing your own fork:
 - Translation and cloud media enrichment were intentionally removed in standalone mode.
 - Twitter/YouTube rich cards degrade to normal links.
 - Runtime forum discovery APIs are not used by this app template.
+
+---
+
+## License
+
+This project is licensed under the MIT License — see [LICENSE](LICENSE) for the full text.
+
+The `plugins/FC_XenForo2/` add-on is also released under MIT, but installing or running it on a XenForo forum still requires a valid XenForo license from XenForo Ltd.

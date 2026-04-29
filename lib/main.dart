@@ -33,7 +33,6 @@ void main() async {
 
     AppLogger.info('Initializing error handling system...');
     await ErrorHandlingInit.initialize(
-      enableCrashReporting: true,
       enableErrorDialogs: true,
       enableDebugLogs: true,
     );
@@ -150,13 +149,6 @@ Future<void> _initializeFirebaseAndNotificationsInBackground() async {
           AppLogger.info('✅ Firebase Project ID: ${app.options.projectId}');
         } catch (verifyError) {
           AppLogger.warning('Firebase initialized but verification failed', error: verifyError);
-        }
-
-        // Initialize Crashlytics now that Firebase is ready
-        try {
-          await ErrorHandlingInit.initializeCrashlyticsAfterFirebase();
-        } catch (e) {
-          AppLogger.warning('Failed to initialize Crashlytics after Firebase', error: e);
         }
       } catch (initError, stackTrace) {
         AppLogger.error('❌ Firebase initialization failed', error: initError, stackTrace: stackTrace);

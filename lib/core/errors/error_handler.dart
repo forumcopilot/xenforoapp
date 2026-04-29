@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:get/get.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'app_exceptions.dart';
 import '../../controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
@@ -17,9 +16,6 @@ class ErrorHandler {
   factory ErrorHandler() => _instance;
   ErrorHandler._internal();
 
-  /// Whether error reporting is enabled
-  static bool _isReportingEnabled = true;
-
   /// Whether to show error dialogs to users
   static bool _showErrorDialogs = kDebugMode;
 
@@ -28,10 +24,8 @@ class ErrorHandler {
 
   /// Initialize the error handler
   static Future<void> initialize({
-    bool enableReporting = true,
     bool showErrorDialogs = kDebugMode,
   }) async {
-    _isReportingEnabled = enableReporting;
     _showErrorDialogs = showErrorDialogs;
 
     // Setup global error handlers
@@ -56,11 +50,6 @@ class ErrorHandler {
     try {
       // Log the error
       await _logError(error, stackTrace, context);
-
-      // Report to crash analytics if enabled
-      if (_isReportingEnabled) {
-        await _reportError(error, stackTrace, context);
-      }
 
       // Notify listeners
       _notifyListeners(error, stackTrace, context);
@@ -201,23 +190,6 @@ class ErrorHandler {
     }
   }
 
-  /// Report error to crash analytics
-  static Future<void> _reportError(
-    dynamic error,
-    StackTrace? stackTrace,
-    String? context,
-  ) async {
-    try {
-      await FirebaseCrashlytics.instance.recordError(
-        error,
-        stackTrace,
-        fatal: false,
-      );
-    } catch (e) {
-      developer.log('Failed to report error to crash analytics: $e', name: 'ErrorHandler');
-    }
-  }
-
   /// Notify error listeners
   static void _notifyListeners(
     dynamic error,
@@ -328,11 +300,6 @@ class ErrorHandler {
   /// Clear all listeners
   static void clearListeners() {
     _listeners.clear();
-  }
-
-  /// Enable/disable error reporting
-  static void setReportingEnabled(bool enabled) {
-    _isReportingEnabled = enabled;
   }
 
   /// Enable/disable error dialogs

@@ -24,7 +24,7 @@ import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
 
-/// Stable reason codes for push/login diagnostics (Crashlytics).
+/// Stable reason codes for push/login diagnostics.
 abstract class PushLoginReasonCode {
   static const String sessionValid = 'session_valid';
   static const String noCookies = 'no_cookies';

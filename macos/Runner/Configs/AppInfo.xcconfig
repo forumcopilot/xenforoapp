@@ -14,4 +14,4 @@ PRODUCT_BUNDLE_IDENTIFIER = com.example.forumapp
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
 
 // macOS deployment target
-MACOSX_DEPLOYMENT_TARGET = 10.15
+MACOSX_DEPLOYMENT_TARGET = 13.5

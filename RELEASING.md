@@ -1,10 +1,10 @@
 # Releasing
 
-This document describes how to publish a new version of the xenForo app and keep the marketing site (`forumcopilot.com/app-changelog`) in sync.
+This document describes how to publish a new version of the xenForo app and keep the marketing site (`forumcopilot.com/github-notice`) in sync.
 
 A release lives in two places:
 - The **canonical** GitHub Release at `https://github.com/forumcopilot/xenforoapp/releases` (this repo)
-- A **curated** entry on the marketing site at `https://forumcopilot.com/app-changelog`, sourced from `frontend/src/data/xenforoAppReleases.js` in the [`forumcopilot/siteowners`](https://github.com/forumcopilot/siteowners) repo
+- A **curated** entry on the marketing site at `https://forumcopilot.com/github-notice`, sourced from `frontend/src/data/xenforoAppReleases.js` in the [`forumcopilot/siteowners`](https://github.com/forumcopilot/siteowners) repo
 
 Both must be updated together. Total time per release: ~10 minutes.
 
@@ -95,9 +95,7 @@ git commit -m "Publish xenForo app v0.6.1"
 git push origin main
 ```
 
-The site redeploys automatically (CI/CD). Within a few minutes:
-- `https://forumcopilot.com/app-changelog` — shows the new release at the top, latest-version overview cards refresh
-- `https://forumcopilot.com/github-notice` — "View Changelog" button still routes to the same page
+The site redeploys automatically (CI/CD). Within a few minutes, `https://forumcopilot.com/github-notice` shows the new release in the "Release history" section below the GitHub-redirect notice, with the latest-version overview cards refreshed.
 
 ## Drafting release notes from the commit log
 

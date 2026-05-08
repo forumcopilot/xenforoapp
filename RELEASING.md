@@ -120,6 +120,7 @@ Example: a commit `fix(ui): remove phantom back arrow from top-level tab app bar
 
 - **Don't tag from a feature branch** — `gh release create` defaults to the current branch. Pass `--target main` explicitly if you're not on `main`.
 - **`releaseUrl` must match the actual tag** — typo there breaks the "View Release" button silently. Test by clicking it after deploy.
+- **Add the version's link reference at the bottom of `CHANGELOG.md`** when you append a new section. Each `## [0.6.1] - …` heading needs a matching `[0.6.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.1` line at the end of the file (just below the existing `[0.6.0]:` reference). Without it, the version number in the heading isn't a clickable link on GitHub. Also bump the `[Unreleased]: …compare/v0.6.1...HEAD` reference so the compare link points at the new tag.
 - **Date format is `YYYY-MM-DD`** — both in CHANGELOG.md and `xenforoAppReleases.js`. The marketing page renders it as-is.
 - **`sections.title === 'Developer Notes'`** is filtered out of the highlights (top 3 bullets shown above the fold). Use it for noisy implementation details that shouldn't lead the page.
 - **Don't auto-publish APKs/IPAs** — this is a build-from-source project on purpose. Only the source tag and release notes go up.

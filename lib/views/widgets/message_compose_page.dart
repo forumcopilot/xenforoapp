@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../../config/app_forum_config.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
@@ -1167,7 +1168,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     return SwitchListTile(
       title: Text(
-        'Sent from Forum Copilot mobile app',
+        'Sent from ${AppForumConfig.forumName} mobile app',
         style: textTheme.bodyMedium?.copyWith(
           color: colorScheme.onSurface,
         ),
@@ -1396,7 +1397,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       
       // Append signature if enabled
       if (widget.showSignatureToggle && _includeSignature) {
-        const signature = 'Sent from Forum Copilot mobile app';
+        final signature = 'Sent from ${AppForumConfig.forumName} mobile app';
         // Add two line breaks before signature
         content = '$content\n\n$signature';
       }

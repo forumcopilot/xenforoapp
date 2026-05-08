@@ -175,6 +175,8 @@
   },
   "subscribeTo": "订阅",
   "unsubscribeFrom": "取消订阅",
+  "subscribe": "订阅",
+  "unsubscribe": "取消订阅",
   "failedToSubscribeToThread": "无法{action}主题",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

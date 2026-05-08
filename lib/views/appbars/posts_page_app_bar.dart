@@ -204,9 +204,9 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   ),
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
-                    widget.isSubscribed 
-                        ? (AppLocalizations.of(context)?.unsubscribeFrom ?? 'Unsubscribe')
-                        : (AppLocalizations.of(context)?.subscribeTo ?? 'Subscribe'),
+                    widget.isSubscribed
+                        ? (AppLocalizations.of(context)?.unsubscribe ?? 'Unsubscribe')
+                        : (AppLocalizations.of(context)?.subscribe ?? 'Subscribe'),
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),

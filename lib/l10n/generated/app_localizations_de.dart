@@ -414,6 +414,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unsubscribeFrom => 'das Abonnement zu kündigen';
 
   @override
+  String get subscribe => 'Abonnieren';
+
+  @override
+  String get unsubscribe => 'Abbestellen';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Thread $action fehlgeschlagen';
   }

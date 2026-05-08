@@ -409,6 +409,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unsubscribeFrom => 'unsubscribe from';
 
   @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get unsubscribe => 'Unsubscribe';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Failed to $action thread';
   }

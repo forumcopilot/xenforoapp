@@ -175,6 +175,8 @@
   },
   "subscribeTo": "suscribirte a",
   "unsubscribeFrom": "desuscribirte de",
+  "subscribe": "Suscribirse",
+  "unsubscribe": "Cancelar suscripción",
   "failedToSubscribeToThread": "Error al {action} hilo",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

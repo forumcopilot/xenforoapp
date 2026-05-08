@@ -375,6 +375,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unsubscribeFrom => '取消订阅';
 
   @override
+  String get subscribe => '订阅';
+
+  @override
+  String get unsubscribe => '取消订阅';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return '无法$action主题';
   }

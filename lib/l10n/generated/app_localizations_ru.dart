@@ -414,6 +414,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unsubscribeFrom => 'отписаться от';
 
   @override
+  String get subscribe => 'Подписаться';
+
+  @override
+  String get unsubscribe => 'Отписаться';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Не удалось $action тему';
   }

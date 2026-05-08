@@ -413,6 +413,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get unsubscribeFrom => 'cancelar inscrição de';
 
   @override
+  String get subscribe => 'Inscrever-se';
+
+  @override
+  String get unsubscribe => 'Cancelar inscrição';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Falha ao $action tópico';
   }

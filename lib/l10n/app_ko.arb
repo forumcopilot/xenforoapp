@@ -175,6 +175,8 @@
   },
   "subscribeTo": "구독",
   "unsubscribeFrom": "구독 취소",
+  "subscribe": "구독",
+  "unsubscribe": "구독 취소",
   "failedToSubscribeToThread": "스레드 {action} 실패",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

@@ -175,6 +175,8 @@
   },
   "subscribeTo": "inscrever-se em",
   "unsubscribeFrom": "cancelar inscrição de",
+  "subscribe": "Inscrever-se",
+  "unsubscribe": "Cancelar inscrição",
   "failedToSubscribeToThread": "Falha ao {action} tópico",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

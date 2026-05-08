@@ -389,6 +389,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unsubscribeFrom => '구독 취소';
 
   @override
+  String get subscribe => '구독';
+
+  @override
+  String get unsubscribe => '구독 취소';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return '스레드 $action 실패';
   }

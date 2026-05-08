@@ -175,6 +175,8 @@
   },
   "subscribeTo": "abonneren op",
   "unsubscribeFrom": "abonnement opzeggen van",
+  "subscribe": "Abonneren",
+  "unsubscribe": "Afmelden",
   "failedToSubscribeToThread": "Kon {action} onderwerp niet",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

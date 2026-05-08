@@ -175,6 +175,8 @@
   },
   "subscribeTo": "subscribe to",
   "unsubscribeFrom": "unsubscribe from",
+  "subscribe": "Subscribe",
+  "unsubscribe": "Unsubscribe",
   "failedToSubscribeToThread": "Failed to {action} thread",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

@@ -121,6 +121,8 @@
   "pleaseLoginToSubscribe": "Bitte melden Sie sich an, um {action} diesen Thread",
   "subscribeTo": "zu abonnieren",
   "unsubscribeFrom": "das Abonnement zu kündigen",
+  "subscribe": "Abonnieren",
+  "unsubscribe": "Abbestellen",
   "failedToSubscribeToThread": "Thread {action} fehlgeschlagen",
   "youCannotReplyToThisThread": "Sie können nicht auf diesen Thread antworten",
   "pleaseWaitForThreadToLoad": "Bitte warten Sie, bis der Thread geladen ist",

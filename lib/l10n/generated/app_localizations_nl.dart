@@ -409,6 +409,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get unsubscribeFrom => 'abonnement opzeggen van';
 
   @override
+  String get subscribe => 'Abonneren';
+
+  @override
+  String get unsubscribe => 'Afmelden';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Kon $action onderwerp niet';
   }

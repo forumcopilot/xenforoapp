@@ -824,6 +824,18 @@ abstract class AppLocalizations {
   /// **'unsubscribe from'**
   String get unsubscribeFrom;
 
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe'**
+  String get subscribe;
+
+  /// No description provided for @unsubscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsubscribe'**
+  String get unsubscribe;
+
   /// Error message when subscribe/unsubscribe fails
   ///
   /// In en, this message translates to:

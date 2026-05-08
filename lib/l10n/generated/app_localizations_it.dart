@@ -408,6 +408,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get unsubscribeFrom => 'disiscriverti da';
 
   @override
+  String get subscribe => 'Iscriviti';
+
+  @override
+  String get unsubscribe => 'Disiscriviti';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Impossibile $action thread';
   }

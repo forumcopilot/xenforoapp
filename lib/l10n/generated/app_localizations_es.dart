@@ -414,6 +414,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unsubscribeFrom => 'desuscribirte de';
 
   @override
+  String get subscribe => 'Suscribirse';
+
+  @override
+  String get unsubscribe => 'Cancelar suscripción';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'Error al $action hilo';
   }

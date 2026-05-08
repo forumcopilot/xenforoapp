@@ -175,6 +175,8 @@
   },
   "subscribeTo": "подписаться на",
   "unsubscribeFrom": "отписаться от",
+  "subscribe": "Подписаться",
+  "unsubscribe": "Отписаться",
   "failedToSubscribeToThread": "Не удалось {action} тему",
   "@failedToSubscribeToThread": {
     "description": "Error message when subscribe/unsubscribe fails",

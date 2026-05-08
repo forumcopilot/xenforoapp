@@ -121,6 +121,8 @@
   "pleaseLoginToSubscribe": "Veuillez vous connecter pour {action} ce fil",
   "subscribeTo": "s'abonner à",
   "unsubscribeFrom": "se désabonner de",
+  "subscribe": "S'abonner",
+  "unsubscribe": "Se désabonner",
   "failedToSubscribeToThread": "Échec de {action} du fil",
   "youCannotReplyToThisThread": "Vous ne pouvez pas répondre à ce fil",
   "pleaseWaitForThreadToLoad": "Veuillez attendre le chargement du fil",

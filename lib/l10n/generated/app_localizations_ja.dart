@@ -393,6 +393,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unsubscribeFrom => '購読を解除する';
 
   @override
+  String get subscribe => '購読';
+
+  @override
+  String get unsubscribe => '購読解除';
+
+  @override
   String failedToSubscribeToThread(String action) {
     return 'スレッドの $action に失敗しました';
   }

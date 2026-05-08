@@ -121,6 +121,8 @@
   "pleaseLoginToSubscribe": "このスレッドを {action} するにはログインしてください",
   "subscribeTo": "購読する",
   "unsubscribeFrom": "購読を解除する",
+  "subscribe": "購読",
+  "unsubscribe": "購読解除",
   "failedToSubscribeToThread": "スレッドの {action} に失敗しました",
   "youCannotReplyToThisThread": "このスレッドに返信できません",
   "pleaseWaitForThreadToLoad": "スレッドの読み込みを待ってください",

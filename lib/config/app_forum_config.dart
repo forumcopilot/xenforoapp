@@ -28,7 +28,22 @@ class AppForumConfig {
   static const String? logoUrl = null;
   static const String? backgroundUrl = null;
 
-  /// Optional push backend base URL (leave empty to disable app push backend).
+  /// Push notification dispatch source. Identifies which mode this build of
+  /// the app is registering against on the XenForo server. The server-side
+  /// addon's `DispatchRouter` uses this to pick the right dispatcher.
+  ///
+  ///   - 'forumcopilot' — official Forum Copilot app build, OR any fork that
+  ///                      uses the hosted ForumCopilot Push backend. Server
+  ///                      dispatches via the hosted backend.
+  ///   - 'direct'       — white-label / BYO Firebase build. Server dispatches
+  ///                      via the customer's own Firebase project (the addon
+  ///                      reads a service-account JSON path from its admin
+  ///                      options and calls FCM HTTP v1 directly).
+  ///                      Requires ForumCopilot xenForo addon v1.3.4+.
+  ///                      Set `pushApiBaseUrl = ''` for this mode.
+  static const String pushSource = 'forumcopilot';
+
+  /// Optional push backend base URL (leave empty to disable hosted push backend).
   ///
   /// You have two ways to enable push notifications:
   ///

@@ -99,4 +99,10 @@ class SiteProxyService with ServiceErrorHandlingMixin {
     if (!_initialized) throw Exception('SiteProxyService not initialized');
     return SiteProxyFactory.getConfigProxy();
   }
+
+  /// Get device proxy (BYO/direct push device registration on the customer's XF server).
+  static IFCDeviceProxy getDeviceProxy() {
+    if (!_initialized) throw Exception('SiteProxyService not initialized');
+    return SiteProxyFactory.getDeviceProxy();
+  }
 }

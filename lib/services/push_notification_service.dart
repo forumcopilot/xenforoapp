@@ -58,6 +58,13 @@ class PushNotificationService with ServiceErrorHandlingMixin {
     required String siteUsername,
     required NotificationPreferences preferences,
   }) async {
+    // Skip the hosted-backend registration entirely when no backend URL is set.
+    // BYO/direct builds set pushApiBaseUrl='' — there's nothing to register against.
+    // The direct-mode registration happens separately via PushNotificationController._tryRegisterDirect.
+    if (!AppForumConfig.isPushBackendEnabled) {
+      AppLogger.debug('[PushNotificationService] Hosted backend disabled — skipping registerDeviceForSite');
+      return true; // Treat as success so the controller's retry chain doesn't fire.
+    }
     try {
       AppLogger.debug('Registering device for site: $siteId, user: $siteUsername');
 
@@ -113,6 +120,7 @@ class PushNotificationService with ServiceErrorHandlingMixin {
     required String deviceId,
     required String newFirebaseToken,
   }) async {
+    if (!AppForumConfig.isPushBackendEnabled) return true; // hosted backend disabled
     try {
       AppLogger.debug('Updating device token for device: ${deviceId.substring(0, 8)}...');
 
@@ -363,6 +371,11 @@ class PushNotificationService with ServiceErrorHandlingMixin {
 
   /// Test connection to push service
   Future<bool> testConnection() async {
+    // Skip the probe entirely when no hosted backend is configured (BYO/direct
+    // builds set pushApiBaseUrl='' — the probe would always fail and spam logs).
+    if (!AppForumConfig.isPushBackendEnabled) {
+      return true; // Treat as a no-op success.
+    }
     try {
       final isHealthy = await checkHealth();
       if (isHealthy) {

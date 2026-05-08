@@ -15,6 +15,7 @@ import '../src/proxy/subscription_proxy.dart';
 import '../src/proxy/moderation_proxy.dart';
 import '../src/proxy/private_conversation_proxy.dart';
 import '../src/proxy/private_message_proxy.dart';
+import '../src/proxy/device_proxy.dart';
 
 /// XenForo proxy factory implementation
 /// Creates XenForo-specific proxy instances for the ForumCopilot SDK
@@ -69,5 +70,9 @@ class XenForoProxyFactory extends SiteProxyFactory {
 
   IFCPrivateMessageProxy createPrivateMessageProxy(SiteContext context) {
     return XenForoPrivateMessageProxy(context);
+  }
+
+  IFCDeviceProxy createDeviceProxy(SiteContext context) {
+    return XenForoDeviceProxy(context);
   }
 }

@@ -17,3 +17,4 @@ export 'i_fc_search_proxy.dart';
 export 'i_fc_social_proxy.dart';
 export 'i_fc_private_conversation_proxy.dart';
 export 'i_fc_private_message_proxy.dart';
+export 'i_fc_device_proxy.dart';

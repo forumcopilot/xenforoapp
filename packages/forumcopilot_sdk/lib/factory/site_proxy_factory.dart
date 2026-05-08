@@ -150,6 +150,16 @@ abstract class SiteProxyFactory {
     return factory.createConfigProxy(_context!);
   }
 
+  /// Get device proxy (BYO/direct push device registration on the customer's XF server).
+  static IFCDeviceProxy getDeviceProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createDeviceProxy(_context!);
+  }
+
   // Abstract methods that must be implemented by concrete factories
   IFCUserProxy createUserProxy(SiteContext context);
   IFCForumProxy createForumProxy(SiteContext context);
@@ -164,4 +174,5 @@ abstract class SiteProxyFactory {
   IFCPrivateMessageProxy createPrivateMessageProxy(SiteContext context);
   IFCAttachmentProxy createAttachmentProxy(SiteContext context);
   IFCConfigProxy createConfigProxy(SiteContext context);
+  IFCDeviceProxy createDeviceProxy(SiteContext context);
 }

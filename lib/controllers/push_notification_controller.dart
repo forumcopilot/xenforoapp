@@ -3,14 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/app_forum_config.dart';
 import '../models/site_notification_state.dart';
 import '../models/notification_preferences.dart';
 import '../services/device_service.dart';
 import '../services/push_notification_service.dart';
 import '../services/notification_preferences_service.dart';
 import '../services/notification_service.dart';
+import '../services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import 'site_controller.dart';
 
 /// Main controller for managing push notifications across multiple sites
 class PushNotificationController extends GetxController with ErrorHandlingMixin {
@@ -80,6 +83,12 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       // Re-register sites that were previously registered
       await _reRegisterPersistedSites();
 
+      // BYO/direct push: register device with the forum's own server.
+      await _tryRegisterDirect();
+
+      // Re-fire when the user logs in later (registration requires an authenticated session).
+      _watchLoginForDirectRegistration();
+
       _isInitialized = true;
       AppLogger.debug('PushNotificationController initialized successfully');
       AppLogger.debug('Loaded ${_siteStates.length} site states, ${registeredSites.length} registered');
@@ -92,10 +101,100 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
     }
   }
 
+  // ----- BYO/direct mode device registration ---------------------------
+
+  bool _hasDirectRegistered = false;
+  Worker? _loginWatcher;
+
+  /// Attempts to register this device with the forum's own server for the
+  /// BYO Firebase ("direct") push mode. No-op when this build isn't a direct
+  /// build, or when prerequisites (token, login) aren't satisfied yet.
+  Future<void> _tryRegisterDirect({String? overrideToken}) async {
+    if (AppForumConfig.pushSource != 'direct') return;
+    if (_deviceId == null) return;
+    final token = overrideToken ?? _fcmToken;
+    if (token == null || token.isEmpty) return;
+
+    final ctx = Get.isRegistered<SiteController>()
+        ? Get.find<SiteController>().currentSiteContext.value
+        : null;
+    if (ctx == null || !ctx.isLoggedIn) {
+      AppLogger.debug('[DirectPush] Skipping register — not logged in yet');
+      return;
+    }
+
+    try {
+      final deviceInfo = await _deviceService.getDeviceInfo();
+      final proxy = SiteProxyService.getDeviceProxy();
+      final r = await proxy.registerDeviceAsync(
+        deviceId: _deviceId!,
+        fcmToken: token,
+        platform: deviceInfo.platform,
+        source: 'direct',
+        appVersion: deviceInfo.appVersion,
+      );
+      if (r.result) {
+        _hasDirectRegistered = true;
+        AppLogger.debug('[DirectPush] Registered device ${_deviceId!.substring(0, 8)}... '
+            'platform=${deviceInfo.platform} on forum ${ctx.site.url}');
+      } else {
+        AppLogger.debug('[DirectPush] Register failed: ${r.resultText}');
+      }
+    } catch (e) {
+      AppLogger.debug('[DirectPush] Register error: $e');
+    }
+  }
+
+  /// Unregister this device from direct-mode push (BYO Firebase). Call on
+  /// logout so the server stops dispatching to this token after the user
+  /// signs out.
+  Future<bool> unregisterDirect() async {
+    if (AppForumConfig.pushSource != 'direct') return true;
+    if (_deviceId == null) return true;
+    if (!_hasDirectRegistered) return true;
+
+    try {
+      final proxy = SiteProxyService.getDeviceProxy();
+      final r = await proxy.unregisterDeviceAsync(_deviceId!);
+      if (r.result) {
+        _hasDirectRegistered = false;
+        AppLogger.debug('[DirectPush] Unregistered device ${_deviceId!.substring(0, 8)}...');
+        return true;
+      }
+      AppLogger.debug('[DirectPush] Unregister failed: ${r.resultText}');
+      return false;
+    } catch (e) {
+      AppLogger.debug('[DirectPush] Unregister error: $e');
+      return false;
+    }
+  }
+
+  /// Listens for the user to become logged in and (re-)attempts direct
+  /// registration. Called once during init.
+  void _watchLoginForDirectRegistration() {
+    if (AppForumConfig.pushSource != 'direct') return;
+    if (_loginWatcher != null) return;
+    if (!Get.isRegistered<SiteController>()) return;
+
+    final siteCtrl = Get.find<SiteController>();
+    _loginWatcher = ever<dynamic>(siteCtrl.currentSiteContext, (_) async {
+      final ctx = siteCtrl.currentSiteContext.value;
+      if (ctx != null && ctx.isLoggedIn && !_hasDirectRegistered) {
+        await _tryRegisterDirect();
+      }
+    });
+  }
+
   /// Handle token refresh from NotificationService (consolidated listener)
   Future<void> _handleTokenRefresh(String newToken) async {
     AppLogger.debug('FCM token refreshed, updating all registrations...');
     _fcmToken = newToken;
+
+    // BYO/direct: re-register with the new token.
+    if (AppForumConfig.pushSource == 'direct' && _hasDirectRegistered) {
+      _hasDirectRegistered = false; // force re-register with new token
+    }
+    await _tryRegisterDirect(overrideToken: newToken);
 
     // Show toast notification
     _showToast('Updating push notification token...', isError: false);
@@ -669,7 +768,11 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
   void onClose() {
     // Save states before closing
     _saveSiteStates();
-    
+
+    // Stop watching login state
+    _loginWatcher?.dispose();
+    _loginWatcher = null;
+
     // Clear token refresh callback from NotificationService
     _notificationService.clearTokenRefreshCallback();
 

@@ -6,7 +6,19 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
-## [0.6.0] - 2026-04-29
+## [0.6.1] - 2026-05-08
+
+Quality-of-life patch release. Three forks-driven improvements moved upstream so anyone cloning the template gets a cleaner default build and a more fork-friendly compose signature.
+
+### Fixed
+- Thread action menu now shows proper "Subscribe" / "Unsubscribe" labels instead of lowercase "subscribe to" / "unsubscribe from" (the lowercase variants were designed for sentence interpolation like "Please login to subscribe to this thread" and read awkwardly as standalone menu items). New menu-label l10n entries added across all 11 supported locales; sentence-interpolation entries unchanged.
+- Removed a stale `[Firebase Crashlytics] Upload dSYM` build phase from the iOS Xcode project. The phase referenced `${PODS_ROOT}/FirebaseCrashlytics/run`, but `firebase_crashlytics` was already dropped from `pubspec.yaml` in v0.6.0, so the script path no longer existed after `pod install` and iOS builds failed with "No such file or directory". Projects that want crash reporting can re-add the package and let pod install set up the build phase fresh.
+
+### Changed
+- The "Sent from Forum Copilot mobile app" signature in the message composer now reads `Sent from <AppForumConfig.forumName> mobile app`. White-label forks already edit `AppForumConfig.forumName` for branding; the signature now picks that up automatically. The hosted Forum Copilot multi-tenant app uses a different codebase and is unaffected.
+
+[0.6.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.1
+
 
 First public release of the standalone XenForo Flutter template — a fork-friendly, build-it-yourself mobile app for any XenForo community.
 
@@ -28,5 +40,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.6.1...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

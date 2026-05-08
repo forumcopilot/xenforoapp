@@ -6,6 +6,27 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-05-08
+
+Adds first-class support for **BYO Firebase + direct dispatch** push notifications. White-label and self-hosted forks can now run push without standing up a separate dispatcher backend — the ForumCopilot xenForo addon (v1.3.4+) ships its own FCM HTTP v1 client and dispatches directly using a service-account JSON.
+
+### Added
+- New `IFCDeviceProxy` SDK interface and `XenForoDeviceProxy` implementation, exposing `registerDevice` / `unregisterDevice` / `updateDeviceToken` against the `forumcopilot.php` plugin endpoint. Used by direct-mode builds to register an FCM token with the customer's own XenForo server (writes to `xf_fc_device_token`).
+- New `AppForumConfig.pushSource` constant gating which push registration path runs at app startup. `'forumcopilot'` (default) keeps the existing hosted-backend flow. `'direct'` activates the new direct-mode flow described above.
+- `PushNotificationController` now performs direct-mode device registration on init when `pushSource == 'direct'`, watches login state to retry once the user authenticates, and re-registers on FCM token rotation. Calls `unregisterDirect()` cleanly on logout.
+- `SiteProxyService.getDeviceProxy()` shortcut for direct-mode callers.
+
+### Changed
+- `PushNotificationService.registerDeviceForSite`, `updateDeviceToken`, and `testConnection` now short-circuit to a no-op when `pushApiBaseUrl` is empty. BYO-direct builds set the URL empty since there is no hosted backend, and the previous behavior was to spam logs probing a non-existent URL.
+- `README.md` push-notifications section rewritten as three labelled setup paths (hosted / BYO direct / BYO custom backend) with a comparison table, replacing the previous two-option layout that pushed self-hosters toward running a custom backend they didn't actually need.
+
+### Notes for forks
+- This release is **backward compatible** for builds already configured with `pushApiBaseUrl` and the hosted ForumCopilot Push backend — `pushSource` defaults to `'forumcopilot'`, behavior is unchanged.
+- To opt into direct mode: set `pushSource = 'direct'`, set `pushApiBaseUrl = ''`, and configure the addon's "Direct push" admin options with a Firebase service-account JSON path. See README.md "Path 2" for the full walkthrough.
+- The XenForo addon must be at least version 1.3.4 for the direct-dispatch endpoint to exist on the server.
+
+[0.7.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.7.0
+
 ## [0.6.1] - 2026-05-08
 
 Quality-of-life patch release. Three forks-driven improvements moved upstream so anyone cloning the template gets a cleaner default build and a more fork-friendly compose signature.
@@ -40,5 +61,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.7.0...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

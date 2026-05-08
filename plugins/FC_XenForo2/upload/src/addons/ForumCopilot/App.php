@@ -288,8 +288,20 @@ class App extends \XF\App
             'leaveConversation' => 'PrivateConversationController@actionLeaveConversation',
             'inviteParticipant' => 'PrivateConversationController@actionInviteParticipant',
             'getQuoteConversation' => 'PrivateConversationController@actionGetQuoteConversation',
+
+            // Push notification device registration
+            'registerDevice' => 'DeviceController@actionRegisterDevice',
+            'unregisterDevice' => 'DeviceController@actionUnregisterDevice',
+            'updateDeviceToken' => 'DeviceController@actionUpdateDeviceToken',
         ];
+        // Debug: log device-registration dispatches so opcache/upload issues are
+        // visible in /admin.php?logs/server-errors. Remove once stable.
+        if (in_array($method, ['registerDevice', 'unregisterDevice', 'updateDeviceToken'], true)) {
+            \XF::logError('[FC DEBUG] Dispatch ' . $method . ' (mapped=' . (isset($map[$method]) ? 'yes' : 'NO') . ')');
+        }
+
         if(!isset($map[$method])) {
+            \XF::logError('[FC DEBUG] Unknown API method: ' . $method);
             return $this->createJsonError("Unknown method: $method", 400);
         }
         $controllerClass = explode('@', $map[$method])[0];

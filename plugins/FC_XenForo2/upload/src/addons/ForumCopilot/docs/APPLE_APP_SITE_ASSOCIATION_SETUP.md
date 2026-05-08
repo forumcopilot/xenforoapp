@@ -49,7 +49,7 @@ Create a file named `apple-app-site-association` (no extension) with this conten
 {
   "webcredentials": {
     "apps": [
-      "TEAM_ID.com.example.forumapp"
+      "3F2M6VD2P8.com.forumcopilot.mobile"
     ]
   }
 }
@@ -178,7 +178,7 @@ Expected output:
 {
   "webcredentials": {
     "apps": [
-      "TEAM_ID.com.example.forumapp"
+      "3F2M6VD2P8.com.forumcopilot.mobile"
     ]
   }
 }

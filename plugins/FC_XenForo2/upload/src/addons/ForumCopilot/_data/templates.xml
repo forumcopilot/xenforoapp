@@ -1,6 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates>
-    <template type="admin" title="option_template_fc_site_info_iframe" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:formrow
+  <template type="admin" title="fc_option" version_id="1031070" version_string="1.3.10"><![CDATA[<xf:title>{{ phrase('option_group.fc_options') }}</xf:title>
+
+<xf:if is="!$fc_site_id">
+	<div class="blockMessage blockMessage--warning">
+		{{ phrase('fc_site_not_registered') }}
+	</div>
+</xf:if>
+
+<xf:form action="{{ link('options/groups', {'group_id': 'fc_options'}) }}" method="post" class="block" data-xf-init="form-submit-loader">
+	<xf:csrf />
+	
+	<div class="block-container">
+		<h2 class="block-header">{{ phrase('fc_push_notifications') }}</h2>
+		
+		<div class="block-body">
+			<xf:checkboxrow label="{{ phrase('fc_push_enabled') }}" explain="{{ phrase('fc_push_enabled_explain') }}">
+				<xf:option name="fc_push_enabled" selected="{$fc_push_enabled}" />
+			</xf:checkboxrow>
+			
+			<xf:formrow label="{{ phrase('fc_push_api_url') }}" explain="{{ phrase('fc_push_api_url_explain') }}">
+				<xf:textbox name="fc_push_api_url" value="{$fc_push_api_url}" />
+			</xf:formrow>
+			
+			<xf:formrow label="{{ phrase('fc_push_api_key') }}" explain="{{ phrase('fc_push_api_key_explain') }}">
+				<xf:textbox name="fc_push_api_key" value="{$fc_push_api_key}" type="password" />
+			</xf:formrow>
+		</div>
+	</div>
+	
+	<div class="block-container">
+		<h2 class="block-header">{{ phrase('fc_smart_banner') }}</h2>
+		
+		<div class="block-body">
+			<xf:checkboxrow label="{{ phrase('option.fc_smart_banner_enabled') }}" explain="{{ phrase('option_explain.fc_smart_banner_enabled') }}">
+				<xf:option name="fc_smart_banner_enabled" selected="{$fc_smart_banner_enabled}" />
+			</xf:checkboxrow>
+
+			<xf:formrow label="{{ phrase('option.fc_smart_banner_ios_app_id') }}" explain="{{ phrase('option_explain.fc_smart_banner_ios_app_id') }}">
+				<xf:textbox name="fc_smart_banner_ios_app_id" value="{$fc_smart_banner_ios_app_id}" />
+			</xf:formrow>
+
+			<xf:formrow label="{{ phrase('option.fc_smart_banner_android_package') }}" explain="{{ phrase('option_explain.fc_smart_banner_android_package') }}">
+				<xf:textbox name="fc_smart_banner_android_package" value="{$fc_smart_banner_android_package}" />
+			</xf:formrow>
+
+			<xf:formrow label="{{ phrase('option.fc_smart_banner_icon_url') }}" explain="{{ phrase('option_explain.fc_smart_banner_icon_url') }}">
+				<xf:textbox name="fc_smart_banner_icon_url" value="{$fc_smart_banner_icon_url}" />
+			</xf:formrow>
+		</div>
+	</div>
+	
+	<xf:submitrow icon="save" />
+</xf:form>]]></template>
+  <template type="admin" title="option_template_fc_site_info_iframe" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:formrow
 	label="{$option.title}"
 	explain="{$explainHtml}"
 	hint="{$hintHtml}"
@@ -39,46 +92,4 @@
 		})();
 	</script>
 </xf:formrow>]]></template>
-    <template type="admin" title="fc_option" version_id="1000000" version_string="1.0.0"><![CDATA[<xf:title>{{ phrase('option_group.fc_options') }}</xf:title>
-
-<xf:if is="!$fc_site_id">
-	<div class="blockMessage blockMessage--warning">
-		{{ phrase('fc_site_not_registered') }}
-	</div>
-</xf:if>
-
-<xf:form action="{{ link('options/groups', {'group_id': 'fc_options'}) }}" method="post" class="block" data-xf-init="form-submit-loader">
-	<xf:csrf />
-	
-	<div class="block-container">
-		<h2 class="block-header">{{ phrase('fc_push_notifications') }}</h2>
-		
-		<div class="block-body">
-			<xf:checkboxrow label="{{ phrase('fc_push_enabled') }}" explain="{{ phrase('fc_push_enabled_explain') }}">
-				<xf:option name="fc_push_enabled" selected="{$fc_push_enabled}" />
-			</xf:checkboxrow>
-			
-			<xf:formrow label="{{ phrase('fc_push_api_url') }}" explain="{{ phrase('fc_push_api_url_explain') }}">
-				<xf:textbox name="fc_push_api_url" value="{$fc_push_api_url}" />
-			</xf:formrow>
-			
-			<xf:formrow label="{{ phrase('fc_push_api_key') }}" explain="{{ phrase('fc_push_api_key_explain') }}">
-				<xf:textbox name="fc_push_api_key" value="{$fc_push_api_key}" type="password" />
-			</xf:formrow>
-		</div>
-	</div>
-	
-	<div class="block-container">
-		<h2 class="block-header">{{ phrase('fc_smart_banner') }}</h2>
-		
-		<div class="block-body">
-			<xf:checkboxrow label="{{ phrase('option.fc_smart_banner_enabled') }}" explain="{{ phrase('option_explain.fc_smart_banner_enabled') }}">
-				<xf:option name="fc_smart_banner_enabled" selected="{$fc_smart_banner_enabled}" />
-			</xf:checkboxrow>
-		</div>
-	</div>
-	
-	<xf:submitrow icon="save" />
-</xf:form>]]></template>
 </templates>
-

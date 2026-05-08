@@ -1,56 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phrases>
-    <phrase title="option_group.fc_options" version_id="1000000" version_string="1.0.0">
-        <![CDATA[ForumCopilot Options]]></phrase>
-    <phrase title="option_group_description.fc_options" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Configure ForumCopilot push notification settings for mobile app integration]]></phrase>
-    
-    <phrase title="option_group.fc_options_debug" version_id="1000000" version_string="1.0.0">
-        <![CDATA[ForumCopilot Internal Options]]></phrase>
-    <phrase title="option_group_description.fc_options_debug" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Internal ForumCopilot options (debug mode only)]]></phrase>
-    
-    <phrase title="option.fc_push_enabled" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Enable Push Notifications]]></phrase>
-    <phrase title="option_explain.fc_push_enabled" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Enable or disable push notifications for ForumCopilot mobile app users]]></phrase>
-    
-    <phrase title="option.fc_push_api_url" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Push API URL]]></phrase>
-    <phrase title="option_explain.fc_push_api_url" version_id="1000000" version_string="1.0.0">
-        <![CDATA[The URL of your ForumCopilot push notification backend service]]></phrase>
-    
-    <phrase title="option.fc_push_api_key" version_id="1000000" version_string="1.0.0">
-        <![CDATA[API Key]]></phrase>
-    <phrase title="option_explain.fc_push_api_key" version_id="1000000" version_string="1.0.0">
-        <![CDATA[API key for authenticating with the ForumCopilot push notification service and for secure communication with siteowners. This is automatically set during site registration.]]></phrase>
-    
-    
-    <phrase title="option.fc_site_info_form" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Forum Information]]></phrase>
-    <phrase title="option_explain.fc_site_info_form" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Edit your forum information (name, description, logo, language, country) that appears in ForumCopilot.]]></phrase>
-    
-    <phrase title="option.fc_smart_banner_enabled" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Enable Smart Banner]]></phrase>
-    <phrase title="option_explain.fc_smart_banner_enabled" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Smart banner is a small banner that appears on your visitors' mobile web browser. It does not block or overlap any of your site features, including banner ads. We appreciate you keeping this setting ON to help make this project sustainable. Mobile app sales are the only way we generate funding for this project.]]></phrase>
-    
-    <phrase title="fc_push" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Forum Copilot Mobile App]]></phrase>
-    
-    <phrase title="fc_register_site" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Register Site / Retry]]></phrase>
-    <phrase title="fc_register_site_explain" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Click this button to register your site with ForumCopilot API and obtain a site ID. Use this if registration failed during installation.]]></phrase>
-    
-    <phrase title="fc_site_not_registered" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Your site is not registered yet. Please register your site first.]]></phrase>
-    <phrase title="fc_forum_information" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Forum Information]]></phrase>
-    <phrase title="fc_push_notifications" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Push Notifications]]></phrase>
-    
-    <phrase title="fc_smart_banner" version_id="1000000" version_string="1.0.0">
-        <![CDATA[Smart Banner]]></phrase>
+  <phrase title="fc_forum_information" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Forum Information]]></phrase>
+  <phrase title="fc_push" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Forum Copilot Mobile App]]></phrase>
+  <phrase title="fc_push_notifications" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Push Notifications]]></phrase>
+  <phrase title="fc_register_site" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Register Site / Retry]]></phrase>
+  <phrase title="fc_register_site_explain" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Click this button to register your site with ForumCopilot API and obtain a site ID. Use this if registration failed during installation.]]></phrase>
+  <phrase title="fc_site_not_registered" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Your site is not registered yet. Please register your site first.]]></phrase>
+  <phrase title="fc_smart_banner" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Smart Banner]]></phrase>
+  <phrase title="option.fc_push_api_key" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Hosted push: API key]]></phrase>
+  <phrase title="option.fc_push_api_url" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Hosted push: backend URL]]></phrase>
+  <phrase title="option.fc_push_direct_creds_path" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Firebase service-account JSON path]]></phrase>
+  <phrase title="option.fc_push_direct_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Direct push (your own white-label app + Firebase)]]></phrase>
+  <phrase title="option.fc_push_enabled" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Enable Push Notifications (master)]]></phrase>
+  <phrase title="option.fc_push_hosted_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Hosted push (official Forum Copilot app)]]></phrase>
+  <phrase title="option.fc_site_info_form" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Forum Information]]></phrase>
+  <phrase title="option.fc_smart_banner_android_package" version_id="1004000" version_string="1.4.0"><![CDATA[
+        Android package name]]></phrase>
+  <phrase title="option.fc_smart_banner_enabled" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Enable Smart Banner]]></phrase>
+  <phrase title="option.fc_smart_banner_icon_url" version_id="1004000" version_string="1.4.0"><![CDATA[
+        Banner icon URL]]></phrase>
+  <phrase title="option.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
+        iOS App Store ID]]></phrase>
+  <phrase title="option_explain.fc_push_api_key" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Used by Hosted push above. API key for authenticating with the Forum Copilot push notification service. Automatically set during site registration; you usually don't need to change this.]]></phrase>
+  <phrase title="option_explain.fc_push_api_url" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Used by Hosted push above. The URL of your Forum Copilot push notification backend service. Default points to the official forumcopilot.com hosted backend.]]></phrase>
+  <phrase title="option_explain.fc_push_direct_creds_path" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Absolute filesystem path on this server to the Firebase service-account JSON file for your Firebase project. Generate this file in the Firebase Console under Project Settings → Service accounts → "Generate new private key", then upload it to this server (outside your web root for security) and paste the full path here. Required for "Direct push" to actually dispatch.]]></phrase>
+  <phrase title="option_explain.fc_push_direct_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Dispatch push notifications directly to Firebase Cloud Messaging using your own Firebase project credentials (set the path below). Use this if you ship a white-label mobile app built from the Forum Copilot Open Source codebase. When enabled but the credentials path is empty, this option is silently ignored — no errors, no log spam. Both this and "Hosted push" can be enabled simultaneously: each device is routed through whichever path it registered with.]]></phrase>
+  <phrase title="option_explain.fc_push_enabled" version_id="1003005" version_string="1.3.5"><![CDATA[
+        Master kill switch for ALL push notifications. When off, no pushes are dispatched regardless of the Hosted/Direct settings below. Turn off to temporarily disable push delivery without losing your configuration.]]></phrase>
+  <phrase title="option_explain.fc_push_hosted_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[
+        Dispatch push notifications through the hosted Forum Copilot push backend (configured by the Push API URL above). Required if any of your users install the official Forum Copilot mobile app from the App Store / Play Store. Safe to leave on; pushes only fire for devices registered against this backend.]]></phrase>
+  <phrase title="option_explain.fc_site_info_form" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Edit your forum information (name, description, logo, language, country) that appears in ForumCopilot.]]></phrase>
+  <phrase title="option_explain.fc_smart_banner_android_package" version_id="1004000" version_string="1.4.0"><![CDATA[
+        Google Play package name for the Android app the banner should link to (e.g. <code>com.forumcopilot.mobile</code>). Leave the default to point at the Forum Copilot app, or replace it with your own package name if you ship a branded version.]]></phrase>
+  <phrase title="option_explain.fc_smart_banner_enabled" version_id="1031070" version_string="1.3.10"><![CDATA[
+        Shows a small "Open in app" banner to visitors on iOS and Android mobile browsers. The banner is dismissible, automatically yields to other sticky bottom elements (cookie bars, anchor ads), and never overlaps your site features. We appreciate you keeping this setting ON to help make this project sustainable — mobile app sales are the only way we fund this project.]]></phrase>
+  <phrase title="option_explain.fc_smart_banner_icon_url" version_id="1004000" version_string="1.4.0"><![CDATA[
+        Optional. URL of the icon shown on the left side of the banner. Leave blank to use the default Forum Copilot icon. Recommended size: 88×88 or 128×128 PNG.]]></phrase>
+  <phrase title="option_explain.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
+        Numeric App Store ID for the iOS app the banner should link to (e.g. <code>6755660616</code>). Leave the default to point at the Forum Copilot app, or replace it with your own App Store ID if you ship a branded version.]]></phrase>
+  <phrase title="option_group.fc_options" version_id="1000000" version_string="1.0.0"><![CDATA[
+        ForumCopilot Options]]></phrase>
+  <phrase title="option_group.fc_options_debug" version_id="1000000" version_string="1.0.0"><![CDATA[
+        ForumCopilot Internal Options]]></phrase>
+  <phrase title="option_group_description.fc_options" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Configure ForumCopilot push notification settings for mobile app integration]]></phrase>
+  <phrase title="option_group_description.fc_options_debug" version_id="1000000" version_string="1.0.0"><![CDATA[
+        Internal ForumCopilot options (debug mode only)]]></phrase>
 </phrases>

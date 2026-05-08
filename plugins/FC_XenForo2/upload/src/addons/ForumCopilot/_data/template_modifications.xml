@@ -1,27 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<template_modifications>
-    <modification type="public" template="account_preferences" modification_key="fc_push_column" description="Add Forum Copilot Mobile App column to notification preferences" enabled="1" action="str_replace" execution_order="10">
-        <find><![CDATA[</xf:if>
-							</ul>
-						</xf:formrow>
-					</xf:foreach>
-					<hr class="formRowSep" />
-				</xf:foreach>]]></find>
-        <replace><![CDATA[</xf:if>
-		<xf:if is="$xf.options.fc_push_enabled">
-									<li class="notificationChoices-choice notificationChoices-choice--fcpush">
-										<xf:checkbox standalone="true">
-											<xf:option name="fc_push[{$contentType}_{$action}]"
-												checked="{{ $xf.visitor.Option.doesReceiveFcPush($contentType, $action) }}"
-												label="{{ phrase('fc_push') }}" />
-										</xf:checkbox>
-										<xf:hiddenval name="fc_push_shown[{$contentType}_{$action}]">1</xf:hiddenval>
-									</li>
-								</xf:if>
-							</ul>
-						</xf:formrow>
-					</xf:foreach>
-					<hr class="formRowSep" />
-				</xf:foreach>]]></replace>
-    </modification>
-</template_modifications>
+<template_modifications/>

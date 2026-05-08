@@ -134,6 +134,8 @@ class ForumCopilotPush
         if ($httpCode !== 200) {
             \XF::logError('ForumCopilot Push Failed: HTTP ' . $httpCode . ' - ' . $response);
             \XF::logError('ForumCopilot Push Data: ' . json_encode($data));
+        } else {
+            \XF::logError('[FC DEBUG] hosted push HTTP 200 — ' . substr((string)$response, 0, 200));
         }
     }
 

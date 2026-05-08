@@ -14,5 +14,5 @@ class BackendApi
     public const VALIDATE_CONNECTION_PATH = '/validate-connection';
 
     /** User-Agent value sent with every request to the backend (WAF/CDN friendly). */
-    public const USER_AGENT = 'ForumCopilotPlugin/1.2.1 (+https://forumcopilot.com)';
+    public const USER_AGENT = 'ForumCopilotPlugin/1.3.2 (+https://forumcopilot.com)';
 }

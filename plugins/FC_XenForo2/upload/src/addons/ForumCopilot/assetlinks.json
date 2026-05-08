@@ -5,20 +5,12 @@
       "delegate_permission/common.handle_all_urls"
     ],
     "target": {
-      "namespace": "web",
-      "site": "https://forum.example.com"
-    }
-  },
-  {
-    "relation": [
-      "delegate_permission/common.get_login_creds",
-      "delegate_permission/common.handle_all_urls"
-    ],
-    "target": {
       "namespace": "android_app",
-      "package_name": "com.example.forumapp",
+      "package_name": "com.forumcopilot.mobile",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_YOUR_ANDROID_SHA256_FINGERPRINT"
+        "40:24:5E:8F:BB:A2:9A:4C:B7:A8:07:44:37:7E:DE:A6:AA:AF:97:06:2C:AF:90:4C:5B:BC:21:85:7E:D1:69:60",
+        "2D:D7:53:7F:D9:33:CD:4A:75:D3:99:F1:5D:AC:7C:E0:4F:4A:80:50:BE:05:66:9D:5E:F9:9E:4B:0C:AC:D5:03",
+        "D4:37:95:33:57:60:98:DB:66:82:94:FF:CC:14:5C:08:0F:8A:83:EB:3D:0F:DF:6A:58:1A:2D:51:0F:BF:B6:F8"
       ]
     }
   }

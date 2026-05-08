@@ -33,7 +33,7 @@ On Android, passkeys use the **Credential Manager** API. For passkeys created on
 
 | Field | Value |
 |-------|--------|
-| **Android package name** | `com.example.forumapp` |
+| **Android package name** | `com.forumcopilot.mobile` |
 | **SHA-256 fingerprint** | Replace the placeholder in the installed file with the **release** signing key fingerprint (see below). |
 
 ---
@@ -76,13 +76,11 @@ Copy the **SHA256** value and add it to the `sha256_cert_fingerprints` array in 
 ### Edit the file on the server
 
 1. Open `{forum_root}/.well-known/assetlinks.json` on your server.
-2. Ensure the file declares both targets:
-   - `namespace: "web"` with your forum domain (for example `https://forum.example.com`)
-   - `namespace: "android_app"` with package + signing fingerprints
+2. The template includes only the **android_app** target (required for passkey login from the Forum Copilot app). Optionally, you can add a **web** target with your forum URL (e.g. `https://your-forum.com`) if you want passkeys to work in the browser on your site.
 3. Replace the placeholder fingerprint in `sha256_cert_fingerprints` with your real SHA-256. You can list multiple fingerprints (e.g. release and debug) in the array.
 4. Save. Ensure the file is still valid JSON.
 
-Example after edit:
+Example (app only; enough for the Android app):
 
 ```json
 [
@@ -92,25 +90,19 @@ Example after edit:
       "delegate_permission/common.handle_all_urls"
     ],
     "target": {
-      "namespace": "web",
-      "site": "https://forum.example.com"
-    }
-  },
-  {
-    "relation": [
-      "delegate_permission/common.get_login_creds",
-      "delegate_permission/common.handle_all_urls"
-    ],
-    "target": {
       "namespace": "android_app",
-      "package_name": "com.example.forumapp",
+      "package_name": "com.forumcopilot.mobile",
       "sha256_cert_fingerprints": [
-        "AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD"
+        "40:24:5E:8F:BB:A2:9A:4C:B7:A8:07:44:37:7E:DE:A6:AA:AF:97:06:2C:AF:90:4C:5B:BC:21:85:7E:D1:69:60",
+        "2D:D7:53:7F:D9:33:CD:4A:75:D3:99:F1:5D:AC:7C:E0:4F:4A:80:50:BE:05:66:9D:5E:F9:9E:4B:0C:AC:D5:03",
+        "D4:37:95:33:57:60:98:DB:66:82:94:FF:CC:14:5C:08:0F:8A:83:EB:3D:0F:DF:6A:58:1A:2D:51:0F:BF:B6:F8"
       ]
     }
   }
 ]
 ```
+
+The three fingerprints in the example are: **release** (upload/local), **debug** (Android Studio / `flutter run`), and **Play App Signing** (Google Play builds). Include all that apply to your setup.
 
 ---
 

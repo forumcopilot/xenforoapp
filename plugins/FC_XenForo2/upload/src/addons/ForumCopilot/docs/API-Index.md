@@ -71,7 +71,7 @@ On error:
   - `loginname` (string, required) — Username or email.
   - `password` (string, required) — Password.
   - `tfaCode` (string, optional) — 2FA code if required (for code-based providers).
-  - `tfaProvider` (string, optional) — 2FA provider id (`totp`, `email`, `backup`, `passkey`).
+  - `tfaProvider` (string, optional) — 2FA provider id (`totp`, `email`, `backup`, `passkey`). When `tfaCode` is omitted and 2FA is required, this can be used to trigger a specific provider on the first step.
   - `trustDevice` (bool, optional) — Trust device if 2FA succeeds.
 
 **Passkey-only login:**
@@ -94,12 +94,13 @@ On error:
   - `result` (bool) — `false` when 2FA required.
   - `resultText` (string) — "Two-factor authentication required".
   - `tfaRequired` (bool) — `true`.
+  - First-step behavior: the API triggers the selected/default TFA provider before returning this response. This means providers such as `email` will generate and send their code at this point.
   - `providers` (array) — List of available 2FA providers:
     - `id` (string) — Provider ID (`totp`, `email`, `backup`, `passkey`).
     - `title` (string) — Display name.
     - `description` (string) — Provider description.
     - `type` (string) — `"passkey"` or `"code"` (indicates how to complete 2FA).
-  - `providerId` (string) — Default/first provider ID.
+  - `providerId` (string) — Provider ID that was triggered for this 2FA step.
   - `availableTfaMethods` (object) — Summary of available methods:
     - `passkey` (bool) — `true` if passkey is available.
     - `code` (bool) — `true` if code-based methods are available.

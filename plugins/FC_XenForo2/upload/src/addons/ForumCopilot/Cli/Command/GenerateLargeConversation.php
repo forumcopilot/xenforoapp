@@ -2,7 +2,6 @@
 
 namespace ForumCopilot\Cli\Command;
 
-use XF\Cli\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

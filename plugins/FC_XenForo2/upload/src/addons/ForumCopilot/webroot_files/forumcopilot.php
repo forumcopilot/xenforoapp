@@ -169,6 +169,11 @@ class ForumCopilotPubApp extends PubApp
             'advanceSearchTopic' => 'SearchController@actionAdvanceSearchTopic',
             'advanceSearchPost' => 'SearchController@actionAdvanceSearchPost',
 
+            // Device tokens (push notifications)
+            'registerDevice'    => 'DeviceController@actionRegisterDevice',
+            'unregisterDevice'  => 'DeviceController@actionUnregisterDevice',
+            'updateDeviceToken' => 'DeviceController@actionUpdateDeviceToken',
+
             // Attachment
             'uploadAttachment' => 'AttachmentController@actionUploadAttachment',
             'removeAttachment' => 'AttachmentController@actionRemoveAttachment',

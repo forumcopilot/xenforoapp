@@ -12,7 +12,6 @@ use ForumCopilot\Result\FCForgetPasswordResult;
 use ForumCopilot\Adapter\XenForoParamAdapter;
 use ForumCopilot\Entity\FCUser;
 use XF\Validator\Email;
-use XF\ControllerPlugin\LoginPlugin;
 
 // Explicitly require FCAccountResult.php which contains multiple Result classes
 // This ensures all classes in that file are loaded
@@ -29,6 +28,10 @@ class AccountController extends AbstractController
         // Check for passkey-only login (webauthn_payload present)
         $webauthnPayload = $params->get('webauthn_payload');
         if (!empty($webauthnPayload) && is_array($webauthnPayload)) {
+            if (!$this->supportsPasskeys()) {
+                return $this->apiError('Passkey login is not supported on this XenForo version');
+            }
+
             try {
                 $webauthnChallenge = $params->get('webauthn_challenge', '');
                 $challengeService = $this->app->service(\ForumCopilot\Service\PasskeyChallengeService::class);
@@ -59,8 +62,7 @@ class AccountController extends AbstractController
                 $challengeService->updatePasskeyLastUse($passkey, $this->request->getIp());
 
                 // Complete login using XenForo native flow (handles remember cookie and login IP log)
-                /** @var LoginPlugin $loginPlugin */
-                $loginPlugin = $this->plugin(LoginPlugin::class);
+                $loginPlugin = $this->getLoginPlugin();
                 $remember = (bool)$params->get('remember', true);
                 $loginPlugin->completeLogin($user, $remember);
 
@@ -158,7 +160,7 @@ class AccountController extends AbstractController
         try {
             // Use LoginService for proper authentication with rate limiting
             $ip = $this->request->getIp();
-            $loginService = $this->service(\XF\Service\User\LoginService::class, $fcParams->loginname, $ip);
+            $loginService = $this->getLoginService($fcParams->loginname, $ip);
             
             // Check for rate limiting (brute force protection)
             if ($loginService->isLoginLimited($limitType)) {
@@ -188,15 +190,21 @@ class AccountController extends AbstractController
             }
 
             // Check if user has two-factor authentication enabled
-            $tfaRepo = $this->repository(\XF\Repository\TfaRepository::class);
-            $tfaService = $this->service(\XF\Service\User\TfaService::class, $user);
+            $tfaRepo = $this->getTfaRepository();
+            $tfaService = $this->getTfaService($user);
             
             if ($tfaRepo->userRequiresTfa($user)) {
                 // TFA is required for this user
                 $tfaCode = $params->get('tfaCode', '');
                 
                 if (empty($tfaCode)) {
-                    // First request - return TFA required response with provider information
+                    // First request - trigger the selected/default provider so code-based
+                    // providers like email actually generate and send their challenge.
+                    $requestedProviderId = $params->get('tfaProvider', '');
+                    if (!empty($requestedProviderId) && !$tfaService->isProviderValid($requestedProviderId)) {
+                        return $this->apiError('Invalid TFA provider');
+                    }
+
                     $providers = $tfaService->getProviders();
                     $providerList = [];
                     $hasPasskey = false;
@@ -220,14 +228,19 @@ class AccountController extends AbstractController
                             $hasCode = true;
                         }
                     }
-                    
+
                     // Set TFA session state (similar to web implementation)
-                    /** @var LoginPlugin $loginPlugin */
-                    $loginPlugin = $this->plugin(LoginPlugin::class);
+                    $loginPlugin = $this->getLoginPlugin();
                     $loginPlugin->setTfaSessionCheck($user);
+
+                    $triggered = $tfaService->trigger(
+                        $this->request,
+                        !empty($requestedProviderId) ? $requestedProviderId : null
+                    );
+                    $triggeredProviderId = $triggered['provider']->provider_id;
                     
                     // Log IP for TFA attempt
-                    $this->repository(\XF\Repository\IpRepository::class)->logIp(
+                    $this->getIpRepository()->logIp(
                         $user->user_id,
                         $ip,
                         'user',
@@ -241,7 +254,7 @@ class AccountController extends AbstractController
                         'resultText' => 'Two-factor authentication required',
                         'tfaRequired' => true,
                         'providers' => $providerList,
-                        'providerId' => !empty($providerList) ? $providerList[0]['id'] : null,
+                        'providerId' => $triggeredProviderId,
                         'availableTfaMethods' => [
                             'passkey' => $hasPasskey,
                             'code' => $hasCode,
@@ -249,7 +262,7 @@ class AccountController extends AbstractController
                     ];
                     
                     // If passkey is available, generate our challenge (binary/base64url) for the app
-                    if ($hasPasskey) {
+                    if ($hasPasskey && $this->supportsPasskeys()) {
                         try {
                             $challengeService = $this->app->service(\ForumCopilot\Service\PasskeyChallengeService::class);
                             $challenge = $challengeService->generateAndStore($this->session());
@@ -286,6 +299,10 @@ class AccountController extends AbstractController
                 
                 // Handle passkey provider differently from code-based providers
                 if ($providerId === 'passkey') {
+                    if (!$this->supportsPasskeys()) {
+                        return $this->apiError('Passkey verification is not supported on this XenForo version');
+                    }
+
                     $webauthnPayload = $params->get('webauthn_payload');
                     $webauthnChallenge = $params->get('webauthn_challenge', '');
                     if (empty($webauthnPayload) || !is_array($webauthnPayload)) {
@@ -331,8 +348,7 @@ class AccountController extends AbstractController
                 }
                 
                 // Clear TFA session check
-                /** @var LoginPlugin $loginPlugin */
-                $loginPlugin = $this->plugin(LoginPlugin::class);
+                $loginPlugin = $this->getLoginPlugin();
                 $loginPlugin->clearTfaSessionCheck();
                 
                 // Optionally handle trusted device - hard coded to trust forever
@@ -340,7 +356,7 @@ class AccountController extends AbstractController
                 if ($trustDevice) {
                     // Create trusted key with "forever" expiration (year 2100 timestamp)
                     // This is effectively permanent for practical purposes
-                    $tfaTrustRepo = $this->repository(\XF\Repository\UserTfaTrustedRepository::class);
+                    $tfaTrustRepo = $this->getUserTfaTrustedRepository();
                     $trustedUntil = 4102444800; // January 1, 2100 00:00:00 UTC - effectively "forever"
                     $key = $tfaTrustRepo->createTrustedKey($user->user_id, $trustedUntil);
                     
@@ -350,8 +366,7 @@ class AccountController extends AbstractController
             }
 
             // Complete login using XenForo native flow (handles remember cookie and login IP log)
-            /** @var LoginPlugin $loginPlugin */
-            $loginPlugin = $this->plugin(LoginPlugin::class);
+            $loginPlugin = $this->getLoginPlugin();
             $loginPlugin->completeLogin($user, $fcParams->remember);
             
             // Mark user as having app installed (creates/updates entry in xf_fc_user)
@@ -446,6 +461,10 @@ class AccountController extends AbstractController
      */
     public function actionGetPasskeyChallenge(ParameterBag $params)
     {
+        if (!$this->supportsPasskeys()) {
+            return $this->apiError('Passkey login is not supported on this XenForo version');
+        }
+
         try {
             $challengeService = $this->app->service(\ForumCopilot\Service\PasskeyChallengeService::class);
             $challenge = $challengeService->generateAndStore($this->session());
@@ -468,6 +487,65 @@ class AccountController extends AbstractController
             );
             return $this->apiError('Failed to generate passkey challenge: ' . $e->getMessage());
         }
+    }
+
+    protected function supportsPasskeys(): bool
+    {
+        return class_exists(\XF\Entity\Passkey::class);
+    }
+
+    protected function getLoginService($login, string $ip)
+    {
+        $serviceId = class_exists(\XF\Service\User\LoginService::class)
+            ? \XF\Service\User\LoginService::class
+            : 'XF:User\Login';
+
+        return $this->service($serviceId, $login, $ip);
+    }
+
+    protected function getTfaRepository()
+    {
+        $repoId = class_exists(\XF\Repository\TfaRepository::class)
+            ? \XF\Repository\TfaRepository::class
+            : 'XF:Tfa';
+
+        return $this->repository($repoId);
+    }
+
+    protected function getTfaService(\XF\Entity\User $user)
+    {
+        $serviceId = class_exists(\XF\Service\User\TfaService::class)
+            ? \XF\Service\User\TfaService::class
+            : 'XF:User\Tfa';
+
+        return $this->service($serviceId, $user);
+    }
+
+    protected function getIpRepository()
+    {
+        $repoId = class_exists(\XF\Repository\IpRepository::class)
+            ? \XF\Repository\IpRepository::class
+            : 'XF:Ip';
+
+        return $this->repository($repoId);
+    }
+
+    protected function getUserTfaTrustedRepository()
+    {
+        $repoId = class_exists(\XF\Repository\UserTfaTrustedRepository::class)
+            ? \XF\Repository\UserTfaTrustedRepository::class
+            : 'XF:UserTfaTrusted';
+
+        return $this->repository($repoId);
+    }
+
+    protected function getLoginPlugin()
+    {
+        $pluginId = class_exists(\XF\ControllerPlugin\LoginPlugin::class)
+            ? \XF\ControllerPlugin\LoginPlugin::class
+            : 'XF:Login';
+
+        return $this->plugin($pluginId);
     }
 
     /**
@@ -973,8 +1051,7 @@ class AccountController extends AbstractController
                 // Use LoginPlugin for consistent logout behavior with web implementation
                 // This handles: last activity update, remember record deletion, 
                 // session logout, cookie clearing, and Clear-Site-Data header
-                /** @var LoginPlugin $loginPlugin */
-                $loginPlugin = $this->plugin(LoginPlugin::class);
+                $loginPlugin = $this->getLoginPlugin();
                 $loginPlugin->logoutVisitor();
             }
 

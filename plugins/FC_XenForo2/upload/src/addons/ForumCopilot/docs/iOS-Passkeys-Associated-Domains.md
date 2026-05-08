@@ -2,7 +2,7 @@
 
 For passkey login on iOS, the app must be associated with your forum domain via **Associated Domains**. iOS fetches `https://your-domain/.well-known/apple-app-site-association` and **requires** it to be served with `Content-Type: application/json`. If the server sends a different type (e.g. `application/octet-stream` or no type), you may see:
 
-> Unable to verify webcredentials association of *TEAM_ID.com.example.forumapp* with domain *your-domain*.
+> Unable to verify webcredentials association of *TEAM_ID.com.forumcopilot.mobile* with domain *your-domain*.
 
 ## 1. Set Content-Type in the web server (recommended)
 

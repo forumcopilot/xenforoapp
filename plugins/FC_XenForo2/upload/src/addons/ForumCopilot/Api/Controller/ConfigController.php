@@ -55,8 +55,11 @@ class ConfigController extends AbstractController
         // Explicitly cast to boolean
         $guestWhosOnline = (bool)$guestWhosOnline;
         
+        $addOn = \XF::app()->addOnManager()->getById('ForumCopilot');
+        $addOnVersion = $addOn ? $addOn->version_string : 'unknown';
+
         $config = [
-            'version' => '1.2.1',
+            'version' => $addOnVersion,
             'systemVersion' => \XF::$version,
             'phpVersion' => phpversion(),
             'hookVersion' => '1.0',

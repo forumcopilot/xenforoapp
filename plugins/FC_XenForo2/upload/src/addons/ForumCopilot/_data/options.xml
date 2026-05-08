@@ -1,39 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
-    <option option_id="fc_site_info_form" edit_format="callback" data_type="string" can_backup="0">
-        <default_value></default_value>
-        <edit_format_params>ForumCopilot\Option\SiteInfoForm::renderForm</edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options" display_order="1"/>
-    </option>
-    <option option_id="fc_push_enabled" edit_format="onoff" data_type="boolean" can_backup="1">
-        <default_value>1</default_value>
-        <edit_format_params></edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options" display_order="2"/>
-    </option>
-    <option option_id="fc_push_api_url" edit_format="textbox" data_type="string" can_backup="1">
-        <default_value>https://push.forumcopilot.com</default_value>
-        <edit_format_params></edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options" display_order="3"/>
-    </option>
-    <option option_id="fc_push_api_key" edit_format="textbox" data_type="string" can_backup="1">
-        <default_value></default_value>
-        <edit_format_params></edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options" display_order="4"/>
-    </option>
-    <option option_id="fc_site_id" edit_format="textbox" data_type="string" can_backup="1">
-        <default_value></default_value>
-        <edit_format_params></edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options_debug" display_order="5"/>
-    </option>
-    <option option_id="fc_smart_banner_enabled" edit_format="onoff" data_type="boolean" can_backup="1">
-        <default_value>1</default_value>
-        <edit_format_params></edit_format_params>
-        <sub_options></sub_options>
-        <relation group_id="fc_options" display_order="5"/>
-    </option>
+  <option option_id="fc_push_api_key" edit_format="textbox" data_type="string" advanced="0">
+    <default_value></default_value>
+    <relation group_id="fc_options" display_order="22"/>
+  </option>
+  <option option_id="fc_push_api_url" edit_format="textbox" data_type="string" advanced="0">
+    <default_value>https://push.forumcopilot.com</default_value>
+    <relation group_id="fc_options" display_order="21"/>
+  </option>
+  <option option_id="fc_push_direct_creds_path" edit_format="textbox" data_type="string" advanced="0">
+    <default_value></default_value>
+    <relation group_id="fc_options" display_order="31"/>
+  </option>
+  <option option_id="fc_push_direct_enabled" edit_format="onoff" data_type="boolean" advanced="0">
+    <default_value>1</default_value>
+    <relation group_id="fc_options" display_order="30"/>
+  </option>
+  <option option_id="fc_push_enabled" edit_format="onoff" data_type="boolean" advanced="0">
+    <default_value>1</default_value>
+    <relation group_id="fc_options" display_order="10"/>
+  </option>
+  <option option_id="fc_push_hosted_enabled" edit_format="onoff" data_type="boolean" advanced="0">
+    <default_value>1</default_value>
+    <relation group_id="fc_options" display_order="20"/>
+  </option>
+  <option option_id="fc_site_id" edit_format="textbox" data_type="string" advanced="0">
+    <default_value></default_value>
+    <relation group_id="fc_options_debug" display_order="5"/>
+  </option>
+  <option option_id="fc_site_info_form" edit_format="callback" data_type="string" advanced="0">
+    <default_value></default_value>
+    <edit_format_params>ForumCopilot\Option\SiteInfoForm::renderForm</edit_format_params>
+    <relation group_id="fc_options" display_order="1"/>
+  </option>
+  <option option_id="fc_smart_banner_android_package" edit_format="textbox" data_type="string" advanced="0">
+    <default_value>com.forumcopilot.mobile</default_value>
+    <relation group_id="fc_options" display_order="42"/>
+  </option>
+  <option option_id="fc_smart_banner_enabled" edit_format="onoff" data_type="boolean" advanced="0">
+    <default_value>1</default_value>
+    <relation group_id="fc_options" display_order="40"/>
+  </option>
+  <option option_id="fc_smart_banner_icon_url" edit_format="textbox" data_type="string" advanced="0">
+    <default_value></default_value>
+    <relation group_id="fc_options" display_order="43"/>
+  </option>
+  <option option_id="fc_smart_banner_ios_app_id" edit_format="textbox" data_type="string" advanced="0">
+    <default_value>6755660616</default_value>
+    <relation group_id="fc_options" display_order="41"/>
+  </option>
 </options>

@@ -288,7 +288,7 @@ class SiteInfoForm extends AbstractOption
                             'error' => null
                         ];
                     } catch (\Throwable $e) {
-                        \XF::logError('ForumCopilot registration: Failed to save options (from options page) - ' . $e->getMessage() . ' - site_id=' . $siteId . ' - Trace: ' . $e->getTraceAsString());
+                        \XF::logError('ForumCopilot registration: Failed to save options (from options page) - ' . $e->getMessage() . ' - site_id=' . $siteId . ($apikey ? ', apikey=' . $apikey : '') . ' - Trace: ' . $e->getTraceAsString());
                         return [
                             'attempted' => true,
                             'success' => false,

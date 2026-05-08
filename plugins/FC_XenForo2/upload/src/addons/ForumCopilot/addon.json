@@ -1,1 +1,19 @@
-{"legacy_addon_id":"ForumCopilot","title":"Forum Copilot Mobile App API","description":"Add-on for Forum Copilot Open Source Mobile App integration","version_string":"1.2.1","version_id":1002010,"dev":"ForumCopilot","dev_url":"https://forumcopilot.com","faq_url":"https://forumcopilot.com","support_url":"https://forumcopilot.com","require":{"XF":[2020000,"XenForo 2.2.0+"]},"icon":"https://forumcopilot.com/assets/forumcopiloticon-CV7f9HB7.png","route_prefix":"forumcopilot"}
+{
+    "legacy_addon_id": "ForumCopilot",
+    "title": "Forum Copilot Mobile App API",
+    "description": "Add-on for Forum Copilot Open Source Mobile App integration",
+    "version_id": 1040170,
+    "version_string": "1.4.1",
+    "dev": "ForumCopilot",
+    "dev_url": "https://forumcopilot.com",
+    "faq_url": "https://forumcopilot.com",
+    "support_url": "https://forumcopilot.com",
+    "extra_urls": [],
+    "require": {
+        "XF": [
+            2020000,
+            "XenForo 2.2.0+"
+        ]
+    },
+    "icon": "https://forumcopilot.com/assets/forumcopiloticon-CV7f9HB7.png"
+}

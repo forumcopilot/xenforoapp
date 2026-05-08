@@ -32,12 +32,18 @@ class AlertPushProcessor extends AbstractService
     public function processCollectedAlerts(array $collected)
     {
         if (empty($collected)) {
+            \XF::logError('[FC DEBUG] AlertPushProcessor: no collected alerts');
             return;
         }
 
         // Step 1: Get all unique receiver IDs from collected alerts
         $allReceiverIds = array_unique(array_column($collected, 'receiverId'));
-        
+
+        \XF::logError(sprintf(
+            '[FC DEBUG] AlertPushProcessor: %d collected alert(s) for %d unique receiver(s) [%s]',
+            count($collected), count($allReceiverIds), implode(',', $allReceiverIds)
+        ));
+
         if (empty($allReceiverIds)) {
             AlertPushCollector::clear();
             return;
@@ -45,9 +51,15 @@ class AlertPushProcessor extends AbstractService
 
         // Step 2: Single bulk query to get app users (users with app installed)
         $appUserIds = $this->getAppUserIds($allReceiverIds);
-        
+
+        \XF::logError(sprintf(
+            '[FC DEBUG] AlertPushProcessor: %d/%d receiver(s) have app installed [%s]',
+            count($appUserIds), count($allReceiverIds), implode(',', $appUserIds)
+        ));
+
         if (empty($appUserIds)) {
             // No app users, nothing to process
+            \XF::logError('[FC DEBUG] AlertPushProcessor: SKIP — no recipients have app installed (xf_fc_user.last_seen within 90d). Recipient IDs: ' . implode(',', $allReceiverIds));
             AlertPushCollector::clear();
             return;
         }
@@ -431,12 +443,12 @@ class AlertPushProcessor extends AbstractService
     protected function sendPush(array $userIds, array $alertData)
     {
         try {
-            $fcPush = new ForumCopilotPush();
-            $fcPush->sendPushNotification(
+            $router = new \ForumCopilot\Service\Push\DispatchRouter();
+            $router->dispatch(
                 $userIds,
-                $alertData['title'],
-                $alertData['body'],
-                $alertData['url'],
+                (string)($alertData['title'] ?? ''),
+                (string)($alertData['body'] ?? ''),
+                (string)($alertData['url'] ?? ''),
                 $alertData
             );
         } catch (\Exception $ex) {

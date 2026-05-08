@@ -18,10 +18,12 @@ class Listener
         }
 
         $collected = \ForumCopilot\Service\Alert\AlertPushCollector::getCollectedAlerts();
-        
+
         if (empty($collected)) {
             return;
         }
+
+        \XF::logError('[FC DEBUG] Listener.processBatchedAlerts: enqueuing job with ' . count($collected) . ' alert(s)');
 
         // Enqueue background job to process alerts
         $jobManager = XF::app()->jobManager();
@@ -31,7 +33,7 @@ class Listener
             ['collectedAlerts' => $collected],
             false // Don't run immediately
         );
-        
+
         // Clear collected alerts (they're now in the job)
         \ForumCopilot\Service\Alert\AlertPushCollector::clear();
     }

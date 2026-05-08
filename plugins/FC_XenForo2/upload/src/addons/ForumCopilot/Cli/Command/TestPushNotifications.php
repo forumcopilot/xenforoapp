@@ -2,7 +2,6 @@
 
 namespace ForumCopilot\Cli\Command;
 
-use XF\Cli\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,8 +10,6 @@ use XF\Entity\Forum;
 use XF\Entity\Post;
 use XF\Entity\Thread;
 use XF\Entity\User;
-use XF\Service\User\FollowService;
-
 class TestPushNotifications extends AbstractCommand
 {
     protected function configure()
@@ -535,7 +532,7 @@ class TestPushNotifications extends AbstractCommand
                 // Unfollow first, then follow again to trigger a new alert
                 $output->writeln("  <comment>Sender already following receiver, unfollowing first...</comment>");
                 \XF::setVisitor($sender);
-                $followService = XF::app()->service(FollowService::class, $receiver, $sender);
+                $followService = XF::app()->service($this->getFollowServiceClass(), $receiver, $sender);
                 $followService->setSilent(true); // Don't send alert on unfollow
                 $followService->unfollow();
                 $output->writeln("  <fg=green>✓</> Unfollowed (silent)");
@@ -543,7 +540,7 @@ class TestPushNotifications extends AbstractCommand
 
             // Now follow the receiver (this will trigger an alert to the receiver)
             \XF::setVisitor($sender);
-            $followService = XF::app()->service(FollowService::class, $receiver, $sender);
+            $followService = XF::app()->service($this->getFollowServiceClass(), $receiver, $sender);
             $followService->setSilent(false); // Send alert
             $userFollow = $followService->follow();
 
@@ -603,5 +600,14 @@ class TestPushNotifications extends AbstractCommand
             }
         }
     }
-}
 
+    protected function getFollowServiceClass(): string
+    {
+        if (class_exists(\XF\Service\User\FollowService::class))
+        {
+            return \XF\Service\User\FollowService::class;
+        }
+
+        return \XF\Service\User\Follow::class;
+    }
+}

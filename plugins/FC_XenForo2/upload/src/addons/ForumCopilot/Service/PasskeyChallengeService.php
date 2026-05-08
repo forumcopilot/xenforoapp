@@ -19,7 +19,7 @@ class PasskeyChallengeService
     public const SESSION_KEY_TIME = 'forumcopilot_passkey_challenge_time';
     public const CHALLENGE_TTL = 900; // 15 minutes, same as XF
     public const CHALLENGE_BYTES = 32;
-    private const APP_PACKAGE_NAME = 'com.example.forumapp';
+    private const APP_PACKAGE_NAME = 'com.forumcopilot.mobile';
 
     /** @var \XF\App */
     protected $app;
@@ -271,7 +271,14 @@ class PasskeyChallengeService
             if ($hash === '') {
                 return false;
             }
-            return in_array($hash, $this->getAndroidKeyHashesFromAssetLinks(), true);
+            $allowedHashes = $this->getAndroidKeyHashesFromAssetLinks();
+            if (in_array($hash, $allowedHashes, true)) {
+                return true;
+            }
+            $this->logPasskeyDebug(empty($allowedHashes)
+                ? 'Android origin rejected: no hashes loaded from assetlinks.json (URL returned non-200 or empty)'
+                : 'Android origin rejected: app hash not in assetlinks.json');
+            return false;
         }
 
         if ($this->getRpId() !== 'localhost' && parse_url($origin, PHP_URL_SCHEME) !== 'https') {
@@ -315,34 +322,48 @@ class PasskeyChallengeService
         return (string)parse_url($options->boardUrl, PHP_URL_HOST);
     }
 
+    protected function logPasskeyDebug(string $message): void
+    {
+        $logFile = \XF::getRootDirectory() . '/internal_data/forumcopilot_passkey.log';
+        @file_put_contents($logFile, '[' . date('c') . '] ' . $message . PHP_EOL, FILE_APPEND);
+    }
+
     /**
      * Read Android signing certificate fingerprints from /.well-known/assetlinks.json
-     * and convert them to android:apk-key-hash values expected by lbuchs/WebAuthn.
+     * via the forum's public URL (same resource the app and Android use).
      *
      * @return string[] base64url-encoded SHA-256 hashes (without padding)
      */
     protected function getAndroidKeyHashesFromAssetLinks(): array
     {
-        // Support both standard installs and subdirectory installs (e.g. /xf2).
-        $rootDir = rtrim(\XF::getRootDirectory(), '/\\');
-        $candidatePaths = [
-            $rootDir . '/.well-known/assetlinks.json',
-            dirname($rootDir) . '/.well-known/assetlinks.json',
-        ];
-
-        $json = null;
-        foreach ($candidatePaths as $path) {
-            if (!is_file($path)) {
-                continue;
-            }
-            $fileContent = file_get_contents($path);
-            if ($fileContent !== false && $fileContent !== '') {
-                $json = $fileContent;
-                break;
-            }
+        $boardUrl = (string)\XF::options()->boardUrl;
+        $scheme = parse_url($boardUrl, PHP_URL_SCHEME);
+        $host = parse_url($boardUrl, PHP_URL_HOST);
+        if (!is_string($scheme) || $scheme === '' || !is_string($host) || $host === '') {
+            return [];
         }
+        $url = $scheme . '://' . $host . '/.well-known/assetlinks.json';
 
-        if ($json === null) {
+        $ch = curl_init($url);
+        if ($ch === false) {
+            $this->logPasskeyDebug('assetlinks.json: curl_init failed');
+            return [];
+        }
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $json = curl_exec($ch);
+        $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError !== '' || $httpCode !== 200 || !is_string($json) || $json === '') {
+            $this->logPasskeyDebug(
+                'assetlinks.json fetch failed: url=' . $url . ' http=' . $httpCode . ($curlError !== '' ? ' curl=' . $curlError : '')
+            );
             return [];
         }
 

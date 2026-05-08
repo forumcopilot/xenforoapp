@@ -42,6 +42,9 @@ class Option extends AbstractController
             'fc_push_api_key' => $options->fc_push_api_key,
             'fc_site_id' => $siteId,
             'fc_smart_banner_enabled' => $options->fc_smart_banner_enabled ?? false,
+            'fc_smart_banner_ios_app_id' => $options->fc_smart_banner_ios_app_id ?? '',
+            'fc_smart_banner_android_package' => $options->fc_smart_banner_android_package ?? '',
+            'fc_smart_banner_icon_url' => $options->fc_smart_banner_icon_url ?? '',
             'registration_error' => $registrationError
         ];
 
@@ -57,7 +60,10 @@ class Option extends AbstractController
             'fc_push_api_url' => 'str',
             'fc_push_api_key' => 'str',
             'fc_site_id' => 'str',
-            'fc_smart_banner_enabled' => 'bool'
+            'fc_smart_banner_enabled' => 'bool',
+            'fc_smart_banner_ios_app_id' => 'str',
+            'fc_smart_banner_android_package' => 'str',
+            'fc_smart_banner_icon_url' => 'str'
         ]);
 
         $optionRepo = $this->repository('XF:Option');

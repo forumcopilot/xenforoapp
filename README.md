@@ -151,13 +151,19 @@ The built app is under `build/macos/Build/Products/Release/`. You can sign and d
 Push notifications are **disabled by default**. The app needs two things to deliver them:
 
 - A **Firebase project** that issues `GoogleService-Info.plist` (iOS/macOS) and `google-services.json` (Android), each registered with your app's bundle ID / package name.
-- A **push backend** that stores the FCM device tokens registered by the app and relays notification events from the XenForo `forumcopilot.php` plugin to FCM/APNs.
+- A **dispatcher** that takes alert events from the XenForo `forumcopilot.php` addon and turns them into FCM/APNs pushes.
 
-You have two ways to set this up.
+You have three ways to set this up. Pick the one that matches your operational comfort:
 
-### Option 1 — Use ForumCopilot Push (hosted, recommended for most forks)
+| Path | Where Firebase lives | Where the dispatcher lives | Best for |
+|---|---|---|---|
+| **1. Hosted ForumCopilot Push** | ForumCopilot's project | ForumCopilot's backend | Anyone who doesn't want to manage Firebase or run a backend |
+| **2. BYO Firebase + direct dispatch** | Your project | Inside the addon (no extra backend) | Self-hosters who own their stack but don't want to write a dispatcher |
+| **3. BYO Firebase + your own dispatch backend** | Your project | Your own server | Advanced — you have a custom routing requirement that doesn't fit modes 1 or 2 |
 
-If you want to ship a forum app without standing up your own Firebase project or push server, **ForumCopilot Push** is a managed service that handles both halves for you. You provide your iOS bundle ID, Android package name, and an APNs auth key (`.p8`) generated in your Apple Developer account; ForumCopilot issues the `GoogleService-Info.plist` / `google-services.json` your build needs and gives you a push API endpoint to point the app at.
+### Path 1 — Hosted ForumCopilot Push (managed, easiest)
+
+ForumCopilot Push is a managed service that handles the Firebase project AND the dispatcher for you. You provide your iOS bundle ID, Android package name, and an APNs auth key (`.p8`) generated in your Apple Developer account; ForumCopilot issues the `GoogleService-Info.plist` / `google-services.json` your build needs and gives you a push API endpoint.
 
 Setup overview (see https://forumcopilot.com for full details and pricing):
 
@@ -171,25 +177,45 @@ Setup overview (see https://forumcopilot.com for full details and pricing):
    cp ~/Downloads/GoogleService-Info.plist  ios/Runner/GoogleService-Info.plist
    cp ~/Downloads/GoogleService-Info.plist  macos/Runner/GoogleService-Info.plist
    ```
-5. Set `pushApiBaseUrl` in `lib/config/app_forum_config.dart` to the endpoint shown in your dashboard.
-6. Install the XenForo `forumcopilot.php` plugin (under `plugins/FC_XenForo2/`) and paste your customer API key into its admin settings so the plugin can talk to ForumCopilot Push.
+5. In `lib/config/app_forum_config.dart`:
+   - Set `pushApiBaseUrl` to the endpoint shown in your dashboard.
+   - Leave `pushSource = 'forumcopilot'` (the default).
+6. Install the ForumCopilot xenForo addon (under `plugins/FC_XenForo2/`) and paste your customer API key into its admin settings so the addon can talk to ForumCopilot Push.
 
-### Option 2 — Run your own Firebase project + push backend
+### Path 2 — Bring your own Firebase + direct dispatch from the addon
 
-If you'd rather host everything yourself:
+The most self-hosted path that doesn't require running an extra service. The addon (v1.3.4 or newer) ships its own FCM HTTP v1 client and can dispatch notifications **directly** using your Firebase service-account JSON. No separate dispatcher process needed.
 
-1. Create your own Firebase project and register your iOS/macOS/Android apps in it.
-2. Copy the example configs into place and replace with your own:
+1. Create your own Firebase project. Register your iOS/macOS/Android apps in it (one entry per platform).
+2. Download the resulting Firebase config files into your project:
    ```bash
-   cp android/app/google-services.json.example android/app/google-services.json
-   cp ios/Runner/GoogleService-Info.plist.example ios/Runner/GoogleService-Info.plist
-   cp macos/Runner/GoogleService-Info.plist.example macos/Runner/GoogleService-Info.plist
+   cp ~/Downloads/google-services.json     android/app/google-services.json
+   cp ~/Downloads/GoogleService-Info.plist  ios/Runner/GoogleService-Info.plist
+   cp ~/Downloads/GoogleService-Info.plist  macos/Runner/GoogleService-Info.plist
    ```
+3. In **Firebase Console → Project Settings → Service accounts → Generate new private key**, download the service-account JSON and upload it to your XenForo server, *outside* the web root for security (e.g. `/var/secrets/firebase-sa.json`).
+4. In `lib/config/app_forum_config.dart`:
+   - Set `pushSource = 'direct'`.
+   - Leave `pushApiBaseUrl = ''` (empty — there is no separate backend).
+5. Install the ForumCopilot xenForo addon (`plugins/FC_XenForo2/`). In **Admin CP → Options → ForumCopilot Options**:
+   - Enable the master push toggle.
+   - Enable **"Direct push (your own white-label app + Firebase)"**.
+   - Set **"Firebase service-account JSON path"** to the absolute path from step 3.
+
+When users open the app, it registers their FCM token directly with your XenForo server via the `registerDevice` plugin API. When a notification fires, the addon's dispatch router reads the token from `xf_fc_device_token` and POSTs to FCM HTTP v1 using your service-account credentials.
+
+### Path 3 — Bring your own Firebase + custom dispatch backend (advanced)
+
+For unusual setups where you need a custom routing layer between the addon and FCM (e.g. multi-region routing, custom analytics, fan-out to non-FCM channels):
+
+1. Same Firebase setup as Path 2.
+2. In `lib/config/app_forum_config.dart`:
+   - Set `pushApiBaseUrl` to your backend's base URL (e.g. `https://push.example.com/api`).
+   - Leave `pushSource = 'forumcopilot'` (the controller will register tokens with your backend the same way the hosted backend would).
 3. Stand up a push backend that:
    - accepts FCM token registrations from the app at `POST <pushApiBaseUrl>/...` endpoints
-   - receives notification events from the `forumcopilot.php` plugin and dispatches them via the FCM HTTP v1 API
-4. Set `pushApiBaseUrl` in `lib/config/app_forum_config.dart` to your backend's base URL (e.g. `https://push.example.com/api`).
-5. Configure the `forumcopilot.php` plugin to send events to your backend.
+   - receives notification events from the `forumcopilot.php` addon and dispatches them via the FCM HTTP v1 API
+4. Configure the `forumcopilot.php` addon's hosted-push admin options to point at your backend.
 
 ---
 

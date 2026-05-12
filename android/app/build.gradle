@@ -45,6 +45,11 @@ android {
             keyPassword keystoreProperties['keyPassword']
             storeFile keystoreProperties['storeFile'] ? file("${keystoreProperties['storeFile']}") : null
             storePassword keystoreProperties['storePassword']
+            // Enable v1 (JAR) signing in addition to v2/v3 so the APK installs
+            // on older devices and quirky OEM Android builds that still expect v1.
+            enableV1Signing true
+            enableV2Signing true
+            enableV3Signing true
         }
     }
 

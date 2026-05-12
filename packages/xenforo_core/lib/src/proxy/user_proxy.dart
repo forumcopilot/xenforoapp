@@ -60,6 +60,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
               iconUrl: userData['iconUrl']?.toString(),
               isOnline: userData['isOnline'] ?? false,
               currentActivity: userData['currentActivity']?.toString(),
+              currentActivityUrl: userData['currentActivityUrl']?.toString(),
               currentTopicId: userData['currentTopicId']?.toString(),
               lastActivityTime: userData['lastActivityTime'] != null ? DateTime.fromMillisecondsSinceEpoch(userData['lastActivityTime'] as int) : null,
             ));

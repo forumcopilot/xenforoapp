@@ -378,18 +378,38 @@ class _MembersPageState extends State<MembersPage> {
           user: user,
           colorScheme: colorScheme,
           textTheme: textTheme,
-          subtitle: user.displayText != null && user.displayText!.isNotEmpty
-              ? Text(
-                  user.displayText!,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null,
+          subtitle: _buildOnlineUserSubtitle(user, colorScheme, textTheme),
         );
       },
+    );
+  }
+
+  /// Subtitle for an Online-Users list row. Prefers the human-readable
+  /// `currentActivity` (e.g. "Viewing thread Foo", "Using Forum Copilot
+  /// Mobile App"). Falls back to `displayText` (user title) for older
+  /// addon versions that don't populate currentActivity. Returns null when
+  /// neither is available, so the list row just shows the username.
+  ///
+  /// Subtitle is plain text only — the row's existing tap target (open
+  /// profile) is preserved; activity info is informational, not actionable.
+  Widget? _buildOnlineUserSubtitle(
+    FCOnlineUser user,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    final activity = user.currentActivity;
+    final fallback = user.displayText;
+    final text = (activity != null && activity.isNotEmpty)
+        ? activity
+        : (fallback != null && fallback.isNotEmpty ? fallback : null);
+    if (text == null) return null;
+    return Text(
+      text,
+      style: textTheme.bodySmall?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 

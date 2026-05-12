@@ -639,6 +639,10 @@ class FCLoginTwoStepResultMapper extends ClassMapperBase<FCLoginTwoStepResult> {
     _$currentActivity,
     opt: true,
   );
+  static String? _$currentActivityUrl(FCLoginTwoStepResult v) =>
+      v.currentActivityUrl;
+  static const Field<FCLoginTwoStepResult, String> _f$currentActivityUrl =
+      Field('currentActivityUrl', _$currentActivityUrl, opt: true);
   static String? _$currentTopicId(FCLoginTwoStepResult v) => v.currentTopicId;
   static const Field<FCLoginTwoStepResult, String> _f$currentTopicId = Field(
     'currentTopicId',
@@ -883,6 +887,7 @@ class FCLoginTwoStepResultMapper extends ClassMapperBase<FCLoginTwoStepResult> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -933,6 +938,7 @@ class FCLoginTwoStepResultMapper extends ClassMapperBase<FCLoginTwoStepResult> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -1063,6 +1069,7 @@ abstract class FCLoginTwoStepResultCopyWith<
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -1143,6 +1150,7 @@ class _FCLoginTwoStepResultCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -1191,6 +1199,7 @@ class _FCLoginTwoStepResultCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -1241,6 +1250,10 @@ class _FCLoginTwoStepResultCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),
@@ -1559,6 +1572,12 @@ class FCOnlineUserMapper extends ClassMapperBase<FCOnlineUser> {
     _$currentActivity,
     opt: true,
   );
+  static String? _$currentActivityUrl(FCOnlineUser v) => v.currentActivityUrl;
+  static const Field<FCOnlineUser, String> _f$currentActivityUrl = Field(
+    'currentActivityUrl',
+    _$currentActivityUrl,
+    opt: true,
+  );
   static String? _$currentTopicId(FCOnlineUser v) => v.currentTopicId;
   static const Field<FCOnlineUser, String> _f$currentTopicId = Field(
     'currentTopicId',
@@ -1714,6 +1733,7 @@ class FCOnlineUserMapper extends ClassMapperBase<FCOnlineUser> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -1750,6 +1770,7 @@ class FCOnlineUserMapper extends ClassMapperBase<FCOnlineUser> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -1858,6 +1879,7 @@ abstract class FCOnlineUserCopyWith<$R, $In extends FCOnlineUser, $Out>
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -1922,6 +1944,7 @@ class _FCOnlineUserCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -1956,6 +1979,7 @@ class _FCOnlineUserCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -1992,6 +2016,10 @@ class _FCOnlineUserCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),
@@ -2109,6 +2137,13 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
   static const Field<FCUserInfoResult, String> _f$currentActivity = Field(
     'currentActivity',
     _$currentActivity,
+    opt: true,
+  );
+  static String? _$currentActivityUrl(FCUserInfoResult v) =>
+      v.currentActivityUrl;
+  static const Field<FCUserInfoResult, String> _f$currentActivityUrl = Field(
+    'currentActivityUrl',
+    _$currentActivityUrl,
     opt: true,
   );
   static String? _$currentTopicId(FCUserInfoResult v) => v.currentTopicId;
@@ -2416,6 +2451,7 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -2478,6 +2514,7 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -2614,6 +2651,7 @@ abstract class FCUserInfoResultCopyWith<$R, $In extends FCUserInfoResult, $Out>
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -2715,6 +2753,7 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -2775,6 +2814,7 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -2838,6 +2878,10 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),
@@ -4075,6 +4119,13 @@ class FCRecommendedUserMapper extends ClassMapperBase<FCRecommendedUser> {
     _$currentActivity,
     opt: true,
   );
+  static String? _$currentActivityUrl(FCRecommendedUser v) =>
+      v.currentActivityUrl;
+  static const Field<FCRecommendedUser, String> _f$currentActivityUrl = Field(
+    'currentActivityUrl',
+    _$currentActivityUrl,
+    opt: true,
+  );
   static String? _$currentTopicId(FCRecommendedUser v) => v.currentTopicId;
   static const Field<FCRecommendedUser, String> _f$currentTopicId = Field(
     'currentTopicId',
@@ -4235,6 +4286,7 @@ class FCRecommendedUserMapper extends ClassMapperBase<FCRecommendedUser> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -4271,6 +4323,7 @@ class FCRecommendedUserMapper extends ClassMapperBase<FCRecommendedUser> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -4388,6 +4441,7 @@ abstract class FCRecommendedUserCopyWith<
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -4454,6 +4508,7 @@ class _FCRecommendedUserCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -4488,6 +4543,7 @@ class _FCRecommendedUserCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -4524,6 +4580,10 @@ class _FCRecommendedUserCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),
@@ -4827,6 +4887,12 @@ class FCSearchUserMapper extends ClassMapperBase<FCSearchUser> {
     _$currentActivity,
     opt: true,
   );
+  static String? _$currentActivityUrl(FCSearchUser v) => v.currentActivityUrl;
+  static const Field<FCSearchUser, String> _f$currentActivityUrl = Field(
+    'currentActivityUrl',
+    _$currentActivityUrl,
+    opt: true,
+  );
   static String? _$currentTopicId(FCSearchUser v) => v.currentTopicId;
   static const Field<FCSearchUser, String> _f$currentTopicId = Field(
     'currentTopicId',
@@ -4982,6 +5048,7 @@ class FCSearchUserMapper extends ClassMapperBase<FCSearchUser> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -5018,6 +5085,7 @@ class FCSearchUserMapper extends ClassMapperBase<FCSearchUser> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -5126,6 +5194,7 @@ abstract class FCSearchUserCopyWith<$R, $In extends FCSearchUser, $Out>
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -5190,6 +5259,7 @@ class _FCSearchUserCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -5224,6 +5294,7 @@ class _FCSearchUserCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -5260,6 +5331,10 @@ class _FCSearchUserCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),
@@ -5852,6 +5927,12 @@ class FCIgnoredUserMapper extends ClassMapperBase<FCIgnoredUser> {
     _$currentActivity,
     opt: true,
   );
+  static String? _$currentActivityUrl(FCIgnoredUser v) => v.currentActivityUrl;
+  static const Field<FCIgnoredUser, String> _f$currentActivityUrl = Field(
+    'currentActivityUrl',
+    _$currentActivityUrl,
+    opt: true,
+  );
   static String? _$currentTopicId(FCIgnoredUser v) => v.currentTopicId;
   static const Field<FCIgnoredUser, String> _f$currentTopicId = Field(
     'currentTopicId',
@@ -6007,6 +6088,7 @@ class FCIgnoredUserMapper extends ClassMapperBase<FCIgnoredUser> {
     #lastActivityTime: _f$lastActivityTime,
     #isOnline: _f$isOnline,
     #currentActivity: _f$currentActivity,
+    #currentActivityUrl: _f$currentActivityUrl,
     #currentTopicId: _f$currentTopicId,
     #acceptsPM: _f$acceptsPM,
     #canSendPM: _f$canSendPM,
@@ -6043,6 +6125,7 @@ class FCIgnoredUserMapper extends ClassMapperBase<FCIgnoredUser> {
       lastActivityTime: data.dec(_f$lastActivityTime),
       isOnline: data.dec(_f$isOnline),
       currentActivity: data.dec(_f$currentActivity),
+      currentActivityUrl: data.dec(_f$currentActivityUrl),
       currentTopicId: data.dec(_f$currentTopicId),
       acceptsPM: data.dec(_f$acceptsPM),
       canSendPM: data.dec(_f$canSendPM),
@@ -6151,6 +6234,7 @@ abstract class FCIgnoredUserCopyWith<$R, $In extends FCIgnoredUser, $Out>
     DateTime? lastActivityTime,
     bool? isOnline,
     String? currentActivity,
+    String? currentActivityUrl,
     String? currentTopicId,
     bool? acceptsPM,
     bool? canSendPM,
@@ -6215,6 +6299,7 @@ class _FCIgnoredUserCopyWithImpl<$R, $Out>
     Object? lastActivityTime = $none,
     bool? isOnline,
     Object? currentActivity = $none,
+    Object? currentActivityUrl = $none,
     Object? currentTopicId = $none,
     bool? acceptsPM,
     bool? canSendPM,
@@ -6249,6 +6334,7 @@ class _FCIgnoredUserCopyWithImpl<$R, $Out>
       if (lastActivityTime != $none) #lastActivityTime: lastActivityTime,
       if (isOnline != null) #isOnline: isOnline,
       if (currentActivity != $none) #currentActivity: currentActivity,
+      if (currentActivityUrl != $none) #currentActivityUrl: currentActivityUrl,
       if (currentTopicId != $none) #currentTopicId: currentTopicId,
       if (acceptsPM != null) #acceptsPM: acceptsPM,
       if (canSendPM != null) #canSendPM: canSendPM,
@@ -6285,6 +6371,10 @@ class _FCIgnoredUserCopyWithImpl<$R, $Out>
     lastActivityTime: data.get(#lastActivityTime, or: $value.lastActivityTime),
     isOnline: data.get(#isOnline, or: $value.isOnline),
     currentActivity: data.get(#currentActivity, or: $value.currentActivity),
+    currentActivityUrl: data.get(
+      #currentActivityUrl,
+      or: $value.currentActivityUrl,
+    ),
     currentTopicId: data.get(#currentTopicId, or: $value.currentTopicId),
     acceptsPM: data.get(#acceptsPM, or: $value.acceptsPM),
     canSendPM: data.get(#canSendPM, or: $value.canSendPM),

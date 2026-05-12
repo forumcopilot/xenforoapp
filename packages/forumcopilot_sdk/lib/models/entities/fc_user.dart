@@ -36,8 +36,17 @@ class FCUser with FCUserMappable {
   /// Indicates if the user is currently online
   bool isOnline;
 
-  /// Current activity or action the user is performing
+  /// Human-readable activity string for the user (e.g.
+  /// "Viewing thread Foo", "Using Forum Copilot Mobile App"). Populated by
+  /// the server's getOnlineUsers response after it resolves each session's
+  /// activity description.
   String? currentActivity;
+
+  /// Optional click-through URL for [currentActivity]. Present when the
+  /// activity has a meaningful destination (thread URL, member profile,
+  /// or admin-configured URL for mobile-app sessions). Null for activities
+  /// with text-only descriptions.
+  String? currentActivityUrl;
 
   /// Topic ID related to current activity (if applicable)
   String? currentTopicId;
@@ -107,6 +116,7 @@ class FCUser with FCUserMappable {
     this.lastActivityTime,
     this.isOnline = false,
     this.currentActivity,
+    this.currentActivityUrl,
     this.currentTopicId,
     this.acceptsPM = false,
     this.canSendPM = false,

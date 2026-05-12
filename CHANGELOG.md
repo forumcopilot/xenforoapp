@@ -6,6 +6,19 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-05-12
+
+Online Users list now shows what each member is doing, matching the web `/online/` page. Plus a build-config fix that lets the signed APK install on older / non-mainstream Android devices.
+
+### Added
+- Each row in the Online Users list (Members tab → Online) now shows a human-readable activity string below the username — e.g. "Viewing thread Foo", "Using Forum Copilot Mobile App", "Viewing list of online members". Matches what XF's web `/online/` page renders. Falls back to user title (`displayText`) for older Forum Copilot addon versions that don't populate the field.
+- New `currentActivityUrl` field on `FCUser` plumbed through the SDK and `XenForoUserProxy`. Present in the API response (ForumCopilot addon v1.4.4+) but not consumed by UI yet — there for future use (e.g. tappable activity rows).
+
+### Fixed
+- Android release APK now signs with v1 + v2 + v3 schemes (previously v2/v3 only). The APK was installable on modern Pixel/Samsung but rejected on older devices and some OEMs that still validate v1 (JAR) signatures, producing an opaque "App not installed" error. v1 + v2 + v3 covers the full installed base.
+
+[0.8.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.8.0
+
 ## [0.7.0] - 2026-05-08
 
 Adds first-class support for **BYO Firebase + direct dispatch** push notifications. White-label and self-hosted forks can now run push without standing up a separate dispatcher backend — the ForumCopilot xenForo addon (v1.3.4+) ships its own FCM HTTP v1 client and dispatches directly using a service-account JSON.
@@ -61,5 +74,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.8.0...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

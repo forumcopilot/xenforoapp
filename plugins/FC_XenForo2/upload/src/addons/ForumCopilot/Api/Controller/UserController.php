@@ -482,16 +482,35 @@ class UserController extends AbstractController
 
         $sessions = $finder->fetch();
 
+        // Resolve human-readable activity descriptions in one batched pass.
+        // Mirrors what XF's own /online/ page does: groups sessions by
+        // controller_name and calls each controller's getActivityDetails()
+        // once per group, populating $session->description /
+        // ->getItemTitle() / ->getItemUrl().
+        $activityRepo = $this->repository('XF:SessionActivity');
+        $activityRepo->applyActivityDetails($sessions->toArray());
+
         $userList = [];
         foreach ($sessions as $session) {
             // User should already be filtered by restrictType and visibility, but double-check
             if ($session->User && $session->User->user_state === 'valid') {
+                $description = $session->description;
+                $itemUrl = $session->getItemUrl();
                 $userList[] = [
                     'id' => (string)$session->User->user_id,
                     'username' => $session->User->username,
                     'iconUrl' => $this->getAbsoluteUrl($session->User->getAvatarUrl('s')),
                     'isOnline' => true,
-                    'currentActivity' => $session->controller_action,
+                    // Human-readable activity string for direct display
+                    // (e.g. "Viewing thread Foo", "Using Forum Copilot Mobile App").
+                    // Renders Phrase objects to their localised string form.
+                    'currentActivity' => $description !== null ? (string)$description : null,
+                    // Optional click-through URL the web /online/ page links to
+                    // (e.g. the thread URL when viewing a thread, or the
+                    // admin-configured /getapps URL for mobile-app sessions).
+                    'currentActivityUrl' => $itemUrl !== false && $itemUrl !== null
+                        ? $this->getAbsoluteUrl($itemUrl)
+                        : null,
                     'currentTopicId' => $session->params['thread_id'] ?? null,
                     'lastActivityTime' => $session->view_date * 1000,
                 ];

@@ -58,6 +58,24 @@ class ConfigController extends AbstractController
         $addOn = \XF::app()->addOnManager()->getById('ForumCopilot');
         $addOnVersion = $addOn ? $addOn->version_string : 'unknown';
 
+        // Capability: can the visitor see the Siropu Chat tab? True only when:
+        //   1. Siropu Chat is installed (the canViewSiropuChat method exists on
+        //      the visitor user, added via XF class extension by Siropu/Chat).
+        //   2. The FCSiropuChatBridge add-on is installed (otherwise the mobile
+        //      Chat.* API methods aren't dispatched anyway).
+        //   3. The visitor's permission actually grants chat viewing.
+        // The mobile app gates the Chat tab on this so users without permission
+        // don't see a tab that would just show an empty "no messages" view.
+        $canViewChat = false;
+        if ($visitor && method_exists($visitor, 'canViewSiropuChat'))
+        {
+            $bridge = \XF::app()->addOnManager()->getById('FCSiropuChatBridge');
+            if ($bridge && $bridge->isActive())
+            {
+                $canViewChat = (bool)$visitor->canViewSiropuChat();
+            }
+        }
+
         $config = [
             'version' => $addOnVersion,
             'systemVersion' => \XF::$version,
@@ -96,6 +114,7 @@ class ConfigController extends AbstractController
             'loginWithEmail' => false,
             'apiKey' => '', // Will be set by client
             'forumType' => 'xenforo',
+            'canViewChat' => $canViewChat,
         ];
 
         // Create FCConfigResult object and return it

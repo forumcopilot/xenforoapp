@@ -238,6 +238,11 @@ class ForumCopilotPubApp extends PubApp
                 return $this->createJsonError("Unknown method: $method", 400);
             }
 
+            // Mark this visitor's session as "Using mobile app" so they show
+            // up in /online/ and per-thread "X members watching" lists the
+            // same way web users do. Best-effort; never blocks the API call.
+            $this->recordMobileSessionActivity();
+
             // Extract controller and action
             [$controllerNames, $action] = explode('@', $map[$method]);
 
@@ -261,6 +266,56 @@ class ForumCopilotPubApp extends PubApp
         {
             // Catch all exceptions from controller actions and return JSON error
             return $this->createJsonError('API error: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Record an `xf_session_activity` row for the current visitor so mobile
+     * users show up in the standard XF online/presence surfaces. Cheap to call
+     * on every API request — the underlying writeSession upsert is keyed on
+     * (user_id, ip).
+     *
+     * Skips:
+     *   - guests (no user_id)
+     *   - users with invisible mode enabled (respects their preference)
+     *   - any exception (mobile API request must not break because activity
+     *     tracking failed)
+     *
+     * Site owners can rebrand the displayed label and optionally make it
+     * clickable via Admin CP → Options → ForumCopilot Options:
+     *   - fc_mobile_activity_label (default "Using mobile app")
+     *   - fc_mobile_activity_url   (optional click-through URL)
+     */
+    protected function recordMobileSessionActivity()
+    {
+        try
+        {
+            $visitor = \XF::visitor();
+            if (!$visitor->user_id)
+            {
+                return;
+            }
+            if (isset($visitor->visible) && !$visitor->visible)
+            {
+                // Visitor opted into invisible mode — respect that everywhere.
+                return;
+            }
+
+            $activityRepo = \XF::repository(\XF\Repository\SessionActivityRepository::class);
+            $activityRepo->updateSessionActivity(
+                (int) $visitor->user_id,
+                $this->request()->getIp(),
+                \ForumCopilot\Service\Activity\MobileSessionActivity::class,
+                'index',
+                [],
+                'valid',
+                null
+            );
+        }
+        catch (\Throwable $e)
+        {
+            // Never let activity tracking break the API request.
+            \XF::logError('FC mobile session activity error: ' . $e->getMessage());
         }
     }
 

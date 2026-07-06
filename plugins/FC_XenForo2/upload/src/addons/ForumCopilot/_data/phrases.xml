@@ -14,6 +14,10 @@
         Your site is not registered yet. Please register your site first.]]></phrase>
   <phrase title="fc_smart_banner" version_id="1000000" version_string="1.0.0"><![CDATA[
         Smart Banner]]></phrase>
+  <phrase title="option.fc_mobile_activity_label" version_id="1040370" version_string="1.4.3"><![CDATA[
+        Mobile app activity label]]></phrase>
+  <phrase title="option.fc_mobile_activity_url" version_id="1040370" version_string="1.4.3"><![CDATA[
+        Mobile app activity URL]]></phrase>
   <phrase title="option.fc_push_api_key" version_id="1003005" version_string="1.3.5"><![CDATA[
         Hosted push: API key]]></phrase>
   <phrase title="option.fc_push_api_url" version_id="1003005" version_string="1.3.5"><![CDATA[
@@ -36,6 +40,10 @@
         Banner icon URL]]></phrase>
   <phrase title="option.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
         iOS App Store ID]]></phrase>
+  <phrase title="option_explain.fc_mobile_activity_label" version_id="1040370" version_string="1.4.3"><![CDATA[
+        Text shown next to a member's name in "Members Online" and "Currently viewing this thread" lists when their session was last touched by the mobile app API. Default is "Using Forum Copilot Mobile App". Customise for your brand (e.g. "On the QHHT app"). Leave empty to disable the label entirely (the user will still appear online but with no activity description).]]></phrase>
+  <phrase title="option_explain.fc_mobile_activity_url" version_id="1040370" version_string="1.4.3"><![CDATA[
+        If set, the activity label above becomes a clickable link to this URL — useful for pointing readers at your app's App Store / Play Store listing or a marketing page. Default points at https://forumcopilot.com/getapps, a device-aware redirect that takes the visitor to the Apple App Store on iOS, the Google Play Store on Android, or the Forum Copilot homepage on desktop. Clear this field to render the label as plain text instead of a link.]]></phrase>
   <phrase title="option_explain.fc_push_api_key" version_id="1003005" version_string="1.3.5"><![CDATA[
         Used by Hosted push above. API key for authenticating with the Forum Copilot push notification service. Automatically set during site registration; you usually don't need to change this.]]></phrase>
   <phrase title="option_explain.fc_push_api_url" version_id="1003005" version_string="1.3.5"><![CDATA[

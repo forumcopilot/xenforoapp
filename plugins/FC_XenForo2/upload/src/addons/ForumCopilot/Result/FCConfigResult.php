@@ -51,6 +51,7 @@ class FCConfigResult
     public $loginWithEmail;
     public $apiKey;
     public $forumType;
+    public $canViewChat;
 
     public function __construct($data = [])
     {

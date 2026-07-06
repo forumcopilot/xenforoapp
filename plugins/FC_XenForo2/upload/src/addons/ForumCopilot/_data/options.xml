@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
+  <option option_id="fc_mobile_activity_label" edit_format="textbox" data_type="string" advanced="0">
+    <default_value>Using Forum Copilot Mobile App</default_value>
+    <relation group_id="fc_options" display_order="50"/>
+  </option>
+  <option option_id="fc_mobile_activity_url" edit_format="textbox" data_type="string" advanced="0">
+    <default_value>https://forumcopilot.com/getapps</default_value>
+    <relation group_id="fc_options" display_order="51"/>
+  </option>
   <option option_id="fc_push_api_key" edit_format="textbox" data_type="string" advanced="0">
     <default_value></default_value>
     <relation group_id="fc_options" display_order="22"/>

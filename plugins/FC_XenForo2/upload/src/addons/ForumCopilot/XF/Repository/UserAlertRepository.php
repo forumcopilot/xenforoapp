@@ -82,19 +82,45 @@ class UserAlertRepository extends XFCP_UserAlertRepository
         // Let XF create the alert first
         $alert = parent::insertAlert($receiverId, $senderId, $senderName, $contentType, $contentId, $action, $extra, $options);
         
-        // Collect alert info for push notification processing (no filtering here - done in bulk later)
-        // insertAlert() returns true/false, not the alert entity, so we collect info and fetch entity later
+        // Enqueue the push job immediately (do not rely on the
+        // app_pub_complete listener / static collector). See the matching
+        // override in ForumCopilot\XF\Repository\UserAlert::insertAlert for
+        // why — short version: app_pub_complete never fires for alerts
+        // created from CLI cron jobs.
         $appOptions = \XF::options();
         if (isset($appOptions->fc_push_enabled) && $appOptions->fc_push_enabled && $alert) {
-            \ForumCopilot\Service\Alert\AlertPushCollector::collectAlert(
-                $receiverId,
-                $senderId,
-                $contentType,
-                $contentId,
-                $action
-            );
+            try
+            {
+                $uniqueId = sprintf(
+                    'fcAlertPush_%d_%s_%d_%s',
+                    (int) $receiverId,
+                    preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $contentType),
+                    (int) $contentId,
+                    preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $action)
+                );
+                \XF::app()->jobManager()->enqueueUnique(
+                    $uniqueId,
+                    \ForumCopilot\Job\ProcessAlertPush::class,
+                    [
+                        'collectedAlerts' => [
+                            [
+                                'receiverId'  => (int) $receiverId,
+                                'senderId'    => (int) $senderId,
+                                'contentType' => (string) $contentType,
+                                'contentId'   => (int) $contentId,
+                                'action'      => (string) $action,
+                            ],
+                        ],
+                    ],
+                    false
+                );
+            }
+            catch (\Throwable $e)
+            {
+                \XF::logError('FC insertAlert enqueue error: ' . $e->getMessage());
+            }
         }
-        
+
         return $alert;
     }
 

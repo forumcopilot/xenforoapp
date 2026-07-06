@@ -86,16 +86,52 @@ class UserAlert extends XFCP_UserAlert
         if ($pushOn && $alert)
         {
             \XF::logError(sprintf(
-                '[FC DEBUG] UserAlert.insertAlert: collecting %s/%s recv=%d send=%d cid=%s',
+                '[FC DEBUG] UserAlert.insertAlert: enqueueing push for %s/%s recv=%d send=%d cid=%s',
                 $contentType, $action, $receiverId, $senderId, $contentId
             ));
-            \ForumCopilot\Service\Alert\AlertPushCollector::collectAlert(
-                $receiverId,
-                $senderId,
-                $contentType,
-                $contentId,
-                $action
-            );
+
+            // Enqueue the push job IMMEDIATELY (do not rely on the
+            // app_pub_complete listener / static collector). That path only
+            // fires for XF\Pub\App requests; alerts created from CLI cron
+            // (e.g. Siropu Chat Custom's room-message Notify job) would never
+            // reach the dispatcher otherwise.
+            //
+            // Unique key dedupes accidental double-inserts of the same alert
+            // within one request. XF's enqueueUnique upserts on the unique
+            // key, replacing execute_data — so we encode the receiver in the
+            // key to keep each recipient's job independent (otherwise the
+            // 50 chat-message alerts for one room message would all collapse
+            // into one job containing only the last recipient).
+            try
+            {
+                $uniqueId = sprintf(
+                    'fcAlertPush_%d_%s_%d_%s',
+                    (int) $receiverId,
+                    preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $contentType),
+                    (int) $contentId,
+                    preg_replace('/[^a-zA-Z0-9_]/', '_', (string) $action)
+                );
+                \XF::app()->jobManager()->enqueueUnique(
+                    $uniqueId,
+                    \ForumCopilot\Job\ProcessAlertPush::class,
+                    [
+                        'collectedAlerts' => [
+                            [
+                                'receiverId'  => (int) $receiverId,
+                                'senderId'    => (int) $senderId,
+                                'contentType' => (string) $contentType,
+                                'contentId'   => (int) $contentId,
+                                'action'      => (string) $action,
+                            ],
+                        ],
+                    ],
+                    false
+                );
+            }
+            catch (\Throwable $e)
+            {
+                \XF::logError('FC insertAlert enqueue error: ' . $e->getMessage());
+            }
         }
         else if (!$alert)
         {

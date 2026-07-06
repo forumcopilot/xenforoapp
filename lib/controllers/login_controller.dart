@@ -1611,6 +1611,15 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             'Failed to register for push notifications for site: ${currentSite.name}');
         AppLogger.warning('Error: ${pushController.lastError}');
       }
+
+      // Also trigger direct-mode registration (BYO Firebase). The Rx-based
+      // login watcher in PushNotificationController can miss updates when
+      // SiteContext is mutated in place rather than replaced, so we call it
+      // here explicitly. `registerDirect()` is a no-op when the build isn't
+      // configured for direct-source push.
+      AppLogger.info(
+          '[LOGIN] Triggering direct-mode push registration (if enabled)...');
+      await pushController.registerDirect();
     } catch (e, stackTrace) {
       await handleError(e, stackTrace,
           context: 'LoginController._registerForPushNotifications',

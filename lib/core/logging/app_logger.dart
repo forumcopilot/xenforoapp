@@ -133,15 +133,18 @@ class AppLogger {
       stackTrace: stackTrace,
     );
 
-    // Print to console in debug mode
-    if (kDebugMode) {
-      debugPrint(logMessage);
-      if (error != null) {
-        debugPrint('Error: $error');
-      }
-      if (stackTrace != null) {
-        debugPrint('Stack trace: $stackTrace');
-      }
+    // Always print to Flutter's stdout so logs are visible via
+    // `adb logcat` / Xcode Console in both debug AND release builds.
+    // developer.log() alone is only visible in DevTools.
+    // ignore: avoid_print
+    print(logMessage);
+    if (error != null) {
+      // ignore: avoid_print
+      print('Error: $error');
+    }
+    if (stackTrace != null) {
+      // ignore: avoid_print
+      print('Stack trace: $stackTrace');
     }
   }
 

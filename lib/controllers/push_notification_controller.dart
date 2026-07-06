@@ -60,15 +60,18 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
   /// Initialize the push notification system
   Future<void> _initialize() async {
     try {
-      AppLogger.debug('Initializing PushNotificationController...');
+      AppLogger.info('[PushInit] Initializing PushNotificationController...');
       _lastError = null;
       _hasNetworkError = false;
 
       // Get device ID
       _deviceId = await _deviceService.getDeviceId();
+      AppLogger.info('[PushInit] deviceId=${_deviceId?.substring(0, 8) ?? "null"}...');
 
       // Get FCM token
       _fcmToken = _notificationService.fcmToken;
+      AppLogger.info('[PushInit] fcmToken from NotificationService: '
+          '${_fcmToken == null ? "NULL" : "${_fcmToken!.substring(0, 12)}... (len=${_fcmToken!.length})"}');
 
       if (_fcmToken == null) {
         throw Exception('FCM token not available');
@@ -90,13 +93,13 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       _watchLoginForDirectRegistration();
 
       _isInitialized = true;
-      AppLogger.debug('PushNotificationController initialized successfully');
-      AppLogger.debug('Loaded ${_siteStates.length} site states, ${registeredSites.length} registered');
+      AppLogger.info('[PushInit] ✅ PushNotificationController initialized successfully');
+      AppLogger.info('[PushInit] Loaded ${_siteStates.length} site states, ${registeredSites.length} registered');
       update();
-    } catch (e) {
+    } catch (e, st) {
       _lastError = e.toString();
       _hasNetworkError = _isNetworkError(e);
-      AppLogger.debug('Error initializing PushNotificationController: $e');
+      AppLogger.error('[PushInit] ❌ Error initializing PushNotificationController: $e', stackTrace: st);
       update();
     }
   }
@@ -106,25 +109,51 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
   bool _hasDirectRegistered = false;
   Worker? _loginWatcher;
 
+  /// Public entry point to trigger direct-mode registration on demand
+  /// (e.g. from LoginController after a successful login, since the Rx
+  /// login watcher can miss updates when the SiteContext is mutated in
+  /// place rather than replaced).
+  Future<void> registerDirect() async => _tryRegisterDirect();
+
   /// Attempts to register this device with the forum's own server for the
   /// BYO Firebase ("direct") push mode. No-op when this build isn't a direct
   /// build, or when prerequisites (token, login) aren't satisfied yet.
   Future<void> _tryRegisterDirect({String? overrideToken}) async {
-    if (AppForumConfig.pushSource != 'direct') return;
-    if (_deviceId == null) return;
+    AppLogger.info('[DirectPush] _tryRegisterDirect ENTER '
+        'pushSource=${AppForumConfig.pushSource} '
+        'deviceId=${_deviceId?.substring(0, 8) ?? "null"} '
+        'fcmToken=${(overrideToken ?? _fcmToken)?.substring(0, 12) ?? "null"}...');
+
+    if (AppForumConfig.pushSource != 'direct') {
+      AppLogger.info('[DirectPush] SKIP — pushSource is not "direct"');
+      return;
+    }
+    if (_deviceId == null) {
+      AppLogger.info('[DirectPush] SKIP — deviceId is null');
+      return;
+    }
     final token = overrideToken ?? _fcmToken;
-    if (token == null || token.isEmpty) return;
+    if (token == null || token.isEmpty) {
+      AppLogger.info('[DirectPush] SKIP — fcmToken is null/empty');
+      return;
+    }
 
     final ctx = Get.isRegistered<SiteController>()
         ? Get.find<SiteController>().currentSiteContext.value
         : null;
     if (ctx == null || !ctx.isLoggedIn) {
-      AppLogger.debug('[DirectPush] Skipping register — not logged in yet');
+      AppLogger.info('[DirectPush] SKIP — not logged in yet '
+          '(ctx=${ctx == null ? "null" : "present"}, '
+          'isLoggedIn=${ctx?.isLoggedIn ?? "n/a"})');
       return;
     }
 
     try {
       final deviceInfo = await _deviceService.getDeviceInfo();
+      AppLogger.info('[DirectPush] Calling registerDeviceAsync '
+          'platform=${deviceInfo.platform} '
+          'app_version=${deviceInfo.appVersion} '
+          'source=direct');
       final proxy = SiteProxyService.getDeviceProxy();
       final r = await proxy.registerDeviceAsync(
         deviceId: _deviceId!,
@@ -135,13 +164,13 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       );
       if (r.result) {
         _hasDirectRegistered = true;
-        AppLogger.debug('[DirectPush] Registered device ${_deviceId!.substring(0, 8)}... '
+        AppLogger.info('[DirectPush] ✅ Registered device ${_deviceId!.substring(0, 8)}... '
             'platform=${deviceInfo.platform} on forum ${ctx.site.url}');
       } else {
-        AppLogger.debug('[DirectPush] Register failed: ${r.resultText}');
+        AppLogger.warning('[DirectPush] ❌ Register failed: ${r.resultText}');
       }
-    } catch (e) {
-      AppLogger.debug('[DirectPush] Register error: $e');
+    } catch (e, st) {
+      AppLogger.error('[DirectPush] Register EXCEPTION: $e', stackTrace: st);
     }
   }
 
@@ -172,6 +201,11 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
   /// Listens for the user to become logged in and (re-)attempts direct
   /// registration. Called once during init.
   void _watchLoginForDirectRegistration() {
+    AppLogger.info('[DirectPush] _watchLoginForDirectRegistration ENTER '
+        'pushSource=${AppForumConfig.pushSource} '
+        'hasWatcher=${_loginWatcher != null} '
+        'siteCtrlReg=${Get.isRegistered<SiteController>()}');
+
     if (AppForumConfig.pushSource != 'direct') return;
     if (_loginWatcher != null) return;
     if (!Get.isRegistered<SiteController>()) return;
@@ -179,10 +213,15 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
     final siteCtrl = Get.find<SiteController>();
     _loginWatcher = ever<dynamic>(siteCtrl.currentSiteContext, (_) async {
       final ctx = siteCtrl.currentSiteContext.value;
+      AppLogger.info('[DirectPush] loginWatcher fired — '
+          'ctx=${ctx == null ? "null" : "present"} '
+          'isLoggedIn=${ctx?.isLoggedIn ?? "n/a"} '
+          'hasDirectRegistered=$_hasDirectRegistered');
       if (ctx != null && ctx.isLoggedIn && !_hasDirectRegistered) {
         await _tryRegisterDirect();
       }
     });
+    AppLogger.info('[DirectPush] login watcher installed');
   }
 
   /// Handle token refresh from NotificationService (consolidated listener)

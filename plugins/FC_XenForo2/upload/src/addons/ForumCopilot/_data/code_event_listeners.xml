@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <code_event_listeners>
   <listener event_id="app_pub_complete" execute_order="100" callback_class="ForumCopilot\Listener" callback_method="processBatchedAlerts" active="1" description="Process batched alert push notifications at end of request"/>
-  <listener event_id="entity_post_save" execute_order="10" callback_class="ForumCopilot\Listener" callback_method="conversationMessageEntityPostSave" active="1" description="Collect ConversationMessage inserts for deferred PM push"/>
+  <listener event_id="entity_pre_save" execute_order="10" callback_class="ForumCopilot\Listener" callback_method="conversationMessageEntityPreSave" active="1" description="Collect ConversationMessage inserts for deferred PM push (pre_save so isInsert() is reliable)"/>
   <listener event_id="templater_template_pre_render" execute_order="10" callback_class="ForumCopilot\Listener\SmartBanner" callback_method="templateHook" active="1" description="Inject Smart Banner script in head for mobile visitors"/>
 </code_event_listeners>

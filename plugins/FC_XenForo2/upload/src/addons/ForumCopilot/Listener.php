@@ -11,11 +11,12 @@ class Listener
 
     /**
      * Collected during the request. Populated in
-     * conversationMessageEntityPostSave; processed in processBatchedAlerts
-     * at app_pub_complete — by which time xf_conversation_recipient rows
-     * are committed to the DB.
+     * conversationMessageEntityPreSave (INSERT only); processed in
+     * processBatchedAlerts at app_pub_complete — by which time the message has
+     * been saved (message_id / conversation_id populated) and the
+     * xf_conversation_recipient rows are committed to the DB.
      *
-     * Shape: [ ['conversationId' => int, 'senderId' => int, 'messageId' => int], ... ]
+     * Shape: [ ['entity' => \XF\Entity\ConversationMessage], ... ]
      */
     protected static $pendingConversationPushes = [];
 
@@ -74,9 +75,23 @@ class Listener
             $db  = \XF::db();
 
             foreach (self::$pendingConversationPushes as $p) {
-                $conversationId = (int) $p['conversationId'];
-                $senderId       = (int) $p['senderId'];
-                $messageId      = (int) $p['messageId'];
+                // Stashed at pre_save; by now the insert has committed so the
+                // entity's message_id / conversation_id / user_id are populated.
+                $pendingMessage = $p['entity'] ?? null;
+                if (!$pendingMessage instanceof \XF\Entity\ConversationMessage) {
+                    continue;
+                }
+                $conversationId = (int) $pendingMessage->conversation_id;
+                $senderId       = (int) $pendingMessage->user_id;
+                $messageId      = (int) $pendingMessage->message_id;
+
+                if ($conversationId <= 0 || $messageId <= 0) {
+                    \XF::logError(sprintf(
+                        '[FC PM] resolve — unsaved/bad ids conv=%d msg=%d, skipping',
+                        $conversationId, $messageId
+                    ));
+                    continue;
+                }
 
                 // 1. Recipients (from the now-committed conversation_recipient rows)
                 $recipientIds = $db->fetchAllColumn(
@@ -193,8 +208,13 @@ class Listener
     }
 
     /**
-     * v8: no schema change, only Listener.php logic — collect at post_save,
-     * resolve at app_pub_complete. Boot check just marks itself done.
+     * v11: migrate the PM listener from entity_post_save to entity_pre_save so
+     * $entity->isInsert() is reliable. On post_save isInsert() is always false
+     * (Entity::save() runs _saveToSource() before firing the event), so a
+     * ConversationMessage re-saved by a reaction/edit — which writes the
+     * reaction cache and calls save() — was indistinguishable from a new
+     * message and dispatched a phantom "new DM" push to the reactor. Drop the
+     * old row and register the pre_save collector instead.
      */
     protected static function bootCheck()
     {
@@ -205,48 +225,50 @@ class Listener
 
         try {
             $reg = \XF::app()->registry();
-            if ($reg->get('fcBootV10Done')) {
+            if ($reg->get('fcBootV11Done')) {
                 return;
             }
 
-            \XF::logError('[FC BOOT] v10 running: ensure PM entity_post_save listener');
+            \XF::logError('[FC BOOT] v11 running: migrate PM listener post_save → pre_save + isInsert');
 
             $db = \XF::db();
             $mutated = false;
-            $required = [
+
+            // 1. Drop any existing PM listener rows (old post_save method OR the
+            //    new pre_save method) so we can re-register cleanly.
+            $obsolete = $db->fetchAll(
+                "SELECT event_listener_id, event_id, callback_method
+                 FROM xf_code_event_listener
+                 WHERE callback_class = ?
+                 AND callback_method IN (?, ?)",
                 [
-                    'method' => 'conversationMessageEntityPostSave',
-                    'desc'   => 'Collect ConversationMessage inserts for deferred PM push',
-                ],
-            ];
-
-            foreach ($required as $req) {
-                $existing = $db->fetchOne(
-                    "SELECT event_listener_id FROM xf_code_event_listener
-                     WHERE callback_class = ?
-                     AND callback_method = ?
-                     AND event_id = ?",
-                    ['ForumCopilot\\Listener', $req['method'], 'entity_post_save']
-                );
-
-                if ($existing) {
-                    \XF::logError('[FC BOOT] ' . $req['method'] . ' listener present id=' . $existing);
-                    continue;
-                }
-
-                $db->insert('xf_code_event_listener', [
-                    'event_id'        => 'entity_post_save',
-                    'execute_order'   => 10,
-                    'callback_class'  => 'ForumCopilot\\Listener',
-                    'callback_method' => $req['method'],
-                    'active'          => 1,
-                    'hint'            => '',
-                    'description'     => $req['desc'],
-                    'addon_id'        => 'ForumCopilot',
-                ]);
-                \XF::logError('[FC BOOT] INSERTED ' . $req['method'] . ' listener id=' . $db->lastInsertId());
+                    'ForumCopilot\\Listener',
+                    'conversationMessageEntityPostSave',
+                    'conversationMessageEntityPreSave',
+                ]
+            );
+            foreach ($obsolete as $r) {
+                $db->delete('xf_code_event_listener', 'event_listener_id = ?', $r['event_listener_id']);
+                \XF::logError(sprintf(
+                    '[FC BOOT] deleted stale PM listener id=%d event=%s method=%s',
+                    (int) $r['event_listener_id'], $r['event_id'], $r['callback_method']
+                ));
                 $mutated = true;
             }
+
+            // 2. Register the PM collector on entity_pre_save.
+            $db->insert('xf_code_event_listener', [
+                'event_id'        => 'entity_pre_save',
+                'execute_order'   => 10,
+                'callback_class'  => 'ForumCopilot\\Listener',
+                'callback_method' => 'conversationMessageEntityPreSave',
+                'active'          => 1,
+                'hint'            => '',
+                'description'     => 'Collect ConversationMessage inserts for deferred PM push (pre_save so isInsert() is reliable)',
+                'addon_id'        => 'ForumCopilot',
+            ]);
+            \XF::logError('[FC BOOT] INSERTED conversationMessageEntityPreSave listener id=' . $db->lastInsertId());
+            $mutated = true;
 
             if ($mutated) {
                 try {
@@ -260,8 +282,8 @@ class Listener
                 }
             }
 
-            $reg->set('fcBootV10Done', time());
-            \XF::logError('[FC BOOT] v10 done');
+            $reg->set('fcBootV11Done', time());
+            \XF::logError('[FC BOOT] v11 done');
         } catch (\Throwable $e) {
             \XF::logError('[FC BOOT] error: ' . $e->getMessage()
                 . ' at ' . $e->getFile() . ':' . $e->getLine());
@@ -269,46 +291,55 @@ class Listener
     }
 
     /**
-     * entity_post_save listener — just collects for later processing.
-     * The recipient lookup is deferred to app_pub_complete where the
-     * xf_conversation_recipient rows have been committed.
+     * entity_pre_save listener — collects genuinely NEW conversation messages
+     * for a deferred PM push. The recipient lookup is deferred to
+     * app_pub_complete, where the xf_conversation_recipient rows have been
+     * committed and the entity's message_id / conversation_id are populated.
+     *
+     * MUST run on entity_pre_save (not post_save) so $entity->isInsert() is
+     * reliable. Reacting to / liking / editing a DM re-saves the
+     * ConversationMessage (XenForo writes the reaction_score / reactions /
+     * reaction_users cache onto the message via
+     * AbstractHandler::updateContentReactions() → $entity->save()). On the old
+     * post_save listener that re-save — arriving in the reaction's OWN request,
+     * so past the per-request dedup — dispatched a fresh "new PM" push whose
+     * recipients exclude the message AUTHOR, i.e. include the reactor. Result:
+     * the reactor got a phantom DM notification for their own reaction. At
+     * post_save isInsert() is always false (Entity::save() runs _saveToSource()
+     * before firing the event), so the guard only works here at pre_save.
      */
-    public static function conversationMessageEntityPostSave(\XF\Mvc\Entity\Entity $entity)
+    public static function conversationMessageEntityPreSave(\XF\Mvc\Entity\Entity $entity)
     {
         if (!($entity instanceof \XF\Entity\ConversationMessage)) {
             return;
         }
 
+        // Skip updates (reactions, edits, cache rebuilds) — only new messages notify.
+        if (!$entity->isInsert()) {
+            return;
+        }
+
         try {
-            $messageId = (int) $entity->message_id;
-            if ($messageId <= 0) {
+            // Dedupe within the request by object identity; message_id is not
+            // assigned until after the insert commits, so we key on the entity.
+            $key = spl_object_hash($entity);
+            if (isset(self::$seenMessageIds[$key])) {
                 return;
             }
-
-            if (isset(self::$seenMessageIds[$messageId])) {
-                return;
-            }
-            self::$seenMessageIds[$messageId] = true;
-
-            $conversationId = (int) $entity->conversation_id;
-            $senderId       = (int) $entity->user_id;
+            self::$seenMessageIds[$key] = true;
 
             \XF::logError(sprintf(
-                '[FC PM] conversationMessageEntityPostSave: msg_id=%d conv=%d sender=%d — deferring recipient lookup',
-                $messageId, $conversationId, $senderId
+                '[FC PM] conversationMessageEntityPreSave: INSERT sender=%d — deferring recipient lookup',
+                (int) $entity->user_id
             ));
 
-            if ($conversationId <= 0) {
-                return;
-            }
-
+            // Stash the entity; by app_pub_complete it has been saved and
+            // message_id / conversation_id are populated.
             self::$pendingConversationPushes[] = [
-                'conversationId' => $conversationId,
-                'senderId'       => $senderId,
-                'messageId'      => $messageId,
+                'entity' => $entity,
             ];
         } catch (\Throwable $e) {
-            \XF::logError('[FC PM] post_save error: ' . $e->getMessage()
+            \XF::logError('[FC PM] pre_save error: ' . $e->getMessage()
                 . ' at ' . $e->getFile() . ':' . $e->getLine());
         }
     }

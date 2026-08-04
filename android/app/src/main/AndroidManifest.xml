@@ -1,7 +1,17 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Photo/video access on Android 13+ (API 33+) goes through the system
+         Android Photo Picker (image_picker_android >= 0.8.6), which grants
+         access to individually picked items without any app-level media
+         permission. Google Play's Photo & Video Permissions policy forbids
+         declaring READ_MEDIA_IMAGES / READ_MEDIA_VIDEO when the photo picker
+         is sufficient — which it is here — so we explicitly strip them in
+         case a transitive plugin manifest tries to merge them back in.
+         Legacy scoped-storage read/write for API <= 32 is retained below. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 

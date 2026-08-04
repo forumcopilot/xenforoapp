@@ -211,15 +211,29 @@ class ConfigController extends AbstractController
         ];
         $imageUrl = (string) $reaction->image_url;
         if ($imageUrl !== '') {
+            // Image-mode reaction: match XenForo's default EmojiOne images by
+            // their fixed basename (like.png, love_2x.png, …).
             $base = strtolower(pathinfo(parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl, PATHINFO_FILENAME));
             $base = preg_replace('/[-_]?2x$/', '', $base);
             if (isset($defaultSet[$base])) {
                 return $defaultSet[$base];
             }
+        } else {
+            // Sprite-mode reaction: XenForo's built-in set ships this way by
+            // default — no emoji_shortname AND no image_url, rendered from a
+            // shared sprite sheet via sprite_params. Neither a native emoji nor
+            // a plain <img> is available, so the app would otherwise draw a
+            // placeholder. Map the standard built-in set by its (lowercased)
+            // title. Locale caveat: matches XenForo's default English titles; a
+            // renamed/translated built-in should use the Emoji replacement
+            // field (handled authoritatively by step 1 above).
+            $title = strtolower(trim((string) $reaction->title));
+            if (isset($defaultSet[$title])) {
+                return $defaultSet[$title];
+            }
         }
 
-        // Custom reaction with no emoji_shortname and not in the default set —
-        // the app falls back to its image.
+        // Custom reaction with an uploaded image and no emoji — app renders image.
         return null;
     }
 }

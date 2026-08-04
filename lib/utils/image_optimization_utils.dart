@@ -6,6 +6,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:forumcopilot_sdk/models/entities/fc_attachment_data.dart';
 
+/// Hard ceiling on the raw (pre-encode) byte size of an image we will upload.
+///
+/// Attachments are transmitted base64-encoded inside a JSON request body (see
+/// XenForoAttachmentProxy.uploadAttachmentAsync), which inflates the payload
+/// by ~33%. The server's nginx `client_max_body_size` limits the ENCODED body,
+/// and on a stock nginx it defaults to 1 MB. To stay comfortably under a 1 MB
+/// encoded-body limit we must keep the raw file well below ~786 KB (1 MB / 1.33)
+/// with headroom for the JSON envelope. 700 KB gives a base64 body of ~955 KB.
+///
+/// This is intentionally conservative so uploads succeed even before the server
+/// admin raises client_max_body_size. Once the server limit is confirmed higher,
+/// this can be relaxed (or made server-driven).
+const int kMaxUploadRawBytes = 700 * 1024;
+
+/// Hard cap on the longest edge (in px) of an uploaded image. Phone cameras
+/// routinely produce 3000–4000px+ images; capping to Full HD slashes the byte
+/// size (pixel count scales with the square of the edge) while staying more
+/// than sharp enough for forum viewing. Applied even when the server sets no
+/// dimension constraint of its own.
+const int kMaxLongestEdgePx = 1920;
+
 /// Optimization plan describing what changes will be made
 class ImageOptimizationPlan {
   final bool needsResize;
@@ -92,6 +113,18 @@ Future<XFile> optimizeImage(
       targetHeight = (currentHeight * scaleFactor).round();
     }
 
+    // Step 3b: Hard-cap the longest edge regardless of server constraints.
+    // Most phone photos far exceed this; this single step does the bulk of the
+    // size reduction before any quality compression.
+    final longestEdge =
+        targetWidth > targetHeight ? targetWidth : targetHeight;
+    if (longestEdge > kMaxLongestEdgePx) {
+      final capScale = kMaxLongestEdgePx / longestEdge;
+      targetWidth = (targetWidth * capScale).round();
+      targetHeight = (targetHeight * capScale).round();
+      needsDimensionResize = true;
+    }
+
     // Step 4: Determine format conversion
     final extension = imageFile.path.split('.').last.toLowerCase();
     final jpgAllowed =
@@ -126,13 +159,22 @@ Future<XFile> optimizeImage(
       optimizedFile = await convertToJpg(optimizedFile, quality: 85);
     }
 
-    // Compress if size still exceeds limit
-    if (constraints.size != null && constraints.size! > 0) {
-      final optimizedSize = await optimizedFile.length();
-      if (optimizedSize > constraints.size!) {
-        optimizedFile =
-            await compressImageToSize(optimizedFile, constraints.size!);
-      }
+    // Compress to the EFFECTIVE byte ceiling: the smaller of the server's
+    // attachment limit and our hard upload ceiling. The hard ceiling is what
+    // actually keeps uploads under nginx's client_max_body_size (see
+    // kMaxUploadRawBytes) — the server's own attachment limit is typically much
+    // larger and doesn't account for the base64 encoding of the request body.
+    int effectiveSizeTarget = kMaxUploadRawBytes;
+    if (constraints.size != null &&
+        constraints.size! > 0 &&
+        constraints.size! < effectiveSizeTarget) {
+      effectiveSizeTarget = constraints.size!;
+    }
+
+    final optimizedSize = await optimizedFile.length();
+    if (optimizedSize > effectiveSizeTarget) {
+      optimizedFile =
+          await compressImageToSize(optimizedFile, effectiveSizeTarget);
     }
 
     return optimizedFile;
@@ -206,11 +248,22 @@ Future<ui.Image> loadImageFromFile(XFile file) async {
   }
 }
 
+/// Strip any optimization prefixes we may have added on a previous pass, so the
+/// filename doesn't accumulate "compressed_resized_compressed_…" across the
+/// iterative compress/resize loop. Keeps the final uploaded attachment name clean.
+String _stripOptimizationPrefixes(String baseName) {
+  var b = baseName;
+  while (b.startsWith('compressed_') || b.startsWith('resized_')) {
+    b = b.replaceFirst(RegExp(r'^(compressed_|resized_)'), '');
+  }
+  return b;
+}
+
 /// Resize image maintaining aspect ratio
 Future<XFile> resizeImage(XFile file, int maxWidth, int maxHeight) async {
   try {
     final tempDir = await getTemporaryDirectory();
-    final originalBaseName = path.basenameWithoutExtension(file.path);
+    final originalBaseName = _stripOptimizationPrefixes(path.basenameWithoutExtension(file.path));
     final outputFormat = _outputFormatForPath(file.path);
     final outputExtension = _outputExtensionForFormat(outputFormat);
     final targetFileName = 'resized_$originalBaseName$outputExtension';
@@ -279,38 +332,48 @@ Future<XFile> convertToJpg(XFile file, {int quality = 85}) async {
 
 /// Compress image to meet size limit
 Future<XFile> compressImageToSize(XFile file, int maxSizeBytes) async {
+  XFile current = file;
+
+  if (await current.length() <= maxSizeBytes) {
+    return current;
+  }
+
+  // Phase 1: step JPEG quality down to a floor. Each pass re-encodes from the
+  // current file, so quality is genuinely reduced.
   int quality = 85;
-  XFile compressedFile = file;
-
-  while (quality >= 60) {
-    final currentSize = await compressedFile.length();
-    if (currentSize <= maxSizeBytes) {
-      break; // Size is acceptable
-    }
-
-    // Reduce quality
-    quality -= 5;
-    compressedFile = await compressImage(compressedFile, quality: quality);
-
-    // If still too large and we can resize further
-    final newSize = await compressedFile.length();
-    if (newSize > maxSizeBytes && quality >= 60) {
-      // Resize by 10% more
-      final image = await loadImageFromFile(compressedFile);
-      final newWidth = (image.width * 0.9).round();
-      final newHeight = (image.height * 0.9).round();
-      compressedFile = await resizeImage(compressedFile, newWidth, newHeight);
+  while (quality > 40) {
+    quality -= 10;
+    current = await compressImage(current, quality: quality);
+    if (await current.length() <= maxSizeBytes) {
+      return current;
     }
   }
 
-  return compressedFile;
+  // Phase 2: still over target at the quality floor — shrink dimensions ~15%
+  // per pass and re-encode at low quality until we're under the ceiling.
+  // Bounded by a guard and a minimum edge so we never loop forever or produce
+  // an unusably tiny image.
+  int guard = 0;
+  while (await current.length() > maxSizeBytes && guard < 10) {
+    guard++;
+    final image = await loadImageFromFile(current);
+    final newWidth = (image.width * 0.85).round();
+    final newHeight = (image.height * 0.85).round();
+    if (newWidth < 320 || newHeight < 320) {
+      break; // don't degrade below a usable size
+    }
+    current = await resizeImage(current, newWidth, newHeight);
+    current = await compressImage(current, quality: 40);
+  }
+
+  return current;
 }
 
 /// Compress image with specified quality
 Future<XFile> compressImage(XFile file, {required int quality}) async {
   try {
     final tempDir = await getTemporaryDirectory();
-    final originalBaseName = path.basenameWithoutExtension(file.path);
+    final originalBaseName = _stripOptimizationPrefixes(path.basenameWithoutExtension(file.path));
     final outputFormat = _outputFormatForPath(file.path);
     final outputExtension = _outputExtensionForFormat(outputFormat);
     final targetFileName = 'compressed_$originalBaseName$outputExtension';

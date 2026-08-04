@@ -8,3 +8,4 @@ export 'fc_attachment.dart';
 export 'fc_like.dart';
 export 'fc_thanks.dart';
 export 'fc_custom_field.dart';
+export 'fc_reaction.dart';

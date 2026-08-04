@@ -368,6 +368,7 @@ class XenForoParamAdapter
         return FCLikePostParams::fromArray([
             'postId' => $params->get('postId', ''),
             'like' => $params->get('like', true),
+            'reactionId' => $params->get('reactionId', 1),
         ]);
     }
 

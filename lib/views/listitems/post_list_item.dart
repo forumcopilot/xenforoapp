@@ -21,6 +21,8 @@ import '../../theme/style_builders.dart';
 import 'post_list_item_header.dart';
 import 'post_list_item_attachment.dart';
 import 'post_list_item_social.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../user_profile_page.dart';
 import 'package:get/get.dart';
@@ -143,6 +145,7 @@ class _PostListItemState extends State<PostListItem> {
   late final PostController _postsController;
   late int _likeCount; // Add local state for like count
   late final PostActionsHandler _postActionsHandler;
+  int? _visitorReactionId; // which reaction the viewer currently has (multi-reaction)
 
   @override
   void initState() {
@@ -154,7 +157,31 @@ class _PostListItemState extends State<PostListItem> {
     _postActionsHandler.setDefaultRefreshCallback(widget.actions?.onRefresh);
     _isLiked = widget.post.isLiked;
     _likeCount = widget.post.likesInfo.length;
+    _visitorReactionId = _initialVisitorReactionId();
   }
+
+  /// Determine the viewer's existing reaction on this post. Prefers the
+  /// reactionId on the viewer's own like entry (when the server sent it),
+  /// falling back to the default Like when the post is liked but no id is known.
+  int? _initialVisitorReactionId() {
+    final me = widget.siteContext.currentUsername;
+    for (final like in widget.post.likesInfo) {
+      if (like.username == me) {
+        return like.reactionId ??
+            (widget.post.isLiked
+                ? (ReactionRegistry.instance.defaultReaction?.id ?? 1)
+                : null);
+      }
+    }
+    return widget.post.isLiked
+        ? (ReactionRegistry.instance.defaultReaction?.id ?? 1)
+        : null;
+  }
+
+  /// The viewer's current reaction (for rendering on the react button), or
+  /// null to show the default outline heart.
+  FCReaction? get _currentReaction =>
+      ReactionRegistry.instance.byId(_visitorReactionId);
 
   /// Checks if a URL is a mention link (link text starts with @ and has no spaces)
   bool _isMentionUrl(String? linkText) {
@@ -649,6 +676,7 @@ class _PostListItemState extends State<PostListItem> {
             isLiked: _isLiked,
             isThanked: _isThanked,
             likeCount: _likeCount,
+            currentReaction: _currentReaction,
             isLoggedIn: widget.siteContext.isLoggedIn,
             onLike: _handleLikeAction,
             onThank: _handleThankAction,
@@ -889,6 +917,40 @@ class _PostListItemState extends State<PostListItem> {
   }
 
   void _handleLikeAction() async {
+    // Multi-reaction path: if the forum exposes a reaction set (newer plugin),
+    // tapping opens the chooser. Picking the current reaction toggles it off.
+    if (ReactionRegistry.instance.isAvailable) {
+      if (!widget.siteContext.isLoggedIn) {
+        _postActionsHandler.handleLike(
+          context: context,
+          siteContext: widget.siteContext,
+          post: widget.post,
+          onRefresh: widget.actions?.onRefresh ?? () {},
+          setIsLiked: (val) => setState(() => _isLiked = val),
+          setLikeCount: (val) => setState(() => _likeCount = val),
+          isLiked: _isLiked,
+        );
+        return;
+      }
+      final selected = await showReactionPicker(
+        context,
+        currentReactionId: _visitorReactionId,
+      );
+      if (selected == null) return; // dismissed
+      await _postActionsHandler.handleReaction(
+        context: context,
+        siteContext: widget.siteContext,
+        post: widget.post,
+        reactionId: selected.id,
+        currentReactionId: _visitorReactionId,
+        setIsLiked: (val) => setState(() => _isLiked = val),
+        setLikeCount: (val) => setState(() => _likeCount = val),
+        setVisitorReaction: (val) => setState(() => _visitorReactionId = val),
+      );
+      return;
+    }
+
+    // Legacy single-Like path (older plugin without a reaction set).
     await _postActionsHandler.handleLike(
       context: context,
       siteContext: widget.siteContext,

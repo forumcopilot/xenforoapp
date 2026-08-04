@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_thanks.dart';
@@ -1025,6 +1026,112 @@ class PostActionsHandler {
           SnackBar(content: Text(wasLiked 
             ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike post: $e')
             : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like post: $e'))),
+        );
+      }
+    }
+  }
+
+  /// Apply a specific reaction to a post (multi-reaction path).
+  ///
+  /// The server's reactToContent() adds, switches, or (when [reactionId] equals
+  /// the current reaction) removes the reaction. We mirror that optimistically:
+  /// tapping the current reaction toggles it off; a different one switches.
+  Future<void> handleReaction({
+    required BuildContext context,
+    required FCPost post,
+    required SiteContext siteContext,
+    required int reactionId,
+    required int? currentReactionId,
+    required ValueSetter<bool> setIsLiked,
+    required ValueSetter<int> setLikeCount,
+    required ValueSetter<int?> setVisitorReaction,
+  }) async {
+    if (!siteContext.isLoggedIn) {
+      showPostLoginPrompt(context, onRefresh: () {});
+      return;
+    }
+
+    final previousReaction = currentReactionId;
+    final togglingOff = previousReaction == reactionId;
+    final myUsername = siteContext.currentUsername;
+
+    // Look up the chosen reaction so the optimistic like entry carries the
+    // same fields the "Reacted by" list renders (reactionEmoji / reactionIconUrl),
+    // not just the id — otherwise the viewer's own row shows a blank icon.
+    final chosen = ReactionRegistry.instance.byId(reactionId);
+
+    // --- Optimistic update ---
+    if (togglingOff) {
+      setVisitorReaction(null);
+      setIsLiked(false);
+      post.likesInfo.removeWhere((like) => like.username == myUsername);
+    } else {
+      setVisitorReaction(reactionId);
+      setIsLiked(true);
+      // Update or add the viewer's like entry with the chosen reaction.
+      final existing =
+          post.likesInfo.where((l) => l.username == myUsername).toList();
+      if (existing.isEmpty) {
+        post.likesInfo.add(FCLike(
+          userId: siteContext.currentUserId ?? '',
+          username: myUsername ?? '',
+          avatarUrl: siteContext.currentAvatarUrl ?? '',
+          timestamp: DateTime.now(),
+          reactionId: reactionId,
+          reactionName: chosen?.title,
+          reactionEmoji: chosen?.emoji,
+          reactionIconUrl: chosen?.imageUrl,
+        ));
+      } else {
+        existing.first
+          ..reactionId = reactionId
+          ..reactionName = chosen?.title
+          ..reactionEmoji = chosen?.emoji
+          ..reactionIconUrl = chosen?.imageUrl;
+      }
+    }
+    setLikeCount(post.likesInfo.length);
+
+    // --- Server call ---
+    try {
+      final socialProxy = SiteProxyFactory.getSocialProxy();
+      final result = await socialProxy.likePostAsync(post.id, reactionId: reactionId);
+      if (!result.result) {
+        final msg = result.resultText;
+        throw Exception((msg != null && msg.isNotEmpty) ? msg : 'React failed');
+      }
+      // Trust the server's authoritative count.
+      setLikeCount(result.likeCount);
+      // isLiked=false from the server means the reaction was toggled off.
+      if (!result.isLiked) {
+        setVisitorReaction(null);
+        setIsLiked(false);
+      }
+    } catch (e) {
+      // --- Revert on failure ---
+      setVisitorReaction(previousReaction);
+      setIsLiked(previousReaction != null);
+      if (togglingOff) {
+        // we removed it optimistically — put it back with its original reaction
+        final prev = ReactionRegistry.instance.byId(previousReaction);
+        post.likesInfo.add(FCLike(
+          userId: siteContext.currentUserId ?? '',
+          username: myUsername ?? '',
+          avatarUrl: siteContext.currentAvatarUrl ?? '',
+          timestamp: DateTime.now(),
+          reactionId: previousReaction,
+          reactionName: prev?.title,
+          reactionEmoji: prev?.emoji,
+          reactionIconUrl: prev?.imageUrl,
+        ));
+      } else if (previousReaction == null) {
+        // we added it optimistically — remove it
+        post.likesInfo.removeWhere((like) => like.username == myUsername);
+      }
+      setLikeCount(post.likesInfo.length);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to react: $e')),
         );
       }
     }

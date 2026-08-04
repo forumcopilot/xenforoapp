@@ -23,10 +23,13 @@ abstract class IFCSocialProxy {
   /// [userId] - User ID to unfollow
   Future<FCUnfollowResult> unfollowAsync(String userId);
 
-  /// Send Like to a specific post
+  /// React to a specific post.
   ///
-  /// [postId] - Post ID to like
-  Future<FCLikePostResult> likePostAsync(String postId);
+  /// [postId] - Post ID to react to
+  /// [reactionId] - Reaction to apply (defaults to 1 = Like). The server
+  ///   switches/toggles automatically: reacting with the same id removes it,
+  ///   a different id switches to it.
+  Future<FCLikePostResult> likePostAsync(String postId, {int reactionId = 1});
 
   /// Remove Like from a specific post
   ///
@@ -36,7 +39,7 @@ abstract class IFCSocialProxy {
   /// Send Like to a specific conversation message
   ///
   /// [messageId] - Conversation message ID to like
-  Future<FCLikePostResult> likeConversationMessageAsync(String messageId);
+  Future<FCLikePostResult> likeConversationMessageAsync(String messageId, {int reactionId = 1});
 
   /// Remove Like from a specific conversation message
   ///

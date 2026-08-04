@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import '../appbars/conversation_app_bar.dart';
@@ -1505,6 +1507,20 @@ class _ConversationPageState extends State<ConversationPage> {
       return;
     }
 
+    // Multi-reaction path: if the forum exposes a reaction set, tapping opens
+    // the chooser (same as posts). Falls through to the legacy single-Like
+    // toggle below when no reaction set is available (older plugin).
+    if (ReactionRegistry.instance.isAvailable) {
+      final currentReactionId = _visitorReactionIdFor(message);
+      final selected = await showReactionPicker(
+        context,
+        currentReactionId: currentReactionId,
+      );
+      if (selected == null) return; // dismissed
+      await _applyMessageReaction(message, selected.id, currentReactionId);
+      return;
+    }
+
     // Optimistically update UI
     final wasLiked = message.isLiked;
     final oldLikeCount = message.likeCount;
@@ -1623,6 +1639,116 @@ class _ConversationPageState extends State<ConversationPage> {
                 'Failed to ${wasLiked ? 'unlike' : 'like'} message: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
+        );
+      }
+    }
+  }
+
+  /// The viewer's current reaction id on a conversation message, from their
+  /// own like entry (falls back to Like when the message is liked but no id
+  /// is known).
+  int? _visitorReactionIdFor(FCConversationMessage message) {
+    final me = widget.siteContext.currentUsername;
+    for (final like in message.likesInfo) {
+      if (like.username == me) {
+        return like.reactionId ??
+            (message.isLiked
+                ? (ReactionRegistry.instance.defaultReaction?.id ?? 1)
+                : null);
+      }
+    }
+    return message.isLiked
+        ? (ReactionRegistry.instance.defaultReaction?.id ?? 1)
+        : null;
+  }
+
+  /// Apply a chosen reaction to a conversation message: optimistic update +
+  /// server call + revert on failure. Mirrors the post reaction flow. The
+  /// server (reactToContent) adds / switches / toggles-off automatically.
+  Future<void> _applyMessageReaction(
+    FCConversationMessage message,
+    int reactionId,
+    int? currentReactionId,
+  ) async {
+    final togglingOff = currentReactionId == reactionId;
+    final myUsername = widget.siteContext.currentUsername;
+    final chosen = ReactionRegistry.instance.byId(reactionId);
+    final oldLikeCount = message.likeCount;
+
+    // --- Optimistic update ---
+    setState(() {
+      if (togglingOff) {
+        message.isLiked = false;
+        message.likesInfo.removeWhere((l) => l.username == myUsername);
+      } else {
+        message.isLiked = true;
+        final existing =
+            message.likesInfo.where((l) => l.username == myUsername).toList();
+        if (existing.isEmpty) {
+          message.likesInfo.add(FCLike(
+            userId: widget.siteContext.currentUserId ?? '',
+            username: myUsername ?? '',
+            avatarUrl: widget.siteContext.currentAvatarUrl ?? '',
+            timestamp: DateTime.now(),
+            reactionId: reactionId,
+            reactionName: chosen?.title,
+            reactionEmoji: chosen?.emoji,
+            reactionIconUrl: chosen?.imageUrl,
+          ));
+        } else {
+          existing.first
+            ..reactionId = reactionId
+            ..reactionName = chosen?.title
+            ..reactionEmoji = chosen?.emoji
+            ..reactionIconUrl = chosen?.imageUrl;
+        }
+      }
+      message.likeCount = message.likesInfo.length;
+    });
+
+    // --- Server call ---
+    try {
+      final socialProxy = SiteProxyFactory.getSocialProxy();
+      final result = await socialProxy.likeConversationMessageAsync(
+        message.messageId,
+        reactionId: reactionId,
+      );
+      if (!result.result) {
+        final msg = result.resultText;
+        throw Exception((msg != null && msg.isNotEmpty) ? msg : 'React failed');
+      }
+      setState(() {
+        message.likeCount = result.likeCount;
+        if (!result.isLiked) {
+          message.isLiked = false;
+          message.likesInfo.removeWhere((l) => l.username == myUsername);
+        }
+      });
+    } catch (e) {
+      // --- Revert ---
+      setState(() {
+        message.likeCount = oldLikeCount;
+        if (togglingOff) {
+          final prev = ReactionRegistry.instance.byId(currentReactionId);
+          message.isLiked = true;
+          message.likesInfo.add(FCLike(
+            userId: widget.siteContext.currentUserId ?? '',
+            username: myUsername ?? '',
+            avatarUrl: widget.siteContext.currentAvatarUrl ?? '',
+            timestamp: DateTime.now(),
+            reactionId: currentReactionId,
+            reactionName: prev?.title,
+            reactionEmoji: prev?.emoji,
+            reactionIconUrl: prev?.imageUrl,
+          ));
+        } else if (currentReactionId == null) {
+          message.isLiked = false;
+          message.likesInfo.removeWhere((l) => l.username == myUsername);
+        }
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to react: $e')),
         );
       }
     }

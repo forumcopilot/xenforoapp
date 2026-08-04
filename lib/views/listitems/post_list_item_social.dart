@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../utils/time_utils.dart';
@@ -23,12 +25,18 @@ class PostListItemSocial extends StatelessWidget {
   final VoidCallback? onShowThanks;
   final Widget? trailing;
 
+  /// The viewer's current reaction (multi-reaction). When set, the react
+  /// button renders it (native emoji, or the reaction's image for custom
+  /// reactions) instead of the default heart icon.
+  final FCReaction? currentReaction;
+
   const PostListItemSocial({
     super.key,
     required this.post,
     required this.isLiked,
     required this.isThanked,
     required this.likeCount,
+    this.currentReaction,
     this.isLoggedIn = false,
     this.onLike,
     this.onThank,
@@ -157,15 +165,24 @@ class PostListItemSocial extends StatelessWidget {
               Builder(
                 builder: (context) {
                   final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-                  final iconColor = isLiked 
-                      ? colorScheme.error 
+                  final iconColor = isLiked
+                      ? colorScheme.error
                       : colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+                  // When the viewer has a specific reaction, render it (native
+                  // emoji or the reaction's image for custom reactions);
+                  // otherwise fall back to the heart icon (liked = filled).
+                  final Widget reactIcon = (isLiked && currentReaction != null)
+                      ? ReactionGlyph(
+                          reaction: currentReaction!,
+                          size: DesignTokens.iconSizeMedium,
+                        )
+                      : Icon(
+                          Icons.favorite,
+                          color: iconColor,
+                          size: DesignTokens.iconSizeMedium,
+                        );
                   return AccessibilityHelpers.accessibleIconButton(
-                    icon: Icon(
-                      Icons.favorite,
-                      color: iconColor,
-                      size: DesignTokens.iconSizeMedium,
-                    ),
+                    icon: reactIcon,
                     onTap: onLike,
                     label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount),
                     isSelected: isLiked,

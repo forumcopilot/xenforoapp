@@ -1213,81 +1213,45 @@ class PrivateConversationController extends AbstractController
                 return $this->apiError($errorMessage);
             }
 
-            // Use like system
+            // Apply the reaction the user picked via XenForo's reaction
+            // repository. reactToContent() adds / switches / toggles-off
+            // automatically. reactionId defaults to 1 (Like) so older app
+            // builds that don't send it behave exactly as before.
             $contentType = 'conversation_message';
-            $contentId = $message->message_id;
-            
-            // Check if already reacted/liked
-            $isReacted = false;
+            $contentId = (int) $message->message_id;
+            $reactionId = (int) $params->get('reactionId', 1);
+            if ($reactionId < 1) {
+                $reactionId = 1;
+            }
+
             try {
-                if (method_exists($message, 'isReactedTo')) {
-                    $isReacted = $message->isReactedTo();
-                } else {
-                    $isReacted = $message->isLiked();
-                }
-            } catch (\Exception $e) {
-                // If check fails, assume not liked and proceed
-                $isReacted = false;
-            }
-            
-            if ($isReacted) {
-                // Already liked, return current state
-                $result = new FCLikePostResult(
+                $reactionRepo = $this->repository('XF:Reaction');
+                $reaction = $reactionRepo->reactToContent(
+                    $reactionId,
+                    $contentType,
+                    $contentId,
+                    $visitor,
                     true,
-                    null,
-                    true,
-                    isset($message->reaction_score) ? (int)$message->reaction_score : 0
+                    false
                 );
-            } else {
-                // Use like system
-                $contentType = 'conversation_message';
-                $contentId = $message->message_id;
-                
-                // Check if reaction system is available
-                if (class_exists('\XF\ControllerPlugin\Reaction')) {
-                    try {
-                        $reactionRepo = $this->repository('XF:Reaction');
-                        $reaction = $reactionRepo->insertReaction(1, 'conversation_message', $contentId, $visitor, true, false);
-                        
-                        // Refresh message
-                        $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
-                        
-                        $result = new FCLikePostResult(
-                            true,
-                            null,
-                            true,
-                            isset($message->reaction_score) ? (int)$message->reaction_score : 0
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiError('Failed to like message: ' . $e->getMessage());
-                    }
-                } else {
-                    // Use old like system
-                    try {
-                        $likeRepo = $this->repository('XF:LikedContent');
-                        $like = $likeRepo->toggleLike($contentType, $contentId, $visitor);
-                        
-                        // Refresh message
-                        $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
-                        
-                        $isLiked = false;
-                        try {
-                            $isLiked = $message->isLiked();
-                        } catch (\Exception $e) {
-                            $isLiked = true;
-                        }
-                        
-                        $result = new FCLikePostResult(
-                            true,
-                            null,
-                            $isLiked,
-                            isset($message->reaction_score) ? (int)$message->reaction_score : 0
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiError('Failed to like message: ' . $e->getMessage());
-                    }
-                }
+            } catch (\Throwable $e) {
+                return $this->apiError('Failed to react to message: ' . $e->getMessage());
             }
+
+            // Refresh the message so reaction_score reflects the change.
+            $message = $this->em()->find('XF:ConversationMessage', $contentId);
+
+            $visitorReactionId = ($reaction && isset($reaction->reaction_id))
+                ? (int) $reaction->reaction_id
+                : null;
+
+            $result = new FCLikePostResult(
+                true,
+                null,
+                $visitorReactionId !== null,
+                (isset($message->reaction_score) ? (int) $message->reaction_score : 0),
+                $visitorReactionId
+            );
 
             return $this->apiSuccess($result);
 

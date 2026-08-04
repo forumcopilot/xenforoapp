@@ -115,10 +115,111 @@ class ConfigController extends AbstractController
             'apiKey' => '', // Will be set by client
             'forumType' => 'xenforo',
             'canViewChat' => $canViewChat,
+            'availableReactions' => $this->getAvailableReactions(),
         ];
 
         // Create FCConfigResult object and return it
         $configResult = new FCConfigResult($config);
         return $this->apiSuccess($configResult->toArray());
+    }
+
+    /**
+     * Build the list of active reactions the forum has configured, so the app
+     * can show a reaction picker instead of a single hardcoded "Like".
+     *
+     * Each entry: {id, title, emoji, imageUrl, displayOrder}. `emoji` is a
+     * native Unicode emoji derived from the standard XenForo reaction set
+     * (so the app can render crisp native emoji); it is null for any custom
+     * reaction we can't map, in which case the app falls back to `imageUrl`.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function getAvailableReactions(): array
+    {
+        try {
+            /** @var \XF\Finder\ReactionFinder $finder */
+            $finder = $this->finder('XF:Reaction')
+                ->where('active', 1)
+                ->order('display_order');
+            $reactions = $finder->fetch();
+        } catch (\Throwable $e) {
+            \XF::logError('FC getAvailableReactions: ' . $e->getMessage());
+            return [];
+        }
+
+        $boardUrl = rtrim((string) $this->app()->options()->boardUrl, '/');
+        $out = [];
+
+        foreach ($reactions as $reaction) {
+            $imageUrl = (string) $reaction->image_url;
+            // XenForo stores a style-relative path (styles/…/reactions/…/love.png).
+            // Absolutize it so the app can load it directly if needed.
+            if ($imageUrl !== '' && !preg_match('#^https?://#i', $imageUrl)) {
+                $imageUrl = $boardUrl . '/' . ltrim($imageUrl, '/');
+            }
+
+            $out[] = [
+                'id'           => (int) $reaction->reaction_id,
+                'title'        => (string) $reaction->title,
+                'emoji'        => self::emojiForReaction($reaction),
+                'imageUrl'     => $imageUrl,
+                'displayOrder' => (int) $reaction->display_order,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Map a XenForo reaction to a native Unicode emoji using the basename of
+     * its image_url (the standard EmojiOne set: like/love/haha/wow/sad/angry/
+     * dislike). Returns null for anything we don't recognise so the app falls
+     * back to the reaction's image.
+     */
+    protected static function emojiForReaction($reaction): ?string
+    {
+        // 1. AUTHORITATIVE: XenForo's own "Emoji replacement" field. When the
+        //    admin sets it (e.g. :exploding_head:), $reaction->emoji returns the
+        //    actual Unicode emoji. This is the clean, per-reaction, admin-driven
+        //    mapping — no plugin change needed for any future reaction. To use
+        //    it for an image-based reaction like "Mind Blown", the admin sets
+        //    the Emoji replacement field and clears the image URL (XenForo
+        //    requires one or the other, not both).
+        try {
+            if (!empty($reaction->emoji_shortname)) {
+                $native = $reaction->emoji;
+                if (is_string($native) && $native !== '') {
+                    return $native;
+                }
+            }
+        } catch (\Throwable $e) {
+            // fall through to the heuristic maps below
+        }
+
+        // 2. XenForo's built-in default reaction set ships as EmojiOne images
+        //    (no emoji_shortname), so map those by their fixed image basename.
+        //    This is the standard set present on every XenForo install — not
+        //    per-forum config — so it's safe generic behavior. Any reaction NOT
+        //    in this default set returns null and the app renders its image;
+        //    to have such a reaction show as a native emoji, the admin fills
+        //    the reaction's "Emoji replacement" field (handled by step 1 above).
+        static $defaultSet = [
+            'like'    => "\u{1F44D}", 'love'    => "\u{2764}\u{FE0F}",
+            'haha'    => "\u{1F604}", 'wow'     => "\u{1F62E}",
+            'sad'     => "\u{1F622}", 'angry'   => "\u{1F620}",
+            'dislike' => "\u{1F44E}",
+        ];
+        $imageUrl = (string) $reaction->image_url;
+        if ($imageUrl !== '') {
+            $base = strtolower(pathinfo(parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl, PATHINFO_FILENAME));
+            $base = preg_replace('/[-_]?2x$/', '', $base);
+            if (isset($defaultSet[$base])) {
+                return $defaultSet[$base];
+            }
+        }
+
+        // Custom reaction with no emoji_shortname and not in the default set —
+        // the app falls back to its image.
+        return null;
     }
 }

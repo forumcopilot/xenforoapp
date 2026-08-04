@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
@@ -24,6 +26,36 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
+
+/// Icon for a conversation message's react button: the viewer's chosen
+/// reaction glyph (emoji or custom image) when they've reacted, else the heart.
+/// Shared by both message layouts (header + regular item).
+Widget buildMessageReactButtonIcon({
+  required SiteContext siteContext,
+  required FCConversationMessage message,
+  required bool isLiked,
+  required Color iconColor,
+  required ColorScheme colorScheme,
+}) {
+  FCReaction? viewer;
+  if (isLiked) {
+    final me = siteContext.currentUsername;
+    for (final like in message.likesInfo) {
+      if (like.username == me && like.reactionId != null) {
+        viewer = ReactionRegistry.instance.byId(like.reactionId);
+        break;
+      }
+    }
+  }
+  if (viewer != null) {
+    return ReactionGlyph(reaction: viewer, size: DesignTokens.iconSizeMedium);
+  }
+  return Icon(
+    Icons.favorite,
+    color: isLiked ? colorScheme.error : iconColor,
+    size: DesignTokens.iconSizeMedium,
+  );
+}
 
 class ConversationHeaderItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -565,10 +597,12 @@ class ConversationHeaderItem extends StatelessWidget {
           if (canLike) ...[
             if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
             AccessibilityHelpers.accessibleIconButton(
-              icon: Icon(
-                Icons.favorite,
-                color: isLiked ? colorScheme.error : iconColor,
-                size: DesignTokens.iconSizeMedium,
+              icon: buildMessageReactButtonIcon(
+                siteContext: siteContext,
+                message: message,
+                isLiked: isLiked,
+                iconColor: iconColor,
+                colorScheme: colorScheme,
               ),
               onTap: onLike,
               label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount > 0 ? likeCount : null),
@@ -1374,10 +1408,12 @@ class ConversationItem extends StatelessWidget {
           if (canLike) ...[
             if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
             AccessibilityHelpers.accessibleIconButton(
-              icon: Icon(
-                Icons.favorite,
-                color: isLiked ? colorScheme.error : iconColor,
-                size: DesignTokens.iconSizeMedium,
+              icon: buildMessageReactButtonIcon(
+                siteContext: siteContext,
+                message: message,
+                isLiked: isLiked,
+                iconColor: iconColor,
+                colorScheme: colorScheme,
               ),
               onTap: onLike,
               label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount > 0 ? likeCount : null),

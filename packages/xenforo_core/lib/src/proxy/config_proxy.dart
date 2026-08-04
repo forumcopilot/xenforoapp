@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_config_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
@@ -36,6 +37,11 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
       } catch (e) {
         print('   ${response.toString()}');
       }
+
+      // Populate the reaction registry from the forum's configured reactions
+      // (newer plugin only; older plugins simply omit the field and the app
+      // falls back to a single Like). Held in-memory, re-fetched each launch.
+      ReactionRegistry.instance.setFromJsonList(response['availableReactions']);
 
       // Convert response to FCConfigResult
       return FCConfigResult(

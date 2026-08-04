@@ -78,15 +78,20 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
   }
 
   @override
-  Future<FCLikePostResult> likePostAsync(String postId) async {
+  Future<FCLikePostResult> likePostAsync(String postId, {int reactionId = 1}) async {
     print('✅ [XENFORO_SOCIAL] likePostAsync called via plugin API');
-    print('   📋 Parameters: postId=$postId');
+    print('   📋 Parameters: postId=$postId, reactionId=$reactionId');
 
     try {
       final response = await callPluginApi('likePost', {
         'postId': postId,
+        'reactionId': reactionId,
       });
 
+      // Note: the server also returns visitorReactionId, but the app already
+      // knows which reaction it sent and uses `isLiked` to tell add (true) from
+      // toggle-off (false), so we don't need it on the mapped result model
+      // (avoids a dart_mappable regen).
       return FCLikePostResult(
         result: response['result'] ?? false,
         resultText: response['resultText']?.toString() ?? '',
@@ -128,13 +133,14 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
   }
 
   @override
-  Future<FCLikePostResult> likeConversationMessageAsync(String messageId) async {
+  Future<FCLikePostResult> likeConversationMessageAsync(String messageId, {int reactionId = 1}) async {
     print('✅ [XENFORO_SOCIAL] likeConversationMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId');
+    print('   📋 Parameters: messageId=$messageId, reactionId=$reactionId');
 
     try {
       final response = await callPluginApi('likeConversationMessage', {
         'messageId': messageId,
+        'reactionId': reactionId,
       });
 
       return FCLikePostResult(

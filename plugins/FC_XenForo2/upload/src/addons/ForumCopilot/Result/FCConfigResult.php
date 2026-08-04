@@ -53,6 +53,9 @@ class FCConfigResult
     public $forumType;
     public $canViewChat;
 
+    /** @var array<int, array<string, mixed>> Active reactions the forum has configured */
+    public $availableReactions = [];
+
     public function __construct($data = [])
     {
         // Set all properties from data array

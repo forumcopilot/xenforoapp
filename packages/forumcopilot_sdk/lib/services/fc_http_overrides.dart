@@ -11,13 +11,24 @@ class FCDioClient {
   String userAgent;
   late Dio dio;
   CookieJar? cookieJar;
-  bool _initialized = false;
+  Future<void>? _initFuture;
   BuildContext? _context;
   bool _cloudflareAdded = false;
   VoidCallback? onCloudflareStart;
   VoidCallback? onCloudflareEnd;
 
-  FCDioClient._internal({required this.userAgent}) : dio = Dio(BaseOptions(followRedirects: true));
+  FCDioClient._internal({required this.userAgent})
+      : dio = Dio(BaseOptions(
+          followRedirects: true,
+          // Fail fast on unreachable/stalled servers instead of hanging forever.
+          connectTimeout: const Duration(seconds: 15),
+          // Max gap between two received data chunks (not total download time),
+          // so large downloads are fine as long as data keeps flowing.
+          receiveTimeout: const Duration(seconds: 30),
+          // Generous, because attachment/avatar uploads go through this same
+          // Dio instance. Only applies to requests that have a body.
+          sendTimeout: const Duration(minutes: 5),
+        ));
 
   static final FCDioClient _instance = FCDioClient._internal(userAgent: 'DefaultUserAgent/1.0');
 
@@ -30,35 +41,45 @@ class FCDioClient {
 
   static FCDioClient get instance => _instance;
 
-  Future<void> initialize() async {
-    if (_initialized) return;
+  Future<void> initialize() {
+    // In-flight guard: the first caller runs the body; concurrent callers
+    // await the same Future. Without this, a parallel first burst would run
+    // the body twice and the second pass's dio.interceptors.clear() would
+    // silently drop an already-attached CloudflareInterceptor.
+    return _initFuture ??= _doInitialize();
+  }
 
+  Future<void> _doInitialize() async {
     try {
-      final cookieDir = await _resolveCookieStorageDirectory();
-      cookieJar = PersistCookieJar(storage: FileStorage(cookieDir.path));
-      debugPrint('🍪 [COOKIE] Persistent cookie storage initialized at: ${cookieDir.path}');
+      try {
+        final cookieDir = await _resolveCookieStorageDirectory();
+        cookieJar = PersistCookieJar(storage: FileStorage(cookieDir.path));
+        debugPrint('🍪 [COOKIE] Persistent cookie storage initialized at: ${cookieDir.path}');
+      } catch (e) {
+        debugPrint('Error initializing persistent cookie jar: $e');
+        cookieJar = CookieJar(); // Fallback to in-memory
+      }
+
+      // Configure Dio interceptors
+      dio.interceptors.clear();
+      if (cookieJar != null) {
+        dio.interceptors.add(CookieManager(cookieJar!));
+      }
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (options, handler) {
+            options.headers.putIfAbsent('User-Agent', () => userAgent + ' ForumCopilot/1.0');
+            options.headers.putIfAbsent('X-Forum-Copilot', () => '1');
+            return handler.next(options);
+          },
+        ),
+      );
+      _maybeAttachCloudflare();
     } catch (e) {
-      debugPrint('Error initializing persistent cookie jar: $e');
-      cookieJar = CookieJar(); // Fallback to in-memory
+      // Allow a later call to retry initialization after a failure.
+      _initFuture = null;
+      rethrow;
     }
-
-    // Configure Dio interceptors
-    dio.interceptors.clear();
-    if (cookieJar != null) {
-      dio.interceptors.add(CookieManager(cookieJar!));
-    }
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          options.headers.putIfAbsent('User-Agent', () => userAgent + ' ForumCopilot/1.0');
-          options.headers.putIfAbsent('X-Forum-Copilot', () => '1');
-          return handler.next(options);
-        },
-      ),
-    );
-    _maybeAttachCloudflare();
-
-    _initialized = true;
   }
 
   Future<void> setContext(BuildContext? context) async {
@@ -100,6 +121,16 @@ class FCDioClient {
     await initialize();
     final cookies = await cookieJar?.loadForRequest(url) ?? [];
     return cookies.length;
+  }
+
+  /// Get cookie names only (no values) for a URL. For diagnostics only.
+  Future<List<String>> cookieNamesForUrl(Uri url) async {
+    await initialize();
+    final cookies = await cookieJar?.loadForRequest(url) ?? [];
+    return cookies
+        .where((c) => c.name.isNotEmpty)
+        .map((c) => c.name)
+        .toList();
   }
 
   /// Get cookies for a specific URL as a Cookie header string

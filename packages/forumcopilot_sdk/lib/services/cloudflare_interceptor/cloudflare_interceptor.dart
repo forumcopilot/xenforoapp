@@ -15,7 +15,9 @@ class CloudflareInterceptor extends Interceptor {
   final CookieJar cookieJar;
   final BuildContext context;
 
-  Completer<String?> _completer = Completer<String?>.sync();
+  /// Non-null while a challenge is being solved. Concurrent challenged
+  /// requests await this same completer instead of starting a second solve.
+  Completer<String?>? _completer;
   bool _usingDialog = false;
 
   CloudflareInterceptor({
@@ -40,8 +42,7 @@ class CloudflareInterceptor extends Interceptor {
     print('🔒 [CLOUDFLARE] Response headers: ${response.requestOptions.headers}');
     _notifyStart();
     try {
-      _solveCloudflare(response.requestOptions);
-      final solvedData = await _completer.future;
+      final solvedData = await _obtainSolvedData(response.requestOptions);
       if (solvedData != null) {
         final newResponse = Response(
           requestOptions: response.requestOptions,
@@ -50,6 +51,17 @@ class CloudflareInterceptor extends Interceptor {
           extra: {'cloudflare': true},
         );
         handler.next(newResponse);
+      } else {
+        // The user dismissed the challenge. Fail the request with a clear
+        // error instead of leaving the awaiting caller hanging forever.
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.cancel,
+            error: 'Cloudflare challenge was dismissed by the user',
+          ),
+        );
       }
     } catch (e) {
       handler.reject(DioException(requestOptions: response.requestOptions, error: e));
@@ -69,8 +81,7 @@ class CloudflareInterceptor extends Interceptor {
     print('🔒 [CLOUDFLARE] Error headers: ${err.requestOptions.headers}');
     _notifyStart();
     try {
-      _solveCloudflare(err.requestOptions);
-      final solvedData = await _completer.future;
+      final solvedData = await _obtainSolvedData(err.requestOptions);
       if (solvedData != null) {
         final newResponse = Response(
           requestOptions: err.requestOptions,
@@ -79,6 +90,10 @@ class CloudflareInterceptor extends Interceptor {
           extra: {'cloudflare': true},
         );
         handler.resolve(newResponse);
+      } else {
+        // The user dismissed the challenge: pass the original error through
+        // so the awaiting caller gets a normal failure instead of hanging.
+        handler.next(err);
       }
     } catch (e) {
       handler.reject(DioException(requestOptions: err.requestOptions, error: e));
@@ -99,9 +114,39 @@ class CloudflareInterceptor extends Interceptor {
     } catch (_) {}
   }
 
-  void _solveCloudflare(RequestOptions requestOptions) async {
-    _completer = Completer<String?>.sync();
+  /// Returns the solved challenge data, or null if the user dismissed the
+  /// challenge dialog. If a solve is already in flight, awaits that same
+  /// solve instead of opening a second challenge dialog.
+  Future<String?> _obtainSolvedData(RequestOptions requestOptions) async {
+    final existing = _completer;
+    if (existing != null && !existing.isCompleted) {
+      return existing.future;
+    }
 
+    final completer = Completer<String?>();
+    _completer = completer;
+    try {
+      await _solveCloudflare(requestOptions);
+    } catch (e, stackTrace) {
+      // Setup failures (e.g. 'Context is not mounted') must reach the
+      // pending handler instead of becoming unhandled zone errors that
+      // leave the request hanging.
+      if (!completer.isCompleted) {
+        completer.completeError(e, stackTrace);
+      }
+    }
+    try {
+      return await completer.future;
+    } finally {
+      // Only reset once solving has finished, and only if a newer solve has
+      // not already replaced this completer.
+      if (identical(_completer, completer)) {
+        _completer = null;
+      }
+    }
+  }
+
+  Future<void> _solveCloudflare(RequestOptions requestOptions) async {
     final targetUri = requestOptions.uri;
 
     // Step 1: Pre-resolve DNS to warm up system cache - ensures WebView uses same IP as Dio
@@ -169,7 +214,8 @@ class CloudflareInterceptor extends Interceptor {
   }
 
   void _onLoadStop(InAppWebViewController controller, WebUri? uri, Uri targetUri) async {
-    if (_completer.isCompleted) return;
+    final completer = _completer;
+    if (completer == null || completer.isCompleted) return;
     if (uri == null) return;
     final currentUri = Uri.parse(uri.toString());
     if (currentUri.scheme.startsWith('about')) return;
@@ -218,16 +264,19 @@ class CloudflareInterceptor extends Interceptor {
     }
 
     // Guard again in case the user closed the dialog while we were awaiting above.
-    if (!_completer.isCompleted) {
-      _completer.complete(resultData);
+    if (!completer.isCompleted) {
+      completer.complete(resultData);
     }
 
     if (_usingDialog) {
-      if (!context.mounted) throw Exception('Context is not mounted');
-
-      Navigator.of(context).pop();
-
       _usingDialog = false;
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      } else {
+        // Don't throw from this fire-and-forget callback: the completer has
+        // already been completed, so the request will proceed either way.
+        debugPrint('⚠️ [CLOUDFLARE] Context not mounted; cannot pop challenge dialog');
+      }
     }
   }
 
@@ -283,8 +332,9 @@ class CloudflareInterceptor extends Interceptor {
     Navigator.of(dialogContext).maybePop();
     _usingDialog = false;
 
-    if (!_completer.isCompleted) {
-      _completer.complete(null);
+    final completer = _completer;
+    if (completer != null && !completer.isCompleted) {
+      completer.complete(null);
     }
   }
 }

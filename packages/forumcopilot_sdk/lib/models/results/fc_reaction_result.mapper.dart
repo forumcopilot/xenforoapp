@@ -360,6 +360,187 @@ class _FCAvailableReactionsResultCopyWithImpl<$R, $Out>
       _FCAvailableReactionsResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
+class FCReactionUsersResultMapper
+    extends ClassMapperBase<FCReactionUsersResult> {
+  FCReactionUsersResultMapper._();
+
+  static FCReactionUsersResultMapper? _instance;
+  static FCReactionUsersResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = FCReactionUsersResultMapper._());
+      FCBaseResultMapper.ensureInitialized();
+      FCLikeMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCReactionUsersResult';
+
+  static bool _$result(FCReactionUsersResult v) => v.result;
+  static const Field<FCReactionUsersResult, bool> _f$result = Field(
+    'result',
+    _$result,
+  );
+  static String? _$resultText(FCReactionUsersResult v) => v.resultText;
+  static const Field<FCReactionUsersResult, String> _f$resultText = Field(
+    'resultText',
+    _$resultText,
+    opt: true,
+  );
+  static List<FCLike> _$users(FCReactionUsersResult v) => v.users;
+  static const Field<FCReactionUsersResult, List<FCLike>> _f$users = Field(
+    'users',
+    _$users,
+    opt: true,
+    def: const [],
+  );
+  static int _$total(FCReactionUsersResult v) => v.total;
+  static const Field<FCReactionUsersResult, int> _f$total = Field(
+    'total',
+    _$total,
+    opt: true,
+    def: 0,
+  );
+
+  @override
+  final MappableFields<FCReactionUsersResult> fields = const {
+    #result: _f$result,
+    #resultText: _f$resultText,
+    #users: _f$users,
+    #total: _f$total,
+  };
+
+  static FCReactionUsersResult _instantiate(DecodingData data) {
+    return FCReactionUsersResult(
+      result: data.dec(_f$result),
+      resultText: data.dec(_f$resultText),
+      users: data.dec(_f$users),
+      total: data.dec(_f$total),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCReactionUsersResult fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCReactionUsersResult>(map);
+  }
+
+  static FCReactionUsersResult fromJson(String json) {
+    return ensureInitialized().decodeJson<FCReactionUsersResult>(json);
+  }
+}
+
+mixin FCReactionUsersResultMappable {
+  String toJson() {
+    return FCReactionUsersResultMapper.ensureInitialized()
+        .encodeJson<FCReactionUsersResult>(this as FCReactionUsersResult);
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCReactionUsersResultMapper.ensureInitialized()
+        .encodeMap<FCReactionUsersResult>(this as FCReactionUsersResult);
+  }
+
+  FCReactionUsersResultCopyWith<
+    FCReactionUsersResult,
+    FCReactionUsersResult,
+    FCReactionUsersResult
+  >
+  get copyWith =>
+      _FCReactionUsersResultCopyWithImpl<
+        FCReactionUsersResult,
+        FCReactionUsersResult
+      >(this as FCReactionUsersResult, $identity, $identity);
+  @override
+  String toString() {
+    return FCReactionUsersResultMapper.ensureInitialized().stringifyValue(
+      this as FCReactionUsersResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCReactionUsersResultMapper.ensureInitialized().equalsValue(
+      this as FCReactionUsersResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCReactionUsersResultMapper.ensureInitialized().hashValue(
+      this as FCReactionUsersResult,
+    );
+  }
+}
+
+extension FCReactionUsersResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCReactionUsersResult, $Out> {
+  FCReactionUsersResultCopyWith<$R, FCReactionUsersResult, $Out>
+  get $asFCReactionUsersResult => $base.as(
+    (v, t, t2) => _FCReactionUsersResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class FCReactionUsersResultCopyWith<
+  $R,
+  $In extends FCReactionUsersResult,
+  $Out
+>
+    implements FCBaseResultCopyWith<$R, $In, $Out> {
+  ListCopyWith<$R, FCLike, FCLikeCopyWith<$R, FCLike, FCLike>> get users;
+  @override
+  $R call({bool? result, String? resultText, List<FCLike>? users, int? total});
+  FCReactionUsersResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _FCReactionUsersResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCReactionUsersResult, $Out>
+    implements FCReactionUsersResultCopyWith<$R, FCReactionUsersResult, $Out> {
+  _FCReactionUsersResultCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<FCReactionUsersResult> $mapper =
+      FCReactionUsersResultMapper.ensureInitialized();
+  @override
+  ListCopyWith<$R, FCLike, FCLikeCopyWith<$R, FCLike, FCLike>> get users =>
+      ListCopyWith(
+        $value.users,
+        (v, t) => v.copyWith.$chain(t),
+        (v) => call(users: v),
+      );
+  @override
+  $R call({
+    bool? result,
+    Object? resultText = $none,
+    List<FCLike>? users,
+    int? total,
+  }) => $apply(
+    FieldCopyWithData({
+      if (result != null) #result: result,
+      if (resultText != $none) #resultText: resultText,
+      if (users != null) #users: users,
+      if (total != null) #total: total,
+    }),
+  );
+  @override
+  FCReactionUsersResult $make(CopyWithData data) => FCReactionUsersResult(
+    result: data.get(#result, or: $value.result),
+    resultText: data.get(#resultText, or: $value.resultText),
+    users: data.get(#users, or: $value.users),
+    total: data.get(#total, or: $value.total),
+  );
+
+  @override
+  FCReactionUsersResultCopyWith<$R2, FCReactionUsersResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _FCReactionUsersResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
 class FCPostVoteResultMapper extends ClassMapperBase<FCPostVoteResult> {
   FCPostVoteResultMapper._();
 

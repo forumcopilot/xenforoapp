@@ -64,6 +64,11 @@ class FCPost with FCPostMappable {
   /// List of likes information for this post
   List<FCLike> likesInfo;
 
+  /// Number of likes/main-reactions on this post. Prefer this over
+  /// likesInfo.length — likesInfo may be empty when the actor list
+  /// hasn't been fetched.
+  int likeCount;
+
   /// POst number of this post in the forum
   int? postNumber;
 
@@ -135,6 +140,7 @@ class FCPost with FCPostMappable {
       this.inlineAttachments = const [],
       this.thanksInfo = const [],
       this.likesInfo = const [],
+      this.likeCount = 0,
       this.postNumber,
       // Moderation capabilities
       this.canBan = false,

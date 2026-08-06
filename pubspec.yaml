@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   json_annotation: ^4.9.0
   shared_preferences: ^2.5.1
+  flutter_secure_storage: ^9.2.4
   forumcopilot_sdk: 
     path: ./packages/forumcopilot_sdk
   xenforo_core: 

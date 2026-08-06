@@ -61,6 +61,12 @@ class FCAttachmentUploadResultMapper
     _$fileSize,
     opt: true,
   );
+  static String? _$url(FCAttachmentUploadResult v) => v.url;
+  static const Field<FCAttachmentUploadResult, String> _f$url = Field(
+    'url',
+    _$url,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCAttachmentUploadResult> fields = const {
@@ -70,6 +76,7 @@ class FCAttachmentUploadResultMapper
     #fileName: _f$fileName,
     #groupId: _f$groupId,
     #fileSize: _f$fileSize,
+    #url: _f$url,
   };
 
   static FCAttachmentUploadResult _instantiate(DecodingData data) {
@@ -80,6 +87,7 @@ class FCAttachmentUploadResultMapper
       fileName: data.dec(_f$fileName),
       groupId: data.dec(_f$groupId),
       fileSize: data.dec(_f$fileSize),
+      url: data.dec(_f$url),
     );
   }
 
@@ -161,6 +169,7 @@ abstract class FCAttachmentUploadResultCopyWith<
     String? fileName,
     String? groupId,
     int? fileSize,
+    String? url,
   });
   FCAttachmentUploadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -184,6 +193,7 @@ class _FCAttachmentUploadResultCopyWithImpl<$R, $Out>
     Object? fileName = $none,
     Object? groupId = $none,
     Object? fileSize = $none,
+    Object? url = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -192,6 +202,7 @@ class _FCAttachmentUploadResultCopyWithImpl<$R, $Out>
       if (fileName != $none) #fileName: fileName,
       if (groupId != $none) #groupId: groupId,
       if (fileSize != $none) #fileSize: fileSize,
+      if (url != $none) #url: url,
     }),
   );
   @override
@@ -202,6 +213,7 @@ class _FCAttachmentUploadResultCopyWithImpl<$R, $Out>
     fileName: data.get(#fileName, or: $value.fileName),
     groupId: data.get(#groupId, or: $value.groupId),
     fileSize: data.get(#fileSize, or: $value.fileSize),
+    url: data.get(#url, or: $value.url),
   );
 
   @override

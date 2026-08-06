@@ -2,6 +2,7 @@ import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import 'secure_credential_store.dart';
 
 class SiteVisitHistory {
   final Site site;
@@ -58,8 +59,12 @@ class SiteVisitHistory {
 
 class SiteVisitTracker {
   static const String _visitHistoryKey = 'site_visit_history';
-  static const String _credentialsKey = 'site_credentials';
+  // Legacy SharedPreferences key holding XOR-"encrypted" passwords.
+  // Only read once, to migrate into SecureCredentialStore, then removed.
+  static const String _legacyCredentialsKey = 'site_credentials';
   static const String _usernamesKey = 'site_usernames';
+  // Keystore key prefix; full key is '$_securePasswordPrefix<siteId>'.
+  static const String _securePasswordPrefix = 'visit_password.';
   static const int _maxRecentVisits = 10;
 
   static SiteVisitTracker? _instance;
@@ -68,25 +73,20 @@ class SiteVisitTracker {
   SiteVisitTracker._();
 
   List<SiteVisitHistory> _recentVisits = [];
-  Map<String, String> _credentials = {}; // siteId -> encrypted password
+  // Site IDs that have a password stored in SecureCredentialStore. Passwords
+  // themselves are never cached here; they are read on demand.
+  Set<String> _credentialSiteIds = {};
   Map<String, String> _usernames = {}; // siteId -> username
   bool _loaded = false;
 
-  // Simple XOR-based encryption for passwords (same as AccountContext)
-  static String _encrypt(String plaintext) {
-    const String key = 'ForumCopilotApp2024SecureKey';
-    final keyBytes = key.codeUnits;
-    final plaintextBytes = plaintext.codeUnits;
-    final encrypted = <int>[];
+  static String _secureKeyForSiteId(String siteId) =>
+      '$_securePasswordPrefix$siteId';
 
-    for (int i = 0; i < plaintextBytes.length; i++) {
-      encrypted.add(plaintextBytes[i] ^ keyBytes[i % keyBytes.length]);
-    }
-
-    return String.fromCharCodes(encrypted);
-  }
-
-  static String _decrypt(String encryptedText) {
+  // Decrypts values written by the OLD XOR-with-hardcoded-key scheme
+  // (codeUnits variant, distinct from AccountContext's base64 variant). The
+  // key is public, so this was never real encryption. Kept ONLY to migrate
+  // previously stored passwords into the platform keystore.
+  static String _legacyDecrypt(String encryptedText) {
     const String key = 'ForumCopilotApp2024SecureKey';
     final keyBytes = key.codeUnits;
     final encryptedBytes = encryptedText.codeUnits;
@@ -97,6 +97,36 @@ class SiteVisitTracker {
     }
 
     return String.fromCharCodes(decrypted);
+  }
+
+  /// Moves passwords written by the old XOR/SharedPreferences scheme into the
+  /// platform keystore, then deletes the plaintext-equivalent copies. The
+  /// legacy prefs entry is only removed after every password has been written
+  /// to the keystore, so a failed migration retries on next launch.
+  Future<void> _migrateLegacyCredentials(SharedPreferences prefs) async {
+    final legacyJson = prefs.getString(_legacyCredentialsKey);
+    if (legacyJson == null) return;
+
+    try {
+      final Map<String, dynamic> legacyMap = json.decode(legacyJson);
+      for (final entry in legacyMap.cast<String, String>().entries) {
+        final password = _legacyDecrypt(entry.value);
+        if (password.isEmpty) continue;
+        // Don't clobber a password already saved via the new path.
+        final existing = await SecureCredentialStore.instance
+            .read(_secureKeyForSiteId(entry.key));
+        if (existing == null) {
+          await SecureCredentialStore.instance
+              .write(_secureKeyForSiteId(entry.key), password);
+        }
+      }
+      await prefs.remove(_legacyCredentialsKey);
+      AppLogger.debug(
+          'SiteVisitTracker: migrated ${legacyMap.length} legacy credential(s) to secure storage');
+    } catch (e) {
+      AppLogger.debug('SiteVisitTracker: legacy credential migration failed: $e');
+      // Leave the legacy entry in place so migration is retried next launch.
+    }
   }
 
   Future<void> loadFromDevice() async {
@@ -126,21 +156,17 @@ class SiteVisitTracker {
         _recentVisits = [];
       }
 
-      // Load credentials
-      final credentialsJson = prefs.getString(_credentialsKey);
-      AppLogger.debug(
-          '🔍 [LOAD_DEBUG] Credentials JSON from storage: ${credentialsJson != null ? credentialsJson.length : 0} chars');
+      // One-time migration of legacy XOR-stored credentials into the keystore.
+      await _migrateLegacyCredentials(prefs);
 
-      if (credentialsJson != null) {
-        final Map<String, dynamic> credentialsMap =
-            json.decode(credentialsJson);
-        _credentials = credentialsMap.cast<String, String>();
-        AppLogger.debug(
-            '🔍 [LOAD_DEBUG] ✅ Loaded ${_credentials.length} credentials from storage');
-      } else {
-        AppLogger.debug('🔍 [LOAD_DEBUG] No credentials found in storage');
-        _credentials = {};
-      }
+      // Index which site IDs have passwords in the keystore.
+      final secureKeys = await SecureCredentialStore.instance
+          .keysWithPrefix(_securePasswordPrefix);
+      _credentialSiteIds = secureKeys
+          .map((key) => key.substring(_securePasswordPrefix.length))
+          .toSet();
+      AppLogger.debug(
+          '🔍 [LOAD_DEBUG] ✅ ${_credentialSiteIds.length} credential(s) available in secure storage');
 
       // Load usernames
       final usernamesJson = prefs.getString(_usernamesKey);
@@ -167,8 +193,6 @@ class SiteVisitTracker {
       AppLogger.debug('🔍 [SAVE_DEBUG] _saveToDevice called');
       AppLogger.debug(
           '🔍 [SAVE_DEBUG] Saving ${_recentVisits.length} recent visits');
-      AppLogger.debug(
-          '🔍 [SAVE_DEBUG] Saving ${_credentials.length} credentials');
 
       final prefs = await SharedPreferences.getInstance();
 
@@ -182,13 +206,8 @@ class SiteVisitTracker {
       AppLogger.debug(
           '🔍 [SAVE_DEBUG] ✅ Recent visits saved to SharedPreferences');
 
-      // Save credentials
-      final credentialsJson = json.encode(_credentials);
-      AppLogger.debug(
-          '🔍 [SAVE_DEBUG] Credentials JSON length: ${credentialsJson.length}');
-      await prefs.setString(_credentialsKey, credentialsJson);
-      AppLogger.debug(
-          '🔍 [SAVE_DEBUG] ✅ Credentials saved to SharedPreferences');
+      // Passwords live in SecureCredentialStore and are written at the call
+      // sites, never through SharedPreferences.
 
       // Save usernames
       final usernamesJson = json.encode(_usernames);
@@ -223,9 +242,11 @@ class SiteVisitTracker {
     final hasNewCredentials =
         hasNewUsername && password != null && password.isNotEmpty;
 
-    // Save credentials if provided
+    // Save credentials if provided (password goes to the platform keystore)
     if (hasNewCredentials) {
-      _credentials[siteId] = _encrypt(password);
+      await SecureCredentialStore.instance
+          .write(_secureKeyForSiteId(siteId), password);
+      _credentialSiteIds.add(siteId);
       AppLogger.debug(
           '🔍 [RECENT_VISIT] Saved credentials for site: ${site.name}');
     }
@@ -236,7 +257,7 @@ class SiteVisitTracker {
     }
 
     // Check if credentials already exist (even if not provided now)
-    final hasExistingCredentials = _credentials.containsKey(siteId);
+    final hasExistingCredentials = _credentialSiteIds.contains(siteId);
     final hasExistingUsername = (_usernames[siteId]?.isNotEmpty ?? false);
     final finalUsername =
         hasNewUsername ? normalizedUsername : _usernames[siteId];
@@ -299,14 +320,16 @@ class SiteVisitTracker {
     await loadFromDevice();
 
     final siteId = site.id.toString();
-    final encryptedPassword = _credentials[siteId];
     final username = _usernames[siteId];
+    if (username == null) return null;
 
-    if (encryptedPassword == null || username == null) return null;
+    final password =
+        await SecureCredentialStore.instance.read(_secureKeyForSiteId(siteId));
+    if (password == null || password.isEmpty) return null;
 
     return {
       'username': username,
-      'password': _decrypt(encryptedPassword),
+      'password': password,
     };
   }
 
@@ -317,7 +340,8 @@ class SiteVisitTracker {
     await loadFromDevice();
 
     final siteId = site.id.toString();
-    _credentials.remove(siteId);
+    await SecureCredentialStore.instance.delete(_secureKeyForSiteId(siteId));
+    _credentialSiteIds.remove(siteId);
     _usernames.remove(siteId);
 
     // Update visit entry to reflect removed credentials

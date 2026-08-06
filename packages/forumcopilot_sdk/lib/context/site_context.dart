@@ -125,7 +125,13 @@ class SiteContext {
       'lastCallRequest': lastCallRequest,
       '_dynamicToken': _dynamicToken,
       'username': username,
-      'password': password,
+      // SECURITY: the password is intentionally NOT persisted here. This
+      // blob is written to plaintext SharedPreferences; storing the
+      // password would leak it in device backups. The password is held
+      // only in memory at runtime and re-loaded on demand from the
+      // platform keystore (SiteVisitTracker / secure credential store).
+      // fromJson still reads a legacy 'password' key so old blobs load,
+      // and the next saveToDevice rewrites this entry without it.
       'lastSuccessfulLoginMethod': lastSuccessfulLoginMethod,
       // Serialize complex objects
       'site': site.toJson(),

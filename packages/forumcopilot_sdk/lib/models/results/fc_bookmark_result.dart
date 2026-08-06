@@ -51,10 +51,17 @@ class FCBookmarkListResult extends FCBaseResult
 
   List<FCBookmark> items;
 
+  /// True when the backend signals further pages (Discourse:
+  /// `more_bookmarks_url`). Additive/defaulted so existing callers are
+  /// unaffected; the honest paging signal since [total] is often only the
+  /// current page length.
+  bool hasMore;
+
   FCBookmarkListResult({
     required bool result,
     String? resultText,
     required this.total,
     required this.items,
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }

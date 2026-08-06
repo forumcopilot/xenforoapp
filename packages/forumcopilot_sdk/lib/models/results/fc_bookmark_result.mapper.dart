@@ -378,6 +378,13 @@ class FCBookmarkListResultMapper extends ClassMapperBase<FCBookmarkListResult> {
     'items',
     _$items,
   );
+  static bool _$hasMore(FCBookmarkListResult v) => v.hasMore;
+  static const Field<FCBookmarkListResult, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCBookmarkListResult> fields = const {
@@ -385,6 +392,7 @@ class FCBookmarkListResultMapper extends ClassMapperBase<FCBookmarkListResult> {
     #resultText: _f$resultText,
     #total: _f$total,
     #items: _f$items,
+    #hasMore: _f$hasMore,
   };
 
   static FCBookmarkListResult _instantiate(DecodingData data) {
@@ -393,6 +401,7 @@ class FCBookmarkListResultMapper extends ClassMapperBase<FCBookmarkListResult> {
       resultText: data.dec(_f$resultText),
       total: data.dec(_f$total),
       items: data.dec(_f$items),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -474,6 +483,7 @@ abstract class FCBookmarkListResultCopyWith<
     String? resultText,
     int? total,
     List<FCBookmark>? items,
+    bool? hasMore,
   });
   FCBookmarkListResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -501,12 +511,14 @@ class _FCBookmarkListResultCopyWithImpl<$R, $Out>
     Object? resultText = $none,
     int? total,
     List<FCBookmark>? items,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
       if (total != null) #total: total,
       if (items != null) #items: items,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -515,6 +527,7 @@ class _FCBookmarkListResultCopyWithImpl<$R, $Out>
     resultText: data.get(#resultText, or: $value.resultText),
     total: data.get(#total, or: $value.total),
     items: data.get(#items, or: $value.items),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override

@@ -12,10 +12,21 @@ class FCGroupListResult {
   final String? resultText;
   final List<FCGroup> groups;
 
+  /// True when the backend signals further pages (Discourse:
+  /// `load_more_groups`). Additive/defaulted so existing callers are
+  /// unaffected.
+  final bool hasMore;
+
+  /// Total groups across all pages when the backend supplies it (Discourse:
+  /// `total_rows_groups`). 0 when unknown; do not treat as page length.
+  final int total;
+
   FCGroupListResult({
     required this.result,
     this.resultText,
     this.groups = const [],
+    this.hasMore = false,
+    this.total = 0,
   });
 }
 
@@ -39,10 +50,15 @@ class FCGroupMembersResult {
   final String? resultText;
   final List<FCDirectoryItem> members;
 
+  /// Total members across all pages when the backend supplies it (Discourse:
+  /// `meta.total`). 0 when unknown; do not treat as page length.
+  final int total;
+
   FCGroupMembersResult({
     required this.result,
     this.resultText,
     this.members = const [],
+    this.total = 0,
   });
 }
 

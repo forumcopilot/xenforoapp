@@ -18,6 +18,11 @@ class FCSearchTopicResult extends FCBaseResult with FCSearchTopicResultMappable 
   /// List of topics
   List<FCTopic> topics;
 
+  /// True when the backend signals further pages. Additive/defaulted honest
+  /// paging signal; [totalTopicNum] is often only the current page length so
+  /// callers should not derive "more" from it.
+  bool hasMore;
+
   // Compatibility properties for snake_case access
   int? get total_topic_num => totalTopicNum;
   String? get search_id => searchId;
@@ -28,6 +33,7 @@ class FCSearchTopicResult extends FCBaseResult with FCSearchTopicResultMappable 
     required this.totalTopicNum,
     this.searchId,
     required this.topics,
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }
 
@@ -44,6 +50,11 @@ class FCSearchPostResult extends FCBaseResult with FCSearchPostResultMappable {
   /// List of posts
   List<FCPost> posts;
 
+  /// True when the backend signals further pages. Additive/defaulted honest
+  /// paging signal; [totalPostNum] is often only the current page length so
+  /// callers should not derive "more" from it.
+  bool hasMore;
+
   // Compatibility properties for snake_case access
   int? get total_post_num => totalPostNum;
   String? get search_id => searchId;
@@ -54,6 +65,7 @@ class FCSearchPostResult extends FCBaseResult with FCSearchPostResultMappable {
     required this.totalPostNum,
     this.searchId,
     required this.posts,
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }
 
@@ -70,6 +82,11 @@ class FCSearchDataResultPost extends FCBaseResult with FCSearchDataResultPostMap
   /// List of posts
   List<FCPost> posts;
 
+  /// True when the backend signals further pages. Additive/defaulted honest
+  /// paging signal; [totalPostNum] is often only the current page length so
+  /// callers should not derive "more" from it.
+  bool hasMore;
+
   // Compatibility properties for snake_case access
   int? get total_post_num => totalPostNum;
   String? get search_id => searchId;
@@ -80,6 +97,7 @@ class FCSearchDataResultPost extends FCBaseResult with FCSearchDataResultPostMap
     required this.totalPostNum,
     this.searchId,
     required this.posts,
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }
 
@@ -96,6 +114,11 @@ class FCSearchDataResultTopic extends FCBaseResult with FCSearchDataResultTopicM
   /// List of topics
   List<FCTopic> topics;
 
+  /// True when the backend signals further pages. Additive/defaulted honest
+  /// paging signal; [totalTopicNum] is often only the current page length so
+  /// callers should not derive "more" from it.
+  bool hasMore;
+
   // Compatibility properties for snake_case access
   int? get total_topic_num => totalTopicNum;
   String? get search_id => searchId;
@@ -106,5 +129,6 @@ class FCSearchDataResultTopic extends FCBaseResult with FCSearchDataResultTopicM
     required this.totalTopicNum,
     this.searchId,
     required this.topics,
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }

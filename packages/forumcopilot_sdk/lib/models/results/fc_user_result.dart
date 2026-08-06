@@ -818,11 +818,17 @@ class FCSearchUserResult extends FCBaseResult with FCSearchUserResultMappable {
   /// List of users
   List<FCSearchUser> list;
 
+  /// True when the backend signals further pages. Additive/defaulted honest
+  /// paging signal; [total] is often only the current page length so callers
+  /// should not derive "more" from it.
+  bool hasMore;
+
   FCSearchUserResult({
     required bool result,
     String? resultText,
     this.total = 0,
     this.list = const [],
+    this.hasMore = false,
   }) : super(result: result, resultText: resultText);
 }
 

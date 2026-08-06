@@ -120,6 +120,13 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     opt: true,
     def: const [],
   );
+  static int _$likeCount(FCPost v) => v.likeCount;
+  static const Field<FCPost, int> _f$likeCount = Field(
+    'likeCount',
+    _$likeCount,
+    opt: true,
+    def: 0,
+  );
   static int? _$postNumber(FCPost v) => v.postNumber;
   static const Field<FCPost, int> _f$postNumber = Field(
     'postNumber',
@@ -277,6 +284,7 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #inlineAttachments: _f$inlineAttachments,
     #thanksInfo: _f$thanksInfo,
     #likesInfo: _f$likesInfo,
+    #likeCount: _f$likeCount,
     #postNumber: _f$postNumber,
     #canBan: _f$canBan,
     #canDelete: _f$canDelete,
@@ -318,6 +326,7 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       inlineAttachments: data.dec(_f$inlineAttachments),
       thanksInfo: data.dec(_f$thanksInfo),
       likesInfo: data.dec(_f$likesInfo),
+      likeCount: data.dec(_f$likeCount),
       postNumber: data.dec(_f$postNumber),
       canBan: data.dec(_f$canBan),
       canDelete: data.dec(_f$canDelete),
@@ -427,6 +436,7 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     List<FCAttachment>? inlineAttachments,
     List<FCThanks>? thanksInfo,
     List<FCLike>? likesInfo,
+    int? likeCount,
     int? postNumber,
     bool? canBan,
     bool? canDelete,
@@ -526,6 +536,7 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     List<FCAttachment>? inlineAttachments,
     List<FCThanks>? thanksInfo,
     List<FCLike>? likesInfo,
+    int? likeCount,
     Object? postNumber = $none,
     bool? canBan,
     bool? canDelete,
@@ -565,6 +576,7 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (inlineAttachments != null) #inlineAttachments: inlineAttachments,
       if (thanksInfo != null) #thanksInfo: thanksInfo,
       if (likesInfo != null) #likesInfo: likesInfo,
+      if (likeCount != null) #likeCount: likeCount,
       if (postNumber != $none) #postNumber: postNumber,
       if (canBan != null) #canBan: canBan,
       if (canDelete != null) #canDelete: canDelete,
@@ -609,6 +621,7 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     ),
     thanksInfo: data.get(#thanksInfo, or: $value.thanksInfo),
     likesInfo: data.get(#likesInfo, or: $value.likesInfo),
+    likeCount: data.get(#likeCount, or: $value.likeCount),
     postNumber: data.get(#postNumber, or: $value.postNumber),
     canBan: data.get(#canBan, or: $value.canBan),
     canDelete: data.get(#canDelete, or: $value.canDelete),

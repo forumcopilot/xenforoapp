@@ -5,23 +5,14 @@ import 'package:get/get.dart';
 import '../utils/site_utils.dart';
 import '../controllers/site_controller.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import 'secure_credential_store.dart';
 
-// Simple XOR-based encryption for passwords
-// This provides basic obfuscation while being cross-platform compatible
-class _SimpleEncryption {
+// Decrypts values written by the OLD XOR-with-hardcoded-key scheme.
+// The key is public (this repo is public), so this was never real encryption.
+// Kept ONLY to migrate previously stored passwords into the platform
+// keystore (SecureCredentialStore); nothing may write in this format.
+class _LegacyXorMigration {
   static const String _key = 'ForumCopilotApp2024SecureKey';
-
-  static String encrypt(String plaintext) {
-    final keyBytes = utf8.encode(_key);
-    final plaintextBytes = utf8.encode(plaintext);
-    final encrypted = <int>[];
-
-    for (int i = 0; i < plaintextBytes.length; i++) {
-      encrypted.add(plaintextBytes[i] ^ keyBytes[i % keyBytes.length]);
-    }
-
-    return base64.encode(encrypted);
-  }
 
   static String decrypt(String encryptedText) {
     try {
@@ -78,7 +69,11 @@ class SiteAccount {
 
 class AccountContext {
   static const String _accountsKey = 'site_accounts';
-  static const String _passwordsKey = 'site_passwords';
+  // Legacy SharedPreferences key holding XOR-"encrypted" passwords.
+  // Only read once, to migrate into SecureCredentialStore, then removed.
+  static const String _legacyPasswordsKey = 'site_passwords';
+  // Keystore key prefix; full key is '$_securePasswordPrefix<host>'.
+  static const String _securePasswordPrefix = 'site_password.';
 
   static AccountContext? _instance;
   static AccountContext get instance => _instance ??= AccountContext._();
@@ -86,7 +81,9 @@ class AccountContext {
   AccountContext._();
 
   List<SiteAccount> _accounts = [];
-  Map<String, String> _passwords = {}; // host -> encrypted password
+  // Hosts that have a password stored in SecureCredentialStore. Passwords
+  // themselves are never cached here; they are read on demand.
+  Set<String> _passwordHosts = {};
   bool _loaded = false;
 
   // Add a lock to prevent concurrent modifications
@@ -95,6 +92,8 @@ class AccountContext {
   String _getPasswordMapKey(String siteUrl) {
     return Uri.parse(siteUrl).host;
   }
+
+  String _secureKeyForHost(String host) => '$_securePasswordPrefix$host';
 
   Future<void> loadFromDevice() async {
     if (_loaded) return;
@@ -120,12 +119,15 @@ class AccountContext {
             .toList();
       }
 
-      // Load encrypted passwords
-      final passwordsJson = prefs.getString(_passwordsKey);
-      if (passwordsJson != null) {
-        final Map<String, dynamic> passwordMap = json.decode(passwordsJson);
-        _passwords = passwordMap.cast<String, String>();
-      }
+      // One-time migration of legacy XOR-stored passwords into the keystore.
+      await _migrateLegacyPasswords(prefs);
+
+      // Index which hosts have passwords in the keystore.
+      final secureKeys = await SecureCredentialStore.instance
+          .keysWithPrefix(_securePasswordPrefix);
+      _passwordHosts = secureKeys
+          .map((key) => key.substring(_securePasswordPrefix.length))
+          .toSet();
 
       _loaded = true;
     } catch (e) {
@@ -133,6 +135,39 @@ class AccountContext {
       // Don't mark as loaded if there was an error
       _loaded = false;
       rethrow;
+    }
+  }
+
+  /// Moves passwords written by the old XOR/SharedPreferences scheme into the
+  /// platform keystore, then deletes the plaintext-equivalent copies. The
+  /// legacy prefs entry is only removed after every password has been written
+  /// to the keystore, so a failed migration retries on next launch.
+  Future<void> _migrateLegacyPasswords(SharedPreferences prefs) async {
+    final legacyJson = prefs.getString(_legacyPasswordsKey);
+    // Clean up temp keys a crashed legacy save may have left behind.
+    await prefs.remove('${_legacyPasswordsKey}_temp');
+
+    if (legacyJson == null) return;
+
+    try {
+      final Map<String, dynamic> legacyMap = json.decode(legacyJson);
+      for (final entry in legacyMap.cast<String, String>().entries) {
+        final password = _LegacyXorMigration.decrypt(entry.value);
+        if (password.isEmpty) continue;
+        // Don't clobber a password already saved via the new path.
+        final existing =
+            await SecureCredentialStore.instance.read(_secureKeyForHost(entry.key));
+        if (existing == null) {
+          await SecureCredentialStore.instance
+              .write(_secureKeyForHost(entry.key), password);
+        }
+      }
+      await prefs.remove(_legacyPasswordsKey);
+      AppLogger.debug(
+          'AccountContext: migrated ${legacyMap.length} legacy password(s) to secure storage');
+    } catch (e) {
+      AppLogger.debug('AccountContext: legacy password migration failed: $e');
+      // Leave the legacy entry in place so migration is retried next launch.
     }
   }
 
@@ -150,34 +185,27 @@ class AccountContext {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Save account information
+      // Save account information (passwords live in SecureCredentialStore
+      // and are written at the call sites, never through SharedPreferences)
       final accountsJson = json.encode(
         _accounts.map((account) => account.toJson()).toList(),
       );
 
-      // Save encrypted passwords
-      final passwordsJson = json.encode(_passwords);
-
-      // Use a transaction-like approach: first write to temp keys, then rename
+      // Use a transaction-like approach: first write to a temp key, then rename
       const tempAccountsKey = '${_accountsKey}_temp';
-      const tempPasswordsKey = '${_passwordsKey}_temp';
 
       await prefs.setString(tempAccountsKey, accountsJson);
-      await prefs.setString(tempPasswordsKey, passwordsJson);
 
       // Verify the temp data was written correctly
       final verifyAccounts = prefs.getString(tempAccountsKey);
-      final verifyPasswords = prefs.getString(tempPasswordsKey);
 
-      if (verifyAccounts != accountsJson || verifyPasswords != passwordsJson) {
+      if (verifyAccounts != accountsJson) {
         throw Exception('Failed to verify written data');
       }
 
-      // Now atomically replace the main keys
+      // Now atomically replace the main key
       await prefs.setString(_accountsKey, accountsJson);
-      await prefs.setString(_passwordsKey, passwordsJson);
       await prefs.remove(tempAccountsKey);
-      await prefs.remove(tempPasswordsKey);
     } catch (e) {
       AppLogger.debug('Error saving site accounts: $e');
       rethrow;
@@ -195,11 +223,13 @@ class AccountContext {
 
     // Create backup of current state for rollback
     final originalAccounts = List<SiteAccount>.from(_accounts);
-    final originalPasswords = Map<String, String>.from(_passwords);
+    final originalPasswordHosts = Set<String>.from(_passwordHosts);
     if (site.id == null) {
       throw StateError('Site ID is required to save account');
     }
     final passwordMapKey = _getPasswordMapKey(site.url);
+    final secureKey = _secureKeyForHost(passwordMapKey);
+    final previousPassword = await SecureCredentialStore.instance.read(secureKey);
 
     try {
       // Remove existing account for this site using ID only
@@ -213,8 +243,9 @@ class AccountContext {
       );
       _accounts.add(newAccount);
 
-      // Store encrypted password
-      _passwords[passwordMapKey] = _SimpleEncryption.encrypt(password);
+      // Store password in the platform keystore
+      await SecureCredentialStore.instance.write(secureKey, password);
+      _passwordHosts.add(passwordMapKey);
 
       // Save all data
       await _saveToDevice();
@@ -223,7 +254,16 @@ class AccountContext {
 
       // Rollback on error
       _accounts = originalAccounts;
-      _passwords = originalPasswords;
+      _passwordHosts = originalPasswordHosts;
+      try {
+        if (previousPassword != null) {
+          await SecureCredentialStore.instance.write(secureKey, previousPassword);
+        } else {
+          await SecureCredentialStore.instance.delete(secureKey);
+        }
+      } catch (rollbackError) {
+        AppLogger.debug('Error rolling back secure password: $rollbackError');
+      }
 
       rethrow;
     }
@@ -234,7 +274,7 @@ class AccountContext {
 
     try {
       AppLogger.debug('🔑 [GET_PASSWORD] Site URL: $siteUrl');
-      AppLogger.debug('🔑 [GET_PASSWORD] Available password keys: ${_passwords.keys.toList()}');
+      AppLogger.debug('🔑 [GET_PASSWORD] Hosts with stored passwords: ${_passwordHosts.toList()}');
 
       // First, try to get the site ID from the current site context
       try {
@@ -249,13 +289,12 @@ class AccountContext {
           for (final account in _accounts) {
             if (account.site.id == siteId) {
               final accountPasswordKey = _getPasswordMapKey(account.site.url);
-              final encryptedPassword = _passwords[accountPasswordKey];
+              final password = await SecureCredentialStore.instance
+                  .read(_secureKeyForHost(accountPasswordKey));
 
-              if (encryptedPassword != null) {
+              if (password != null && password.isNotEmpty) {
                 AppLogger.debug('🔑 [GET_PASSWORD] ✅ Found password by site ID: $siteId');
-                final decryptedPassword = _SimpleEncryption.decrypt(encryptedPassword);
-                AppLogger.debug('🔑 [GET_PASSWORD] Decrypted password length: ${decryptedPassword.length}');
-                return decryptedPassword.isEmpty ? null : decryptedPassword;
+                return password;
               }
             }
           }
@@ -273,33 +312,31 @@ class AccountContext {
       AppLogger.debug('🔑 [GET_PASSWORD] Password map key: $passwordMapKey');
 
       // Try the primary key first
-      var encryptedPassword = _passwords[passwordMapKey];
-      AppLogger.debug('🔑 [GET_PASSWORD] Primary key match: ${encryptedPassword != null}');
+      var password =
+          await SecureCredentialStore.instance.read(_secureKeyForHost(passwordMapKey));
+      AppLogger.debug('🔑 [GET_PASSWORD] Primary key match: ${password != null}');
 
       // If no match, try to find by hostname
-      if (encryptedPassword == null) {
+      if (password == null) {
         final hostname = _getHostname(siteUrl);
         AppLogger.debug('🔑 [GET_PASSWORD] Trying hostname fallback: $hostname');
 
-        for (final key in _passwords.keys) {
-          if (_getHostname(key) == hostname) {
-            encryptedPassword = _passwords[key];
-            AppLogger.debug('🔑 [GET_PASSWORD] Found password with hostname match: $key');
+        for (final host in _passwordHosts) {
+          if (_getHostname(host) == hostname) {
+            password =
+                await SecureCredentialStore.instance.read(_secureKeyForHost(host));
+            AppLogger.debug('🔑 [GET_PASSWORD] Found password with hostname match: $host');
             break;
           }
         }
       }
 
-      AppLogger.debug('🔑 [GET_PASSWORD] Encrypted password found: ${encryptedPassword != null}');
-
-      if (encryptedPassword == null) {
-        AppLogger.debug('🔑 [GET_PASSWORD] ❌ No encrypted password found for key: $passwordMapKey');
+      if (password == null || password.isEmpty) {
+        AppLogger.debug('🔑 [GET_PASSWORD] ❌ No stored password found for key: $passwordMapKey');
         return null;
       }
 
-      final decryptedPassword = _SimpleEncryption.decrypt(encryptedPassword);
-      AppLogger.debug('🔑 [GET_PASSWORD] Decrypted password length: ${decryptedPassword.length}');
-      return decryptedPassword.isEmpty ? null : decryptedPassword;
+      return password;
     } catch (e) {
       AppLogger.debug('🔑 [GET_PASSWORD] ❌ Error reading password for $siteUrl: $e');
       return null;
@@ -314,10 +351,10 @@ class AccountContext {
       for (final account in _accounts) {
         if (account.site.id == siteId) {
           final accountPasswordKey = _getPasswordMapKey(account.site.url);
-          final encryptedPassword = _passwords[accountPasswordKey];
-          if (encryptedPassword != null) {
-            final decryptedPassword = _SimpleEncryption.decrypt(encryptedPassword);
-            return decryptedPassword.isEmpty ? null : decryptedPassword;
+          final password = await SecureCredentialStore.instance
+              .read(_secureKeyForHost(accountPasswordKey));
+          if (password != null && password.isNotEmpty) {
+            return password;
           }
         }
       }
@@ -462,7 +499,7 @@ class AccountContext {
 
     // Create backup for rollback
     final originalAccounts = List<SiteAccount>.from(_accounts);
-    final originalPasswords = Map<String, String>.from(_passwords);
+    final originalPasswordHosts = Set<String>.from(_passwordHosts);
 
     try {
       // Get account info before removing for push notification cleanup
@@ -476,7 +513,8 @@ class AccountContext {
 
       // Remove password using URL-derived key of the located account
       final passwordMapKey = _getPasswordMapKey(accountToRemove.site.url);
-      _passwords.remove(passwordMapKey);
+      await SecureCredentialStore.instance.delete(_secureKeyForHost(passwordMapKey));
+      _passwordHosts.remove(passwordMapKey);
 
       // Save updated data
       await _saveToDevice();
@@ -488,7 +526,7 @@ class AccountContext {
 
       // Rollback on error
       _accounts = originalAccounts;
-      _passwords = originalPasswords;
+      _passwordHosts = originalPasswordHosts;
 
       rethrow;
     }
@@ -544,12 +582,13 @@ class AccountContext {
 
     // Create backup for rollback
     final originalAccounts = List<SiteAccount>.from(_accounts);
-    final originalPasswords = Map<String, String>.from(_passwords);
+    final originalPasswordHosts = Set<String>.from(_passwordHosts);
 
     try {
       // Clear all data
       _accounts.clear();
-      _passwords.clear();
+      await SecureCredentialStore.instance.deleteWithPrefix(_securePasswordPrefix);
+      _passwordHosts.clear();
 
       // Save empty data
       await _saveToDevice();
@@ -558,7 +597,7 @@ class AccountContext {
 
       // Rollback on error
       _accounts = originalAccounts;
-      _passwords = originalPasswords;
+      _passwordHosts = originalPasswordHosts;
 
       rethrow;
     }
@@ -576,11 +615,13 @@ class AccountContext {
     }
 
     final passwordMapKey = _getPasswordMapKey(siteUrl);
-    final originalPassword = _passwords[passwordMapKey];
+    final secureKey = _secureKeyForHost(passwordMapKey);
+    final originalPassword = await SecureCredentialStore.instance.read(secureKey);
 
     try {
-      // Update password
-      _passwords[passwordMapKey] = _SimpleEncryption.encrypt(newPassword);
+      // Update password in the platform keystore
+      await SecureCredentialStore.instance.write(secureKey, newPassword);
+      _passwordHosts.add(passwordMapKey);
 
       // Update last login time
       await updateLastLoginTime(siteUrl);
@@ -588,8 +629,15 @@ class AccountContext {
       AppLogger.debug('Error changing password for $siteUrl: $e');
 
       // Rollback password on error
-      if (originalPassword != null) {
-        _passwords[passwordMapKey] = originalPassword;
+      try {
+        if (originalPassword != null) {
+          await SecureCredentialStore.instance.write(secureKey, originalPassword);
+        } else {
+          await SecureCredentialStore.instance.delete(secureKey);
+          _passwordHosts.remove(passwordMapKey);
+        }
+      } catch (rollbackError) {
+        AppLogger.debug('Error rolling back secure password: $rollbackError');
       }
 
       rethrow;
@@ -601,7 +649,7 @@ class AccountContext {
   Future<void> forceReload() async {
     _loaded = false;
     _accounts.clear();
-    _passwords.clear();
+    _passwordHosts.clear();
     await loadFromDevice();
   }
 
@@ -611,10 +659,11 @@ class AccountContext {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_accountsKey);
-      await prefs.remove(_passwordsKey);
+      await prefs.remove(_legacyPasswordsKey);
+      await SecureCredentialStore.instance.deleteWithPrefix(_securePasswordPrefix);
       _loaded = false;
       _accounts.clear();
-      _passwords.clear();
+      _passwordHosts.clear();
       AppLogger.debug('AccountContext: Cleared corrupted account data');
     } catch (e) {
       AppLogger.debug('AccountContext: Error clearing corrupted data: $e');
@@ -629,7 +678,7 @@ class AccountContext {
 
     for (final account in _accounts) {
       final passwordMapKey = _getPasswordMapKey(account.site.url);
-      final hasPassword = _passwords.containsKey(passwordMapKey);
+      final hasPassword = _passwordHosts.contains(passwordMapKey);
       consistencyReport[account.site.url] = hasPassword;
     }
 

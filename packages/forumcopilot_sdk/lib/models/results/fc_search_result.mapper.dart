@@ -51,6 +51,13 @@ class FCSearchTopicResultMapper extends ClassMapperBase<FCSearchTopicResult> {
     'topics',
     _$topics,
   );
+  static bool _$hasMore(FCSearchTopicResult v) => v.hasMore;
+  static const Field<FCSearchTopicResult, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCSearchTopicResult> fields = const {
@@ -59,6 +66,7 @@ class FCSearchTopicResultMapper extends ClassMapperBase<FCSearchTopicResult> {
     #totalTopicNum: _f$totalTopicNum,
     #searchId: _f$searchId,
     #topics: _f$topics,
+    #hasMore: _f$hasMore,
   };
 
   static FCSearchTopicResult _instantiate(DecodingData data) {
@@ -68,6 +76,7 @@ class FCSearchTopicResultMapper extends ClassMapperBase<FCSearchTopicResult> {
       totalTopicNum: data.dec(_f$totalTopicNum),
       searchId: data.dec(_f$searchId),
       topics: data.dec(_f$topics),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -149,6 +158,7 @@ abstract class FCSearchTopicResultCopyWith<
     int? totalTopicNum,
     String? searchId,
     List<FCTopic>? topics,
+    bool? hasMore,
   });
   FCSearchTopicResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -177,6 +187,7 @@ class _FCSearchTopicResultCopyWithImpl<$R, $Out>
     int? totalTopicNum,
     Object? searchId = $none,
     List<FCTopic>? topics,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -184,6 +195,7 @@ class _FCSearchTopicResultCopyWithImpl<$R, $Out>
       if (totalTopicNum != null) #totalTopicNum: totalTopicNum,
       if (searchId != $none) #searchId: searchId,
       if (topics != null) #topics: topics,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -193,6 +205,7 @@ class _FCSearchTopicResultCopyWithImpl<$R, $Out>
     totalTopicNum: data.get(#totalTopicNum, or: $value.totalTopicNum),
     searchId: data.get(#searchId, or: $value.searchId),
     topics: data.get(#topics, or: $value.topics),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override
@@ -244,6 +257,13 @@ class FCSearchPostResultMapper extends ClassMapperBase<FCSearchPostResult> {
     'posts',
     _$posts,
   );
+  static bool _$hasMore(FCSearchPostResult v) => v.hasMore;
+  static const Field<FCSearchPostResult, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCSearchPostResult> fields = const {
@@ -252,6 +272,7 @@ class FCSearchPostResultMapper extends ClassMapperBase<FCSearchPostResult> {
     #totalPostNum: _f$totalPostNum,
     #searchId: _f$searchId,
     #posts: _f$posts,
+    #hasMore: _f$hasMore,
   };
 
   static FCSearchPostResult _instantiate(DecodingData data) {
@@ -261,6 +282,7 @@ class FCSearchPostResultMapper extends ClassMapperBase<FCSearchPostResult> {
       totalPostNum: data.dec(_f$totalPostNum),
       searchId: data.dec(_f$searchId),
       posts: data.dec(_f$posts),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -343,6 +365,7 @@ abstract class FCSearchPostResultCopyWith<
     int? totalPostNum,
     String? searchId,
     List<FCPost>? posts,
+    bool? hasMore,
   });
   FCSearchPostResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -371,6 +394,7 @@ class _FCSearchPostResultCopyWithImpl<$R, $Out>
     int? totalPostNum,
     Object? searchId = $none,
     List<FCPost>? posts,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -378,6 +402,7 @@ class _FCSearchPostResultCopyWithImpl<$R, $Out>
       if (totalPostNum != null) #totalPostNum: totalPostNum,
       if (searchId != $none) #searchId: searchId,
       if (posts != null) #posts: posts,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -387,6 +412,7 @@ class _FCSearchPostResultCopyWithImpl<$R, $Out>
     totalPostNum: data.get(#totalPostNum, or: $value.totalPostNum),
     searchId: data.get(#searchId, or: $value.searchId),
     posts: data.get(#posts, or: $value.posts),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override
@@ -439,6 +465,13 @@ class FCSearchDataResultPostMapper
     'posts',
     _$posts,
   );
+  static bool _$hasMore(FCSearchDataResultPost v) => v.hasMore;
+  static const Field<FCSearchDataResultPost, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCSearchDataResultPost> fields = const {
@@ -447,6 +480,7 @@ class FCSearchDataResultPostMapper
     #totalPostNum: _f$totalPostNum,
     #searchId: _f$searchId,
     #posts: _f$posts,
+    #hasMore: _f$hasMore,
   };
 
   static FCSearchDataResultPost _instantiate(DecodingData data) {
@@ -456,6 +490,7 @@ class FCSearchDataResultPostMapper
       totalPostNum: data.dec(_f$totalPostNum),
       searchId: data.dec(_f$searchId),
       posts: data.dec(_f$posts),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -537,6 +572,7 @@ abstract class FCSearchDataResultPostCopyWith<
     int? totalPostNum,
     String? searchId,
     List<FCPost>? posts,
+    bool? hasMore,
   });
   FCSearchDataResultPostCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -566,6 +602,7 @@ class _FCSearchDataResultPostCopyWithImpl<$R, $Out>
     int? totalPostNum,
     Object? searchId = $none,
     List<FCPost>? posts,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -573,6 +610,7 @@ class _FCSearchDataResultPostCopyWithImpl<$R, $Out>
       if (totalPostNum != null) #totalPostNum: totalPostNum,
       if (searchId != $none) #searchId: searchId,
       if (posts != null) #posts: posts,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -582,6 +620,7 @@ class _FCSearchDataResultPostCopyWithImpl<$R, $Out>
     totalPostNum: data.get(#totalPostNum, or: $value.totalPostNum),
     searchId: data.get(#searchId, or: $value.searchId),
     posts: data.get(#posts, or: $value.posts),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override
@@ -636,6 +675,13 @@ class FCSearchDataResultTopicMapper
     'topics',
     _$topics,
   );
+  static bool _$hasMore(FCSearchDataResultTopic v) => v.hasMore;
+  static const Field<FCSearchDataResultTopic, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCSearchDataResultTopic> fields = const {
@@ -644,6 +690,7 @@ class FCSearchDataResultTopicMapper
     #totalTopicNum: _f$totalTopicNum,
     #searchId: _f$searchId,
     #topics: _f$topics,
+    #hasMore: _f$hasMore,
   };
 
   static FCSearchDataResultTopic _instantiate(DecodingData data) {
@@ -653,6 +700,7 @@ class FCSearchDataResultTopicMapper
       totalTopicNum: data.dec(_f$totalTopicNum),
       searchId: data.dec(_f$searchId),
       topics: data.dec(_f$topics),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -734,6 +782,7 @@ abstract class FCSearchDataResultTopicCopyWith<
     int? totalTopicNum,
     String? searchId,
     List<FCTopic>? topics,
+    bool? hasMore,
   });
   FCSearchDataResultTopicCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -763,6 +812,7 @@ class _FCSearchDataResultTopicCopyWithImpl<$R, $Out>
     int? totalTopicNum,
     Object? searchId = $none,
     List<FCTopic>? topics,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -770,6 +820,7 @@ class _FCSearchDataResultTopicCopyWithImpl<$R, $Out>
       if (totalTopicNum != null) #totalTopicNum: totalTopicNum,
       if (searchId != $none) #searchId: searchId,
       if (topics != null) #topics: topics,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -779,6 +830,7 @@ class _FCSearchDataResultTopicCopyWithImpl<$R, $Out>
     totalTopicNum: data.get(#totalTopicNum, or: $value.totalTopicNum),
     searchId: data.get(#searchId, or: $value.searchId),
     topics: data.get(#topics, or: $value.topics),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override

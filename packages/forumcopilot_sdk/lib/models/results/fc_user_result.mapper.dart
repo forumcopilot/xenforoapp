@@ -4679,6 +4679,13 @@ class FCSearchUserResultMapper extends ClassMapperBase<FCSearchUserResult> {
     opt: true,
     def: const [],
   );
+  static bool _$hasMore(FCSearchUserResult v) => v.hasMore;
+  static const Field<FCSearchUserResult, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCSearchUserResult> fields = const {
@@ -4686,6 +4693,7 @@ class FCSearchUserResultMapper extends ClassMapperBase<FCSearchUserResult> {
     #resultText: _f$resultText,
     #total: _f$total,
     #list: _f$list,
+    #hasMore: _f$hasMore,
   };
 
   static FCSearchUserResult _instantiate(DecodingData data) {
@@ -4694,6 +4702,7 @@ class FCSearchUserResultMapper extends ClassMapperBase<FCSearchUserResult> {
       resultText: data.dec(_f$resultText),
       total: data.dec(_f$total),
       list: data.dec(_f$list),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -4780,6 +4789,7 @@ abstract class FCSearchUserResultCopyWith<
     String? resultText,
     int? total,
     List<FCSearchUser>? list,
+    bool? hasMore,
   });
   FCSearchUserResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -4811,12 +4821,14 @@ class _FCSearchUserResultCopyWithImpl<$R, $Out>
     Object? resultText = $none,
     int? total,
     List<FCSearchUser>? list,
+    bool? hasMore,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
       if (total != null) #total: total,
       if (list != null) #list: list,
+      if (hasMore != null) #hasMore: hasMore,
     }),
   );
   @override
@@ -4825,6 +4837,7 @@ class _FCSearchUserResultCopyWithImpl<$R, $Out>
     resultText: data.get(#resultText, or: $value.resultText),
     total: data.get(#total, or: $value.total),
     list: data.get(#list, or: $value.list),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override

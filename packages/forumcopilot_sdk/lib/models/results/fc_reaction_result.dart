@@ -1,4 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post_vote.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post_reaction.dart';
 import 'package:forumcopilot_sdk/models/results/fc_base_result.dart';
@@ -35,6 +36,26 @@ class FCAvailableReactionsResult extends FCBaseResult
     required bool result,
     String? resultText,
     this.reactions = const [],
+  }) : super(result: result, resultText: resultText);
+}
+
+/// Result of fetching the users who reacted to (or liked) a post,
+/// optionally filtered to a single reaction. [users] carries one entry
+/// per actor — username, user id, avatar and, where the backend
+/// reports it, the reaction they gave. [total] is the server's total
+/// row count for the query (not the length of this page), so callers
+/// can page through large actor lists.
+@MappableClass()
+class FCReactionUsersResult extends FCBaseResult
+    with FCReactionUsersResultMappable {
+  List<FCLike> users;
+  int total;
+
+  FCReactionUsersResult({
+    required bool result,
+    String? resultText,
+    this.users = const [],
+    this.total = 0,
   }) : super(result: result, resultText: resultText);
 }
 

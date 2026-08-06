@@ -22,6 +22,13 @@ class FCAttachmentUploadResult extends FCBaseResult with FCAttachmentUploadResul
   /// Return the file size of the uploaded file after processed by the forum system.
   int? fileSize;
 
+  /// Absolute/cooked upload URL when the forum system emits one. Discourse's
+  /// upload serializer returns a resolvable `url` alongside the un-renderable
+  /// `upload://` short_url; keeping it here avoids losing the only URL a
+  /// client can actually display or link. Null when the backend supplies only
+  /// a short_url/placeholder.
+  String? url;
+
   FCAttachmentUploadResult({
     required bool result,
     String? resultText,
@@ -29,6 +36,7 @@ class FCAttachmentUploadResult extends FCBaseResult with FCAttachmentUploadResul
     this.fileName,
     this.groupId,
     this.fileSize,
+    this.url,
   }) : super(result: result, resultText: resultText);
 }
 

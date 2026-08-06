@@ -11,11 +11,11 @@ class AppForumConfig {
   static const int siteId = 1;
 
   /// Human-readable forum name shown in app UI.
-  static const String forumName = 'XF Dev Forum';
+  static const String forumName = 'My XenForo Forum';
 
   /// Base forum URL (without trailing slash).
   /// Example: https://forum.example.com
-  static const String forumBaseUrl = 'http://localhost:8091';
+  static const String forumBaseUrl = 'https://forum.example.com';
 
   /// Plugin endpoint path relative to [forumBaseUrl].
   /// Common values:

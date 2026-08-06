@@ -164,6 +164,10 @@ abstract class BaseXenForoProxy {
         print('   ${result.body}');
       }
       final decoded = jsonDecode(result.body) as Map<String, dynamic>;
+      // Thread fc_is_login from this HTTP response into the decoded map so callers
+      // do not rely on SiteContext.lastCallFcIsLogin (which can be overwritten by a
+      // concurrent API call from another BaseXenForoProxy instance).
+      decoded['_fc_plugin_internal_fc_is_login'] = result.fcIsLogin;
       print('🔍 [BASE_PROXY] JSON decoded successfully, keys: ${decoded.keys.toList()}');
       return decoded;
     } catch (e, stackTrace) {

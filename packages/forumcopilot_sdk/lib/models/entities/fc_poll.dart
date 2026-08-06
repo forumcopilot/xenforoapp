@@ -70,6 +70,11 @@ class FCPoll with FCPollMappable {
   /// Whether the current user can see vote counts.
   bool canViewResults;
 
+  /// Id of the post hosting this poll (polls are embedded in a post's
+  /// body on some platforms, e.g. Discourse). Null when the backend
+  /// attaches polls to the topic rather than a specific post.
+  String? postId;
+
   FCPoll({
     required this.pollId,
     required this.topicId,
@@ -85,5 +90,6 @@ class FCPoll with FCPollMappable {
     this.canVote = false,
     this.hasVoted = false,
     this.canViewResults = false,
+    this.postId,
   });
 }

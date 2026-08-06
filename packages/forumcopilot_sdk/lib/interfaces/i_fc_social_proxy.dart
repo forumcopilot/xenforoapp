@@ -58,4 +58,9 @@ abstract class IFCSocialProxy {
   /// [page] - Page number for pagination
   /// [perpage] - Number of items per page
   Future<FCActivityResult> getActivityAsync(int page, int perpage);
+
+  /// Mark every unread alert as read in one call (Discourse:
+  /// `PUT /notifications/mark-read`). Backends without bulk
+  /// mark-read stub-fail.
+  Future<FCMarkAlertsReadResult> markAllAlertsReadAsync();
 }

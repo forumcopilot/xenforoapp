@@ -113,6 +113,20 @@ class FCTopic with FCTopicMappable {
   /// Full poll data when thread has a poll; null otherwise. Only present in thread responses.
   FCPoll? poll;
 
+  /// How many unread posts the topic has for the current user
+  /// (Discourse: `unread_posts`). 0 when fully read, unknown, or the
+  /// viewer is a guest; [hasNewPosts] stays the boolean signal.
+  int unreadCount;
+
+  /// Topic tags. First-class on Discourse (`tags:[...]`); backends
+  /// without tags leave this empty. UI surfaces these as chips.
+  List<String> tags;
+
+  /// Whether any post in this topic has been marked as the accepted
+  /// answer (Discourse: `has_accepted_answer:true`, requires the
+  /// discourse-solved plugin).
+  bool isSolved;
+
   FCTopic({
     required this.id,
     required this.title,
@@ -163,5 +177,8 @@ class FCTopic with FCTopicMappable {
     this.canThank = false,
     this.hasPoll = false,
     this.poll,
+    this.unreadCount = 0,
+    this.tags = const [],
+    this.isSolved = false,
   });
 }

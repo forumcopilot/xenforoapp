@@ -46,25 +46,3 @@ class FCAttachmentRemoveResult extends FCBaseResult with FCAttachmentRemoveResul
     this.groupId,
   }) : super(result: result, resultText: resultText);
 }
-
-/// Forum Copilot Tapatalk Image Upload Result
-/// Maps from UploadTapatalkImageData_Output
-@MappableClass()
-class FCTapatalkImageUploadResult extends FCBaseResult with FCTapatalkImageUploadResultMappable {
-  /// URL of the uploaded image
-  String? imageUrl;
-
-  /// ID of the uploaded image
-  String? imageId;
-
-  /// Thumbnail URL of the uploaded image
-  String? thumbnailUrl;
-
-  FCTapatalkImageUploadResult({
-    required bool result,
-    String? resultText,
-    this.imageUrl,
-    this.imageId,
-    this.thumbnailUrl,
-  }) : super(result: result, resultText: resultText);
-}

@@ -134,9 +134,10 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
   /// [reason] - Optional reason for deletion (stored in moderator log)
   /// [starterAlert] - If true, sends an alert to the topic starter
   /// [starterAlertReason] - Custom reason message for the alert (only used if starterAlert is true)
-  Future<FCDeleteTopicResult> deleteTopicExtendedAsync({
-    required String topicId,
-    required bool hardDelete,
+  @override
+  Future<FCDeleteTopicResult> deleteTopicExtendedAsync(
+    String topicId, {
+    bool hardDelete = false,
     String? reason,
     bool starterAlert = false,
     String? starterAlertReason,
@@ -176,8 +177,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
     print('✅ [XENFORO_MODERATION] deletePostAsync called - IMPLEMENTED');
     print('   📋 Parameters: postId=$postId, mode=$mode, reason=$reason');
     
-    // Map Tapatalk mode to XenForo hardDelete:
-    // Tapatalk: mode 1 = soft delete, mode 2 = hard delete
+    // Map FC delete mode to XenForo hardDelete:
+    // FC: mode 1 = soft delete, mode 2 = hard delete
     // XenForo: hardDelete false = soft delete, hardDelete true = hard delete
     final hardDelete = (mode == 2);
     
@@ -485,4 +486,18 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
       );
     }
   }
+
+  @override
+  Future<FCDeleteTopicResult> archiveTopicAsync(String topicId,
+          {required bool archived}) async =>
+      FCDeleteTopicResult(
+          result: false,
+          resultText: 'Topic archiving is not supported on XenForo');
+
+  @override
+  Future<FCDeleteTopicResult> setTopicVisibilityAsync(String topicId,
+          {required bool visible}) async =>
+      FCDeleteTopicResult(
+          result: false,
+          resultText: 'Topic visibility toggling is not supported on XenForo');
 }

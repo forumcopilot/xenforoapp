@@ -133,6 +133,17 @@ class FCAlert with FCAlertMappable {
   /// Action type (e.g., "insert", "mention", "reaction", "quote")
   String? action;
 
+  /// Whether the user has already seen this alert (Discourse: the
+  /// notification's `read` flag). Drives unread-row styling. Defaults
+  /// to true so backends that don't expose read-state render plainly.
+  bool isRead;
+
+  /// The platform's native notification id (Discourse: notification
+  /// `id`; XenForo: alert id). Enables per-alert operations such as
+  /// marking a single alert read. Null when the backend doesn't
+  /// expose one.
+  int? alertId;
+
   FCAlert({
     required this.userId,
     required this.username,
@@ -148,6 +159,8 @@ class FCAlert with FCAlertMappable {
     this.actionUrl,
     this.fromUsername,
     this.action,
+    this.isRead = true,
+    this.alertId,
   });
 
   // Compatibility properties for snake_case access
@@ -221,4 +234,16 @@ class FCActivity with FCActivityMappable {
   String? get content_type => contentType;
   String? get content_id => contentId;
   String? get topic_id => topicId;
+}
+
+/// Forum Copilot Mark Alerts Read Result (Discourse:
+/// `PUT /notifications/mark-read` - clears every unread notification
+/// in one shot). Same shape as the other bare-success results.
+@MappableClass()
+class FCMarkAlertsReadResult extends FCBaseResult
+    with FCMarkAlertsReadResultMappable {
+  FCMarkAlertsReadResult({
+    required bool result,
+    String? resultText,
+  }) : super(result: result, resultText: resultText);
 }

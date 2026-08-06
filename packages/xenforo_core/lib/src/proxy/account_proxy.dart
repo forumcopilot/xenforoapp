@@ -8,6 +8,8 @@ import 'package:forumcopilot_sdk/models/settings/fc_settings_category.dart';
 import 'package:forumcopilot_sdk/models/settings/fc_user_setting.dart';
 import 'package:forumcopilot_sdk/models/settings/fc_user_settings_result.dart';
 import '../base_xenforo_proxy.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_notification_prefs.dart';
+import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
 
 /// XenForo implementation of IFCAccountProxy
 /// Handles user registration and authentication for XenForo forums
@@ -484,4 +486,17 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
       dependsOn: dependsOn,
     );
   }
+
+  @override
+  Future<FCNotificationPrefsResult> getNotificationPrefsAsync() async =>
+      FCNotificationPrefsResult(
+          result: false,
+          resultText: 'Notification preferences are not supported on XenForo');
+
+  @override
+  Future<FCNotificationPrefsResult> updateNotificationPrefsAsync(
+          FCNotificationPrefs prefs) async =>
+      FCNotificationPrefsResult(
+          result: false,
+          resultText: 'Notification preferences are not supported on XenForo');
 }

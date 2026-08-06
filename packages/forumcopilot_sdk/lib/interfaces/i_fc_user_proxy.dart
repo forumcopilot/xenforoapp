@@ -1,6 +1,7 @@
 import '../models/results/fc_passkey_result.dart';
 import '../models/results/fc_user_result.dart';
 import '../models/results/fc_private_conversation_result.dart';
+import '../models/results/fc_directory_result.dart';
 
 /// Forum Copilot User Proxy Interface
 /// Defines the contract for user-related operations
@@ -76,4 +77,21 @@ abstract class IFCUserProxy {
   /// Report a user for inappropriate behavior
   /// This function is used to report a problematic user to moderators
   Future<FCReportUserResult> reportUserAsync(String userId, String reason);
+
+  /// Browse the community directory (Discourse:
+  /// `GET /directory_items.json`). [period] is one of `daily`,
+  /// `weekly`, `monthly`, `quarterly`, `yearly`, `all`; [order] is a
+  /// stat key (`likes_received`, `posts_read`, ...).
+  Future<FCDirectoryItemResult> getDirectoryItemsAsync(
+    String period,
+    String order,
+    int page,
+  );
+
+  /// List every badge the forum offers (Discourse: `GET /badges.json`).
+  Future<FCBadgeResult> getAllBadgesAsync();
+
+  /// List the badges awarded to [username]
+  /// (Discourse: `GET /user-badges/{username}.json`).
+  Future<FCBadgeResult> getUserBadgesAsync(String username);
 }

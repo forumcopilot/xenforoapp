@@ -87,4 +87,34 @@ abstract class IFCModerationProxy {
     bool deleteConversations = false,
     bool banUser = false,
   });
+
+  /// Toggle a topic's archived state (Discourse-specific:
+  /// `PUT /t/{id}/status.json` with `status=archived`).
+  /// Stub-fails on backends without an archive concept.
+  Future<FCDeleteTopicResult> archiveTopicAsync(
+    String topicId, {
+    required bool archived,
+  });
+
+  /// Toggle a topic's listed/unlisted state (Discourse-specific:
+  /// `PUT /t/{id}/status.json` with `status=visible`).
+  Future<FCDeleteTopicResult> setTopicVisibilityAsync(
+    String topicId, {
+    required bool visible,
+  });
+
+  /// Extended topic deletion with full parameter support.
+  ///
+  /// [hardDelete] true deletes permanently (Discourse:
+  /// `delete_for_real=true`; XenForo: hard delete), false soft-deletes.
+  /// [reason] optional moderator-log reason.
+  /// [starterAlert]/[starterAlertReason] notify the topic starter -
+  /// XF-flavored; backends without the concept ignore them.
+  Future<FCDeleteTopicResult> deleteTopicExtendedAsync(
+    String topicId, {
+    bool hardDelete = false,
+    String? reason,
+    bool starterAlert = false,
+    String? starterAlertReason,
+  });
 }

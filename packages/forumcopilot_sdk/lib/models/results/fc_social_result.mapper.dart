@@ -1002,6 +1002,19 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
     _$action,
     opt: true,
   );
+  static bool _$isRead(FCAlert v) => v.isRead;
+  static const Field<FCAlert, bool> _f$isRead = Field(
+    'isRead',
+    _$isRead,
+    opt: true,
+    def: true,
+  );
+  static int? _$alertId(FCAlert v) => v.alertId;
+  static const Field<FCAlert, int> _f$alertId = Field(
+    'alertId',
+    _$alertId,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCAlert> fields = const {
@@ -1019,6 +1032,8 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
     #actionUrl: _f$actionUrl,
     #fromUsername: _f$fromUsername,
     #action: _f$action,
+    #isRead: _f$isRead,
+    #alertId: _f$alertId,
   };
 
   static FCAlert _instantiate(DecodingData data) {
@@ -1037,6 +1052,8 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
       actionUrl: data.dec(_f$actionUrl),
       fromUsername: data.dec(_f$fromUsername),
       action: data.dec(_f$action),
+      isRead: data.dec(_f$isRead),
+      alertId: data.dec(_f$alertId),
     );
   }
 
@@ -1112,6 +1129,8 @@ abstract class FCAlertCopyWith<$R, $In extends FCAlert, $Out>
     String? actionUrl,
     String? fromUsername,
     String? action,
+    bool? isRead,
+    int? alertId,
   });
   FCAlertCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -1140,6 +1159,8 @@ class _FCAlertCopyWithImpl<$R, $Out>
     Object? actionUrl = $none,
     Object? fromUsername = $none,
     Object? action = $none,
+    bool? isRead,
+    Object? alertId = $none,
   }) => $apply(
     FieldCopyWithData({
       if (userId != null) #userId: userId,
@@ -1156,6 +1177,8 @@ class _FCAlertCopyWithImpl<$R, $Out>
       if (actionUrl != $none) #actionUrl: actionUrl,
       if (fromUsername != $none) #fromUsername: fromUsername,
       if (action != $none) #action: action,
+      if (isRead != null) #isRead: isRead,
+      if (alertId != $none) #alertId: alertId,
     }),
   );
   @override
@@ -1174,6 +1197,8 @@ class _FCAlertCopyWithImpl<$R, $Out>
     actionUrl: data.get(#actionUrl, or: $value.actionUrl),
     fromUsername: data.get(#fromUsername, or: $value.fromUsername),
     action: data.get(#action, or: $value.action),
+    isRead: data.get(#isRead, or: $value.isRead),
+    alertId: data.get(#alertId, or: $value.alertId),
   );
 
   @override
@@ -1549,5 +1574,151 @@ class _FCActivityCopyWithImpl<$R, $Out>
   FCActivityCopyWith<$R2, FCActivity, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   ) => _FCActivityCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
+class FCMarkAlertsReadResultMapper
+    extends ClassMapperBase<FCMarkAlertsReadResult> {
+  FCMarkAlertsReadResultMapper._();
+
+  static FCMarkAlertsReadResultMapper? _instance;
+  static FCMarkAlertsReadResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = FCMarkAlertsReadResultMapper._());
+      FCBaseResultMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCMarkAlertsReadResult';
+
+  static bool _$result(FCMarkAlertsReadResult v) => v.result;
+  static const Field<FCMarkAlertsReadResult, bool> _f$result = Field(
+    'result',
+    _$result,
+  );
+  static String? _$resultText(FCMarkAlertsReadResult v) => v.resultText;
+  static const Field<FCMarkAlertsReadResult, String> _f$resultText = Field(
+    'resultText',
+    _$resultText,
+    opt: true,
+  );
+
+  @override
+  final MappableFields<FCMarkAlertsReadResult> fields = const {
+    #result: _f$result,
+    #resultText: _f$resultText,
+  };
+
+  static FCMarkAlertsReadResult _instantiate(DecodingData data) {
+    return FCMarkAlertsReadResult(
+      result: data.dec(_f$result),
+      resultText: data.dec(_f$resultText),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCMarkAlertsReadResult fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCMarkAlertsReadResult>(map);
+  }
+
+  static FCMarkAlertsReadResult fromJson(String json) {
+    return ensureInitialized().decodeJson<FCMarkAlertsReadResult>(json);
+  }
+}
+
+mixin FCMarkAlertsReadResultMappable {
+  String toJson() {
+    return FCMarkAlertsReadResultMapper.ensureInitialized()
+        .encodeJson<FCMarkAlertsReadResult>(this as FCMarkAlertsReadResult);
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCMarkAlertsReadResultMapper.ensureInitialized()
+        .encodeMap<FCMarkAlertsReadResult>(this as FCMarkAlertsReadResult);
+  }
+
+  FCMarkAlertsReadResultCopyWith<
+    FCMarkAlertsReadResult,
+    FCMarkAlertsReadResult,
+    FCMarkAlertsReadResult
+  >
+  get copyWith =>
+      _FCMarkAlertsReadResultCopyWithImpl<
+        FCMarkAlertsReadResult,
+        FCMarkAlertsReadResult
+      >(this as FCMarkAlertsReadResult, $identity, $identity);
+  @override
+  String toString() {
+    return FCMarkAlertsReadResultMapper.ensureInitialized().stringifyValue(
+      this as FCMarkAlertsReadResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCMarkAlertsReadResultMapper.ensureInitialized().equalsValue(
+      this as FCMarkAlertsReadResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCMarkAlertsReadResultMapper.ensureInitialized().hashValue(
+      this as FCMarkAlertsReadResult,
+    );
+  }
+}
+
+extension FCMarkAlertsReadResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCMarkAlertsReadResult, $Out> {
+  FCMarkAlertsReadResultCopyWith<$R, FCMarkAlertsReadResult, $Out>
+  get $asFCMarkAlertsReadResult => $base.as(
+    (v, t, t2) => _FCMarkAlertsReadResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class FCMarkAlertsReadResultCopyWith<
+  $R,
+  $In extends FCMarkAlertsReadResult,
+  $Out
+>
+    implements FCBaseResultCopyWith<$R, $In, $Out> {
+  @override
+  $R call({bool? result, String? resultText});
+  FCMarkAlertsReadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _FCMarkAlertsReadResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCMarkAlertsReadResult, $Out>
+    implements
+        FCMarkAlertsReadResultCopyWith<$R, FCMarkAlertsReadResult, $Out> {
+  _FCMarkAlertsReadResultCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<FCMarkAlertsReadResult> $mapper =
+      FCMarkAlertsReadResultMapper.ensureInitialized();
+  @override
+  $R call({bool? result, Object? resultText = $none}) => $apply(
+    FieldCopyWithData({
+      if (result != null) #result: result,
+      if (resultText != $none) #resultText: resultText,
+    }),
+  );
+  @override
+  FCMarkAlertsReadResult $make(CopyWithData data) => FCMarkAlertsReadResult(
+    result: data.get(#result, or: $value.result),
+    resultText: data.get(#resultText, or: $value.resultText),
+  );
+
+  @override
+  FCMarkAlertsReadResultCopyWith<$R2, FCMarkAlertsReadResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _FCMarkAlertsReadResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 

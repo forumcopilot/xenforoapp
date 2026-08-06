@@ -1,5 +1,7 @@
 import '../models/entities/fc_poll.dart';
 import '../models/results/fc_post_result.dart';
+import '../models/entities/fc_post_vote.dart';
+import '../models/results/fc_reaction_result.dart';
 
 /// Interface for post management operations
 /// This interface handles post creation, editing, retrieval, and management
@@ -83,4 +85,42 @@ abstract class IFCPostProxy {
   /// [responseIds] IDs of the chosen options (from poll.responses[].id).
   /// Returns the updated poll on success, or null on failure.
   Future<FCPoll?> votePollAsync(String topicId, List<String> responseIds);
+
+  /// Mark a post as the accepted answer for its topic
+  /// (Discourse: discourse-solved plugin). Gated on
+  /// `FCPost.canAcceptAnswer` - typically the topic OP or staff.
+  Future<FCAcceptAnswerResult> acceptAnswerAsync(String postId);
+
+  /// Reverse of [acceptAnswerAsync]. Clears the solved state.
+  Future<FCAcceptAnswerResult> unacceptAnswerAsync(String postId);
+
+  /// Toggle an emoji reaction on [postId] (Discourse:
+  /// `discourse-reactions` plugin). [reactionId] is the reaction
+  /// shortcode (e.g. `"heart"`). Returns the post's updated reaction
+  /// list; `result:false` on 404 (plugin not installed).
+  Future<FCToggleReactionResult> toggleReactionAsync(
+    String postId,
+    String reactionId,
+  );
+
+  /// Fetch the forum's enabled reaction set for the picker
+  /// (Discourse: `GET /discourse-reactions/custom-reactions`).
+  Future<FCAvailableReactionsResult> getAvailableReactionsAsync();
+
+  /// Cast a Q&A-style vote on [postId] (Discourse:
+  /// `discourse-post-voting` plugin). [direction] is `"up"` or
+  /// `"down"`; pass the post's current `vote` as [previous] so the
+  /// result reflects the post-cast state.
+  Future<FCPostVoteResult> castPostVoteAsync(
+    String postId,
+    String direction, {
+    FCPostVote? previous,
+  });
+
+  /// Remove the viewer's vote on [postId]. Same computed-vote
+  /// convention as [castPostVoteAsync].
+  Future<FCPostVoteResult> removePostVoteAsync(
+    String postId, {
+    FCPostVote? previous,
+  });
 }

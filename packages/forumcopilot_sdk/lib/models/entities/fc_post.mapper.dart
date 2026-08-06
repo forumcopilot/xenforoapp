@@ -18,6 +18,8 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       FCAttachmentMapper.ensureInitialized();
       FCThanksMapper.ensureInitialized();
       FCLikeMapper.ensureInitialized();
+      FCPostReactionMapper.ensureInitialized();
+      FCPostVoteMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -208,6 +210,53 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     opt: true,
     def: false,
   );
+  static bool _$bookmarked(FCPost v) => v.bookmarked;
+  static const Field<FCPost, bool> _f$bookmarked = Field(
+    'bookmarked',
+    _$bookmarked,
+    opt: true,
+    def: false,
+  );
+  static bool _$isSolution(FCPost v) => v.isSolution;
+  static const Field<FCPost, bool> _f$isSolution = Field(
+    'isSolution',
+    _$isSolution,
+    opt: true,
+    def: false,
+  );
+  static bool _$canAcceptAnswer(FCPost v) => v.canAcceptAnswer;
+  static const Field<FCPost, bool> _f$canAcceptAnswer = Field(
+    'canAcceptAnswer',
+    _$canAcceptAnswer,
+    opt: true,
+    def: false,
+  );
+  static List<FCPostReaction> _$reactions(FCPost v) => v.reactions;
+  static const Field<FCPost, List<FCPostReaction>> _f$reactions = Field(
+    'reactions',
+    _$reactions,
+    opt: true,
+    def: const [],
+  );
+  static FCPostVote? _$vote(FCPost v) => v.vote;
+  static const Field<FCPost, FCPostVote> _f$vote = Field(
+    'vote',
+    _$vote,
+    opt: true,
+  );
+  static int? _$editVersion(FCPost v) => v.editVersion;
+  static const Field<FCPost, int> _f$editVersion = Field(
+    'editVersion',
+    _$editVersion,
+    opt: true,
+  );
+  static bool _$isWiki(FCPost v) => v.isWiki;
+  static const Field<FCPost, bool> _f$isWiki = Field(
+    'isWiki',
+    _$isWiki,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCPost> fields = const {
@@ -241,6 +290,13 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #isThanked: _f$isThanked,
     #canLike: _f$canLike,
     #canThank: _f$canThank,
+    #bookmarked: _f$bookmarked,
+    #isSolution: _f$isSolution,
+    #canAcceptAnswer: _f$canAcceptAnswer,
+    #reactions: _f$reactions,
+    #vote: _f$vote,
+    #editVersion: _f$editVersion,
+    #isWiki: _f$isWiki,
   };
 
   static FCPost _instantiate(DecodingData data) {
@@ -275,6 +331,13 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       isThanked: data.dec(_f$isThanked),
       canLike: data.dec(_f$canLike),
       canThank: data.dec(_f$canThank),
+      bookmarked: data.dec(_f$bookmarked),
+      isSolution: data.dec(_f$isSolution),
+      canAcceptAnswer: data.dec(_f$canAcceptAnswer),
+      reactions: data.dec(_f$reactions),
+      vote: data.dec(_f$vote),
+      editVersion: data.dec(_f$editVersion),
+      isWiki: data.dec(_f$isWiki),
     );
   }
 
@@ -339,6 +402,13 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
   ListCopyWith<$R, FCThanks, FCThanksCopyWith<$R, FCThanks, FCThanks>>
   get thanksInfo;
   ListCopyWith<$R, FCLike, FCLikeCopyWith<$R, FCLike, FCLike>> get likesInfo;
+  ListCopyWith<
+    $R,
+    FCPostReaction,
+    FCPostReactionCopyWith<$R, FCPostReaction, FCPostReaction>
+  >
+  get reactions;
+  FCPostVoteCopyWith<$R, FCPostVote, FCPostVote>? get vote;
   $R call({
     String? id,
     String? title,
@@ -370,6 +440,13 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     bool? isThanked,
     bool? canLike,
     bool? canThank,
+    bool? bookmarked,
+    bool? isSolution,
+    bool? canAcceptAnswer,
+    List<FCPostReaction>? reactions,
+    FCPostVote? vote,
+    int? editVersion,
+    bool? isWiki,
   });
   FCPostCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -417,6 +494,20 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
         (v) => call(likesInfo: v),
       );
   @override
+  ListCopyWith<
+    $R,
+    FCPostReaction,
+    FCPostReactionCopyWith<$R, FCPostReaction, FCPostReaction>
+  >
+  get reactions => ListCopyWith(
+    $value.reactions,
+    (v, t) => v.copyWith.$chain(t),
+    (v) => call(reactions: v),
+  );
+  @override
+  FCPostVoteCopyWith<$R, FCPostVote, FCPostVote>? get vote =>
+      $value.vote?.copyWith.$chain((v) => call(vote: v));
+  @override
   $R call({
     String? id,
     String? title,
@@ -448,6 +539,13 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     bool? isThanked,
     bool? canLike,
     bool? canThank,
+    bool? bookmarked,
+    bool? isSolution,
+    bool? canAcceptAnswer,
+    List<FCPostReaction>? reactions,
+    Object? vote = $none,
+    Object? editVersion = $none,
+    bool? isWiki,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -480,6 +578,13 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (isThanked != null) #isThanked: isThanked,
       if (canLike != null) #canLike: canLike,
       if (canThank != null) #canThank: canThank,
+      if (bookmarked != null) #bookmarked: bookmarked,
+      if (isSolution != null) #isSolution: isSolution,
+      if (canAcceptAnswer != null) #canAcceptAnswer: canAcceptAnswer,
+      if (reactions != null) #reactions: reactions,
+      if (vote != $none) #vote: vote,
+      if (editVersion != $none) #editVersion: editVersion,
+      if (isWiki != null) #isWiki: isWiki,
     }),
   );
   @override
@@ -517,6 +622,13 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     isThanked: data.get(#isThanked, or: $value.isThanked),
     canLike: data.get(#canLike, or: $value.canLike),
     canThank: data.get(#canThank, or: $value.canThank),
+    bookmarked: data.get(#bookmarked, or: $value.bookmarked),
+    isSolution: data.get(#isSolution, or: $value.isSolution),
+    canAcceptAnswer: data.get(#canAcceptAnswer, or: $value.canAcceptAnswer),
+    reactions: data.get(#reactions, or: $value.reactions),
+    vote: data.get(#vote, or: $value.vote),
+    editVersion: data.get(#editVersion, or: $value.editVersion),
+    isWiki: data.get(#isWiki, or: $value.isWiki),
   );
 
   @override

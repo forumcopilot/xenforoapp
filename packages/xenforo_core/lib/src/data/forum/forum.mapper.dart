@@ -1,6 +1,8 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 // ignore_for_file: type=lint
+// ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: unused_element, unnecessary_cast, override_on_non_overriding_member
 // ignore_for_file: strict_raw_type, inference_failure_on_untyped_parameter
 
@@ -21,17 +23,29 @@ class XenForoForumMapper extends ClassMapperBase<XenForoForum> {
   final String id = 'XenForoForum';
 
   static String? _$forumTypeId(XenForoForum v) => v.forumTypeId;
-  static const Field<XenForoForum, String> _f$forumTypeId =
-      Field('forumTypeId', _$forumTypeId, opt: true);
+  static const Field<XenForoForum, String> _f$forumTypeId = Field(
+    'forumTypeId',
+    _$forumTypeId,
+    opt: true,
+  );
   static bool? _$allowPosting(XenForoForum v) => v.allowPosting;
-  static const Field<XenForoForum, bool> _f$allowPosting =
-      Field('allowPosting', _$allowPosting, opt: true);
+  static const Field<XenForoForum, bool> _f$allowPosting = Field(
+    'allowPosting',
+    _$allowPosting,
+    opt: true,
+  );
   static bool? _$requirePrefix(XenForoForum v) => v.requirePrefix;
-  static const Field<XenForoForum, bool> _f$requirePrefix =
-      Field('requirePrefix', _$requirePrefix, opt: true);
+  static const Field<XenForoForum, bool> _f$requirePrefix = Field(
+    'requirePrefix',
+    _$requirePrefix,
+    opt: true,
+  );
   static int? _$minTags(XenForoForum v) => v.minTags;
-  static const Field<XenForoForum, int> _f$minTags =
-      Field('minTags', _$minTags, opt: true);
+  static const Field<XenForoForum, int> _f$minTags = Field(
+    'minTags',
+    _$minTags,
+    opt: true,
+  );
 
   @override
   final MappableFields<XenForoForum> fields = const {
@@ -43,10 +57,11 @@ class XenForoForumMapper extends ClassMapperBase<XenForoForum> {
 
   static XenForoForum _instantiate(DecodingData data) {
     return XenForoForum(
-        forumTypeId: data.dec(_f$forumTypeId),
-        allowPosting: data.dec(_f$allowPosting),
-        requirePrefix: data.dec(_f$requirePrefix),
-        minTags: data.dec(_f$minTags));
+      forumTypeId: data.dec(_f$forumTypeId),
+      allowPosting: data.dec(_f$allowPosting),
+      requirePrefix: data.dec(_f$requirePrefix),
+      minTags: data.dec(_f$minTags),
+    );
   }
 
   @override
@@ -63,34 +78,43 @@ class XenForoForumMapper extends ClassMapperBase<XenForoForum> {
 
 mixin XenForoForumMappable {
   String toJson() {
-    return XenForoForumMapper.ensureInitialized()
-        .encodeJson<XenForoForum>(this as XenForoForum);
+    return XenForoForumMapper.ensureInitialized().encodeJson<XenForoForum>(
+      this as XenForoForum,
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return XenForoForumMapper.ensureInitialized()
-        .encodeMap<XenForoForum>(this as XenForoForum);
+    return XenForoForumMapper.ensureInitialized().encodeMap<XenForoForum>(
+      this as XenForoForum,
+    );
   }
 
   XenForoForumCopyWith<XenForoForum, XenForoForum, XenForoForum> get copyWith =>
       _XenForoForumCopyWithImpl<XenForoForum, XenForoForum>(
-          this as XenForoForum, $identity, $identity);
+        this as XenForoForum,
+        $identity,
+        $identity,
+      );
   @override
   String toString() {
-    return XenForoForumMapper.ensureInitialized()
-        .stringifyValue(this as XenForoForum);
+    return XenForoForumMapper.ensureInitialized().stringifyValue(
+      this as XenForoForum,
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return XenForoForumMapper.ensureInitialized()
-        .equalsValue(this as XenForoForum, other);
+    return XenForoForumMapper.ensureInitialized().equalsValue(
+      this as XenForoForum,
+      other,
+    );
   }
 
   @override
   int get hashCode {
-    return XenForoForumMapper.ensureInitialized()
-        .hashValue(this as XenForoForum);
+    return XenForoForumMapper.ensureInitialized().hashValue(
+      this as XenForoForum,
+    );
   }
 }
 
@@ -102,11 +126,12 @@ extension XenForoForumValueCopy<$R, $Out>
 
 abstract class XenForoForumCopyWith<$R, $In extends XenForoForum, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call(
-      {String? forumTypeId,
-      bool? allowPosting,
-      bool? requirePrefix,
-      int? minTags});
+  $R call({
+    String? forumTypeId,
+    bool? allowPosting,
+    bool? requirePrefix,
+    int? minTags,
+  });
   XenForoForumCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -119,26 +144,30 @@ class _XenForoForumCopyWithImpl<$R, $Out>
   late final ClassMapperBase<XenForoForum> $mapper =
       XenForoForumMapper.ensureInitialized();
   @override
-  $R call(
-          {Object? forumTypeId = $none,
-          Object? allowPosting = $none,
-          Object? requirePrefix = $none,
-          Object? minTags = $none}) =>
-      $apply(FieldCopyWithData({
-        if (forumTypeId != $none) #forumTypeId: forumTypeId,
-        if (allowPosting != $none) #allowPosting: allowPosting,
-        if (requirePrefix != $none) #requirePrefix: requirePrefix,
-        if (minTags != $none) #minTags: minTags
-      }));
+  $R call({
+    Object? forumTypeId = $none,
+    Object? allowPosting = $none,
+    Object? requirePrefix = $none,
+    Object? minTags = $none,
+  }) => $apply(
+    FieldCopyWithData({
+      if (forumTypeId != $none) #forumTypeId: forumTypeId,
+      if (allowPosting != $none) #allowPosting: allowPosting,
+      if (requirePrefix != $none) #requirePrefix: requirePrefix,
+      if (minTags != $none) #minTags: minTags,
+    }),
+  );
   @override
   XenForoForum $make(CopyWithData data) => XenForoForum(
-      forumTypeId: data.get(#forumTypeId, or: $value.forumTypeId),
-      allowPosting: data.get(#allowPosting, or: $value.allowPosting),
-      requirePrefix: data.get(#requirePrefix, or: $value.requirePrefix),
-      minTags: data.get(#minTags, or: $value.minTags));
+    forumTypeId: data.get(#forumTypeId, or: $value.forumTypeId),
+    allowPosting: data.get(#allowPosting, or: $value.allowPosting),
+    requirePrefix: data.get(#requirePrefix, or: $value.requirePrefix),
+    minTags: data.get(#minTags, or: $value.minTags),
+  );
 
   @override
   XenForoForumCopyWith<$R2, XenForoForum, $Out2> $chain<$R2, $Out2>(
-          Then<$Out2, $R2> t) =>
-      _XenForoForumCopyWithImpl<$R2, $Out2>($value, $cast, t);
+    Then<$Out2, $R2> t,
+  ) => _XenForoForumCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
+

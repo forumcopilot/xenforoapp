@@ -26,10 +26,4 @@ abstract class IFCAttachmentProxy {
   /// [groupId] Group ID of the attachment
   /// [postId] Post ID for editing existing posts with attachments
   Future<FCAttachmentRemoveResult> removeAttachmentAsync(String attachmentId, String forumId, String groupId, String postId);
-
-  /// Upload an image to Tapatalk's servers
-  ///
-  /// [attachmentName] Name of the image file
-  /// [attachmentBytes] Binary data of the image
-  Future<FCTapatalkImageUploadResult> uploadTapatalkImageAsync(String attachmentName, Uint8List attachmentBytes);
 }

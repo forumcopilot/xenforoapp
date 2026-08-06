@@ -261,6 +261,12 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
     opt: true,
     def: false,
   );
+  static String? _$postId(FCPoll v) => v.postId;
+  static const Field<FCPoll, String> _f$postId = Field(
+    'postId',
+    _$postId,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCPoll> fields = const {
@@ -278,6 +284,7 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
     #canVote: _f$canVote,
     #hasVoted: _f$hasVoted,
     #canViewResults: _f$canViewResults,
+    #postId: _f$postId,
   };
 
   static FCPoll _instantiate(DecodingData data) {
@@ -296,6 +303,7 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
       canVote: data.dec(_f$canVote),
       hasVoted: data.dec(_f$hasVoted),
       canViewResults: data.dec(_f$canViewResults),
+      postId: data.dec(_f$postId),
     );
   }
 
@@ -366,6 +374,7 @@ abstract class FCPollCopyWith<$R, $In extends FCPoll, $Out>
     bool? canVote,
     bool? hasVoted,
     bool? canViewResults,
+    String? postId,
   });
   FCPollCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -403,6 +412,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
     bool? canVote,
     bool? hasVoted,
     bool? canViewResults,
+    Object? postId = $none,
   }) => $apply(
     FieldCopyWithData({
       if (pollId != null) #pollId: pollId,
@@ -419,6 +429,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
       if (canVote != null) #canVote: canVote,
       if (hasVoted != null) #hasVoted: hasVoted,
       if (canViewResults != null) #canViewResults: canViewResults,
+      if (postId != $none) #postId: postId,
     }),
   );
   @override
@@ -440,6 +451,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
     canVote: data.get(#canVote, or: $value.canVote),
     hasVoted: data.get(#hasVoted, or: $value.hasVoted),
     canViewResults: data.get(#canViewResults, or: $value.canViewResults),
+    postId: data.get(#postId, or: $value.postId),
   );
 
   @override

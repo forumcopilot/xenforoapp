@@ -339,6 +339,27 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
     _$poll,
     opt: true,
   );
+  static int _$unreadCount(FCThreadResult v) => v.unreadCount;
+  static const Field<FCThreadResult, int> _f$unreadCount = Field(
+    'unreadCount',
+    _$unreadCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$tags(FCThreadResult v) => v.tags;
+  static const Field<FCThreadResult, List<String>> _f$tags = Field(
+    'tags',
+    _$tags,
+    opt: true,
+    def: const [],
+  );
+  static bool _$isSolved(FCThreadResult v) => v.isSolved;
+  static const Field<FCThreadResult, bool> _f$isSolved = Field(
+    'isSolved',
+    _$isSolved,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCThreadResult> fields = const {
@@ -391,6 +412,9 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
     #canThank: _f$canThank,
     #hasPoll: _f$hasPoll,
     #poll: _f$poll,
+    #unreadCount: _f$unreadCount,
+    #tags: _f$tags,
+    #isSolved: _f$isSolved,
   };
 
   static FCThreadResult _instantiate(DecodingData data) {
@@ -444,6 +468,9 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
       canThank: data.dec(_f$canThank),
       hasPoll: data.dec(_f$hasPoll),
       poll: data.dec(_f$poll),
+      unreadCount: data.dec(_f$unreadCount),
+      tags: data.dec(_f$tags),
+      isSolved: data.dec(_f$isSolved),
     );
   }
 
@@ -516,6 +543,8 @@ abstract class FCThreadResultCopyWith<$R, $In extends FCThreadResult, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
+  @override
   $R call({
     bool? result,
     String? resultText,
@@ -566,6 +595,9 @@ abstract class FCThreadResultCopyWith<$R, $In extends FCThreadResult, $Out>
     bool? canThank,
     bool? hasPoll,
     FCPoll? poll,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   });
   FCThreadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -597,6 +629,13 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll =>
       $value.poll?.copyWith.$chain((v) => call(poll: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags =>
+      ListCopyWith(
+        $value.tags,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(tags: v),
+      );
   @override
   $R call({
     bool? result,
@@ -648,6 +687,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
     bool? canThank,
     bool? hasPoll,
     Object? poll = $none,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -700,6 +742,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
       if (canThank != null) #canThank: canThank,
       if (hasPoll != null) #hasPoll: hasPoll,
       if (poll != $none) #poll: poll,
+      if (unreadCount != null) #unreadCount: unreadCount,
+      if (tags != null) #tags: tags,
+      if (isSolved != null) #isSolved: isSolved,
     }),
   );
   @override
@@ -756,6 +801,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
     canThank: data.get(#canThank, or: $value.canThank),
     hasPoll: data.get(#hasPoll, or: $value.hasPoll),
     poll: data.get(#poll, or: $value.poll),
+    unreadCount: data.get(#unreadCount, or: $value.unreadCount),
+    tags: data.get(#tags, or: $value.tags),
+    isSolved: data.get(#isSolved, or: $value.isSolved),
   );
 
   @override
@@ -1104,6 +1152,27 @@ class FCThreadByUnreadResultMapper
     _$poll,
     opt: true,
   );
+  static int _$unreadCount(FCThreadByUnreadResult v) => v.unreadCount;
+  static const Field<FCThreadByUnreadResult, int> _f$unreadCount = Field(
+    'unreadCount',
+    _$unreadCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$tags(FCThreadByUnreadResult v) => v.tags;
+  static const Field<FCThreadByUnreadResult, List<String>> _f$tags = Field(
+    'tags',
+    _$tags,
+    opt: true,
+    def: const [],
+  );
+  static bool _$isSolved(FCThreadByUnreadResult v) => v.isSolved;
+  static const Field<FCThreadByUnreadResult, bool> _f$isSolved = Field(
+    'isSolved',
+    _$isSolved,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCThreadByUnreadResult> fields = const {
@@ -1157,6 +1226,9 @@ class FCThreadByUnreadResultMapper
     #canThank: _f$canThank,
     #hasPoll: _f$hasPoll,
     #poll: _f$poll,
+    #unreadCount: _f$unreadCount,
+    #tags: _f$tags,
+    #isSolved: _f$isSolved,
   };
 
   static FCThreadByUnreadResult _instantiate(DecodingData data) {
@@ -1211,6 +1283,9 @@ class FCThreadByUnreadResultMapper
       canThank: data.dec(_f$canThank),
       hasPoll: data.dec(_f$hasPoll),
       poll: data.dec(_f$poll),
+      unreadCount: data.dec(_f$unreadCount),
+      tags: data.dec(_f$tags),
+      isSolved: data.dec(_f$isSolved),
     );
   }
 
@@ -1291,6 +1366,8 @@ abstract class FCThreadByUnreadResultCopyWith<
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
+  @override
   $R call({
     bool? result,
     String? resultText,
@@ -1342,6 +1419,9 @@ abstract class FCThreadByUnreadResultCopyWith<
     bool? canThank,
     bool? hasPoll,
     FCPoll? poll,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   });
   FCThreadByUnreadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1374,6 +1454,13 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll =>
       $value.poll?.copyWith.$chain((v) => call(poll: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags =>
+      ListCopyWith(
+        $value.tags,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(tags: v),
+      );
   @override
   $R call({
     bool? result,
@@ -1426,6 +1513,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
     bool? canThank,
     bool? hasPoll,
     Object? poll = $none,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -1479,6 +1569,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
       if (canThank != null) #canThank: canThank,
       if (hasPoll != null) #hasPoll: hasPoll,
       if (poll != $none) #poll: poll,
+      if (unreadCount != null) #unreadCount: unreadCount,
+      if (tags != null) #tags: tags,
+      if (isSolved != null) #isSolved: isSolved,
     }),
   );
   @override
@@ -1536,6 +1629,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
     canThank: data.get(#canThank, or: $value.canThank),
     hasPoll: data.get(#hasPoll, or: $value.hasPoll),
     poll: data.get(#poll, or: $value.poll),
+    unreadCount: data.get(#unreadCount, or: $value.unreadCount),
+    tags: data.get(#tags, or: $value.tags),
+    isSolved: data.get(#isSolved, or: $value.isSolved),
   );
 
   @override
@@ -1883,6 +1979,27 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
     _$poll,
     opt: true,
   );
+  static int _$unreadCount(FCThreadByPostResult v) => v.unreadCount;
+  static const Field<FCThreadByPostResult, int> _f$unreadCount = Field(
+    'unreadCount',
+    _$unreadCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$tags(FCThreadByPostResult v) => v.tags;
+  static const Field<FCThreadByPostResult, List<String>> _f$tags = Field(
+    'tags',
+    _$tags,
+    opt: true,
+    def: const [],
+  );
+  static bool _$isSolved(FCThreadByPostResult v) => v.isSolved;
+  static const Field<FCThreadByPostResult, bool> _f$isSolved = Field(
+    'isSolved',
+    _$isSolved,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCThreadByPostResult> fields = const {
@@ -1936,6 +2053,9 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
     #canThank: _f$canThank,
     #hasPoll: _f$hasPoll,
     #poll: _f$poll,
+    #unreadCount: _f$unreadCount,
+    #tags: _f$tags,
+    #isSolved: _f$isSolved,
   };
 
   static FCThreadByPostResult _instantiate(DecodingData data) {
@@ -1990,6 +2110,9 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
       canThank: data.dec(_f$canThank),
       hasPoll: data.dec(_f$hasPoll),
       poll: data.dec(_f$poll),
+      unreadCount: data.dec(_f$unreadCount),
+      tags: data.dec(_f$tags),
+      isSolved: data.dec(_f$isSolved),
     );
   }
 
@@ -2070,6 +2193,8 @@ abstract class FCThreadByPostResultCopyWith<
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
+  @override
   $R call({
     bool? result,
     String? resultText,
@@ -2121,6 +2246,9 @@ abstract class FCThreadByPostResultCopyWith<
     bool? canThank,
     bool? hasPoll,
     FCPoll? poll,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   });
   FCThreadByPostResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -2152,6 +2280,13 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll =>
       $value.poll?.copyWith.$chain((v) => call(poll: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags =>
+      ListCopyWith(
+        $value.tags,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(tags: v),
+      );
   @override
   $R call({
     bool? result,
@@ -2204,6 +2339,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
     bool? canThank,
     bool? hasPoll,
     Object? poll = $none,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -2257,6 +2395,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
       if (canThank != null) #canThank: canThank,
       if (hasPoll != null) #hasPoll: hasPoll,
       if (poll != $none) #poll: poll,
+      if (unreadCount != null) #unreadCount: unreadCount,
+      if (tags != null) #tags: tags,
+      if (isSolved != null) #isSolved: isSolved,
     }),
   );
   @override
@@ -2314,6 +2455,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
     canThank: data.get(#canThank, or: $value.canThank),
     hasPoll: data.get(#hasPoll, or: $value.hasPoll),
     poll: data.get(#poll, or: $value.poll),
+    unreadCount: data.get(#unreadCount, or: $value.unreadCount),
+    tags: data.get(#tags, or: $value.tags),
+    isSolved: data.get(#isSolved, or: $value.isSolved),
   );
 
   @override
@@ -3640,6 +3784,27 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
     _$poll,
     opt: true,
   );
+  static int _$unreadCount(FCAnnouncementResult v) => v.unreadCount;
+  static const Field<FCAnnouncementResult, int> _f$unreadCount = Field(
+    'unreadCount',
+    _$unreadCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$tags(FCAnnouncementResult v) => v.tags;
+  static const Field<FCAnnouncementResult, List<String>> _f$tags = Field(
+    'tags',
+    _$tags,
+    opt: true,
+    def: const [],
+  );
+  static bool _$isSolved(FCAnnouncementResult v) => v.isSolved;
+  static const Field<FCAnnouncementResult, bool> _f$isSolved = Field(
+    'isSolved',
+    _$isSolved,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCAnnouncementResult> fields = const {
@@ -3694,6 +3859,9 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
     #canThank: _f$canThank,
     #hasPoll: _f$hasPoll,
     #poll: _f$poll,
+    #unreadCount: _f$unreadCount,
+    #tags: _f$tags,
+    #isSolved: _f$isSolved,
   };
 
   static FCAnnouncementResult _instantiate(DecodingData data) {
@@ -3749,6 +3917,9 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
       canThank: data.dec(_f$canThank),
       hasPoll: data.dec(_f$hasPoll),
       poll: data.dec(_f$poll),
+      unreadCount: data.dec(_f$unreadCount),
+      tags: data.dec(_f$tags),
+      isSolved: data.dec(_f$isSolved),
     );
   }
 
@@ -3829,6 +4000,8 @@ abstract class FCAnnouncementResultCopyWith<
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
+  @override
   $R call({
     bool? result,
     String? resultText,
@@ -3881,6 +4054,9 @@ abstract class FCAnnouncementResultCopyWith<
     bool? canThank,
     bool? hasPoll,
     FCPoll? poll,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   });
   FCAnnouncementResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -3912,6 +4088,13 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll =>
       $value.poll?.copyWith.$chain((v) => call(poll: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags =>
+      ListCopyWith(
+        $value.tags,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(tags: v),
+      );
   @override
   $R call({
     bool? result,
@@ -3965,6 +4148,9 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
     bool? canThank,
     bool? hasPoll,
     Object? poll = $none,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -4020,6 +4206,9 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
       if (canThank != null) #canThank: canThank,
       if (hasPoll != null) #hasPoll: hasPoll,
       if (poll != $none) #poll: poll,
+      if (unreadCount != null) #unreadCount: unreadCount,
+      if (tags != null) #tags: tags,
+      if (isSolved != null) #isSolved: isSolved,
     }),
   );
   @override
@@ -4084,11 +4273,158 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
     canThank: data.get(#canThank, or: $value.canThank),
     hasPoll: data.get(#hasPoll, or: $value.hasPoll),
     poll: data.get(#poll, or: $value.poll),
+    unreadCount: data.get(#unreadCount, or: $value.unreadCount),
+    tags: data.get(#tags, or: $value.tags),
+    isSolved: data.get(#isSolved, or: $value.isSolved),
   );
 
   @override
   FCAnnouncementResultCopyWith<$R2, FCAnnouncementResult, $Out2>
   $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
       _FCAnnouncementResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
+class FCAcceptAnswerResultMapper extends ClassMapperBase<FCAcceptAnswerResult> {
+  FCAcceptAnswerResultMapper._();
+
+  static FCAcceptAnswerResultMapper? _instance;
+  static FCAcceptAnswerResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = FCAcceptAnswerResultMapper._());
+      FCBaseResultMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCAcceptAnswerResult';
+
+  static bool _$result(FCAcceptAnswerResult v) => v.result;
+  static const Field<FCAcceptAnswerResult, bool> _f$result = Field(
+    'result',
+    _$result,
+  );
+  static String? _$resultText(FCAcceptAnswerResult v) => v.resultText;
+  static const Field<FCAcceptAnswerResult, String> _f$resultText = Field(
+    'resultText',
+    _$resultText,
+    opt: true,
+  );
+
+  @override
+  final MappableFields<FCAcceptAnswerResult> fields = const {
+    #result: _f$result,
+    #resultText: _f$resultText,
+  };
+
+  static FCAcceptAnswerResult _instantiate(DecodingData data) {
+    return FCAcceptAnswerResult(
+      result: data.dec(_f$result),
+      resultText: data.dec(_f$resultText),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCAcceptAnswerResult fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCAcceptAnswerResult>(map);
+  }
+
+  static FCAcceptAnswerResult fromJson(String json) {
+    return ensureInitialized().decodeJson<FCAcceptAnswerResult>(json);
+  }
+}
+
+mixin FCAcceptAnswerResultMappable {
+  String toJson() {
+    return FCAcceptAnswerResultMapper.ensureInitialized()
+        .encodeJson<FCAcceptAnswerResult>(this as FCAcceptAnswerResult);
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCAcceptAnswerResultMapper.ensureInitialized()
+        .encodeMap<FCAcceptAnswerResult>(this as FCAcceptAnswerResult);
+  }
+
+  FCAcceptAnswerResultCopyWith<
+    FCAcceptAnswerResult,
+    FCAcceptAnswerResult,
+    FCAcceptAnswerResult
+  >
+  get copyWith =>
+      _FCAcceptAnswerResultCopyWithImpl<
+        FCAcceptAnswerResult,
+        FCAcceptAnswerResult
+      >(this as FCAcceptAnswerResult, $identity, $identity);
+  @override
+  String toString() {
+    return FCAcceptAnswerResultMapper.ensureInitialized().stringifyValue(
+      this as FCAcceptAnswerResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCAcceptAnswerResultMapper.ensureInitialized().equalsValue(
+      this as FCAcceptAnswerResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCAcceptAnswerResultMapper.ensureInitialized().hashValue(
+      this as FCAcceptAnswerResult,
+    );
+  }
+}
+
+extension FCAcceptAnswerResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCAcceptAnswerResult, $Out> {
+  FCAcceptAnswerResultCopyWith<$R, FCAcceptAnswerResult, $Out>
+  get $asFCAcceptAnswerResult => $base.as(
+    (v, t, t2) => _FCAcceptAnswerResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class FCAcceptAnswerResultCopyWith<
+  $R,
+  $In extends FCAcceptAnswerResult,
+  $Out
+>
+    implements FCBaseResultCopyWith<$R, $In, $Out> {
+  @override
+  $R call({bool? result, String? resultText});
+  FCAcceptAnswerResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _FCAcceptAnswerResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCAcceptAnswerResult, $Out>
+    implements FCAcceptAnswerResultCopyWith<$R, FCAcceptAnswerResult, $Out> {
+  _FCAcceptAnswerResultCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<FCAcceptAnswerResult> $mapper =
+      FCAcceptAnswerResultMapper.ensureInitialized();
+  @override
+  $R call({bool? result, Object? resultText = $none}) => $apply(
+    FieldCopyWithData({
+      if (result != null) #result: result,
+      if (resultText != $none) #resultText: resultText,
+    }),
+  );
+  @override
+  FCAcceptAnswerResult $make(CopyWithData data) => FCAcceptAnswerResult(
+    result: data.get(#result, or: $value.result),
+    resultText: data.get(#resultText, or: $value.resultText),
+  );
+
+  @override
+  FCAcceptAnswerResultCopyWith<$R2, FCAcceptAnswerResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _FCAcceptAnswerResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 

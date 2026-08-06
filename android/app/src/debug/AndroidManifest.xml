@@ -4,4 +4,8 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Debug-only: allow cleartext HTTP so the app can reach a local
+         XenForo dev server via `adb reverse` (http://localhost:8091).
+         Release builds keep the platform default (cleartext blocked). -->
+    <application android:usesCleartextTraffic="true" />
 </manifest>

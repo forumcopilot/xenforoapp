@@ -306,6 +306,27 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     _$poll,
     opt: true,
   );
+  static int _$unreadCount(FCTopic v) => v.unreadCount;
+  static const Field<FCTopic, int> _f$unreadCount = Field(
+    'unreadCount',
+    _$unreadCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$tags(FCTopic v) => v.tags;
+  static const Field<FCTopic, List<String>> _f$tags = Field(
+    'tags',
+    _$tags,
+    opt: true,
+    def: const [],
+  );
+  static bool _$isSolved(FCTopic v) => v.isSolved;
+  static const Field<FCTopic, bool> _f$isSolved = Field(
+    'isSolved',
+    _$isSolved,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCTopic> fields = const {
@@ -354,6 +375,9 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     #canThank: _f$canThank,
     #hasPoll: _f$hasPoll,
     #poll: _f$poll,
+    #unreadCount: _f$unreadCount,
+    #tags: _f$tags,
+    #isSolved: _f$isSolved,
   };
 
   static FCTopic _instantiate(DecodingData data) {
@@ -403,6 +427,9 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
       canThank: data.dec(_f$canThank),
       hasPoll: data.dec(_f$hasPoll),
       poll: data.dec(_f$poll),
+      unreadCount: data.dec(_f$unreadCount),
+      tags: data.dec(_f$tags),
+      isSolved: data.dec(_f$isSolved),
     );
   }
 
@@ -466,6 +493,7 @@ abstract class FCTopicCopyWith<$R, $In extends FCTopic, $Out>
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
   get participatedUserIds;
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
   $R call({
     String? id,
     String? title,
@@ -512,6 +540,9 @@ abstract class FCTopicCopyWith<$R, $In extends FCTopic, $Out>
     bool? canThank,
     bool? hasPoll,
     FCPoll? poll,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   });
   FCTopicCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -534,6 +565,13 @@ class _FCTopicCopyWithImpl<$R, $Out>
   @override
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll =>
       $value.poll?.copyWith.$chain((v) => call(poll: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags =>
+      ListCopyWith(
+        $value.tags,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(tags: v),
+      );
   @override
   $R call({
     String? id,
@@ -581,6 +619,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
     bool? canThank,
     bool? hasPoll,
     Object? poll = $none,
+    int? unreadCount,
+    List<String>? tags,
+    bool? isSolved,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -629,6 +670,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
       if (canThank != null) #canThank: canThank,
       if (hasPoll != null) #hasPoll: hasPoll,
       if (poll != $none) #poll: poll,
+      if (unreadCount != null) #unreadCount: unreadCount,
+      if (tags != null) #tags: tags,
+      if (isSolved != null) #isSolved: isSolved,
     }),
   );
   @override
@@ -681,6 +725,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
     canThank: data.get(#canThank, or: $value.canThank),
     hasPoll: data.get(#hasPoll, or: $value.hasPoll),
     poll: data.get(#poll, or: $value.poll),
+    unreadCount: data.get(#unreadCount, or: $value.unreadCount),
+    tags: data.get(#tags, or: $value.tags),
+    isSolved: data.get(#isSolved, or: $value.isSolved),
   );
 
   @override

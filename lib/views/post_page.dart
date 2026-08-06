@@ -405,7 +405,7 @@ class _PostPageState extends State<PostPage> {
       FCDeleteTopicResult deleteResult;
       if (moderationProxy is XenForoModerationProxy) {
         deleteResult = await moderationProxy.deleteTopicExtendedAsync(
-          topicId: widget.topicId,
+          widget.topicId,
           hardDelete: hardDelete,
           reason: reason,
           starterAlert: starterAlert,

@@ -1,6 +1,6 @@
 # Forum Copilot Interfaces
 
-This directory contains forum proxy interfaces used across connector implementations. These interfaces allow swapping forum backends without changing application logic.
+This directory contains the extracted interfaces from the Tapatalk proxy classes. These interfaces allow for easy swapping of forum implementations without changing the application logic.
 
 ## Overview
 
@@ -31,12 +31,12 @@ The interfaces follow the naming convention `FC{ModuleName}` where:
 To use these interfaces, import them from the main interfaces file:
 
 ```dart
-import 'package:forumcopilot_sdk/interfaces/interfaces.dart';
+import 'package:tapatalk_core/src/interfaces/interfaces.dart';
 ```
 
 ## Implementation Strategy
 
-Concrete proxy classes should implement these interfaces:
+The current Tapatalk proxy classes can be refactored to implement these interfaces:
 
 ```dart
 class AttachmentProxy extends BaseProxy implements FCAttachment {

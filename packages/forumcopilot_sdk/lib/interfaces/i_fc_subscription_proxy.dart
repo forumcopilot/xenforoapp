@@ -1,4 +1,6 @@
 import '../models/results/fc_subscription_result.dart';
+import '../models/entities/fc_notification_level.dart';
+import '../models/results/fc_notification_result.dart';
 
 /// Forum Copilot Subscription Proxy Interface
 /// Defines the contract for subscription-related operations
@@ -46,4 +48,32 @@ abstract class IFCSubscriptionProxy {
   /// [topicId] Topic id of the topic to be unsubscribed. In api level 4: if topic id is 'ALL',
   /// unsubscribe all topics
   Future<FCUnsubscribeTopicResult> unsubscribeTopicAsync(String topicId);
+
+  /// Set the viewer's notification level on [topicId]
+  /// (Discourse: `POST /t/{id}/notifications.json`). Surfaces the
+  /// rich notification ladder that subscribe/unsubscribe collapse
+  /// into binary Tracking/Normal.
+  Future<FCNotificationLevelResult> setTopicNotificationLevelAsync(
+    String topicId,
+    FCNotificationLevel level,
+  );
+
+  /// Read the viewer's current notification level on [topicId]
+  /// (Discourse: `GET /t/{id}.json` -> `notification_level`).
+  Future<FCNotificationLevelResult> getTopicNotificationLevelAsync(
+    String topicId,
+  );
+
+  /// Set the viewer's notification level on a category
+  /// (Discourse: `POST /category/{id}/notifications.json`).
+  Future<FCNotificationLevelResult> setCategoryNotificationLevelAsync(
+    String categoryId,
+    FCNotificationLevel level,
+  );
+
+  /// Read the viewer's current notification level on a category
+  /// (Discourse: `GET /categories.json` -> match by id).
+  Future<FCNotificationLevelResult> getCategoryNotificationLevelAsync(
+    String categoryId,
+  );
 }

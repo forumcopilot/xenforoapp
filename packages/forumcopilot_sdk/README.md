@@ -1,6 +1,6 @@
 # ForumCopilot SDK
 
-A comprehensive Flutter SDK for building forum applications with support for multiple forum platforms. This SDK provides a clean abstraction layer that allows you to switch between different forum implementations without changing your application code.
+A comprehensive Flutter SDK for building forum applications with support for multiple forum platforms. This SDK provides a clean abstraction layer that allows you to easily switch between different forum implementations (Tapatalk, custom forums, etc.) without changing your application code.
 
 ## 🏗️ **SDK Architecture**
 
@@ -103,7 +103,7 @@ Abstract contracts that define the API for different forum operations:
 ### 🏭 Factory Pattern (`factory/`)
 
 - **`SiteProxyFactory`**: Abstract factory for creating proxy instances
-- **`XenForoProxyFactory`**: Concrete implementation for XenForo forums
+- **`TapatalkProxyFactory`**: Concrete implementation for Tapatalk forums
 - Future implementations: `OtherForumProxyFactory`, etc.
 
 ### 🌐 Context (`context/`)
@@ -129,7 +129,10 @@ Generic networking infrastructure:
 
 Business logic services:
 
-- **`ForumCopilotApiService`**: Legacy compatibility service (disabled in standalone mode)
+- **`ForumCopilotApiService`**: Centralized API service for ForumCopilot backend
+  - Site discovery and management
+  - YouTube and Twitter data fetching
+  - Search and explore functionality
 - **`FCHttpClient`**: HTTP client with custom overrides
 - **`FCCacheManager`**: Caching service
 - **`FCDioClient`**: Shared Dio client with persistent cookies and headers
@@ -140,7 +143,7 @@ Business logic services:
 
 ```dart
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
-import 'package:xenforo_core/xenforo_core.dart';
+import 'package:tapatalk_core/tapatalk_core.dart';
 
 // Create site context
 final siteContext = SiteContext(
@@ -155,8 +158,8 @@ final siteContext = SiteContext(
 // Initialize the factory
 SiteProxyFactory.initialize(siteContext);
 
-// Register concrete implementation
-SiteProxyFactory.register('xenforo', XenForoProxyFactory());
+// Register concrete implementations
+SiteProxyFactory.register('tapatalk', TapatalkProxyFactory());
 ```
 
 ### 2. Use Proxies
@@ -243,11 +246,15 @@ SiteProxyFactory.register('myforum', MyForumProxyFactory());
 The SDK includes build scripts for easy compilation and analysis:
 
 - **`build_forumcopilot_sdk.bat`**: Build and analyze ForumCopilot SDK
+- **`build_tapatalk_core.bat`**: Build and analyze Tapatalk Core
 - **`buildlib.bat`**: Build all libraries with analysis
 
 ```bash
 # Build and analyze ForumCopilot SDK
 build_forumcopilot_sdk.bat
+
+# Build and analyze Tapatalk Core
+build_tapatalk_core.bat
 
 # Build all libraries
 buildlib.bat

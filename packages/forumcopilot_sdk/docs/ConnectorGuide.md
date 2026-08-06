@@ -1,6 +1,6 @@
 # Connector Development Guide
 
-This guide walks a new developer through creating a **forum connector** that plugs into the [ForumCopilot SDK](../README.md). A *connector* is a concrete implementation of the SDK’s abstract proxy interfaces that talks to a specific forum platform (e.g. XenForo, Discourse, NodeBB). The SDK is intentionally **interface‑driven** and uses a *factory* pattern to create the appropriate proxy at runtime.
+This guide walks a new developer through creating a **forum connector** that plugs into the [ForumCopilot SDK](../README.md).  A *connector* is a concrete implementation of the SDK’s abstract proxy interfaces that talks to a specific forum platform (e.g. Tapatalk, Discourse, NodeBB).  The SDK is intentionally **interface‑driven** and uses a *factory* pattern to create the appropriate proxy at runtime.
 
 > **Prerequisite** – Familiarity with Dart/Flutter, basic HTTP concepts and JSON handling.
 
@@ -17,7 +17,7 @@ forumcopilot_sdk/
 ```
 
 * **Proxies** – One per feature set (users, forums, posts, etc.).  Each proxy implements an `IFC*Proxy` interface.
-* **Factory** – `SiteProxyFactory` reads the current `SiteContext.siteType` and delegates to a concrete factory (e.g. `XenForoProxyFactory`).
+* **Factory** – `SiteProxyFactory` reads the current `SiteContext.siteType` and delegates to a concrete factory (e.g. `TapatalkProxyFactory`).
 * **Context** – Holds authentication tokens, site metadata and is passed to all proxies.
 
 When you add a new connector:
@@ -29,7 +29,7 @@ When you add a new connector:
 
 ## 2️⃣ Step‑by‑Step: Building a New Connector
 
-Below is an end‑to‑end example of creating a connector called **`MyForum`**.
+Below is an end‑to‑end example of creating a connector called **`MyForum`**.  The steps mirror what `tapatalk_core` does.
 
 ### 2.1 – Define the Concrete Proxy Classes
 
@@ -200,6 +200,6 @@ The maintainers will review the code, run integration tests against a public for
 
 ---
 
-> **Pro Tip** – When adding a new proxy, keep the method signatures identical to the interface. This ensures that any consumer of the SDK can swap connectors without code changes.
+> **Pro Tip** – When adding a new proxy, keep the method signatures identical to the interface.  This ensures that any consumer of the SDK (including `tapatalk_core`) can swap connectors without code changes.
 
 Happy coding!

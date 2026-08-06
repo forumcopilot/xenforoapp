@@ -266,4 +266,10 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
       items: [],
     );
   }
+
+  @override
+  Future<FCMarkAlertsReadResult> markAllAlertsReadAsync() async =>
+      FCMarkAlertsReadResult(
+          result: false,
+          resultText: 'Bulk mark-read is not supported on XenForo');
 }

@@ -23,7 +23,9 @@ abstract class IFCTopicProxy {
   /// [prefixId] Optional prefix ID for the topic
   /// [attachmentIds] Optional list of attachment IDs
   /// [groupId] Optional group ID for attachments
-  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId});
+  /// [tags] Tag names to attach to the new topic; forums without a
+  /// tag concept ignore the field
+  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId, List<String>? tags});
 
   /// Returns a list of topics under a specific forum. It can also return sticky topics
   /// and announcement, given the "mode" parameter is provided.
@@ -92,4 +94,15 @@ abstract class IFCTopicProxy {
   ///
   /// [topicIds] List of topic IDs to retrieve
   Future<FCTopicByIdsResult> getTopicByIds(List<String> topicIds);
+
+  /// Record that the given [postNumbers] of [topicId] were viewed by
+  /// the current user (Discourse: `POST /topics/timings`) - the
+  /// mechanism that advances server-side read state. [msPerPost] is
+  /// the dwell time credited to each post. Implementations should
+  /// no-op successfully for guests and empty [postNumbers].
+  Future<FCMarkTopicReadResult> markPostsReadAsync({
+    required String topicId,
+    required List<int> postNumbers,
+    int msPerPost = 2000,
+  });
 }

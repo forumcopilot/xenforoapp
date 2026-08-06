@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../config/app_forum_config.dart';
 import '../../controllers/push_notification_controller.dart';
 import '../../controllers/notification_settings_controller.dart';
 import '../../models/site_notification_state.dart';
 import '../../theme/design_tokens.dart';
-import '../../services/push_notification_service.dart';
 import '../../l10n/generated/app_localizations.dart';
 
 /// Main page for configuring notification settings
@@ -173,7 +173,9 @@ class NotificationSettingsPage extends StatelessWidget {
           SizedBox(height: DesignTokens.spacingXS),
           _buildDebugInfoRow(
             'API Base URL',
-            PushNotificationService.baseUrl,
+            AppForumConfig.isPushBackendEnabled
+                ? AppForumConfig.pushApiBaseUrl
+                : 'Disabled (no push backend configured)',
             colorScheme,
             textTheme,
           ),

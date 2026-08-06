@@ -82,6 +82,9 @@ class FCThreadResult extends FCTopic with FCThreadResultMappable {
     bool canThank = false,
     bool hasPoll = false,
     FCPoll? poll,
+    int unreadCount = 0,
+    List<String> tags = const [],
+    bool isSolved = false,
   }) : super(
           id: id,
           title: title,
@@ -125,6 +128,9 @@ class FCThreadResult extends FCTopic with FCThreadResultMappable {
           canThank: canThank,
           hasPoll: hasPoll,
           poll: poll,
+          unreadCount: unreadCount,
+          tags: tags,
+          isSolved: isSolved,
           canReply: canReply,
           canReport: canReport,
           canUpload: canUpload,
@@ -216,6 +222,9 @@ class FCThreadByUnreadResult extends FCTopic with FCThreadByUnreadResultMappable
     bool canThank = false,
     bool hasPoll = false,
     FCPoll? poll,
+    int unreadCount = 0,
+    List<String> tags = const [],
+    bool isSolved = false,
   }) : super(
           id: id,
           title: title,
@@ -259,6 +268,9 @@ class FCThreadByUnreadResult extends FCTopic with FCThreadByUnreadResultMappable
           canThank: canThank,
           hasPoll: hasPoll,
           poll: poll,
+          unreadCount: unreadCount,
+          tags: tags,
+          isSolved: isSolved,
           canReply: canReply,
           canReport: canReport,
           canUpload: canUpload,
@@ -350,6 +362,9 @@ class FCThreadByPostResult extends FCTopic with FCThreadByPostResultMappable {
     bool canThank = false,
     bool hasPoll = false,
     FCPoll? poll,
+    int unreadCount = 0,
+    List<String> tags = const [],
+    bool isSolved = false,
   }) : super(
           id: id,
           title: title,
@@ -393,6 +408,9 @@ class FCThreadByPostResult extends FCTopic with FCThreadByPostResultMappable {
           canThank: canThank,
           hasPoll: hasPoll,
           poll: poll,
+          unreadCount: unreadCount,
+          tags: tags,
+          isSolved: isSolved,
           canReply: canReply,
           canReport: canReport,
           canUpload: canUpload,
@@ -605,6 +623,9 @@ class FCAnnouncementResult extends FCTopic with FCAnnouncementResultMappable {
     bool canThank = false,
     bool hasPoll = false,
     FCPoll? poll,
+    int unreadCount = 0,
+    List<String> tags = const [],
+    bool isSolved = false,
   }) : super(
           id: id,
           title: title,
@@ -648,8 +669,24 @@ class FCAnnouncementResult extends FCTopic with FCAnnouncementResultMappable {
           canThank: canThank,
           hasPoll: hasPoll,
           poll: poll,
+          unreadCount: unreadCount,
+          tags: tags,
+          isSolved: isSolved,
           canReply: canReply,
           canReport: canReport,
           canUpload: canUpload,
         );
+}
+
+/// Forum Copilot Accept Answer Result (discourse-solved). Same
+/// shape on both `acceptAnswerAsync` and `unacceptAnswerAsync` -
+/// the operation either succeeded or it didn't, with optional
+/// human-readable reason on failure.
+@MappableClass()
+class FCAcceptAnswerResult extends FCBaseResult
+    with FCAcceptAnswerResultMappable {
+  FCAcceptAnswerResult({
+    required bool result,
+    String? resultText,
+  }) : super(result: result, resultText: resultText);
 }

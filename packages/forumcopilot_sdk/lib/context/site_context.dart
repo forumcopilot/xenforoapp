@@ -38,7 +38,7 @@ class SiteContext {
   String? lastSuccessfulLoginMethod;
   Future<bool> Function(SiteContext context)? reloginHandler;
 
-  /// Site type identifier (e.g., "tapatalk", "otherforum", etc.)
+  /// Site type identifier (e.g., "xenforo", "discourse")
   String siteType;
 
   /// Authentication state management (replaces AuthController)
@@ -116,14 +116,6 @@ class SiteContext {
     return '';
   }
 
-  String get lastCallCPUUsage {
-    if (_lastCallResponse?.headers.containsKey('TapatalkCPUUsage') ?? false) {
-      return _lastCallResponse?.headers['TapatalkCPUUsage']?.toLowerCase() ??
-          '';
-    }
-    return '';
-  }
-
   // Add these methods to the SiteContext class
   Map<String, dynamic> toJson() {
     return {
@@ -144,7 +136,7 @@ class SiteContext {
 
   static SiteContext fromJson(Map<String, dynamic> json) {
     final SiteContext context = SiteContext(
-      siteType: json['siteType'] ?? 'tapatalk',
+      siteType: json['siteType'] ?? 'xenforo',
       site: SiteMapper.fromJson(json['site']),
     );
 
@@ -182,7 +174,7 @@ class SiteContext {
     return fromJson(json);
   }
 
-  // ===== PERSISTENCE METHODS (moved from TapatalkContext) =====
+  // ===== PERSISTENCE METHODS =====
 
   /// Save the SiteContext to device
   Future<void> saveToDevice() async {

@@ -2076,6 +2076,19 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
     _$resultText,
     opt: true,
   );
+  static int? _$trustLevel(FCUserInfoResult v) => v.trustLevel;
+  static const Field<FCUserInfoResult, int> _f$trustLevel = Field(
+    'trustLevel',
+    _$trustLevel,
+    opt: true,
+  );
+  static bool _$canIgnore(FCUserInfoResult v) => v.canIgnore;
+  static const Field<FCUserInfoResult, bool> _f$canIgnore = Field(
+    'canIgnore',
+    _$canIgnore,
+    opt: true,
+    def: false,
+  );
   static String _$id(FCUserInfoResult v) => v.id;
   static const Field<FCUserInfoResult, String> _f$id = Field('id', _$id);
   static String _$username(FCUserInfoResult v) => v.username;
@@ -2440,6 +2453,8 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
   final MappableFields<FCUserInfoResult> fields = const {
     #result: _f$result,
     #resultText: _f$resultText,
+    #trustLevel: _f$trustLevel,
+    #canIgnore: _f$canIgnore,
     #id: _f$id,
     #username: _f$username,
     #loginName: _f$loginName,
@@ -2503,6 +2518,8 @@ class FCUserInfoResultMapper extends ClassMapperBase<FCUserInfoResult> {
     return FCUserInfoResult(
       result: data.dec(_f$result),
       resultText: data.dec(_f$resultText),
+      trustLevel: data.dec(_f$trustLevel),
+      canIgnore: data.dec(_f$canIgnore),
       id: data.dec(_f$id),
       username: data.dec(_f$username),
       loginName: data.dec(_f$loginName),
@@ -2640,6 +2657,8 @@ abstract class FCUserInfoResultCopyWith<$R, $In extends FCUserInfoResult, $Out>
   $R call({
     bool? result,
     String? resultText,
+    int? trustLevel,
+    bool? canIgnore,
     String? id,
     String? username,
     String? loginName,
@@ -2742,6 +2761,8 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
   $R call({
     bool? result,
     Object? resultText = $none,
+    Object? trustLevel = $none,
+    bool? canIgnore,
     String? id,
     String? username,
     Object? loginName = $none,
@@ -2803,6 +2824,8 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
+      if (trustLevel != $none) #trustLevel: trustLevel,
+      if (canIgnore != null) #canIgnore: canIgnore,
       if (id != null) #id: id,
       if (username != null) #username: username,
       if (loginName != $none) #loginName: loginName,
@@ -2867,6 +2890,8 @@ class _FCUserInfoResultCopyWithImpl<$R, $Out>
   FCUserInfoResult $make(CopyWithData data) => FCUserInfoResult(
     result: data.get(#result, or: $value.result),
     resultText: data.get(#resultText, or: $value.resultText),
+    trustLevel: data.get(#trustLevel, or: $value.trustLevel),
+    canIgnore: data.get(#canIgnore, or: $value.canIgnore),
     id: data.get(#id, or: $value.id),
     username: data.get(#username, or: $value.username),
     loginName: data.get(#loginName, or: $value.loginName),

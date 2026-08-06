@@ -326,7 +326,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
   }
 
   @override
-  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId}) async {
+  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId, List<String>? tags}) async {
     print('✅ [XENFORO_TOPIC] newTopic called - IMPLEMENTED');
     print('   📋 Parameters: forumId=$forumId, subject=$subject, textBody=${textBody.length} chars, prefixId=$prefixId, attachmentIds=$attachmentIds, groupId=$groupId');
 
@@ -354,4 +354,14 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
       );
     }
   }
+
+  @override
+  Future<FCMarkTopicReadResult> markPostsReadAsync({
+    required String topicId,
+    required List<int> postNumbers,
+    int msPerPost = 2000,
+  }) async =>
+      // XenForo advances read state server-side when threads are fetched,
+      // so explicit timing calls are a successful no-op here.
+      FCMarkTopicReadResult(result: true);
 }

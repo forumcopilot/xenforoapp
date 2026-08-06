@@ -2,6 +2,8 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:forumcopilot_sdk/models/mapping/hooks.dart';
 import 'fc_attachment.dart';
 import 'fc_like.dart';
+import 'fc_post_reaction.dart';
+import 'fc_post_vote.dart';
 import 'fc_thanks.dart';
 
 part 'fc_post.mapper.dart';
@@ -83,6 +85,38 @@ class FCPost with FCPostMappable {
   bool canLike;
   bool canThank;
 
+  /// Whether the current user has bookmarked this post (Discourse:
+  /// `bookmarked:true`). XF-flavored impls leave false.
+  bool bookmarked;
+
+  /// Whether this post is the accepted answer for its topic (Discourse:
+  /// `accepted_answer:true`, requires the discourse-solved plugin).
+  bool isSolution;
+
+  /// Whether the current viewer can mark this post as the accepted
+  /// answer so the UI can render an "Accept this answer" action.
+  bool canAcceptAnswer;
+
+  /// Emoji reactions on this post (Discourse: `discourse-reactions`
+  /// plugin). Empty when the plugin isn't installed or no one has
+  /// reacted.
+  List<FCPostReaction> reactions;
+
+  /// Q&A vote state on this post (Discourse: `discourse-post-voting`
+  /// plugin). Null on posts in topics without voting - the UI uses
+  /// null to hide the vote arrows entirely.
+  FCPostVote? vote;
+
+  /// Revision count of this post (Discourse: `version`). A value
+  /// greater than 1 means the post has been edited. Null when the
+  /// backend doesn't expose revision counts.
+  int? editVersion;
+
+  /// Whether this post is a wiki post that any sufficiently trusted
+  /// user may edit (Discourse: `wiki`). Backends without a wiki
+  /// concept leave false.
+  bool isWiki;
+
   FCPost(
       {required this.id,
       required this.title,
@@ -117,5 +151,12 @@ class FCPost with FCPostMappable {
       this.isLiked = false,
       this.isThanked = false,
       this.canLike = false,
-      this.canThank = false});
+      this.canThank = false,
+      this.bookmarked = false,
+      this.isSolution = false,
+      this.canAcceptAnswer = false,
+      this.reactions = const [],
+      this.vote,
+      this.editVersion,
+      this.isWiki = false});
 }

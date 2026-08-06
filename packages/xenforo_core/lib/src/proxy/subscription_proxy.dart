@@ -2,6 +2,8 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_subscription_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_subscription_result.dart';
 import '../base_xenforo_proxy.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_notification_level.dart';
+import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
 
 /// XenForo implementation of IFCSubscriptionProxy
 /// Handles subscription operations for XenForo forums
@@ -202,4 +204,32 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
       );
     }
   }
+
+  @override
+  Future<FCNotificationLevelResult> setTopicNotificationLevelAsync(
+          String topicId, FCNotificationLevel level) async =>
+      FCNotificationLevelResult(
+          result: false,
+          resultText: 'Notification levels are not supported on XenForo');
+
+  @override
+  Future<FCNotificationLevelResult> getTopicNotificationLevelAsync(
+          String topicId) async =>
+      FCNotificationLevelResult(
+          result: false,
+          resultText: 'Notification levels are not supported on XenForo');
+
+  @override
+  Future<FCNotificationLevelResult> setCategoryNotificationLevelAsync(
+          String categoryId, FCNotificationLevel level) async =>
+      FCNotificationLevelResult(
+          result: false,
+          resultText: 'Notification levels are not supported on XenForo');
+
+  @override
+  Future<FCNotificationLevelResult> getCategoryNotificationLevelAsync(
+          String categoryId) async =>
+      FCNotificationLevelResult(
+          result: false,
+          resultText: 'Notification levels are not supported on XenForo');
 }

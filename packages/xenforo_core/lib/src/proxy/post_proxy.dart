@@ -7,6 +7,8 @@ import 'package:forumcopilot_sdk/models/entities/fc_attachment_data.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_poll.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import '../base_xenforo_proxy.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_post_vote.dart';
+import 'package:forumcopilot_sdk/models/results/fc_reaction_result.dart';
 
 /// XenForo implementation of IFCPostProxy
 /// Handles post operations for XenForo forums
@@ -501,4 +503,43 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
       return null;
     }
   }
+
+  @override
+  Future<FCAcceptAnswerResult> acceptAnswerAsync(String postId) async =>
+      FCAcceptAnswerResult(
+          result: false,
+          resultText: 'Accepted answers are not supported on XenForo');
+
+  @override
+  Future<FCAcceptAnswerResult> unacceptAnswerAsync(String postId) async =>
+      FCAcceptAnswerResult(
+          result: false,
+          resultText: 'Accepted answers are not supported on XenForo');
+
+  @override
+  Future<FCToggleReactionResult> toggleReactionAsync(
+          String postId, String reactionId) async =>
+      FCToggleReactionResult(
+          result: false,
+          resultText: 'Emoji reactions are not supported on XenForo');
+
+  @override
+  Future<FCAvailableReactionsResult> getAvailableReactionsAsync() async =>
+      FCAvailableReactionsResult(
+          result: false,
+          resultText: 'Emoji reactions are not supported on XenForo');
+
+  @override
+  Future<FCPostVoteResult> castPostVoteAsync(String postId, String direction,
+          {FCPostVote? previous}) async =>
+      FCPostVoteResult(
+          result: false,
+          resultText: 'Post voting is not supported on XenForo');
+
+  @override
+  Future<FCPostVoteResult> removePostVoteAsync(String postId,
+          {FCPostVote? previous}) async =>
+      FCPostVoteResult(
+          result: false,
+          resultText: 'Post voting is not supported on XenForo');
 }

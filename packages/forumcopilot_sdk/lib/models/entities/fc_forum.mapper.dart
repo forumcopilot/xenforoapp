@@ -127,6 +127,38 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     opt: true,
     def: const [],
   );
+  static String? _$color(FCForum v) => v.color;
+  static const Field<FCForum, String> _f$color = Field(
+    'color',
+    _$color,
+    opt: true,
+  );
+  static String? _$textColor(FCForum v) => v.textColor;
+  static const Field<FCForum, String> _f$textColor = Field(
+    'textColor',
+    _$textColor,
+    opt: true,
+  );
+  static int _$topicCount(FCForum v) => v.topicCount;
+  static const Field<FCForum, int> _f$topicCount = Field(
+    'topicCount',
+    _$topicCount,
+    opt: true,
+    def: 0,
+  );
+  static int _$postCount(FCForum v) => v.postCount;
+  static const Field<FCForum, int> _f$postCount = Field(
+    'postCount',
+    _$postCount,
+    opt: true,
+    def: 0,
+  );
+  static String? _$slug(FCForum v) => v.slug;
+  static const Field<FCForum, String> _f$slug = Field(
+    'slug',
+    _$slug,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCForum> fields = const {
@@ -147,6 +179,11 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     #isLinkForum: _f$isLinkForum,
     #isSubForumContainer: _f$isSubForumContainer,
     #childForums: _f$childForums,
+    #color: _f$color,
+    #textColor: _f$textColor,
+    #topicCount: _f$topicCount,
+    #postCount: _f$postCount,
+    #slug: _f$slug,
   };
 
   static FCForum _instantiate(DecodingData data) {
@@ -168,6 +205,11 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
       isLinkForum: data.dec(_f$isLinkForum),
       isSubForumContainer: data.dec(_f$isSubForumContainer),
       childForums: data.dec(_f$childForums),
+      color: data.dec(_f$color),
+      textColor: data.dec(_f$textColor),
+      topicCount: data.dec(_f$topicCount),
+      postCount: data.dec(_f$postCount),
+      slug: data.dec(_f$slug),
     );
   }
 
@@ -248,6 +290,11 @@ abstract class FCForumCopyWith<$R, $In extends FCForum, $Out>
     bool? isLinkForum,
     bool? isSubForumContainer,
     List<FCForum>? childForums,
+    String? color,
+    String? textColor,
+    int? topicCount,
+    int? postCount,
+    String? slug,
   });
   FCForumCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -286,6 +333,11 @@ class _FCForumCopyWithImpl<$R, $Out>
     bool? isLinkForum,
     bool? isSubForumContainer,
     List<FCForum>? childForums,
+    Object? color = $none,
+    Object? textColor = $none,
+    int? topicCount,
+    int? postCount,
+    Object? slug = $none,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -306,6 +358,11 @@ class _FCForumCopyWithImpl<$R, $Out>
       if (isSubForumContainer != null)
         #isSubForumContainer: isSubForumContainer,
       if (childForums != null) #childForums: childForums,
+      if (color != $none) #color: color,
+      if (textColor != $none) #textColor: textColor,
+      if (topicCount != null) #topicCount: topicCount,
+      if (postCount != null) #postCount: postCount,
+      if (slug != $none) #slug: slug,
     }),
   );
   @override
@@ -330,6 +387,11 @@ class _FCForumCopyWithImpl<$R, $Out>
       or: $value.isSubForumContainer,
     ),
     childForums: data.get(#childForums, or: $value.childForums),
+    color: data.get(#color, or: $value.color),
+    textColor: data.get(#textColor, or: $value.textColor),
+    topicCount: data.get(#topicCount, or: $value.topicCount),
+    postCount: data.get(#postCount, or: $value.postCount),
+    slug: data.get(#slug, or: $value.slug),
   );
 
   @override

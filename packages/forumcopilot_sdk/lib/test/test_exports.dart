@@ -1,7 +1,7 @@
 /// Test utilities and functions for ForumCopilot SDK
 ///
 /// This file exports all test functions and utilities that can be used
-/// by connector implementations (e.g. xenforo_core) to run interface tests.
+/// by implementations (tapatalk_core, xenforo_core, etc.) to run interface tests.
 
 export 'config/test_config.dart';
 export 'support/proxy_test_helper.dart';

@@ -1,5 +1,7 @@
 import '../models/results/fc_account_result.dart';
 import '../models/settings/fc_user_settings_result.dart';
+import '../models/entities/fc_notification_prefs.dart';
+import '../models/results/fc_notification_result.dart';
 
 /// Interface for account management operations
 /// This interface handles user authentication, registration, and profile management
@@ -58,4 +60,16 @@ abstract class IFCAccountProxy {
 
   /// Update settings for a specific category
   Future<FCUserSettingsResult> updateUserSettings(String category, Map<String, dynamic> settings);
+
+  /// Fetch the current user's notification preferences
+  /// (Discourse: `GET /u/{username}.json` -> `user.user_option.*`).
+  Future<FCNotificationPrefsResult> getNotificationPrefsAsync();
+
+  /// Update the current user's notification preferences
+  /// (Discourse: `PUT /u/{username}.json`). Pass a full
+  /// [FCNotificationPrefs] - implementations forward only the
+  /// pref-shaped fields.
+  Future<FCNotificationPrefsResult> updateNotificationPrefsAsync(
+    FCNotificationPrefs prefs,
+  );
 }

@@ -188,35 +188,4 @@ class XenForoAttachmentProxy extends BaseXenForoProxy implements IFCAttachmentPr
       );
     }
   }
-
-  @override
-  Future<FCTapatalkImageUploadResult> uploadTapatalkImageAsync(String attachmentName, Uint8List attachmentBytes) async {
-    print('✅ [XENFORO_ATTACHMENT] uploadTapatalkImage called - IMPLEMENTED');
-    print('   📋 Parameters: attachmentName=$attachmentName, bytes=${attachmentBytes.length}');
-
-    try {
-      // Convert Uint8List to base64 string
-      final base64String = base64Encode(attachmentBytes);
-
-      final response = await callPluginApi('uploadTapatalkImage', {
-        'attachmentName': attachmentName,
-        'attachmentBytes': base64String,
-      });
-
-      return FCTapatalkImageUploadResult(
-        result: response['result'] ?? false,
-        resultText: response['resultText']?.toString() ?? '',
-        imageId: response['imageId'] ?? '',
-        imageUrl: response['imageUrl'] ?? '',
-      );
-    } catch (e) {
-      print('❌ [XENFORO_ATTACHMENT] uploadTapatalkImage error: $e');
-      return FCTapatalkImageUploadResult(
-        result: false,
-        resultText: 'Error uploading Tapatalk image: $e',
-        imageId: '',
-        imageUrl: '',
-      );
-    }
-  }
 }

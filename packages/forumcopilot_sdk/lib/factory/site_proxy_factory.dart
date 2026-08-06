@@ -150,7 +150,8 @@ abstract class SiteProxyFactory {
     return factory.createConfigProxy(_context!);
   }
 
-  /// Get device proxy (BYO/direct push device registration on the customer's XF server).
+
+  /// Get device proxy
   static IFCDeviceProxy getDeviceProxy() {
     if (_context == null) throw Exception('SiteProxyFactory not initialized');
 
@@ -158,6 +159,56 @@ abstract class SiteProxyFactory {
     if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
 
     return factory.createDeviceProxy(_context!);
+  }
+
+  /// Get bookmark proxy
+  static IFCBookmarkProxy getBookmarkProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createBookmarkProxy(_context!);
+  }
+
+  /// Get draft proxy
+  static IFCDraftProxy getDraftProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createDraftProxy(_context!);
+  }
+
+  /// Get tag proxy
+  static IFCTagProxy getTagProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createTagProxy(_context!);
+  }
+
+  /// Get chat proxy
+  static IFCChatProxy getChatProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createChatProxy(_context!);
+  }
+
+  /// Get group proxy
+  static IFCGroupProxy getGroupProxy() {
+    if (_context == null) throw Exception('SiteProxyFactory not initialized');
+
+    final factory = _providers[_context!.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${_context!.siteType}');
+
+    return factory.createGroupProxy(_context!);
   }
 
   // Abstract methods that must be implemented by concrete factories
@@ -174,5 +225,34 @@ abstract class SiteProxyFactory {
   IFCPrivateMessageProxy createPrivateMessageProxy(SiteContext context);
   IFCAttachmentProxy createAttachmentProxy(SiteContext context);
   IFCConfigProxy createConfigProxy(SiteContext context);
-  IFCDeviceProxy createDeviceProxy(SiteContext context);
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with device support override this.
+  IFCDeviceProxy createDeviceProxy(SiteContext context) =>
+      throw UnsupportedError('Device proxy not supported by this platform');
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with bookmark support override this.
+  IFCBookmarkProxy createBookmarkProxy(SiteContext context) =>
+      throw UnsupportedError('Bookmark proxy not supported by this platform');
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with draft support override this.
+  IFCDraftProxy createDraftProxy(SiteContext context) =>
+      throw UnsupportedError('Draft proxy not supported by this platform');
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with tag support override this.
+  IFCTagProxy createTagProxy(SiteContext context) =>
+      throw UnsupportedError('Tag proxy not supported by this platform');
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with chat support override this.
+  IFCChatProxy createChatProxy(SiteContext context) =>
+      throw UnsupportedError('Chat proxy not supported by this platform');
+
+  /// Concrete default so existing factories keep compiling; platforms
+  /// with group support override this.
+  IFCGroupProxy createGroupProxy(SiteContext context) =>
+      throw UnsupportedError('Group proxy not supported by this platform');
 }

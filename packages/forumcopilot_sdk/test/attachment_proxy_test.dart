@@ -46,11 +46,5 @@ void runAttachmentProxyTests(IFCAttachmentProxy attachmentProxy, IFCPostProxy po
       );
       helper.assertResultTrue(result, 'removeAttachmentAsync');
     });
-
-    test('uploadTapatalkImageAsync returns result: true', () async {
-      final attachmentBytes = Uint8List.fromList([1, 2, 3, 4, 5]);
-      final result = await attachmentProxy.uploadTapatalkImageAsync('test.jpg', attachmentBytes);
-      helper.assertResultTrue(result, 'uploadTapatalkImageAsync');
-    });
   });
 }

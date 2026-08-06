@@ -7,6 +7,7 @@ import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.d
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import 'package:forumcopilot_sdk/services/fc_http_overrides.dart';
 import '../base_xenforo_proxy.dart';
+import 'package:forumcopilot_sdk/models/results/fc_directory_result.dart';
 
 /// XenForo implementation of IFCUserProxy
 /// Handles user operations and profile management for XenForo forums
@@ -635,4 +636,22 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
       );
     }
   }
+
+  @override
+  Future<FCDirectoryItemResult> getDirectoryItemsAsync(
+          String period, String order, int page) async =>
+      FCDirectoryItemResult(
+          result: false,
+          resultText: 'Member directory is not supported on XenForo',
+          total: 0,
+          items: const []);
+
+  @override
+  Future<FCBadgeResult> getAllBadgesAsync() async => FCBadgeResult(
+      result: false, resultText: 'Badges are not supported on XenForo');
+
+  @override
+  Future<FCBadgeResult> getUserBadgesAsync(String username) async =>
+      FCBadgeResult(
+          result: false, resultText: 'Badges are not supported on XenForo');
 }

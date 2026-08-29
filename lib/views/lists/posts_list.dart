@@ -703,6 +703,7 @@ class _PostsState extends State<PostsList> {
     try {
       final data = _postsController.threadDataOutput.value;
       if (data == null) return;
+      final int beforeCount = data.posts.length;
       final range = data.laterRange(_pageSize);
       // laterRange returns 0-based values, but getThreadAsync expects 1-based for the API
       final startNum1Based = range['startNum']! + 1; // Convert 0-based to 1-based
@@ -714,7 +715,16 @@ class _PostsState extends State<PostsList> {
       final topicIdToUse = data.topic.id.isNotEmpty ? data.topic.id : (_actualTopicId ?? widget.topicId);
       await _postsController.getThreadAsync(topicIdToUse, startNum1Based, lastNum1Based, _retriveHtml, mode: LoadMode.later);
       // --- End normal paging ---
-      _updateHasMorePosts();
+
+      // If the fetch added no NEW posts (dedup dropped them all, or the server
+      // returned an overlapping/empty tail), we've reached the end — stop paging
+      // so we don't loop re-fetching the same tail against a stale total count.
+      final afterCount = _postsController.threadDataOutput.value?.posts.length ?? beforeCount;
+      if (afterCount <= beforeCount) {
+        _hasMorePosts = false;
+      } else {
+        _updateHasMorePosts();
+      }
     } catch (e) {
       rethrow;
     } finally {

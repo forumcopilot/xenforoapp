@@ -31,6 +31,21 @@ class PostController extends GlobalLoaderController with ErrorHandlingMixin {
     await completer.future;
   }
 
+  /// Removes duplicate posts by id, keeping the first occurrence (order
+  /// preserved). Guards the thread against overlapping fetches rendering the
+  /// same post twice — e.g. an anchored / first-unread open returns a window
+  /// centred on the anchor that can overlap a later load-more page.
+  List<FCPost> _dedupPostsById(List<FCPost> posts) {
+    final seen = <String>{};
+    final result = <FCPost>[];
+    for (final post in posts) {
+      if (seen.add(post.id)) {
+        result.add(post);
+      }
+    }
+    return result;
+  }
+
   Future<void> getThreadAsync(String topicId, int startNum, int lastNum, bool returnHtml, {LoadMode mode = LoadMode.initial}) async {
     try {
       // Note: startNum and lastNum here are in the format expected by the proxy/API.
@@ -65,7 +80,7 @@ class PostController extends GlobalLoaderController with ErrorHandlingMixin {
       if (mode == LoadMode.initial || threadDataOutput.value == null) {
         newData = ThreadViewData(
           topic: threadsResult,
-          posts: fcPosts,
+          posts: _dedupPostsById(fcPosts),
           currentStartNum: currentStartNum0Based, // Store as 0-based
           position: position + 1, // Convert to 1-based for position field
         );
@@ -74,10 +89,12 @@ class PostController extends GlobalLoaderController with ErrorHandlingMixin {
         List<FCPost> mergedPosts;
         int newStartNum;
         if (mode == LoadMode.earlier) {
-          mergedPosts = [...fcPosts, ...existing.posts];
+          // Dedup by id: an anchored/centred window can overlap the page we
+          // already hold; appending blindly renders the same post twice.
+          mergedPosts = _dedupPostsById([...fcPosts, ...existing.posts]);
           newStartNum = currentStartNum0Based; // Use 0-based
         } else {
-          mergedPosts = [...existing.posts, ...fcPosts];
+          mergedPosts = _dedupPostsById([...existing.posts, ...fcPosts]);
           newStartNum = existing.currentStartNum; // Already 0-based
         }
         newData = ThreadViewData(
@@ -103,15 +120,17 @@ class PostController extends GlobalLoaderController with ErrorHandlingMixin {
 
       // Set post_level for each post
       final position = threadsResult.position; // 1-based index of first unread post
-      // Convert 1-based position to 0-based index for calculation
-      // Position 1 -> index 0, Position 25 -> index 24
-      // To show post 25 in a page of 20, we want posts 20-39 (0-based: 19-38), so startNum = 19
-      // Calculation: ((25 - 1) ~/ 20) * 20 = (24 ~/ 20) * 20 = 1 * 20 = 20
-      // But we need 0-based, so: ((position - 1) ~/ postsPerRequest) * postsPerRequest
-      final currentStartNum = ((position - 1) ~/ postsPerRequest) * postsPerRequest;
-
       // The proxy now returns FCPost objects directly, no conversion needed
       final fcPosts = threadsResult.posts;
+
+      // Derive the 0-based start of the loaded window from the FIRST post
+      // actually returned (postNumber = its 1-based thread position), NOT a
+      // page-boundary guess. The server window is centred on the anchor and
+      // does not align to page boundaries; a guess drifts and makes load-more
+      // offsets overlap the loaded tail (duplicate posts).
+      final int currentStartNum = (fcPosts.isNotEmpty && (fcPosts.first.postNumber ?? 0) > 0)
+          ? (fcPosts.first.postNumber! - 1)
+          : ((position - 1) ~/ postsPerRequest) * postsPerRequest;
       
       // Log warning if posts are empty
       if (fcPosts.isEmpty) {
@@ -147,17 +166,21 @@ class PostController extends GlobalLoaderController with ErrorHandlingMixin {
       final position = threadsResult.position; // 1-based index of anchor post
       AppLogger.debug('🔍 [PostController] Position from API (1-based): $position');
 
-      // Convert 1-based position to 0-based index for calculation
-      // Position 1 -> index 0, Position 25 -> index 24
-      // To show post 25 in a page of 20, we want posts 20-39 (0-based: 19-38), so startNum = 19
-      // Calculation: ((25 - 1) ~/ 20) * 20 = (24 ~/ 20) * 20 = 1 * 20 = 20
-      // But we need 0-based, so: ((position - 1) ~/ postsPerRequest) * postsPerRequest
-      final currentStartNum = ((position - 1) ~/ postsPerRequest) * postsPerRequest;
-      AppLogger.debug('🔍 [PostController] Calculated currentStartNum (0-based): $currentStartNum from position $position');
-
       // The proxy now returns FCPost objects directly, no conversion needed
       final fcPosts = threadsResult.posts;
       AppLogger.debug('🔍 [PostController] Received ${fcPosts.length} posts');
+
+      // Derive the 0-based start of the loaded window from the FIRST post
+      // actually returned (postNumber = its 1-based thread position), NOT a
+      // page-boundary guess. The server returns a window centred on the anchor
+      // (startNum = max(1, position - perPage/2)) that does not align to page
+      // boundaries; a guess drifts and makes load-more offsets overlap the
+      // loaded tail, rendering duplicate posts. Fall back to the guess only if
+      // the posts carry no position.
+      final int currentStartNum = (fcPosts.isNotEmpty && (fcPosts.first.postNumber ?? 0) > 0)
+          ? (fcPosts.first.postNumber! - 1)
+          : ((position - 1) ~/ postsPerRequest) * postsPerRequest;
+      AppLogger.debug('🔍 [PostController] currentStartNum (0-based): $currentStartNum from position $position, firstPostNumber=${fcPosts.isNotEmpty ? fcPosts.first.postNumber : null}');
       
       // Log warning if posts are empty
       if (fcPosts.isEmpty) {

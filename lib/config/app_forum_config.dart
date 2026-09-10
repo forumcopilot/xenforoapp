@@ -11,17 +11,15 @@ class AppForumConfig {
   static const int siteId = 1;
 
   /// Human-readable forum name shown in app UI.
-  static const String forumName = 'SatelliteGuys.US';
+  static const String forumName = 'My XenForo Forum';
 
   /// Base forum URL (without trailing slash).
   /// Example: https://forum.example.com
   ///
-  /// Benchmark target. SatelliteGuys is guest-readable AND runs the
-  /// ForumCopilot add-on (`/xen/forumcopilot.php` answers 200), so the scroll
-  /// harness in integration_test/scroll_perf_test.dart runs without
-  /// credentials. Keep this fixed: numbers are only comparable across runs
-  /// against the same forum on the same phone.
-  static const String forumBaseUrl = 'https://www.satelliteguys.us/xen';
+  /// To run the scroll benchmark (docs/perf-benchmarking.md) point this at
+  /// `https://www.satelliteguys.us/xen`: the harness pins content on that
+  /// forum, which is guest-readable and runs the add-on. Do not ship it.
+  static const String forumBaseUrl = 'https://forum.example.com';
 
   /// Plugin endpoint path relative to [forumBaseUrl].
   /// Common values:

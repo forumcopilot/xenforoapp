@@ -50,8 +50,11 @@ The flip side: unlike Discourse (whose public API any instance exposes), this
 app talks through the **ForumCopilot add-on endpoint**, so it can only measure
 a forum that has the add-on installed.
 
-It is currently pointed at **SatelliteGuys.US** (`https://www.satelliteguys.us/xen`),
-which runs the add-on and lets guests read — so runs need no credentials. The
+**Before a run, point `lib/config/app_forum_config.dart` at
+`https://www.satelliteguys.us/xen`** (`forumName` is cosmetic). The harness
+pins content on that forum, which runs the add-on and lets guests read, so
+runs need no credentials. The committed config is the template placeholder;
+the benchmark target must not ship. The
 app's own forum, `qhhtofficialforum.com`, answers guests with HTTP 403; if you
 point the config back at it, supply a throwaway account at run time (nothing is
 stored in the repo):

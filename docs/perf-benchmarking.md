@@ -219,6 +219,7 @@ of that commit's runs, spread in parentheses where it matters.
 | baseline → F3 | 7.7–10.3 / 11.5–17.6 / 211–885 / 8–178 |
 | **Phase 2** | **1.0–0.9 / 2.9 / 13–18 / 1–2** |
 | item 12 (header: no `IntrinsicHeight`, tint via `Image.asset` instead of `ColorFiltered`) | 1.0 / 2.8–2.9 / 12–19 / 1–2 — raster p50 4.1–4.2 vs 4.0–4.1: neutral |
+| F4 (one preview card per post; caches peeked on first build) | thread p50 1.9 / p90 3.8–3.9: inside the band. Jank counts uniformly elevated this pass — including `topic_list` 35–38 vs 15–31, which F4 cannot touch — read as device state, not the change |
 
 An order of magnitude, which is the one kind of `home_feed` result that outruns its noise.
 

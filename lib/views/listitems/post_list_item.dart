@@ -33,6 +33,7 @@ import '../lists/posts_list.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/gestures.dart' show GestureRecognizer;
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
+import 'package:forumcopilot_flutter/utils/preview_selection.dart';
 
 /// Everything a post's body needs that is derived from its text and its
 /// attachment lists. Immutable, and shared through [_postContentCache].
@@ -488,10 +489,14 @@ class _PostListItemState extends State<PostListItem> {
     processedText = inlineAttachmentResult.text;
     final filteredInlineAttachments =
         inlineAttachmentResult.remainingInlineAttachments;
-    // Limit
-    final limitedUrls = urls.take(10).toList();
-    final limitedYoutubeUrls = youtubeUrls.take(10).toList();
-    final limitedTwitterUrls = twitterUrls.take(10).toList();
+    // One preview per post: a video if there is one, else a tweet, else the
+    // first external link. Up to thirty cards used to be built here, each
+    // fetching on appearance.
+    final preview = PreviewSelection.choose(
+        videos: youtubeUrls, tweets: twitterUrls, links: urls);
+    final limitedUrls = [if (preview.linkUrl != null) preview.linkUrl!];
+    final limitedYoutubeUrls = [if (preview.videoUrl != null) preview.videoUrl!];
+    final limitedTwitterUrls = [if (preview.tweetUrl != null) preview.tweetUrl!];
     // Filter out attachments that are already displayed inline
     // The isInline flag is set by the backend to indicate the attachment is embedded inline in the post content
     final nonInlineAttachments = widget.post.attachments.where((att) {
@@ -625,16 +630,16 @@ class _PostListItemState extends State<PostListItem> {
           },
         );
       },
-      onImageTap: (String imageUrl, BuildContext context, String heroTag) {
-        if (widget.actions?.onShowImage != null) {
-          widget.actions!.onShowImage!(imageUrl, context, heroTag);
-        } else {
-          AppLogger.debug('No onShowImage action defined');
       // Viewable image attachments arrive here with the Hero tag they were
       // rendered with, so the viewer can fly from them like [img] images.
       onAttachmentImageTap: (String url, BuildContext context, String heroTag) {
         widget.actions?.onShowImage?.call(url, context, heroTag);
       },
+      onImageTap: (String imageUrl, BuildContext context, String heroTag) {
+        if (widget.actions?.onShowImage != null) {
+          widget.actions!.onShowImage!(imageUrl, context, heroTag);
+        } else {
+          AppLogger.debug('No onShowImage action defined');
         }
       },
       onVideoTap: (videoUrl) {

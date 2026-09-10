@@ -59,7 +59,24 @@ class TwitterCache {
 
   /// Fetches Twitter preview data from cache or API
   /// Think of it like checking your Twitter bookmarks before making a new API call
+  /// Results this process has already resolved, by URL. The file cache is
+  /// asynchronous; this lets a card that is rebuilt or scrolled back into
+  /// view show its preview in its first frame instead of a placeholder and
+  /// a setState.
+  static final Map<String, TwitterPreviewData> _memory = <String, TwitterPreviewData>{};
+
+  /// The preview for [url] if this process already has it; never fetches.
+  static TwitterPreviewData? peek(String url) => _memory[url];
+
   static Future<TwitterPreviewData?> fetchTwitterPreview(String url, {Duration maxAge = const Duration(hours: 24)}) async {
+    final known = _memory[url];
+    if (known != null) return known;
+    final result = await _fetchTwitterPreviewUncached(url, maxAge: maxAge);
+    if (result != null) _memory[url] = result;
+    return result;
+  }
+
+  static Future<TwitterPreviewData?> _fetchTwitterPreviewUncached(String url, {Duration maxAge = const Duration(hours: 24)}) async {
     try {
       // Clean the URL by removing any quotes or extra whitespace
       final cleanUrl = url.trim().replaceAll('"', '');

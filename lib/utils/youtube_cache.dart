@@ -63,7 +63,24 @@ class YouTubeCache {
 
   /// Fetches YouTube preview data from cache or API
   /// Think of it like checking your YouTube watch history before making a new API call
+  /// Results this process has already resolved, by URL. The file cache is
+  /// asynchronous; this lets a card that is rebuilt or scrolled back into
+  /// view show its preview in its first frame instead of a placeholder and
+  /// a setState.
+  static final Map<String, YouTubePreviewData> _memory = <String, YouTubePreviewData>{};
+
+  /// The preview for [url] if this process already has it; never fetches.
+  static YouTubePreviewData? peek(String url) => _memory[url];
+
   static Future<YouTubePreviewData?> fetchYouTubePreview(String url, {Duration maxAge = const Duration(hours: 24)}) async {
+    final known = _memory[url];
+    if (known != null) return known;
+    final result = await _fetchYouTubePreviewUncached(url, maxAge: maxAge);
+    if (result != null) _memory[url] = result;
+    return result;
+  }
+
+  static Future<YouTubePreviewData?> _fetchYouTubePreviewUncached(String url, {Duration maxAge = const Duration(hours: 24)}) async {
     try {
       // Clean the URL by removing any quotes or extra whitespace
       var cleanUrl = url.trim().replaceAll('"', '');

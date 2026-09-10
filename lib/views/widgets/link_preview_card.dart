@@ -41,7 +41,14 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
-    AppLogger.debug('Initializing LinkPreviewCard for URL: ${widget.url}');
+    // Already resolved in this process? Show it in the first frame.
+    final known = LinkPreviewCache.peek(widget.url);
+    if (known != null) {
+      _previewData = known;
+      _isLoading = false;
+      _shouldShow = true;
+      return;
+    }
     _fetchMetadata();
   }
 

@@ -29,6 +29,15 @@ class _VideoCardState extends State<VideoCard> with AutomaticKeepAliveClientMixi
   @override
   void initState() {
     super.initState();
+    // Already resolved in this process? Show it in the first frame.
+    final known = YouTubeCache.peek(widget.url);
+    if (known != null) {
+      _youtubeData = known;
+      _isLoading = false;
+      _shouldShow = true;
+      _showAsLink = false;
+      return;
+    }
     _fetchVideoData();
   }
 

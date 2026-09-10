@@ -63,7 +63,24 @@ class LinkPreviewCache {
 
   /// Fetches link preview data from cache or web
   /// Think of it like checking your address book before looking up contact info again
+  /// Results this process has already resolved, by URL. The file cache is
+  /// asynchronous; this lets a card that is rebuilt or scrolled back into
+  /// view show its preview in its first frame instead of a placeholder and
+  /// a setState.
+  static final Map<String, LinkPreviewData> _memory = <String, LinkPreviewData>{};
+
+  /// The preview for [url] if this process already has it; never fetches.
+  static LinkPreviewData? peek(String url) => _memory[url];
+
   static Future<LinkPreviewData?> fetchLinkPreview(String url, {Duration maxAge = const Duration(hours: 24)}) async {
+    final known = _memory[url];
+    if (known != null) return known;
+    final result = await _fetchLinkPreviewUncached(url, maxAge: maxAge);
+    if (result != null) _memory[url] = result;
+    return result;
+  }
+
+  static Future<LinkPreviewData?> _fetchLinkPreviewUncached(String url, {Duration maxAge = const Duration(hours: 24)}) async {
     try {
       // Clean the URL by removing any quotes or extra whitespace
       final cleanUrl = url.trim().replaceAll('"', '');

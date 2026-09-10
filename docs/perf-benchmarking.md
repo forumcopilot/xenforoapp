@@ -117,6 +117,38 @@ both change between runs. Use it only where the effect is an order of magnitude
 and dwarfs the noise. It runs last so that its noise cannot contaminate the two
 pinned measurements.
 
+## Baseline — 2026-09-09, Pixel `5B291JEA321887`
+
+Three runs, no `lib/` changes between them, commit `3f14783`. Median of the
+three; the spread column is max − min across the three.
+
+| | build p50 | p90 | p99 | raster p50 | p90 | total>16.7 | total>33 |
+|---|---|---|---|---|---|---|---|
+| `topic_list` | **0.9** ±0.0 | 3.2 ±0.1 | 11.4 ±0.3 | **4.2** ±0.0 | 5.6 ±0.2 | 26 (21–34) | 0 |
+| `thread` | **2.0** ±0.0 | 3.9 ±0.3 | 27.2 ±0.6 | **5.0** ±0.2 | 6.4 ±0.5 | 59 (52–60) | 18 (16–19) |
+| `home_feed` | 10.1 ±0.4 | 16.0 ±3.4 | 24.2 ±4.8 | 7.2 ±0.2 | 9.2 ±0.9 | 840 (835–885) | 21 (19–36) |
+
+Image diagnostics were 134–140 cache misses, **0** decode rejections and **0**
+file→network fallbacks on all three runs (the Discourse app's equivalent was
+598 / 10 / 88 before its avatar fixes).
+
+### What this baseline says you can trust
+
+**Percentiles on the pinned screens are the gate.** Build p50 is identical to
+0.1 ms across three runs and p99 moves by at most 0.6 ms — comfortably inside
+the ~0.2 ms tolerance the Discourse harness set for p50. A change of ≥1 ms on
+`topic_list` or `thread` p50/p90 is real.
+
+**Small jank counts are not a gate.** `topic_list` swings 21 → 34 janky frames
+between identical runs, which looks like ±74 % but is 2–3 % of ~1,080 frames and
+entirely consistent with counting noise (√27 ≈ 5). Counts only carry signal once
+they are in the hundreds, as on `thread` (52–60, ±14 %) and `home_feed`
+(835–885, ±6 %).
+
+**`home_feed`'s tails carry no signal at all.** Its `build>16.7ms` ran 76 → 107
+→ 178 across identical runs. Its p50 and its total jank count happen to be
+steady, but do not build an argument on anything further out than that.
+
 ## Reading the numbers
 
 - **Budget.** 16.7 ms per frame at 60 Hz, 8.3 ms at 120 Hz. Build and raster

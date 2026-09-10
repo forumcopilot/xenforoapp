@@ -1290,9 +1290,16 @@ class InlineAttachmentTag extends AdvancedTag {
   }
 
   /// Checks if a string is a numeric ID
-  bool _isNumericId(String? value) {
-    if (value == null || value.isEmpty) return false;
-    return RegExp(r'^\d+$').hasMatch(value.trim());
+  bool _isNumericId(String? value) => _attachmentIdFrom(value) != null;
+
+  /// The attachment id inside an [ATTACH] tag, or null if the content is not
+  /// one. Accepts a bare id and the `<id>.vB` form XenForo's importer leaves
+  /// on attachments migrated from vBulletin; XenForo's own renderer reads the
+  /// leading integer the same way, which is why the site shows them.
+  String? _attachmentIdFrom(String? value) {
+    if (value == null) return null;
+    final m = RegExp(r'^(\d+)(?:\.[A-Za-z]+)?$').firstMatch(value.trim());
+    return m?.group(1);
   }
 
   /// Determines if attachment is an image
@@ -1476,7 +1483,9 @@ class InlineAttachmentTag extends AdvancedTag {
     AppLogger.debug('InlineAttachmentTag: tag: $tag');
 
     if (tagContent != null && _isNumericId(tagContent)) {
-      attachmentId = tagContent;
+      // Normalised: `92631.vB` looks up attachment 92631. Non-null here:
+      // _isNumericId above is exactly `_attachmentIdFrom(...) != null`.
+      attachmentId = _attachmentIdFrom(tagContent)!;
       AppLogger.debug('InlineAttachmentTag: Detected numeric ID: $attachmentId');
       AppLogger.debug('InlineAttachmentTag: Looking up attachment in inlineAttachments: ${inlineAttachments?.length ?? 0} items');
       AppLogger.debug('InlineAttachmentTag: Looking up attachment in attachments: ${attachments?.length ?? 0} items');

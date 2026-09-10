@@ -3,9 +3,14 @@
 // Run (phone connected, developer mode, listed by `adb devices`):
 //
 //   flutter drive --profile -d <device-id> \
+//     --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
 //     --driver=test_driver/perf_driver.dart \
 //     --target=integration_test/scroll_perf_test.dart > /tmp/drive.log 2>&1
 //   grep PERF /tmp/drive.log
+//
+// The --dart-define is required: the committed config points at a placeholder
+// host, and against it the app renders nothing and the run ends green with
+// no PERF lines.
 //
 // Prints one summary line per screen so before/after runs line up with the
 // Discourse audit tables:

@@ -10,10 +10,15 @@ Phone connected, developer mode on, listed by `adb devices`.
 
 ```bash
 flutter drive --profile -d <device-id> \
+  --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
   --driver=test_driver/perf_driver.dart \
   --target=integration_test/scroll_perf_test.dart > /tmp/drive.log 2>&1
 grep PERF /tmp/drive.log
 ```
+
+The `--dart-define` is not optional: without it the app boots against the
+template's placeholder host, renders nothing, and the run ends green with
+zero `PERF` lines (trap 8).
 
 ~3 minutes per run (profile build, install, test, uninstall). Keep the whole
 log — it also holds the app's own debug output, which is useful for counting
@@ -50,17 +55,18 @@ The flip side: unlike Discourse (whose public API any instance exposes), this
 app talks through the **ForumCopilot add-on endpoint**, so it can only measure
 a forum that has the add-on installed.
 
-**Before a run, point `lib/config/app_forum_config.dart` at
-`https://www.satelliteguys.us/xen`** (`forumName` is cosmetic). The harness
-pins content on that forum, which runs the add-on and lets guests read, so
-runs need no credentials. The committed config is the template placeholder;
-the benchmark target must not ship. The
+The benchmark forum is supplied at build time —
+`--dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen` — and
+`AppForumConfig` reads it through `String.fromEnvironment`. The harness pins
+content on that forum, which runs the add-on and lets guests read, so runs
+need no credentials, and the committed config stays the template placeholder. The
 app's own forum, `qhhtofficialforum.com`, answers guests with HTTP 403; if you
 point the config back at it, supply a throwaway account at run time (nothing is
 stored in the repo):
 
 ```bash
 flutter drive --profile -d <device-id> \
+  --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
   --driver=test_driver/perf_driver.dart \
   --target=integration_test/scroll_perf_test.dart \
   --dart-define=PERF_USER=<user> --dart-define=PERF_PASS=<pass>

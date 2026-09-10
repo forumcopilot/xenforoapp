@@ -11,15 +11,22 @@ class AppForumConfig {
   static const int siteId = 1;
 
   /// Human-readable forum name shown in app UI.
-  static const String forumName = 'My XenForo Forum';
+  ///
+  /// Overridable at build time (`--dart-define=FORUM_NAME=...`) so the scroll
+  /// benchmark can target a forum without that target ever being committed.
+  static const String forumName =
+      String.fromEnvironment('FORUM_NAME', defaultValue: 'My XenForo Forum');
 
   /// Base forum URL (without trailing slash).
   /// Example: https://forum.example.com
   ///
-  /// To run the scroll benchmark (docs/perf-benchmarking.md) point this at
-  /// `https://www.satelliteguys.us/xen`: the harness pins content on that
-  /// forum, which is guest-readable and runs the add-on. Do not ship it.
-  static const String forumBaseUrl = 'https://forum.example.com';
+  /// Overridable at build time. The scroll benchmark
+  /// (docs/perf-benchmarking.md) passes
+  /// `--dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen`; the
+  /// harness pins content on that forum, which is guest-readable and runs
+  /// the add-on. Nothing about the benchmark lives in this file.
+  static const String forumBaseUrl = String.fromEnvironment('FORUM_BASE_URL',
+      defaultValue: 'https://forum.example.com');
 
   /// Plugin endpoint path relative to [forumBaseUrl].
   /// Common values:

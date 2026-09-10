@@ -19,16 +19,18 @@ grep PERF /tmp/drive.log
 log — it also holds the app's own debug output, which is useful for counting
 side effects a frame timer cannot see.
 
-Output is three lines:
+Output is five lines:
 
 ```
 PERF topic_list frames=1082 build p50=0.9 p90=3.2 p99=11.5 max=13 | raster p50=4.2 ... | total>16.7ms=25 total>33ms=2 build>16.7ms=0  raster>16.7ms=2
 PERF thread     frames=1275 build p50=2.0 p90=4.3 p99=27.4 max=44 | raster p50=5.0 ... | total>16.7ms=57 total>33ms=21 build>16.7ms=40 raster>16.7ms=1
+PERF thread_back frames=...  build ...                                        (same posts, scrolled back up)
+PERF thread_rebuild frames=... build ...                                      (visible posts republished in place)
 PERF home_feed  frames=1388 build p50=7.8 p90=11.4 p99=17.4 max=30 | raster p50=3.0 ... | total>16.7ms=139 total>33ms=4 build>16.7ms=20 raster>16.7ms=1
 ```
 
-`topic_list` and `thread` are the comparable ones. `home_feed` is indicative
-only — see below.
+`topic_list`, `thread`, `thread_back` and `thread_rebuild` are the comparable
+ones. `home_feed` is indicative only — see below.
 
 **Run the baseline three times before changing anything, and check the spread.**
 The target is the Discourse harness's noise floor: within ~0.2 ms on p50 and
@@ -75,6 +77,40 @@ own navigator instead of using whatever is on screen:
 
 Pagination is deterministic as a result: the node loads `startNum` 0/21/42/63/84
 and the thread loads posts 1/21/41 on every run.
+
+### `thread_back` — why a fourth line exists
+
+`thread` flings forward only, so it meets every post exactly once, fresh. That
+makes it blind to anything that depends on a post being seen **twice**: an
+element disposed on the way down and recreated on the way up, or a rebuild of
+a post already on screen (a like, a highlight, a poll vote, a translation, or
+the whole-list rebuild every page load triggers). `thread_back` is eight flings
+back up through the posts `thread` just loaded — pinned content, mirrored
+gesture — and measures exactly that re-entry cost. It was added for F1
+(content caching), whose entire effect lives there: on `thread` alone F1 is
+neutral by construction, because a first sight of a post is a cache miss.
+
+It runs after `thread`, so the first three lines are byte-identical to earlier
+runs and stay comparable with them.
+
+### `thread_rebuild` — rebuilding what is already on screen
+
+Neither scroll segment rebuilds a post that is already on screen: since F2 a
+live element is not rebuilt by scrolling. Yet the app rebuilds visible posts
+constantly — every page load, like, poll vote or translation publishes
+`threadDataOutput`, and the list's `Obx` rebuilds every visible post. This
+segment publishes the same data 30 times, settling ten frames after each, on
+the pinned thread. It isolates the cost of one rebuild per visible post with
+nothing else changing, which is exactly where per-post derivation is paid
+again and again unless it is cached. It runs after `thread_back` and before
+`home_feed`.
+
+Read it differently from the scroll segments. Most of its frames are the
+settle frames between publishes and idle at well under a millisecond, so its
+**p50 says nothing**. Each publish lands as one heavy build frame, so the
+number to watch is `build>16.7ms` — before F1 it was 29 out of 481 frames,
+one per publish — together with build p99 and max, which are the cost of
+that frame.
 
 Both sit under **SatelliteGuys Archives**, which is read-only — the add-on
 reports `canPost=false, canReply=false`, so nobody can post and the bytes the
@@ -131,6 +167,29 @@ three; the spread column is max − min across the three.
 Image diagnostics were 134–140 cache misses, **0** decode rejections and **0**
 file→network fallbacks on all three runs (the Discourse app's equivalent was
 598 / 10 / 88 before its avatar fixes).
+
+### Results log
+
+Pinned screens only, same phone. Each row is a commit; `thread` is the median
+of that commit's runs, spread in parentheses where it matters.
+
+| commit | change | thread build p50 / p90 / p99 | thread total>16.7 | thread_back (build) | thread_rebuild (build>16.7 · p99 · max · total>33) |
+|---|---|---|---|---|---|
+| `76826b4` | baseline (3 runs) | 2.0 / 3.9 / 27.2 | 59 (52–60) | — | — |
+| `1962aa6` | F2: no whole-thread rebuild on scroll, keyed rows | 1.8 / 3.6 / 11.4–16.5 | 24 (23–25) | — | — |
+| `336d05a` | F1 prereq: stable Hero tags | 1.8 / 3.7 / 14.8–16.4 | 22 (18–27) | p50 1.5 / p90 3.7–3.8 / p99 12–14 | 29–30 · 26.2–26.3 · 29–30 · 5–6 |
+| F1 | content processed once per input, LRU-memoised | 1.8–2.0 / 3.6–4.0 / 14.4–16.7 | 25 (25–37) | p50 1.5–1.8 / p90 3.7–4.0 / p99 10.5–11.5 | 25–29 · 23.2–24.3 · 26–27 · 0–1 |
+
+`topic_list` did not move across any of these (build p50 0.9 throughout); none
+of them touch the topic list. F1 is neutral on **both** scroll segments:
+`thread` by construction (first sight of a post is a cache miss), and
+`thread_back` because re-entry mostly meets elements the list kept alive, and
+since F2 a live element is not rebuilt by scrolling at all. What F1 removes is
+the cost of rebuilding a post that is already on screen, which the app does on
+every page load, like, poll vote and translation — see `thread_rebuild`, where
+F1 takes 2–3 ms off a ~26 ms publish frame and removes the double-frame drops.
+The frame stays heavy because `BBCodeText` re-parses the post into spans in
+its own `build()` on every rebuild; caching those spans is the next step.
 
 ### What this baseline says you can trust
 

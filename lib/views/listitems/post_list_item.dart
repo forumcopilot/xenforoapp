@@ -30,9 +30,31 @@ import '../../controllers/login_controller.dart';
 import '../login_page.dart';
 import '../post_page.dart';
 import '../lists/posts_list.dart';
+import 'package:flutter/foundation.dart' show listEquals;
+import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 
+/// Everything a post's body needs that is derived from its text and its
+/// attachment lists. Immutable, and shared through [_postContentCache].
+///
+/// Producing one of these is the single most expensive thing a post does:
+/// `BBCodeProcessor.processText` (four tag-strip passes with fresh RegExps,
+/// normalisation, emoji, a [url] rewrite, plain-URL detection), three more
+/// regex sweeps for previews, the inline-attachment substitution, and then
+/// two full structural scans to decide whether the result is safe to hand to
+/// the BBCode renderer. It used to be recomputed on every build of every
+/// visible post — and the thread rebuilt every visible post on every scroll
+/// frame until F2. Now it is computed once per input and remembered.
 class _PostContentData {
+  /// Post text after processing and inline-attachment substitution.
   final String processedText;
+
+  /// [processedText] after `getValidBBCodeText` — what actually gets parsed.
+  final String textToRender;
+
+  /// True when the text could not be repaired into structurally valid
+  /// BBCode; the body is then shown as plain text instead of being parsed.
+  final bool renderAsPlainText;
+
   final List<String> limitedUrls;
   final List<String> limitedYoutubeUrls;
   final List<String> limitedTwitterUrls;
@@ -40,6 +62,8 @@ class _PostContentData {
   final List<FCAttachment> filteredInlineAttachments;
   _PostContentData({
     required this.processedText,
+    required this.textToRender,
+    required this.renderAsPlainText,
     required this.limitedUrls,
     required this.limitedYoutubeUrls,
     required this.limitedTwitterUrls,
@@ -47,6 +71,57 @@ class _PostContentData {
     required this.filteredInlineAttachments,
   });
 }
+
+/// Identifies one [_PostContentData] exactly.
+///
+/// Equality compares the full original text, so a hit can never serve
+/// content for a different edit of the post; the attachment fingerprint
+/// covers the two lists the derivation also reads (url / view permission /
+/// inline flag per attachment). The hash is cheap: Dart caches a String's
+/// hashCode after first use, so repeat lookups do not rescan the text.
+class _PostContentKey {
+  final String postId;
+  final String siteType;
+  final String attachmentFingerprint;
+  final String text;
+
+  const _PostContentKey(
+      this.postId, this.siteType, this.attachmentFingerprint, this.text);
+
+  static String fingerprint(FCPost post) {
+    final b = StringBuffer();
+    for (final a in post.inlineAttachments) {
+      b..write(a.id)..write('|')..write(a.url)..write('|')..write(a.canViewUrl)..write(';');
+    }
+    b.write('#');
+    for (final a in post.attachments) {
+      b..write(a.id)..write('|')..write(a.isInline)..write(';');
+    }
+    return b.toString();
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is _PostContentKey &&
+      other.postId == postId &&
+      other.siteType == siteType &&
+      other.attachmentFingerprint == attachmentFingerprint &&
+      other.text == text;
+
+  @override
+  int get hashCode =>
+      Object.hash(postId, siteType, attachmentFingerprint, text.length, text.hashCode);
+}
+
+/// Process-wide memo of derived post content, keyed exactly by its inputs.
+///
+/// Sized for a thread's worth of scroll-back: a page is 20 posts, so 256
+/// entries is a dozen pages. Memory is dominated by the processed text,
+/// roughly the size of the post itself. A post scrolled off screen and back
+/// on (its element disposed and recreated) costs a map lookup, not a
+/// reprocess.
+final LRUCache<_PostContentKey, _PostContentData> _postContentCache =
+    LRUCache<_PostContentKey, _PostContentData>(maxSize: 256);
 
 /// Callback class for post-related actions
 class PostActions {
@@ -147,9 +222,14 @@ class _PostListItemState extends State<PostListItem> {
   late final PostActionsHandler _postActionsHandler;
   int? _visitorReactionId; // which reaction the viewer currently has (multi-reaction)
 
+  /// Derived content for the current inputs. Resolved in [initState] and
+  /// again in [didUpdateWidget] only when an input changes; never in build.
+  late _PostContentData _contentData;
+
   @override
   void initState() {
     super.initState();
+    _contentData = _resolveContentData();
     _postsController = widget.postController;
     _postActionsHandler =
         PostActionsHandler(_postsController, widget.siteContext);
@@ -158,6 +238,51 @@ class _PostListItemState extends State<PostListItem> {
     _isLiked = widget.post.isLiked;
     _likeCount = widget.post.likesInfo.length;
     _visitorReactionId = _initialVisitorReactionId();
+  }
+
+  @override
+  void didUpdateWidget(covariant PostListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_contentInputsChanged(oldWidget)) {
+      _contentData = _resolveContentData();
+    }
+  }
+
+  /// True when anything [_extractPostContentData] reads has changed. Deliberately
+  /// not `widget.post != oldWidget.post`: FCPost has value equality over every
+  /// field, so a like or a reaction would count as a change.
+  bool _contentInputsChanged(PostListItem old) {
+    if (widget.translatedContent != old.translatedContent) {
+      return true;
+    }
+    if (!identical(widget.siteContext, old.siteContext) &&
+        widget.siteContext.siteType != old.siteContext.siteType) {
+      return true;
+    }
+    final p = widget.post, q = old.post;
+    if (identical(p, q)) {
+      return false;
+    }
+    return p.id != q.id ||
+        p.content != q.content ||
+        !listEquals(p.inlineAttachments, q.inlineAttachments) ||
+        !listEquals(p.attachments, q.attachments);
+  }
+
+  /// Serves [_PostContentData] from [_postContentCache], deriving and storing
+  /// it on a miss.
+  _PostContentData _resolveContentData() {
+    final key = _PostContentKey(
+      widget.post.id,
+      widget.siteContext.siteType,
+      _PostContentKey.fingerprint(widget.post),
+      widget.translatedContent ?? widget.post.content,
+    );
+    final cached = _postContentCache.get(key);
+    if (cached != null) return cached;
+    final data = _extractPostContentData();
+    _postContentCache.put(key, data);
+    return data;
   }
 
   /// Determine the viewer's existing reaction on this post. Prefers the
@@ -285,8 +410,17 @@ class _PostListItemState extends State<PostListItem> {
       return !isInline;
     }).toList();
 
+    // Decide once whether the result is safe to parse. This used to run inside
+    // build() as two further full scans of the text on every frame.
+    final processor = BBCodeProcessor();
+    final textToRender = processor.getValidBBCodeText(processedText);
+    final renderAsPlainText = textToRender == processedText &&
+        !processor.isBBCodeStructurallyValid(textToRender);
+
     return _PostContentData(
       processedText: processedText,
+      textToRender: textToRender,
+      renderAsPlainText: renderAsPlainText,
       limitedUrls: limitedUrls,
       limitedYoutubeUrls: limitedYoutubeUrls,
       limitedTwitterUrls: limitedTwitterUrls,
@@ -596,11 +730,8 @@ class _PostListItemState extends State<PostListItem> {
           ],
           Builder(
             builder: (context) {
-              final processor = BBCodeProcessor();
-              String textToRender =
-                  processor.getValidBBCodeText(data.processedText);
-              if (textToRender == data.processedText &&
-                  !processor.isBBCodeStructurallyValid(textToRender)) {
+              final textToRender = data.textToRender;
+              if (data.renderAsPlainText) {
                 return Text(
                   data.processedText,
                   style: textTheme.bodyMedium?.copyWith(
@@ -707,7 +838,7 @@ class _PostListItemState extends State<PostListItem> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final data = _extractPostContentData();
+    final data = _contentData;
 
     // Determine background color based on highlight state
     // Use a more visible highlight color

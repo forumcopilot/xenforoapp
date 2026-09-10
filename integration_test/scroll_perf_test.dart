@@ -10,8 +10,10 @@
 // Prints one summary line per screen so before/after runs line up with the
 // Discourse audit tables:
 //
-//   PERF topic_list frames=1183 build p50=6.9 p90=14.9 ... | raster ... | total>16.7ms=366 ...
-//   PERF thread     frames=965  build p50=0.8 ...
+//   PERF topic_list  frames=1183 build p50=6.9 p90=14.9 ... | raster ... | total>16.7ms=366 ...
+//   PERF thread      frames=965  build p50=0.8 ...
+//   PERF thread_back frames=...  (the same posts, scrolled back up through)
+//   PERF thread_rebuild frames=... (visible posts republished in place)
 //
 // Differences from the Discourse harness this was ported from:
 //
@@ -45,6 +47,7 @@ import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' show globalNavigatorKey;
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
+import 'package:forumcopilot_flutter/controllers/post_controller.dart';
 import 'package:forumcopilot_flutter/controllers/site_controller.dart';
 import 'package:forumcopilot_flutter/main.dart' as app;
 import 'package:forumcopilot_flutter/views/forum_topics_page.dart';
@@ -165,6 +168,29 @@ void main() {
     await _measure('thread', () => _flings(tester, 8));
     _stage('thread measured');
 
+    // --- thread_back: the same posts re-entering the viewport ---
+    // Flinging forward only ever meets fresh posts, so it cannot see any
+    // work that depends on a post being seen twice: an element that is
+    // disposed on the way down and recreated on the way up, or a rebuild of
+    // a post already on screen. Eight flings back up through the posts the
+    // previous segment just loaded measures exactly that, on pinned content.
+    await _measure('thread_back', () => _flings(tester, 8, up: true));
+    _stage('thread_back measured');
+
+    // --- thread_rebuild: the visible posts rebuilt in place, no scrolling ---
+    // Neither scroll segment rebuilds a post that is already on screen (F2
+    // saw to that), yet the app does it constantly: every page load, like,
+    // poll vote or translation publishes threadDataOutput and the list's Obx
+    // rebuilds every visible post. Publishing the same data again is that
+    // exact trigger with nothing else changing, so this isolates the cost of
+    // one rebuild per visible post -- which is where per-post derivation,
+    // when it is not cached, gets paid again and again.
+    final controller = tester
+        .widget<PostListItem>(find.byType(PostListItem).first)
+        .postController;
+    await _measure('thread_rebuild', () => _republish(tester, controller, 30));
+    _stage('thread_rebuild measured');
+
     // --- home feed: unpinnable, measured last, indicative only ---
     globalNavigatorKey.currentState!.pop();
     await _pumpUntil(tester, find.byType(TopicListItem),
@@ -252,9 +278,24 @@ Future<void> _measure(String label, Future<void> Function() action) async {
       'build>16.7ms=${over(build, 16.7)} raster>16.7ms=${over(raster, 16.7)}');
 }
 
-Future<void> _flings(WidgetTester tester, int count) async {
+/// Publishes the thread's current data [count] times without changing it,
+/// settling a few frames after each so every visible post rebuilds and
+/// paints before the next publish.
+Future<void> _republish(
+    WidgetTester tester, PostController controller, int count) async {
   for (var i = 0; i < count; i++) {
-    await tester.flingFrom(const Offset(200, 760), const Offset(0, -520), 3000);
+    controller.threadDataOutput.refresh();
+    await _settle(tester, frames: 10);
+  }
+}
+
+/// [up] reverses the gesture: same distance and velocity, started high on the
+/// screen so the drag has room, so a down/up pair covers the same posts.
+Future<void> _flings(WidgetTester tester, int count, {bool up = false}) async {
+  final start = up ? const Offset(200, 400) : const Offset(200, 760);
+  final delta = up ? const Offset(0, 520) : const Offset(0, -520);
+  for (var i = 0; i < count; i++) {
+    await tester.flingFrom(start, delta, 3000);
     await _settle(tester, frames: 75);
   }
 }

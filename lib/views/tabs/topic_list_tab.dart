@@ -46,26 +46,32 @@ class _ReactiveTopicItemsState extends State<_ReactiveTopicItems> {
         final centerChild = firstItem.child;
         if (centerChild is CircularProgressIndicator) {
           // Show spinner instead of empty state when loading
-          return firstItem;
+          return SliverToBoxAdapter(child: firstItem);
         }
       }
-      // If we have multiple items or the item is not a spinner, show the items
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: topicItems,
+      // Rows as a builder-delegate sliver: only rows near the viewport get
+      // elements and layout. The list of widgets is cheap to hold; what
+      // could not stay was the single Column that built and laid out every
+      // loaded row on every frame.
+      return SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => topicItems[index],
+          childCount: topicItems.length,
+        ),
       );
     }
 
     // If no items and we have empty state, show it
     if (emptyState != null) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height - 300,
-        child: emptyState,
-      );
+      // Fills whatever the header and chips leave, without measuring the
+      // screen.
+      return SliverFillRemaining(hasScrollBody: false, child: emptyState);
     }
 
     // Fallback: show spinner if nothing else
-    return const Center(child: CircularProgressIndicator());
+    return const SliverToBoxAdapter(
+      child: Center(child: CircularProgressIndicator()),
+    );
   }
 }
 
@@ -354,50 +360,37 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
     }
   }
 
-  // Ensure topic list widgets are initialized (but not visible)
-  // We use IndexedStack to keep all widgets mounted for state management
-  // Position them off-screen with constrained size to avoid layout errors
   Widget _buildTopicListWidgets() {
-    return Positioned(
-      left: -10000, // Position completely off-screen
-      top: -10000,
-      child: IgnorePointer(
-        ignoring: true,
-        child: Opacity(
-          opacity: 0.0,
-          child: SizedBox(
-            width: 100, // Small but bounded size
-            height: 100,
-            child: ClipRect(
-              child: IndexedStack(
-                index: _selectedFilterIndex,
-                children: [
-                  LatestTopicsList(
-                    key: _latestTopicsKey,
-                    isActive: widget.isActive && _selectedFilterIndex == 0,
-                    siteContext: widget.siteContext,
-                  ),
-                  UnreadTopicsList(
-                    key: _unreadTopicsKey,
-                    isActive: widget.isActive && _selectedFilterIndex == 1,
-                    siteContext: widget.siteContext,
-                  ),
-                  SubscribedTopicsList(
-                    key: _subscribedTopicsKey,
-                    isActive: widget.isActive && _selectedFilterIndex == 2,
-                    siteContext: widget.siteContext,
-                  ),
-                  ParticipatedTopicsList(
-                    key: _participatedTopicsKey,
-                    isActive: widget.isActive && _selectedFilterIndex == 3,
-                    siteContext: widget.siteContext,
-                  ),
-                ],
+    return Offstage(
+      // Keeps the four list States alive for their data without laying
+      // out or painting a frame nobody sees. This used to be a 100x100 box
+      // at Positioned(-10000) under Opacity(0), IgnorePointer and ClipRect.
+      offstage: true,
+      child: IndexedStack(
+            index: _selectedFilterIndex,
+            children: [
+              LatestTopicsList(
+                key: _latestTopicsKey,
+                isActive: widget.isActive && _selectedFilterIndex == 0,
+                siteContext: widget.siteContext,
               ),
-            ),
+              UnreadTopicsList(
+                key: _unreadTopicsKey,
+                isActive: widget.isActive && _selectedFilterIndex == 1,
+                siteContext: widget.siteContext,
+              ),
+              SubscribedTopicsList(
+                key: _subscribedTopicsKey,
+                isActive: widget.isActive && _selectedFilterIndex == 2,
+                siteContext: widget.siteContext,
+              ),
+              ParticipatedTopicsList(
+                key: _participatedTopicsKey,
+                isActive: widget.isActive && _selectedFilterIndex == 3,
+                siteContext: widget.siteContext,
+              ),
+            ],
           ),
-        ),
-      ),
     );
   }
 
@@ -450,17 +443,19 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
       children: [
         RefreshIndicator(
           onRefresh: _handleRefresh,
-          child: ListView(
+          child: CustomScrollView(
             controller: _scrollController,
-            children: [
+            slivers: [
               // Forum Header
-              ForumHeaderWidget(
-                boardStats: widget.boardStats,
-                extendUnderAppBar: true,
+              SliverToBoxAdapter(
+                child: ForumHeaderWidget(
+                  boardStats: widget.boardStats,
+                  extendUnderAppBar: true,
+                ),
               ),
               // Filter Chips
-              _buildFilterChips(),
-              // Empty state or topic items - wrapped in reactive widget
+              SliverToBoxAdapter(child: _buildFilterChips()),
+              // Empty state or topic items, as a sliver
               _ReactiveTopicItems(
                 filterIndex: _selectedFilterIndex,
                 buildItems: _buildTopicItems,

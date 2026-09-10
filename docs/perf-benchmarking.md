@@ -199,6 +199,18 @@ of that commit's runs, spread in parentheses where it matters.
 | `336d05a` | F1 prereq: stable Hero tags | 1.8 / 3.7 / 14.8–16.4 | 22 (18–27) | p50 1.5 / p90 3.7–3.8 / p99 12–14 | 29–30 · 26.2–26.3 · 29–30 · 5–6 |
 | F1 | content processed once per input, LRU-memoised | 1.8–2.0 / 3.6–4.0 / 14.4–16.7 | 25 (25–37) | p50 1.5–1.8 / p90 3.7–4.0 / p99 10.5–11.5 | 25–29 · 23.2–24.3 · 26–27 · 0–1 |
 | F1b | body parsed to spans once per State, not per build | 1.8–2.1 / 3.6–3.9 / 12.5–16.6 | 14–31 | p50 1.5–1.8 / p90 3.7–4.1 / p99 9.7–12.1 | **0** · 12.4–13.2 · 13–15 · 0 |
+| F3 `737ace5` | images decoded at display size, fetched once | 1.8–2.0 / 3.7–4.0 / 13.2–17.8 | 16–32 | p50 1.5–1.8 / p99 9.7–12.1 | 0 · 12.3–13.1 · 13–15 · 0 |
+| hygiene | items 7, 13, 15, 17, 18 | 1.8–1.9 / 3.6–3.8 / 12.8–15.2 | 18–27 | p50 1.4–1.7 / p99 10.3–11.5 | 0 · 11.7–12.3 · 14 · 0 |
+| Phase 2 | home feed virtualised (items 5, 6) | unchanged | unchanged | unchanged | unchanged |
+
+`home_feed` (indicative segment) across the same commits — build p50 / p90 / total>16.7 / build>16.7:
+
+| commit | home_feed |
+|---|---|
+| baseline → F3 | 7.7–10.3 / 11.5–17.6 / 211–885 / 8–178 |
+| **Phase 2** | **1.0–0.9 / 2.9 / 13–18 / 1–2** |
+
+An order of magnitude, which is the one kind of `home_feed` result that outruns its noise.
 
 Image-cache occupancy (`PERFIMG bytes`, identical image set per segment):
 
@@ -284,6 +296,12 @@ fixes; that finding came entirely from the log, not the frame timer.
 6. **`flutter drive` uninstalls the app when it finishes.** Reinstall before
    poking at the device by hand.
 7. **Never benchmark on an emulator.** The numbers mean nothing.
+8. **"All tests passed" is not proof the run measured anything.** A change
+   that throws during a page's first build (seen once: reading `widget` in a
+   State constructor) leaves the route empty, and the run can still end
+   green with only the segments before it printed. Count the `PERF` lines:
+   fewer than six is a failed run, whatever `flutter drive` says. Any
+   `Another exception was thrown` in the log is the tell.
 
 ## Notes on this port
 

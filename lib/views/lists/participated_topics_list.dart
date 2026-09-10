@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:forumcopilot_flutter/views/widgets/error_or_child.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
@@ -336,136 +335,10 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    // Show login prompt immediately if user is not logged in
-    if (!widget.siteContext.isLoggedIn) {
-      return NotSignedInView(
-        siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewParticipatedTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewParticipatedTopics,
-        icon: Icons.chat_bubble_outline_rounded,
-      );
-    }
-
-    return ErrorOrChild(
-        isError: super.isError,
-        errorMessage: super.errorMessage,
-        onRetry: () {
-          resetList();
-        },
-        errorBuilder: (context, errorMessage, onRetry) {
-          // Show login prompt for login/permission errors
-          if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
-            return NotSignedInView(
-              siteContext: widget.siteContext,
-              title: AppLocalizations.of(context)?.signInToViewParticipatedTopics ?? 'Sign in to view participated topics',
-              message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewParticipatedTopics ?? 'You need to be signed in to view topics you have participated in.',
-              icon: Icons.chat_bubble_outline_rounded,
-            );
-          }
-          // Return null to use default error handling for other errors
-          return null;
-        },
-        builder: (context) {
-          // Show spinner while controller is not initialized
-          if (_participatedTopicController == null) {
-            // If controller doesn't exist and tab is active but not loaded yet, show spinner
-            // This is the default state - spinner while loading
-            if ((!_hasLoaded || _isInitialLoading) && widget.isActive) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            // Default: show spinner (controller not initialized yet)
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (_isInitialLoading && widget.isActive) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (!_participatedTopicController!.isInitialized.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (_participatedTopicController != null && _participatedTopicController!.isInitialized.value) {
-            var topicsList = _participatedTopicController!.fcTopics;
-            if (topicsList.isEmpty) {
-              final colorScheme = Theme.of(context).colorScheme;
-              final textTheme = Theme.of(context).textTheme;
-              return Center(
-                child: Padding(
-                  padding: DesignTokens.paddingXXL,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.forum_rounded,
-                        size: 80,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        AppLocalizations.of(context)!.noParticipatedTopics,
-                        style: textTheme.headlineSmall?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppLocalizations.of(context)!.topicsYouParticipatedIn,
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: refreshList,
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: topicsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < topicsList.length) {
-                    final topic = topicsList[index];
-                    return TopicListItem(
-                      siteContext: widget.siteContext,
-                      topic: topic,
-                      onTap: () async {
-                        if (!widget.siteContext.isLoggedIn) {
-                          if (!Get.isRegistered<LoginController>()) {
-                            Get.put(LoginController());
-                          }
-                          final loginController = Get.find<LoginController>();
-                          final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
-                          if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                            await Get.to(() => LoginPage(siteContext: widget.siteContext));
-                          }
-                        }
-                        Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId));
-                      },
-                    );
-                  } else {
-                    // Show spinner when loading more items or when there are more items to load
-                    if (_isLoadingMore || (_participatedTopicController != null && topicsList.length < _participatedTopicController!.participatedTopicsDataOutput.value.total_topic_num)) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }
-                },
-              ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        });
+    // This list's own frame is never on screen. TopicListTab keeps it
+    // mounted (Offstage) for its data and draws the rows itself through
+    // buildTopicItems() / buildErrorOrNotSignedInWidget().
+    return const SizedBox.shrink();
   }
 
   @override

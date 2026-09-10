@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
-import 'package:forumcopilot_flutter/views/widgets/error_or_child.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
@@ -352,156 +351,10 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-
-    // Check for permission/login errors from API result
-    if (_latestTopicController == null) {
-      // If controller doesn't exist and tab is active but not loaded yet, show spinner
-      // This is the default state - spinner while loading
-      if ((!_hasLoaded || _isInitialLoading) && widget.isActive) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      // Default: show spinner (controller not initialized yet)
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (_isInitialLoading && widget.isActive) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    final result = _latestTopicController!.latestTopicsDataOutput.value;
-    final resultText = result.resultText;
-    if (!result.result && resultText != null && resultText.isNotEmpty) {
-      final lowerResultText = resultText.toLowerCase();
-      if ((lowerResultText.contains('not logged in') ||
-              lowerResultText.contains('do not have permission') ||
-              lowerResultText.contains('permission to') ||
-              lowerResultText.contains('please log in') ||
-              lowerResultText.contains('log in to access')) &&
-          !widget.siteContext.isLoggedIn) {
-        return NotSignedInView(
-          siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewLatestTopics ?? 'Sign in to view latest topics',
-          message: resultText,
-          icon: Icons.lock_outline_rounded,
-        );
-      }
-    }
-
-    return ErrorOrChild(
-        isError: super.isError,
-        errorMessage: super.errorMessage,
-        onRetry: () {
-          resetList(); // o la función que quieras para reintentar
-        },
-        errorBuilder: (context, errorMessage, onRetry) {
-          // Check for permission/login errors in error message
-          if (errorMessage.contains('not logged in') ||
-              errorMessage.contains('do not have permission') ||
-              errorMessage.contains('permission to') ||
-              errorMessage.contains('please log in') ||
-              errorMessage.contains('log in to access')) {
-            if (!widget.siteContext.isLoggedIn) {
-              return NotSignedInView(
-                siteContext: widget.siteContext,
-                title: AppLocalizations.of(context)!.signInToViewLatestTopics,
-                message: errorMessage,
-                icon: Icons.lock_outline_rounded,
-              );
-            }
-          }
-          // Return null to use default error handling for other errors
-          return null;
-        },
-        builder: (context) {
-          if (_latestTopicController != null && _latestTopicController!.isInitialized.value) {
-            var topicsList = _latestTopicController!.fcTopics;
-            if (topicsList.isEmpty) {
-              final colorScheme = Theme.of(context).colorScheme;
-              final textTheme = Theme.of(context).textTheme;
-              return Center(
-                child: SingleChildScrollView(
-                  padding: DesignTokens.paddingXXL,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.forum_outlined,
-                        size: DesignTokens.avatarSizeXL, // 64px - matches NotSignedInView
-                        color: colorScheme.primary,
-                      ),
-                      SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
-                      Text(
-                        "No Latest Topics",
-                        style: textTheme.titleLarge?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: DesignTokens.fontWeightBold,
-                          fontSize: DesignTokens.fontSizeL, // Match NotSignedInView title size
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
-                      Text(
-                        AppLocalizations.of(context)!.noRecentTopicsToDisplay,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return RefreshIndicator(
-              onRefresh: refreshList,
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: topicsList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < topicsList.length) {
-                    final topic = topicsList[index];
-                    return TopicListItem(
-                      siteContext: widget.siteContext,
-                      topic: topic,
-                      onTap: () async {
-                        if (!widget.siteContext.isLoggedIn) {
-                          if (!Get.isRegistered<LoginController>()) {
-                            Get.put(LoginController());
-                          }
-                          final loginController = Get.find<LoginController>();
-                          final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
-                          if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                            await Get.to(() => LoginPage(siteContext: widget.siteContext));
-                          }
-                        }
-                        // Only use first_unread mode if user is logged in (it requires authentication)
-                        // Otherwise, use normal mode which doesn't require authentication
-                        final mode = widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal;
-                        AppLogger.debug('🔍 [LatestTopicsList] Topic tapped (ListView): topicId=${topic.id}, isLoggedIn=${widget.siteContext.isLoggedIn}, mode=$mode');
-                        Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: mode, forumId: topic.forumId));
-                      },
-                      onMarkAsRead: (topicId) {
-                        _latestTopicController!.markTopicAsRead(topicId);
-                      },
-                    );
-                  } else {
-                    if (_latestTopicController != null && topicsList.length < _latestTopicController!.latestTopicsDataOutput.value.total_topic_num) {
-                      return Padding(
-                        padding: DesignTokens.paddingS,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    } else {
-                      return const SizedBox.shrink();
-                    }
-                  }
-                },
-              ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        });
+    // This list's own frame is never on screen. TopicListTab keeps it
+    // mounted (Offstage) for its data and draws the rows itself through
+    // buildTopicItems() / buildErrorOrNotSignedInWidget().
+    return const SizedBox.shrink();
   }
 
   @override

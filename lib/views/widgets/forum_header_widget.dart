@@ -151,9 +151,7 @@ class ForumHeaderWidget extends StatelessWidget {
       final topPadding = extendUnderAppBar ? DesignTokens.spacingXL : DesignTokens.spacingL;
       final bottomPadding = DesignTokens.spacingL;
 
-      // Wrap in IntrinsicHeight to make height dynamic based on content
-      return IntrinsicHeight(
-        child: ClipRect(
+      return ClipRect(
           child: Container(
             width: double.infinity,
             child: Stack(
@@ -174,24 +172,22 @@ class ForumHeaderWidget extends StatelessWidget {
                         ),
                         // Pattern image with theme color tint
                         // Matches default logo color when no logo is present
-                        ColorFiltered(
-                          colorFilter: ColorFilter.mode(
-                            (isDarkMode 
+                        // Tinted inside the image paint. ColorFiltered here was a saveLayer
+                        // the size of the whole header on every frame it painted.
+                        Image.asset(
+                          'assets/forum_header_bg.png',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          color: (isDarkMode 
                               ? _getDarkModePatternColor(_getBackgroundThemeColor(context, logoUrl, siteName))
                               : _getBackgroundThemeColor(context, logoUrl, siteName)
                             ).withOpacity(
-                              isDarkMode ? 0.75 : 0.5,  // Much higher opacity in dark mode for darker effect
+                              isDarkMode ? 0.75 : 0.5,  
                             ),
-                            isDarkMode 
-                              ? BlendMode.multiply  // Darker blend for dark mode - makes pattern more visible
-                              : BlendMode.color,   // Stronger color application for light mode
-                          ),
-                          child: Image.asset(
-                            'assets/forum_header_bg.png',
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
+                          colorBlendMode: isDarkMode 
+                              ? BlendMode.multiply  
+                              : BlendMode.color,
                         ),
                         // Text readability overlay - darker in dark mode to make pattern more subtle
                         Container(
@@ -361,8 +357,7 @@ class ForumHeaderWidget extends StatelessWidget {
             ],
           ),
         ),
-        ),
-      );
+        );
     });
   }
 }

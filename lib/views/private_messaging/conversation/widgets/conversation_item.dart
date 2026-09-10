@@ -219,6 +219,7 @@ class ConversationHeaderItem extends StatelessWidget {
       siteContext: siteContext,
       callbacks: callbacks,
       context: context,
+      contentId: message.messageId,
     );
 
     return Material(
@@ -1069,6 +1070,7 @@ class ConversationItem extends StatelessWidget {
       siteContext: siteContext,
       callbacks: callbacks,
       context: context,
+      contentId: message.messageId,
     );
 
     return Material(

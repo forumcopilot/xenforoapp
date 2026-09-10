@@ -75,6 +75,10 @@ class CustomBBStylesheet extends BBStylesheet {
     BBCodeCallbacks? callbacks,
     BuildContext? context,
     double? fontSize,
+    /// Id of the post/message whose content this stylesheet renders. Scopes
+    /// the Hero tags handed to images and attachments so that two posts
+    /// embedding the same image URL do not end up sharing a tag.
+    String? contentId,
   }) {
     final effectiveFontSize = fontSize ?? 15.0;
     final defaultText = context != null
@@ -121,9 +125,9 @@ class CustomBBStylesheet extends BBStylesheet {
         CustomUrlTag("URL", onTap: callbacks?.onUrlTap, onMentionTap: callbacks?.onMentionTap),
         EmailTag("email"),
         EmailTag("EMAIL"),
-        ImgTag("img", siteContext: siteContext, onImageTap: callbacks?.onImageTap),
-        ImgTag("IMG", siteContext: siteContext, onImageTap: callbacks?.onImageTap),
-        ImgTag("image", siteContext: siteContext, onImageTap: callbacks?.onImageTap),
+        ImgTag("img", siteContext: siteContext, onImageTap: callbacks?.onImageTap, contentId: contentId),
+        ImgTag("IMG", siteContext: siteContext, onImageTap: callbacks?.onImageTap, contentId: contentId),
+        ImgTag("image", siteContext: siteContext, onImageTap: callbacks?.onImageTap, contentId: contentId),
         VideoTag("VIDEO", onTap: callbacks?.onVideoTap),
         VideoTag("video", onTap: callbacks?.onVideoTap),
         CustomQuoteTag("quote", siteContext),
@@ -148,12 +152,12 @@ class CustomBBStylesheet extends BBStylesheet {
         UnorderedList(ListItemStyle("●  ", TextStyle(fontWeight: FontWeight.bold))),
         CustomListItem(),
         AsteriskListItem(),
-        InlineAttachmentTag("ATTACH", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
-        InlineAttachmentTag("attach", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
-        InlineAttachmentTag("ATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
-        InlineAttachmentTag("attachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
-        InlineAttachmentTag("INLINEATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
-        InlineAttachmentTag("inlineattachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments),
+        InlineAttachmentTag("ATTACH", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("attach", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("ATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("attachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("INLINEATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("inlineattachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
         TwitterTag("twitter"),
         YoutubeTag('youtube', onTap: callbacks?.onVideoTap),
         YoutubeTag('MEDIA', onTap: callbacks?.onVideoTap),
@@ -292,12 +296,59 @@ class CustomUrlTag extends StyleTag {
   }
 }
 
+
+/// Per-parse ordinal source for Hero tags.
+///
+/// A Hero tag has to be unique on screen *and* identical every time the same
+/// content is rendered: `Hero` matches the two ends of a flight by tag, and
+/// once post content is cached the tag baked into that output has to keep
+/// meaning the same image.
+///
+/// The previous scheme was `image-${url.hashCode}-${_counter++}` reading a
+/// STATIC counter. That gave uniqueness and nothing else — every rebuild of
+/// any post handed every image a brand-new tag, and mutating global state
+/// during render meant the tag depended on how many images the app had drawn
+/// beforehand.
+///
+/// The ordinal is attached to the [FlutterRenderer] instead, which
+/// flutter_bbcode constructs fresh for each parse (`parseBBCode`). So it
+/// restarts at zero for every parse of a post and hands out the same ordinals
+/// in the same order — stable across rebuilds and across a later re-parse of
+/// cached content — while still telling two copies of one URL inside a single
+/// post apart. Entries die with their renderer.
+final Expando<_HeroTagOrdinal> _heroTagOrdinals =
+    Expando<_HeroTagOrdinal>('bbcodeHeroTagOrdinals');
+
+class _HeroTagOrdinal {
+  int next = 0;
+}
+
+/// Builds the Hero tag for one image-like element.
+///
+/// [contentId] is the id of the post/message being rendered; it is what keeps
+/// two posts that embed the same image URL from colliding. Callers that have
+/// no id fall back to the URL, which is still stable across rebuilds.
+String _bbCodeHeroTag(
+  FlutterRenderer renderer,
+  String kind,
+  String? contentId,
+  String url,
+) {
+  final ordinal = _heroTagOrdinals[renderer] ??= _HeroTagOrdinal();
+  final scope = (contentId != null && contentId.isNotEmpty)
+      ? contentId
+      : '${url.hashCode}';
+  return '$kind-$scope-${ordinal.next++}';
+}
+
 class ImgTag extends AdvancedTag {
-  static int _counter = 0;
   final Function(String, BuildContext, String)? onImageTap;
   final SiteContext? siteContext;
 
-  ImgTag(String name, {this.onImageTap, this.siteContext}) : super(name);
+  /// Id of the post/message this tag renders inside; scopes the Hero tags.
+  final String? contentId;
+
+  ImgTag(String name, {this.onImageTap, this.siteContext, this.contentId}) : super(name);
 
   /// Converts a relative URL to an absolute URL using the site's base URL
   String _makeAbsoluteUrl(String url) {
@@ -392,7 +443,7 @@ class ImgTag extends AdvancedTag {
     // Convert relative URLs to absolute URLs
     imageUrl = _makeAbsoluteUrl(imageUrl);
 
-    final heroTag = 'image-${imageUrl.hashCode}-${_counter++}';
+    final heroTag = _bbCodeHeroTag(renderer, 'image', contentId, imageUrl);
 
     final image = Builder(
       builder: (context) {
@@ -1207,12 +1258,14 @@ class EmojiTag extends AdvancedTag {
 }
 
 class InlineAttachmentTag extends AdvancedTag {
-  static int _counter = 0;
   final Function(String url, bool isImage, bool canView)? onAttachmentTap;
   final List<dynamic>? inlineAttachments;
   final List<dynamic>? attachments;
 
-  InlineAttachmentTag(String name, this.onAttachmentTap, this.inlineAttachments, this.attachments) : super(name);
+  /// Id of the post/message this tag renders inside; scopes the Hero tags.
+  final String? contentId;
+
+  InlineAttachmentTag(String name, this.onAttachmentTap, this.inlineAttachments, this.attachments, {this.contentId}) : super(name);
 
   /// Looks up an attachment by ID from the provided attachment lists
   dynamic _lookupAttachmentById(String attachmentId) {
@@ -1560,7 +1613,7 @@ class InlineAttachmentTag extends AdvancedTag {
                 useFullImageFit = false;
               }
 
-              final heroTag = 'attachment-${urlNonNull.hashCode}-${_counter++}';
+              final heroTag = _bbCodeHeroTag(renderer, 'attachment', contentId, urlNonNull);
 
               // Render inline attachment images exactly like regular [img] tags - simple image with no filename card
               // Add lock icon overlay if it's a thumbnail and user doesn't have permission to view full version

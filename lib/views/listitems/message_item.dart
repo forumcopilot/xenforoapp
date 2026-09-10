@@ -63,6 +63,7 @@ class MessageItem extends StatelessWidget {
       siteContext: siteContext,
       callbacks: callbacks,
       context: context,
+      contentId: message.msgId,
     );
 
     return Column(

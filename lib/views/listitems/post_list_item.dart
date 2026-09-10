@@ -465,6 +465,7 @@ class _PostListItemState extends State<PostListItem> {
       siteContext: widget.siteContext,
       callbacks: callbacks,
       context: context,
+      contentId: widget.post.id,
     );
     // Check if attachments/images are the last items - if so, reduce bottom padding
     // to avoid excessive white space between images and social buttons

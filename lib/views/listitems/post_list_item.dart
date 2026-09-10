@@ -31,6 +31,7 @@ import '../login_page.dart';
 import '../post_page.dart';
 import '../lists/posts_list.dart';
 import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/gestures.dart' show GestureRecognizer;
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 
 /// Everything a post's body needs that is derived from its text and its
@@ -226,6 +227,22 @@ class _PostListItemState extends State<PostListItem> {
   /// again in [didUpdateWidget] only when an input changes; never in build.
   late _PostContentData _contentData;
 
+  /// The body parsed to spans, once per (content, theme, text scale).
+  ///
+  /// `BBCodeText` re-parses its data inside its own build(), so every rebuild
+  /// of a post already on screen -- each page load, like, poll vote,
+  /// translation -- paid the full parse again: measured as the dominant term
+  /// of the rebuild frame (thread_rebuild in docs/perf-benchmarking.md). The
+  /// spans are kept on the State, not in a process-wide cache, because the
+  /// tag callbacks close over this State's context and handlers. Reusing the
+  /// same span objects also hands the element tree identical WidgetSpan
+  /// children, so embedded images and cards are not rebuilt either.
+  List<InlineSpan>? _spans;
+  BBStylesheet? _stylesheet;
+  bool _spansFailed = false;
+  ThemeData? _spansTheme;
+  TextScaler? _spansTextScaler;
+
   @override
   void initState() {
     super.initState();
@@ -245,6 +262,74 @@ class _PostListItemState extends State<PostListItem> {
     super.didUpdateWidget(oldWidget);
     if (_contentInputsChanged(oldWidget)) {
       _contentData = _resolveContentData();
+      _prepareSpans();
+    }
+  }
+
+  /// Runs before the first build and whenever an inherited dependency
+  /// changes. Only a theme or text-scale change invalidates the spans -- the
+  /// stylesheet bakes in the theme's text style -- so anything else that
+  /// trips this (a keyboard inset, say) leaves them alone.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final theme = Theme.of(context);
+    final scaler = MediaQuery.textScalerOf(context);
+    if (_spans == null ||
+        !identical(theme, _spansTheme) ||
+        scaler != _spansTextScaler) {
+      _prepareSpans();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposeRecognizers(_spans);
+    super.dispose();
+  }
+
+  /// Builds the stylesheet for this State and parses the body once.
+  void _prepareSpans() {
+    _disposeRecognizers(_spans);
+    _spansTheme = Theme.of(context);
+    _spansTextScaler = MediaQuery.textScalerOf(context);
+    _stylesheet = _buildStylesheet(context);
+    _spansFailed = false;
+    if (_contentData.renderAsPlainText) {
+      _spans = const <InlineSpan>[];
+      return;
+    }
+    try {
+      _spans = parseBBCode(
+        _contentData.textToRender,
+        stylesheet: _stylesheet,
+        onError: (error, stackTrace) {
+          debugPrint(
+              'BBCode parsing error in post: \n$error\nStackTrace: $stackTrace');
+          debugPrint('Post content that caused error:\n${_contentData.textToRender}');
+          _spansFailed = true;
+        },
+      );
+    } catch (error, stackTrace) {
+      debugPrint('BBCode parsing error in post: \n$error\nStackTrace: $stackTrace');
+      _spans = const <InlineSpan>[];
+      _spansFailed = true;
+    }
+  }
+
+  /// flutter_bbcode allocates a TapGestureRecognizer per tappable text span
+  /// on every parse and never disposes them. Before this cache they leaked
+  /// once per rebuild; now they live as long as the spans and go with them.
+  static void _disposeRecognizers(List<InlineSpan>? spans) {
+    if (spans == null) return;
+    for (final span in spans) {
+      span.visitChildren((child) {
+        if (child is TextSpan) {
+          final GestureRecognizer? r = child.recognizer;
+          r?.dispose();
+        }
+        return true;
+      });
     }
   }
 
@@ -442,8 +527,10 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
-  Widget _buildPostContent(BuildContext context, _PostContentData data,
-      ColorScheme colorScheme, TextTheme textTheme) {
+  /// The stylesheet's tag callbacks close over this State's [context] and
+  /// handlers, all of which live as long as the State, so one stylesheet per
+  /// State (rebuilt with the spans) is enough.
+  BBStylesheet _buildStylesheet(BuildContext context) {
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) {
         AppLogger.debug('BBCode URL tapped: $url');
@@ -595,12 +682,16 @@ class _PostListItemState extends State<PostListItem> {
       inlineAttachments: widget.post.inlineAttachments,
       attachments: widget.post.attachments,
     );
-    final stylesheet = CustomBBStylesheet(
+    return CustomBBStylesheet(
       siteContext: widget.siteContext,
       callbacks: callbacks,
       context: context,
       contentId: widget.post.id,
     );
+  }
+
+  Widget _buildPostContent(BuildContext context, _PostContentData data,
+      ColorScheme colorScheme, TextTheme textTheme) {
     // Check if attachments/images are the last items - if so, reduce bottom padding
     // to avoid excessive white space between images and social buttons
     // Attachments and filteredInlineAttachments always come last (after text, videos, links)
@@ -728,38 +819,24 @@ class _PostListItemState extends State<PostListItem> {
               ),
             ),
           ],
-          Builder(
-            builder: (context) {
-              final textToRender = data.textToRender;
-              if (data.renderAsPlainText) {
-                return Text(
-                  data.processedText,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    height: DesignTokens.lineHeightTight,
-                  ),
-                );
-              }
-              try {
-                return BBCodeText(
-                  data: textToRender,
-                  stylesheet: stylesheet,
-                );
-              } catch (error, stackTrace) {
-                debugPrint(
-                    'BBCode parsing error in post: \n$error\nStackTrace: $stackTrace');
-                debugPrint('Post content that caused error:\n$textToRender');
-                // If BBCode parsing fails, display as plain text instead of rich text
-                return Text(
-                  data.processedText,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    height: DesignTokens.lineHeightTight,
-                  ),
-                );
-              }
-            },
-          ),
+          // The body: spans parsed once in _prepareSpans, rendered the way
+          // BBCodeText.build renders them, minus the parse.
+          if (data.renderAsPlainText || _spansFailed || _spans == null)
+            Text(
+              data.processedText,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface,
+                height: DesignTokens.lineHeightTight,
+              ),
+            )
+          else
+            RichText(
+              text: TextSpan(
+                children: _spans,
+                style: _stylesheet?.defaultTextStyle,
+              ),
+              textScaler: MediaQuery.textScalerOf(context),
+            ),
           if (data.limitedYoutubeUrls.isNotEmpty) ...[
             const SizedBox(height: DesignTokens.spacingM),
             StyleBuilders.divider(colorScheme: colorScheme),

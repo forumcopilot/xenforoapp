@@ -113,6 +113,67 @@ void main() {
     expect(find.textContaining('beta two', findRichText: true), findsNothing);
   });
 
+  /// The span list of the body's RichText, or null when rendered plain.
+  List<InlineSpan>? spansOf(WidgetTester tester) {
+    final rich = tester
+        .widgetList<RichText>(find.byType(RichText))
+        .map((r) => r.text)
+        .whereType<TextSpan>()
+        .where((t) => (t.children ?? const []).isNotEmpty)
+        .toList();
+    return rich.isEmpty ? null : rich.first.children;
+  }
+
+  testWidgets('rebuilding the same post reuses the parsed spans',
+      (tester) async {
+    await tester.pumpWidget(_Host(_post('alpha [b]one[/b]'), ctx, controller));
+    final first = spansOf(tester);
+    // A rebuild with equal inputs (new widget instance, same content).
+    await tester.pumpWidget(_Host(_post('alpha [b]one[/b]'), ctx, controller));
+    final second = spansOf(tester);
+    expect(first, isNotNull);
+    expect(identical(first, second), isTrue,
+        reason: 'a rebuild must not re-parse the body');
+  });
+
+  testWidgets('an edited post gets freshly parsed spans', (tester) async {
+    await tester.pumpWidget(_Host(_post('alpha [b]one[/b]'), ctx, controller));
+    final first = spansOf(tester);
+    await tester.pumpWidget(_Host(_post('beta [b]two[/b]'), ctx, controller));
+    final second = spansOf(tester);
+    expect(identical(first, second), isFalse);
+    expect(find.textContaining('two', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('a theme change re-prepares and still renders the body',
+      (tester) async {
+    Widget host(ThemeData theme) => MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: PostListItem(
+                key: const ValueKey('item'),
+                siteContext: ctx,
+                post: _post('gamma [b]three[/b]'),
+                threadId: '7',
+                topicTitle: 'Thread',
+                postController: controller,
+              ),
+            ),
+          ),
+        );
+    await tester.pumpWidget(host(ThemeData.light()));
+    final light = spansOf(tester);
+    await tester.pumpWidget(host(ThemeData.dark()));
+    // MaterialApp animates theme changes; the dependency change lands once
+    // AnimatedTheme reaches the new data.
+    await tester.pump(const Duration(milliseconds: 250));
+    final dark = spansOf(tester);
+    expect(find.textContaining('three', findRichText: true), findsOneWidget);
+    expect(identical(light, dark), isFalse,
+        reason: 'the stylesheet bakes in the theme, so spans must be rebuilt');
+  });
+
   testWidgets('two posts with the same text do not share a stale body',
       (tester) async {
     await tester.pumpWidget(_Host(_post('same text', id: 'a'), ctx, controller));

@@ -19,18 +19,20 @@ grep PERF /tmp/drive.log
 log — it also holds the app's own debug output, which is useful for counting
 side effects a frame timer cannot see.
 
-Output is five lines:
+Output is six PERF lines, each followed by a PERFIMG line:
 
 ```
 PERF topic_list frames=1082 build p50=0.9 p90=3.2 p99=11.5 max=13 | raster p50=4.2 ... | total>16.7ms=25 total>33ms=2 build>16.7ms=0  raster>16.7ms=2
 PERF thread     frames=1275 build p50=2.0 p90=4.3 p99=27.4 max=44 | raster p50=5.0 ... | total>16.7ms=57 total>33ms=21 build>16.7ms=40 raster>16.7ms=1
 PERF thread_back frames=...  build ...                                        (same posts, scrolled back up)
 PERF thread_rebuild frames=... build ...                                      (visible posts republished in place)
+PERF thread_media frames=...   build ...                                      (a pinned thread with inline images)
+PERFIMG <label> images=N bytes=B live=L pending=P                            (image-cache occupancy after each segment)
 PERF home_feed  frames=1388 build p50=7.8 p90=11.4 p99=17.4 max=30 | raster p50=3.0 ... | total>16.7ms=139 total>33ms=4 build>16.7ms=20 raster>16.7ms=1
 ```
 
-`topic_list`, `thread`, `thread_back` and `thread_rebuild` are the comparable
-ones. `home_feed` is indicative only — see below.
+`topic_list`, `thread`, `thread_back`, `thread_rebuild` and `thread_media` are
+the comparable ones. `home_feed` is indicative only — see below.
 
 **Run the baseline three times before changing anything, and check the spread.**
 The target is the Discourse harness's noise floor: within ~0.2 ms on p50 and
@@ -112,6 +114,23 @@ number to watch is `build>16.7ms` — before F1 it was 29 out of 481 frames,
 one per publish — together with build p99 and max, which are the cost of
 that frame.
 
+### `thread_media` and the `PERFIMG` lines — decode size
+
+Frame timings cannot see what size an image was decoded at; the image cache
+can. After every segment the harness prints `PERFIMG <label> images= bytes=
+live= pending=` from `PaintingBinding.instance.imageCache`. On pinned content
+the image set is identical every run, so `bytes` compares directly across
+builds — an image decoded at display size occupies a fraction of one decoded
+at the size the forum stored.
+
+The benchmark thread is text (~0 inline images in its first 60 posts), so
+`thread_media` opens a second pinned thread from the same read-only archive
+node: **345894, "PC Owners Thread"**, six full-size `[img]` tags in its first
+60 posts (imgur PNG/JPEG 62–473 KB, one 5 MB animated GIF, one URL repeated
+in two posts), all of which still resolve. Its `PERFIMG bytes` is the
+evidence for decode-size changes; its frame timings are a bonus. It runs
+after `thread_rebuild` and before `home_feed`.
+
 Both sit under **SatelliteGuys Archives**, which is read-only — the add-on
 reports `canPost=false, canReply=false`, so nobody can post and the bytes the
 app receives are identical on every run.
@@ -179,6 +198,7 @@ of that commit's runs, spread in parentheses where it matters.
 | `1962aa6` | F2: no whole-thread rebuild on scroll, keyed rows | 1.8 / 3.6 / 11.4–16.5 | 24 (23–25) | — | — |
 | `336d05a` | F1 prereq: stable Hero tags | 1.8 / 3.7 / 14.8–16.4 | 22 (18–27) | p50 1.5 / p90 3.7–3.8 / p99 12–14 | 29–30 · 26.2–26.3 · 29–30 · 5–6 |
 | F1 | content processed once per input, LRU-memoised | 1.8–2.0 / 3.6–4.0 / 14.4–16.7 | 25 (25–37) | p50 1.5–1.8 / p90 3.7–4.0 / p99 10.5–11.5 | 25–29 · 23.2–24.3 · 26–27 · 0–1 |
+| F1b | body parsed to spans once per State, not per build | 1.8–2.1 / 3.6–3.9 / 12.5–16.6 | 14–31 | p50 1.5–1.8 / p90 3.7–4.1 / p99 9.7–12.1 | **0** · 12.4–13.2 · 13–15 · 0 |
 
 `topic_list` did not move across any of these (build p50 0.9 throughout); none
 of them touch the topic list. F1 is neutral on **both** scroll segments:
@@ -188,8 +208,9 @@ since F2 a live element is not rebuilt by scrolling at all. What F1 removes is
 the cost of rebuilding a post that is already on screen, which the app does on
 every page load, like, poll vote and translation — see `thread_rebuild`, where
 F1 takes 2–3 ms off a ~26 ms publish frame and removes the double-frame drops.
-The frame stays heavy because `BBCodeText` re-parses the post into spans in
-its own `build()` on every rebuild; caching those spans is the next step.
+The frame stayed heavy after F1 because `BBCodeText` re-parsed the post into
+spans in its own `build()` on every rebuild; F1b caches those spans per State
+and the heavy frame is gone — `build>16.7ms` 0 on both runs.
 
 ### What this baseline says you can trust
 

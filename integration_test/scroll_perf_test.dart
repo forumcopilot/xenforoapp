@@ -20,8 +20,10 @@
 //    of the flakiness that came with it.
 //  * Screens are detected by widget type (TopicListItem / PostListItem) rather
 //    than by on-screen text, so the harness does not depend on locale.
-//  * Both halves open PINNED content (see below) rather than whatever the
-//    "latest" feed happens to hold, because the feed churns between runs.
+//  * The two comparable screens open PINNED content (see below) rather than
+//    whatever the "latest" feed happens to hold, because the feed churns
+//    between runs. A third line, `home_feed`, measures the app's landing tab,
+//    which cannot be pinned — see the caveat on it below.
 //  * If the configured forum requires a login to read anything, pass a
 //    throwaway account at run time. Nothing is stored in the repo:
 //
@@ -73,6 +75,21 @@ import 'package:forumcopilot_flutter/views/post_page.dart';
 // parse and image-decode paths the audit is about.
 //
 // CHANGING EITHER CONSTANT INVALIDATES EVERY EARLIER NUMBER. Re-baseline.
+//
+// The third line, `home_feed`, is the app's landing tab, and it is measured
+// LAST and on purpose despite being unpinnable. Pinning is not available to it
+// — its content is the site-wide "latest" feed — but it must not be dropped,
+// because it is a DIFFERENT and far more expensive code path than the forum
+// node above: topic_list_tab.dart puts every loaded row in one
+// `Column(children: topicItems)` inside a `ListView(children:)`, so nothing is
+// virtualised and every row builds on every frame, while forum_topic_list.dart
+// spreads its rows as ListView children and stays lazy. Measured back to back
+// on the same build that is build p50 = 7.8 ms (home) vs 0.9 ms (forum node).
+//
+// Treat `home_feed` as INDICATIVE ONLY, never as a regression gate: its rows
+// and its pagination depth both change between runs. It is here so that a
+// 10x structural fix to that tab has a number attached to it. It runs last so
+// its noise cannot contaminate the two pinned measurements.
 
 /// Node 42 — "Video Game Reviews & Discussions" (SatelliteGuys Archives).
 /// 2,194 threads, guest-readable, read-only since 2024-04-03.
@@ -98,7 +115,9 @@ void main() {
     app.main();
     await tester.pump(const Duration(seconds: 3));
 
+    _stage('booted');
     final siteContext = await _awaitSiteContext(tester);
+    _stage('siteContext');
 
     if (_perfUser.isNotEmpty && _perfPass.isNotEmpty) {
       await _signIn(tester, siteContext);
@@ -114,11 +133,14 @@ void main() {
     );
 
     // Rows on screen == the list actually rendered.
+    _stage('pushed forum');
     await _pumpUntil(tester, find.byType(TopicListItem),
         timeout: const Duration(seconds: 120));
+    _stage('rows visible');
     await tester.pump(const Duration(seconds: 2));
 
     await _measure('topic_list', () => _flings(tester, 8));
+    _stage('topic_list measured');
 
     // --- thread: a fixed long thread, not whatever sat in row 2 ---
     globalNavigatorKey.currentState!.pop();
@@ -134,13 +156,28 @@ void main() {
     );
 
     // Prove a thread actually opened before attributing frames to it.
+    _stage('pushed thread');
     await _pumpUntil(tester, find.byType(PostListItem),
         timeout: const Duration(seconds: 90));
+    _stage('posts visible');
     await _settle(tester, frames: 30);
 
     await _measure('thread', () => _flings(tester, 8));
+    _stage('thread measured');
+
+    // --- home feed: unpinnable, measured last, indicative only ---
+    globalNavigatorKey.currentState!.pop();
+    await _pumpUntil(tester, find.byType(TopicListItem),
+        timeout: const Duration(seconds: 120));
+    await tester.pump(const Duration(seconds: 2));
+    _stage('home visible');
+
+    await _measure('home_feed', () => _flings(tester, 8));
   });
 }
+
+// ignore: avoid_print
+void _stage(String s) => print('PERFSTAGE $s ${DateTime.now().toIso8601String()}');
 
 /// Pushes [page] on the app's own navigator. The returned route future only
 /// completes when the route is popped, so it is deliberately not awaited.

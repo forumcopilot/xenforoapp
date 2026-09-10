@@ -19,12 +19,16 @@ grep PERF /tmp/drive.log
 log — it also holds the app's own debug output, which is useful for counting
 side effects a frame timer cannot see.
 
-Output is two lines:
+Output is three lines:
 
 ```
-PERF topic_list frames=1183 build p50=6.9 p90=14.9 p99=24.1 max=89 | raster p50=6.0 ... | total>16.7ms=366 total>33ms=16 build>16.7ms=54 raster>16.7ms=1
-PERF thread     frames=965  build p50=0.8 p90=2.3  p99=30.2 max=83 | raster p50=4.6 ... | total>16.7ms=20  total>33ms=11 build>16.7ms=15 raster>16.7ms=0
+PERF topic_list frames=1082 build p50=0.9 p90=3.2 p99=11.5 max=13 | raster p50=4.2 ... | total>16.7ms=25 total>33ms=2 build>16.7ms=0  raster>16.7ms=2
+PERF thread     frames=1275 build p50=2.0 p90=4.3 p99=27.4 max=44 | raster p50=5.0 ... | total>16.7ms=57 total>33ms=21 build>16.7ms=40 raster>16.7ms=1
+PERF home_feed  frames=1388 build p50=7.8 p90=11.4 p99=17.4 max=30 | raster p50=3.0 ... | total>16.7ms=139 total>33ms=4 build>16.7ms=20 raster>16.7ms=1
 ```
+
+`topic_list` and `thread` are the comparable ones. `home_feed` is indicative
+only — see below.
 
 **Run the baseline three times before changing anything, and check the spread.**
 The target is the Discourse harness's noise floor: within ~0.2 ms on p50 and
@@ -69,6 +73,9 @@ own navigator instead of using whatever is on screen:
 | `topic_list` | node **42**, "Video Game Reviews & Discussions" | 2,194 threads; 18/20 rows have an avatar and a snippet |
 | `thread` | topic **203226**, "Where are my Satellite Guy's gamers at?" | 1,700 posts, ~700-char average with quotes throughout, avatar on nearly every post |
 
+Pagination is deterministic as a result: the node loads `startNum` 0/21/42/63/84
+and the thread loads posts 1/21/41 on every run.
+
 Both sit under **SatelliteGuys Archives**, which is read-only — the add-on
 reports `canPost=false, canReply=false`, so nobody can post and the bytes the
 app receives are identical on every run.
@@ -87,6 +94,28 @@ before/after, run 2 → run 1 would read as an 84 % reduction in jank from a
 change that did nothing.
 
 **Changing either constant invalidates every earlier number.** Re-baseline.
+
+### `home_feed` is the exception, and it is deliberate
+
+The third line measures the app's landing tab, which **cannot** be pinned — its
+content is the site-wide "latest" feed. It is kept anyway, and measured last,
+because it is a different and far more expensive code path than the forum node:
+
+- `lib/views/tabs/topic_list_tab.dart:53` puts every loaded row into one
+  `Column(children: topicItems)` inside a `ListView(children:)`. Nothing is
+  virtualised; every loaded row builds on every frame, and it gets worse as you
+  paginate.
+- `lib/views/lists/forum_topic_list.dart:359` spreads its rows as `ListView`
+  children, so the sliver only builds what is near the viewport.
+
+Back to back on the same build that is **build p50 = 7.8 ms (home) vs 0.9 ms
+(forum node)**. Dropping the home tab from the harness would mean the audit's
+largest single structural finding had no number attached to it.
+
+**Never gate a regression on `home_feed`.** Its rows and its pagination depth
+both change between runs. Use it only where the effect is an order of magnitude
+and dwarfs the noise. It runs last so that its noise cannot contaminate the two
+pinned measurements.
 
 ## Reading the numbers
 

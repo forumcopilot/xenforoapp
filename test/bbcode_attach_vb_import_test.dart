@@ -43,7 +43,9 @@ FCAttachment _photo() {
   return att;
 }
 
-Future<void> _pump(WidgetTester tester, String bbcode) async {
+Future<void> _pump(WidgetTester tester, String bbcode,
+    {void Function(String url, BuildContext context, String heroTag)?
+        onAttachmentImageTap}) async {
   final att = _photo();
   await tester.pumpWidget(MaterialApp(
     home: Scaffold(
@@ -57,6 +59,7 @@ Future<void> _pump(WidgetTester tester, String bbcode) async {
             callbacks: BBCodeCallbacks(
               inlineAttachments: [att],
               attachments: [att],
+              onAttachmentImageTap: onAttachmentImageTap,
             ),
           ),
         ),
@@ -81,6 +84,23 @@ void main() {
         reason: 'the leading integer names the attachment, as on the website');
     expect(find.text('Inline Attachments'), findsNothing,
         reason: 'no placeholder card for an attachment the API returned');
+  });
+
+  testWidgets('tapping an image attachment hands the opener its Hero tag',
+      (tester) async {
+    String? received;
+    await _pump(tester, '[ATTACH]92631[/ATTACH]',
+        onAttachmentImageTap: (url, context, heroTag) => received = heroTag);
+    final hero = tester.widget<Hero>(find.byType(Hero).first);
+    // Invoke the image's own tap handler; hit-testing an image that has not
+    // loaded is not what this test is about.
+    final tap = tester.widget<GestureDetector>(find
+        .descendant(of: find.byType(Hero), matching: find.byType(GestureDetector))
+        .first);
+    tap.onTap!();
+    expect(received, isNotNull, reason: 'the tagged callback must be used');
+    expect(received, hero.tag,
+        reason: 'the viewer flies only from a Hero with this exact tag');
   });
 
   testWidgets('an id that is not an attachment still falls back',

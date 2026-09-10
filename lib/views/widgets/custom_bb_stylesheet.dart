@@ -37,6 +37,11 @@ class BBCodeCallbacks {
   /// Called when an attachment is tapped
   final Function(String url, bool isImage, bool canView)? onAttachmentTap;
 
+  /// Called instead of [onAttachmentTap] when a viewable *image* attachment
+  /// is tapped, carrying the Hero tag the image was rendered with -- the
+  /// viewer needs that exact tag to fly from the tapped widget.
+  final Function(String url, BuildContext context, String heroTag)? onAttachmentImageTap;
+
   /// List of inline attachments available for lookup by ID
   final List<dynamic>? inlineAttachments;
 
@@ -50,6 +55,7 @@ class BBCodeCallbacks {
     this.onMentionTap,
     this.onUserTap,
     this.onAttachmentTap,
+    this.onAttachmentImageTap,
     this.inlineAttachments,
     this.attachments,
   });
@@ -152,12 +158,12 @@ class CustomBBStylesheet extends BBStylesheet {
         UnorderedList(ListItemStyle("●  ", TextStyle(fontWeight: FontWeight.bold))),
         CustomListItem(),
         AsteriskListItem(),
-        InlineAttachmentTag("ATTACH", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
-        InlineAttachmentTag("attach", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
-        InlineAttachmentTag("ATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
-        InlineAttachmentTag("attachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
-        InlineAttachmentTag("INLINEATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
-        InlineAttachmentTag("inlineattachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId),
+        InlineAttachmentTag("ATTACH", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
+        InlineAttachmentTag("attach", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
+        InlineAttachmentTag("ATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
+        InlineAttachmentTag("attachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
+        InlineAttachmentTag("INLINEATTACHMENT", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
+        InlineAttachmentTag("inlineattachment", callbacks?.onAttachmentTap, callbacks?.inlineAttachments, callbacks?.attachments, contentId: contentId, onImageTap: callbacks?.onAttachmentImageTap),
         TwitterTag("twitter"),
         YoutubeTag('youtube', onTap: callbacks?.onVideoTap),
         YoutubeTag('MEDIA', onTap: callbacks?.onVideoTap),
@@ -1247,13 +1253,17 @@ class EmojiTag extends AdvancedTag {
 
 class InlineAttachmentTag extends AdvancedTag {
   final Function(String url, bool isImage, bool canView)? onAttachmentTap;
+
+  /// Preferred over [onAttachmentTap] for a viewable image: carries the Hero
+  /// tag so the full-screen viewer can fly from the tapped widget.
+  final Function(String url, BuildContext context, String heroTag)? onImageTap;
   final List<dynamic>? inlineAttachments;
   final List<dynamic>? attachments;
 
   /// Id of the post/message this tag renders inside; scopes the Hero tags.
   final String? contentId;
 
-  InlineAttachmentTag(String name, this.onAttachmentTap, this.inlineAttachments, this.attachments, {this.contentId}) : super(name);
+  InlineAttachmentTag(String name, this.onAttachmentTap, this.inlineAttachments, this.attachments, {this.contentId, this.onImageTap}) : super(name);
 
   /// Looks up an attachment by ID from the provided attachment lists
   dynamic _lookupAttachmentById(String attachmentId) {
@@ -1631,7 +1641,10 @@ class InlineAttachmentTag extends AdvancedTag {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (canViewUrl && onAttachmentTap != null) {
+                            if (canViewUrl && onImageTap != null) {
+                              // Carries the Hero tag this image was rendered with.
+                              onImageTap!(urlNonNull, context, heroTag);
+                            } else if (canViewUrl && onAttachmentTap != null) {
                               onAttachmentTap!(urlNonNull, true, canViewUrl);
                             } else if (!canViewUrl && onAttachmentTap != null) {
                               // Show permission prompt

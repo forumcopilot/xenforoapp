@@ -59,7 +59,6 @@ class ImageActions {
     // Handle [IMG] tags with or without attributes: [IMG]...[/IMG] or [IMG size="1280x720"]...[/IMG]
     final RegExp imgRegex = RegExp(r'\[IMG(?:[^\]]*)?\](.*?)\[/IMG\]', caseSensitive: false, multiLine: true);
     final List<String> allImageUrls = [];
-    final List<String> allHeroTags = [];
     int tappedIndex = 0;
     int currentIndex = 0;
 
@@ -91,7 +90,6 @@ class ImageActions {
         // Convert relative URLs to absolute URLs for consistent comparison
         final absoluteUrl = _makeAbsoluteUrl(url);
         allImageUrls.add(absoluteUrl);
-        allHeroTags.add('${post.id}_image_$currentIndex');
         AppLogger.debug('  - IMG tag: $url -> $absoluteUrl');
         // Compare both the original URL and absolute URL with the clicked imageUrl
         // Also convert imageUrl to absolute if needed for comparison
@@ -109,7 +107,6 @@ class ImageActions {
           // Use full URL if available, otherwise use thumbnail
           final urlToUse = att.url.isNotEmpty ? att.url : (att.thumbnailUrl ?? '');
           allImageUrls.add(urlToUse);
-          allHeroTags.add('${post.id}_attachment_$currentIndex');
           AppLogger.debug('  - Attachment: $urlToUse');
           if (urlToUse == imageUrl || att.url == imageUrl || att.thumbnailUrl == imageUrl) {
             tappedIndex = currentIndex;
@@ -130,7 +127,6 @@ class ImageActions {
           // Use full URL if available, otherwise use thumbnail
           final urlToUse = att.url.isNotEmpty ? att.url : (att.thumbnailUrl ?? '');
           allImageUrls.add(urlToUse);
-          allHeroTags.add('${post.id}_inlineattachment_$currentIndex');
           AppLogger.debug('  - InlineAttachment: $urlToUse');
           if (urlToUse == imageUrl || att.url == imageUrl || att.thumbnailUrl == imageUrl) {
             tappedIndex = currentIndex;
@@ -163,7 +159,10 @@ class ImageActions {
           builder: (context) => FullScreenImageViewer(
             imageUrls: allImageUrls,
             initialIndex: tappedIndex,
-            heroTag: allHeroTags[tappedIndex],
+            // The tag of the widget that was tapped -- the one Hero on screen
+            // the viewer can fly from. The '<id>_image_<n>' names built above
+            // never matched anything, so the flight never ran.
+            heroTag: heroTag,
           ),
         ),
       );

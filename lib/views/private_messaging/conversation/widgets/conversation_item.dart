@@ -836,7 +836,6 @@ class _ConversationAttachmentActions {
   void onShowImage(String imageUrl, BuildContext context, String heroTag) {
     // Collect all image attachments from this message
     final List<String> allImageUrls = [];
-    final List<String> allHeroTags = [];
     int tappedIndex = 0;
     int currentIndex = 0;
 
@@ -847,7 +846,6 @@ class _ConversationAttachmentActions {
         // Use full URL if available, otherwise use thumbnail
         final urlToUse = att.url.isNotEmpty ? att.url : (att.thumbnailUrl ?? '');
         allImageUrls.add(urlToUse);
-        allHeroTags.add('${message.messageId}_attachment_$currentIndex');
         if (urlToUse == imageUrl || att.url == imageUrl || att.thumbnailUrl == imageUrl) {
           tappedIndex = currentIndex;
         }
@@ -878,7 +876,8 @@ class _ConversationAttachmentActions {
         builder: (context) => FullScreenImageViewer(
           imageUrls: allImageUrls,
           initialIndex: tappedIndex,
-          heroTag: allHeroTags[tappedIndex],
+          // The tapped widget's own Hero tag; see image_actions.dart.
+          heroTag: heroTag,
         ),
       ),
     );

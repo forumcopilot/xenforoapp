@@ -208,8 +208,10 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
             // Image - try to load thumbnail even if flag says we can't
             Positioned.fill(
               child: GestureDetector(
-                onTap: attachment.canViewUrl == true ? () => widget.onImageTap?.call(attachment.url, context, attachment.id) : () => widget.onLoginRequired?.call(context),
-                child: LayoutBuilder(
+                onTap: attachment.canViewUrl == true ? () => widget.onImageTap?.call(attachment.url, context, 'attachment-carousel-${attachment.postId ?? ''}-${attachment.id}') : () => widget.onLoginRequired?.call(context),
+                child: Hero(
+                  tag: 'attachment-carousel-${attachment.postId ?? ''}-${attachment.id}',
+                  child: LayoutBuilder(
                   builder: (context, constraints) {
                     // Decode no wider than the box it is drawn in: a 2000 px photo
                     // otherwise decodes at 2000 px inside a scrolling list.
@@ -235,6 +237,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
                 
                     );
                   },
+                ),
                 ),
               ),
             ),

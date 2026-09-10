@@ -630,6 +630,11 @@ class _PostListItemState extends State<PostListItem> {
           widget.actions!.onShowImage!(imageUrl, context, heroTag);
         } else {
           AppLogger.debug('No onShowImage action defined');
+      // Viewable image attachments arrive here with the Hero tag they were
+      // rendered with, so the viewer can fly from them like [img] images.
+      onAttachmentImageTap: (String url, BuildContext context, String heroTag) {
+        widget.actions?.onShowImage?.call(url, context, heroTag);
+      },
         }
       },
       onVideoTap: (videoUrl) {

@@ -124,9 +124,13 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                     // while maintaining its natural aspect ratio
                     GestureDetector(
                       onTap: attachment.canViewUrl == true
-                          ? () => onImageTap?.call(attachment.url, context, attachment.id)
+                          ? () => onImageTap?.call(attachment.url, context, 'attachment-grid-${attachment.postId ?? ''}-${attachment.id}')
                           : () => onLoginRequired?.call(context),
-                      child: CachedRedirectImage(
+                      child: Hero(
+                        // Unique per post and attachment; the opener passes it
+                        // to the viewer so the tap flies into the full image.
+                        tag: 'attachment-grid-${attachment.postId ?? ''}-${attachment.id}',
+                        child: CachedRedirectImage(
                         imageUrl: imageUrl,
                         width: actualWidth,
                         // Height is free (contain), so constrain the decode by width only.
@@ -144,6 +148,7 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                             ),
                           );
                         },
+                      )
                       ),
                     ),
                     // Lock overlay if can't view

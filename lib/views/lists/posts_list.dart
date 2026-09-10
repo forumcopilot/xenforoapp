@@ -11,7 +11,6 @@ import 'package:forumcopilot_flutter/views/widgets/post_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/image_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/avatar_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/thread_poll_mini_card.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
@@ -100,7 +99,12 @@ class _PostsState extends State<PostsList> {
   final int _pageSize = 20;
   String? _anchorPostId;
   int? _gotoPage;
-  int _currentVisiblePostIndex = 0;
+  /// 0-based post number of the post currently occupying most of the viewport.
+  /// A [ValueNotifier] rather than plain state: it changes on every scroll
+  /// frame, and only the bottom-bar counter and the jump dialog read it, so a
+  /// setState here would rebuild the entire thread (and re-run the per-post
+  /// content processing) on every frame the user scrolls.
+  final ValueNotifier<int> _currentVisiblePostIndex = ValueNotifier<int>(0);
   int? _pendingInitialScrollIndex;
   bool _hasJumpedToInitialPost = false;
   String? _highlightedPostId; // Track which post should be highlighted
@@ -114,8 +118,10 @@ class _PostsState extends State<PostsList> {
   _PagingDirection _pagingDirection = _PagingDirection.none;
 
   /// True when the first post (post #1) is currently visible on screen.
-  /// Used to hide the mini poll bar when the full poll is visible inside the first post.
-  bool _isFirstPostVisible = true;
+  /// Used to hide the mini poll bar when the full poll is visible inside the
+  /// first post. A [ValueNotifier] for the same reason as
+  /// [_currentVisiblePostIndex]: only the mini poll bar reads it.
+  final ValueNotifier<bool> _isFirstPostVisible = ValueNotifier<bool>(true);
 
   // Track when we last loaded earlier posts to prevent endless loading
   DateTime? _lastEarlierLoadTime;
@@ -180,8 +186,8 @@ class _PostsState extends State<PostsList> {
       _postsController.threadDataOutput.value = null;
 
       // Reset state when switching threads or posts
+      _currentVisiblePostIndex.value = 0;
       setState(() {
-        _currentVisiblePostIndex = 0;
         _isLoadingMore = false;
         _hasMorePosts = true;
         _hasJumpedToInitialPost = false; // Reset to allow jumping to new post
@@ -516,6 +522,13 @@ class _PostsState extends State<PostsList> {
   }
 
   void _onScroll() {
+    if (!mounted) return;
+
+    // Visible-post tracking runs on every reported position change, including
+    // while a page is loading — the counter must not freeze mid-load. It is
+    // deliberately ahead of the paging guards below.
+    _updateVisiblePostIndex();
+
     // Don't process scroll events if scroll loading is disabled
     if (!_isScrollLoadingEnabled || _isLoadingMore || !_postsController.isInitialized.value) return;
 
@@ -559,13 +572,46 @@ class _PostsState extends State<PostsList> {
           final firstPostListIndex = (_isLoadingMore && _pagingDirection == _PagingDirection.earlier) ? 1 : 0;
           newFirstPostVisible = itemPositions.any((p) => p.index == firstPostListIndex);
         }
-        if (newFirstPostVisible != _isFirstPostVisible && mounted) {
-          setState(() {
-            _isFirstPostVisible = newFirstPostVisible;
-          });
-        }
+        _isFirstPostVisible.value = newFirstPostVisible;
       }
     }
+  }
+
+  /// Derives the post occupying most of the viewport from the positions
+  /// `ScrollablePositionedList` already reports every scroll frame.
+  ///
+  /// Replaces a per-post `VisibilityDetector` that called `setState` on the
+  /// whole list: same information, no extra widgets, and no rebuild of the
+  /// thread. Picks the item with the largest visible height, measuring each
+  /// item's edges clamped into the 0..1 viewport range.
+  void _updateVisiblePostIndex() {
+    final itemPositions = _itemPositionsListener.itemPositions.value;
+    if (itemPositions.isEmpty) return;
+
+    final data = _postsController.threadDataOutput.value;
+    if (data == null || data.posts.isEmpty) return;
+
+    final int leadingOffset =
+        (_isLoadingMore && _pagingDirection == _PagingDirection.earlier) ? 1 : 0;
+
+    double bestVisible = 0;
+    int? bestPostIndex;
+    for (final position in itemPositions) {
+      final postIndex = position.index - leadingOffset;
+      if (postIndex < 0 || postIndex >= data.posts.length) continue;
+      final visible = position.itemTrailingEdge.clamp(0.0, 1.0) -
+          position.itemLeadingEdge.clamp(0.0, 1.0);
+      if (visible > bestVisible) {
+        bestVisible = visible;
+        bestPostIndex = postIndex;
+      }
+    }
+    if (bestPostIndex == null) return;
+
+    // ValueNotifier already suppresses no-op writes, so this is free while the
+    // same post stays dominant.
+    _currentVisiblePostIndex.value =
+        (data.posts[bestPostIndex].postNumber ?? 1) - 1;
   }
 
   bool _hasMoreEarlier() {
@@ -1000,63 +1046,59 @@ class _PostsState extends State<PostsList> {
     final imageActions = ImageActions(_postsController, siteContext: widget.siteContext);
     final postActionsHandler = PostActionsHandler(_postsController, widget.siteContext, fallbackForumId: widget.forumId);
 
-    Widget postWidget = VisibilityDetector(
-      key: Key('post_${post.id}'),
-      onVisibilityChanged: (info) {
-        if (!mounted) return;
-        if (info.visibleFraction > 0.5) {
-          final newIndex = (post.postNumber ?? 1) - 1;
-          // Only update state if the visible post index actually changed
-          if (_currentVisiblePostIndex != newIndex) {
-            setState(() {
-              _currentVisiblePostIndex = newIndex;
-            });
-          }
-        }
-      },
-      child: PostListItem(
-        siteContext: widget.siteContext,
-        onAvatarTap: (userId, userName) => avatarActions.handleAvatarTap(context, widget.siteContext, userId, userName, postActionsHandler: postActionsHandler, onRefresh: _refreshCurrentPage),
-        post: post,
-        threadId: widget.topicId,
-        topicTitle: widget.topicTitle,
-        topicPrefix: data.topic.prefix,
-        postController: _postsController,
-        forumId: data.topic.forumId,
-        isHighlighted: isHighlighted,
-        poll: post.postNumber == 1 ? data.topic.poll : null,
-        onVoteSuccess: (p) => _postsController.updateThreadPoll(p),
-        actions: PostActions(
-          onReply: (postId) => postActionsHandler.handleReply(context, postId, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
-          onQuote: (postId, authorName, postText) => postActionsHandler.handleQuote(context, postId, authorName, postText, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
-          onEdit:
-              post.canEdit ? (postId, currentText) => postActionsHandler.handleEdit(context, postId, currentText, widget.topicTitle, widget.topicId, data.topic.forumId, _refreshCurrentPage) : null,
-          onDelete: post.canDelete ? (postId) => postActionsHandler.handleDelete(context, postId) : null,
-          onReport: post.canReport ? (postId) => postActionsHandler.handleReport(context, postId) : null,
-          onShowImage: (imageUrl, context, heroTag) => imageActions.handleShowImage(imageUrl, context, heroTag, post.id),
-          onRefresh: _refreshCurrentPage,
-          onLoginRequired: (context) => postActionsHandler.showPostLoginPrompt(context, onRefresh: _refreshCurrentPage),
-        ),
+    // No VisibilityDetector here: the visible post is derived from
+    // _itemPositionsListener in _updateVisiblePostIndex(), which costs no
+    // widgets and does not rebuild the list.
+    Widget postWidget = PostListItem(
+      siteContext: widget.siteContext,
+      onAvatarTap: (userId, userName) => avatarActions.handleAvatarTap(context, widget.siteContext, userId, userName, postActionsHandler: postActionsHandler, onRefresh: _refreshCurrentPage),
+      post: post,
+      threadId: widget.topicId,
+      topicTitle: widget.topicTitle,
+      topicPrefix: data.topic.prefix,
+      postController: _postsController,
+      forumId: data.topic.forumId,
+      isHighlighted: isHighlighted,
+      poll: post.postNumber == 1 ? data.topic.poll : null,
+      onVoteSuccess: (p) => _postsController.updateThreadPoll(p),
+      actions: PostActions(
+        onReply: (postId) => postActionsHandler.handleReply(context, postId, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
+        onQuote: (postId, authorName, postText) => postActionsHandler.handleQuote(context, postId, authorName, postText, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
+        onEdit:
+            post.canEdit ? (postId, currentText) => postActionsHandler.handleEdit(context, postId, currentText, widget.topicTitle, widget.topicId, data.topic.forumId, _refreshCurrentPage) : null,
+        onDelete: post.canDelete ? (postId) => postActionsHandler.handleDelete(context, postId) : null,
+        onReport: post.canReport ? (postId) => postActionsHandler.handleReport(context, postId) : null,
+        onShowImage: (imageUrl, context, heroTag) => imageActions.handleShowImage(imageUrl, context, heroTag, post.id),
+        onRefresh: _refreshCurrentPage,
+        onLoginRequired: (context) => postActionsHandler.showPostLoginPrompt(context, onRefresh: _refreshCurrentPage),
       ),
     );
     if (postIndex == postsListLength - 1) {
       // Add padding equal to the toolbar height so the last post can scroll above it
       final double toolbarHeight = _getBottomToolbarHeight(context);
-      return Column(
+      postWidget = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           postWidget,
           SizedBox(height: toolbarHeight),
         ],
       );
-    } else {
-      return postWidget;
     }
+    // Key the OUTERMOST widget for this index. Without this the unkeyed Column
+    // above (and index-based matching in general) hands a post's element to a
+    // different post when the list is prepended to, forcing a full rebuild of
+    // rows that did not change.
+    return KeyedSubtree(key: ValueKey<String>(post.id), child: postWidget);
   }
 
   void _showJumpToPostDialog(BuildContext context, ThreadViewData data) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    // Dialog-local, seeded from the current position. Dragging the slider used
+    // to write straight into the thread's visible-post state, which both moved
+    // the bottom-bar counter while the dialog was still open and rebuilt the
+    // list behind it on every drag tick.
+    int selectedPostNumber = _currentVisiblePostIndex.value + 1;
 
     showDialog(
       context: context,
@@ -1074,20 +1116,20 @@ class _PostsState extends State<PostsList> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '${_currentVisiblePostIndex + 1}',
+                    '$selectedPostNumber',
                     style: textTheme.headlineMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
                   ),
                   Slider(
-                    value: (_currentVisiblePostIndex + 1).toDouble(),
+                    value: selectedPostNumber.toDouble(),
                     min: 1,
                     max: data.totalPosts.toDouble(),
                     divisions: data.totalPosts - 1,
-                    label: '${_currentVisiblePostIndex + 1}',
+                    label: '$selectedPostNumber',
                     onChanged: (double value) {
                       setState(() {
-                        _currentVisiblePostIndex = value.toInt() - 1;
+                        selectedPostNumber = value.toInt();
                       });
                     },
                   ),
@@ -1109,7 +1151,7 @@ class _PostsState extends State<PostsList> {
               onPressed: () async {
                 if (!mounted) return;
                 Navigator.of(context).pop();
-                int selectedPostIndex = _currentVisiblePostIndex + 1;
+                int selectedPostIndex = selectedPostNumber;
                 int gotoPage = ((selectedPostIndex - 1) ~/ _pageSize) + 1;
                 final data = _postsController.threadDataOutput.value;
 
@@ -1130,9 +1172,7 @@ class _PostsState extends State<PostsList> {
                         _itemScrollController.jumpTo(index: listIndex);
 
                         // Update visible index to reflect the jump
-                        setState(() {
-                          _currentVisiblePostIndex = selectedPostIndex - 1;
-                        });
+                        _currentVisiblePostIndex.value = selectedPostIndex - 1;
 
                         // Highlight the post after a short delay to ensure it's rendered
                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1230,9 +1270,12 @@ class _PostsState extends State<PostsList> {
                   onTap: () {
                     _showJumpToPostDialog(context, data);
                   },
-                  child: Text(
-                    '${_currentVisiblePostIndex + 1} / ${data.totalPosts}',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: _currentVisiblePostIndex,
+                    builder: (context, index, _) => Text(
+                      '${index + 1} / ${data.totalPosts}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -1267,9 +1310,9 @@ class _PostsState extends State<PostsList> {
         }
         // Show mini poll bar only when thread has a poll and the full poll is not visible:
         // either we're not on the first page, or the first post has scrolled off screen.
-        final showMiniPollBar = data.topic.hasPoll &&
-            data.topic.poll != null &&
-            (data.currentStartNum > 0 || !_isFirstPostVisible);
+        // The scroll-driven half of that condition lives in a
+        // ValueListenableBuilder below so it does not rebuild the list.
+        final hasPoll = data.topic.hasPoll && data.topic.poll != null;
         final stack = Stack(
           children: [
             RefreshIndicator(
@@ -1315,14 +1358,23 @@ class _PostsState extends State<PostsList> {
                 },
               ),
             ),
-            if (showMiniPollBar && data.topic.poll != null)
+            if (hasPoll)
               Positioned(
                 left: 0,
                 right: 0,
                 top: 0,
-                child: ThreadPollMiniCard(
-                  poll: data.topic.poll!,
-                  onTap: _jumpToFirstPost,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _isFirstPostVisible,
+                  builder: (context, isFirstPostVisible, _) {
+                    // Hidden while the real poll inside post #1 is on screen.
+                    if (data.currentStartNum == 0 && isFirstPostVisible) {
+                      return const SizedBox.shrink();
+                    }
+                    return ThreadPollMiniCard(
+                      poll: data.topic.poll!,
+                      onTap: _jumpToFirstPost,
+                    );
+                  },
                 ),
               ),
             _buildBottomBar(context, data),
@@ -1415,6 +1467,8 @@ class _PostsState extends State<PostsList> {
   @override
   void dispose() {
     _itemPositionsListener.itemPositions.removeListener(_onScroll);
+    _currentVisiblePostIndex.dispose();
+    _isFirstPostVisible.dispose();
     _highlightTimer?.cancel(); // Cancel timer on dispose
     // Dispose the controller to prevent memory leaks
     _postsController.dispose();

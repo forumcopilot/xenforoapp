@@ -290,6 +290,8 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
+                      cacheWidth: (60 * MediaQuery.devicePixelRatioOf(context)).round(),
+                      cacheHeight: (60 * MediaQuery.devicePixelRatioOf(context)).round(),
                       errorWidget: (context, error, stackTrace) {
                         // Defer setState to avoid calling it during build
                         WidgetsBinding.instance.addPostFrameCallback((_) {

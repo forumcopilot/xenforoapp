@@ -129,6 +129,8 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                       child: CachedRedirectImage(
                         imageUrl: imageUrl,
                         width: actualWidth,
+                        // Height is free (contain), so constrain the decode by width only.
+                        cacheWidth: (actualWidth * MediaQuery.devicePixelRatioOf(context)).round(),
                         fit: BoxFit.contain, // Maintains aspect ratio, fits within constraints
                         errorWidget: (context, error, stackTrace) {
                           return Container(

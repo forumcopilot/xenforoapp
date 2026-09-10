@@ -124,18 +124,18 @@ class _CachedRedirectImageState extends State<CachedRedirectImage> {
   @override
   void initState() {
     super.initState();
-    // Defer the image loading to avoid build-time conflicts
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _resolvedUrlFuture = _getImageUrl();
-          _imageDataFuture = _getImageData();
-        });
-      }
-    });
-    // Initialize with a completed future to avoid null issues
-    _resolvedUrlFuture = Future.value(widget.imageUrl);
-    _imageDataFuture = Future.value(null);
+    _startLoading();
+  }
+
+  /// One fetch per widget. The resolved URL, which only the network fallback
+  /// needs, is derived from the same future rather than fetched a second
+  /// time. Loading starts here, not in a post-frame setState: that deferral
+  /// cost every image a wasted first frame and a rebuild before its request
+  /// had even been issued.
+  void _startLoading() {
+    _imageDataFuture = _getImageData();
+    _resolvedUrlFuture =
+        _imageDataFuture.then((d) => d?.resolvedUrl ?? widget.imageUrl);
   }
 
   /// Checks if we need to update the image when the widget's properties change
@@ -144,32 +144,8 @@ class _CachedRedirectImageState extends State<CachedRedirectImage> {
   void didUpdateWidget(CachedRedirectImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.imageUrl != widget.imageUrl || oldWidget.cacheKey != widget.cacheKey) {
-      // Defer the image loading to avoid build-time conflicts
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _resolvedUrlFuture = _getImageUrl();
-            _imageDataFuture = _getImageData();
-          });
-        }
-      });
-    }
-  }
-
-  /// Gets the final URL for the image, handling any redirects along the way
-  /// Like finding the correct address when someone has moved to a new house
-  Future<String> _getImageUrl() async {
-    try {
-      // Use our shared helper to get the image
-      final imageData = await ImageLoader.fetchImageFile(
-        widget.imageUrl,
-        cacheKey: widget.cacheKey,
-      );
-      return imageData.resolvedUrl;
-    } catch (e) {
-      // If something goes wrong, note the error but return the original URL
-      debugPrint('Error in CachedRedirectImage for ${widget.imageUrl}: $e');
-      return widget.imageUrl;
+      // A rebuild is already in flight; just swap the futures it will read.
+      _startLoading();
     }
   }
 
@@ -198,8 +174,12 @@ class _CachedRedirectImageState extends State<CachedRedirectImage> {
         // This uses the same cookie-aware download path as the full-screen viewer
         if (imageDataSnapshot.hasData && imageDataSnapshot.data != null) {
           final imageFile = imageDataSnapshot.data!.file;
+          // Decode at the size the caller will draw, not the size the forum
+          // stored. The cacheWidth/cacheHeight the caller computed used to
+          // reach only the network fallback below; this path ignored them.
           return Image(
-            image: FileImage(imageFile),
+            image: ResizeImage.resizeIfNeeded(
+                widget.cacheWidth, widget.cacheHeight, FileImage(imageFile)),
             width: widget.width,
             height: widget.height,
             fit: widget.fit,

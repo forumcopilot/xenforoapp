@@ -209,7 +209,16 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
             Positioned.fill(
               child: GestureDetector(
                 onTap: attachment.canViewUrl == true ? () => widget.onImageTap?.call(attachment.url, context, attachment.id) : () => widget.onLoginRequired?.call(context),
-                child: CachedRedirectImage(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Decode no wider than the box it is drawn in: a 2000 px photo
+                    // otherwise decodes at 2000 px inside a scrolling list.
+                    final maxW = constraints.maxWidth;
+                    final decodeWidth = maxW.isFinite
+                        ? (maxW * MediaQuery.devicePixelRatioOf(context)).round()
+                        : null;
+                    return CachedRedirectImage(
+                      cacheWidth: decodeWidth,
                   imageUrl: imageUrl,
                   fit: BoxFit.cover, // Fill the square container
                   errorWidget: (context, error, stackTrace) {
@@ -221,6 +230,9 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
                         size: 48,
                         color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                       ),
+                    );
+                  },
+                
                     );
                   },
                 ),

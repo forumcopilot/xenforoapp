@@ -123,6 +123,8 @@ class AttachmentItemWidget extends StatelessWidget {
                                 width: 48,
                                 height: 48,
                                 fit: BoxFit.cover,
+                                    cacheWidth: (48 * MediaQuery.devicePixelRatioOf(context)).round(),
+                                    cacheHeight: (48 * MediaQuery.devicePixelRatioOf(context)).round(),
                                 errorWidget: (context, error, stackTrace) {
                                   return Center(
                                     child: Icon(

@@ -469,7 +469,16 @@ class ImgTag extends AdvancedTag {
                       onImageTap!(imageUrl!, context, heroTag);
                     }
                   },
-                  child: CachedRedirectImage(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Decode no wider than the box it is drawn in: a 2000 px photo
+                      // otherwise decodes at 2000 px inside a scrolling list.
+                      final maxW = constraints.maxWidth;
+                      final decodeWidth = maxW.isFinite
+                          ? (maxW * MediaQuery.devicePixelRatioOf(context)).round()
+                          : null;
+                      return CachedRedirectImage(
+                        cacheWidth: decodeWidth,
                     imageUrl: imageUrl!,
                     errorWidget: (context, error, stack) {
                       AppLogger.debug('Error loading image: $error');
@@ -508,6 +517,9 @@ class ImgTag extends AdvancedTag {
                       ),
                     ),
                     fit: BoxFit.contain,
+                  
+                      );
+                    },
                   ),
                 ),
               ),
@@ -1641,7 +1653,16 @@ class InlineAttachmentTag extends AdvancedTag {
                               onAttachmentTap!(urlNonNull, true, false);
                             }
                           },
-                          child: CachedRedirectImage(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              // Decode no wider than the box it is drawn in: a 2000 px photo
+                              // otherwise decodes at 2000 px inside a scrolling list.
+                              final maxW = constraints.maxWidth;
+                              final decodeWidth = maxW.isFinite
+                                  ? (maxW * MediaQuery.devicePixelRatioOf(context)).round()
+                                  : null;
+                              return CachedRedirectImage(
+                                cacheWidth: decodeWidth,
                             imageUrl: imageUrlToUse,
                             errorWidget: (context, error, stack) {
                               AppLogger.debug('Error loading attachment image: $error, URL: $imageUrlToUse');
@@ -1682,6 +1703,9 @@ class InlineAttachmentTag extends AdvancedTag {
                             // For full images (with permission), use contain to show full image at full width (like [img] tags)
                             // For thumbnails or when permission denied, use cover to fill the space nicely
                             fit: useFullImageFit ? BoxFit.contain : BoxFit.cover,
+                          
+                              );
+                            },
                           ),
                         ),
                         // Lock icon overlay for thumbnails when user doesn't have permission to view full version

@@ -14,6 +14,7 @@
 //   PERF thread      frames=965  build p50=0.8 ...
 //   PERF thread_back frames=...  (the same posts, scrolled back up through)
 //   PERF thread_rebuild frames=... (visible posts republished in place)
+//   PERF thread_media   frames=... (a pinned thread with inline images)
 //
 // Differences from the Discourse harness this was ported from:
 //
@@ -105,6 +106,15 @@ const String _perfForumName = 'Video Game Reviews & Discussions';
 const String _perfTopicId = '203226';
 const String _perfTopicTitle = "Where are my Satellite Guy's gamers at?";
 
+/// Thread 345894 -- "PC Owners Thread", same read-only archive node. The
+/// benchmark thread above is text: ~0 inline images in its first 60 posts.
+/// This one has six full-size [img] tags in its first 60 (imgur PNG/JPEG
+/// 62-473 KB, one 5 MB animated GIF, one URL repeated in two posts), all of
+/// which still resolve. It exists to measure image decode size, which the
+/// frame timings cannot see and the text thread cannot exercise.
+const String _perfMediaTopicId = '345894';
+const String _perfMediaTopicTitle = 'PC Owners Thread';
+
 const String _perfUser = String.fromEnvironment('PERF_USER');
 const String _perfPass = String.fromEnvironment('PERF_PASS');
 
@@ -191,6 +201,24 @@ void main() {
     await _measure('thread_rebuild', () => _republish(tester, controller, 30));
     _stage('thread_rebuild measured');
 
+    // --- thread_media: a pinned thread with real inline images ---
+    globalNavigatorKey.currentState!.pop();
+    await _settle(tester, frames: 30);
+    await _push(
+      tester,
+      PostPage(
+        siteContext: siteContext,
+        topicId: _perfMediaTopicId,
+        title: _perfMediaTopicTitle,
+      ),
+    );
+    await _pumpUntil(tester, find.byType(PostListItem),
+        timeout: const Duration(seconds: 90));
+    await _settle(tester, frames: 30);
+    _stage('media posts visible');
+    await _measure('thread_media', () => _flings(tester, 8));
+    _stage('thread_media measured');
+
     // --- home feed: unpinnable, measured last, indicative only ---
     globalNavigatorKey.currentState!.pop();
     await _pumpUntil(tester, find.byType(TopicListItem),
@@ -276,6 +304,15 @@ Future<void> _measure(String label, Future<void> Function() action) async {
       'p99=${pct(raster, .99).toStringAsFixed(1)} max=${raster.isEmpty ? 0 : raster.last.toStringAsFixed(0)} '
       '| total>16.7ms=${over(total, 16.7)} total>33ms=${over(total, 33)} '
       'build>16.7ms=${over(build, 16.7)} raster>16.7ms=${over(raster, 16.7)}');
+
+  // Decoded-image memory this segment left behind. Frame timings cannot see
+  // decode size; this can. Pinned content makes the image set identical
+  // across runs, so `bytes` compares directly before/after a decode change.
+  final cache = PaintingBinding.instance.imageCache;
+  // ignore: avoid_print
+  print('PERFIMG $label images=${cache.currentSize} '
+      'bytes=${cache.currentSizeBytes} live=${cache.liveImageCount} '
+      'pending=${cache.pendingImageCount}');
 }
 
 /// Publishes the thread's current data [count] times without changing it,

@@ -200,6 +200,13 @@ of that commit's runs, spread in parentheses where it matters.
 | F1 | content processed once per input, LRU-memoised | 1.8–2.0 / 3.6–4.0 / 14.4–16.7 | 25 (25–37) | p50 1.5–1.8 / p90 3.7–4.0 / p99 10.5–11.5 | 25–29 · 23.2–24.3 · 26–27 · 0–1 |
 | F1b | body parsed to spans once per State, not per build | 1.8–2.1 / 3.6–3.9 / 12.5–16.6 | 14–31 | p50 1.5–1.8 / p90 3.7–4.1 / p99 9.7–12.1 | **0** · 12.4–13.2 · 13–15 · 0 |
 
+Image-cache occupancy (`PERFIMG bytes`, identical image set per segment):
+
+| commit | thread_media | home_feed | thread | topic_list |
+|---|---|---|---|---|
+| F1b `8d1db12` (before F3) | 55 img · 25.9 MB | 67 img · 26.0 MB | 50 img · 6.7 MB | 31 img · 6.6 MB |
+| F3 | 56 img · 7.8 MB–7.8 MB (**−70%**) | 68 img · 7.9 MB–7.9 MB (−70%) | 50 img · 6.7 MB | 31 img · 6.6 MB |
+
 `topic_list` did not move across any of these (build p50 0.9 throughout); none
 of them touch the topic list. F1 is neutral on **both** scroll segments:
 `thread` by construction (first sight of a post is a cache miss), and

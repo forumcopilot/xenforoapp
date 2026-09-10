@@ -148,6 +148,8 @@ class ReactionGlyph extends StatelessWidget {
         reaction.imageUrl,
         width: size,
         height: size,
+        cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).round(),
+        cacheHeight: (size * MediaQuery.devicePixelRatioOf(context)).round(),
         errorBuilder: (_, __, ___) =>
             Icon(Icons.favorite, size: size, color: Colors.redAccent),
       );

@@ -243,6 +243,11 @@ class _PostListItemState extends State<PostListItem> {
   ThemeData? _spansTheme;
   TextScaler? _spansTextScaler;
 
+  /// True from the moment a highlight is cleared until its fade-out ends, so
+  /// the AnimatedContainer that animates it stays in the tree that long and
+  /// no longer. Every other post renders a plain ColoredBox.
+  bool _highlightFading = false;
+
   @override
   void initState() {
     super.initState();
@@ -263,6 +268,9 @@ class _PostListItemState extends State<PostListItem> {
     if (_contentInputsChanged(oldWidget)) {
       _contentData = _resolveContentData();
       _prepareSpans();
+    }
+    if (oldWidget.isHighlighted && !widget.isHighlighted) {
+      _highlightFading = true;
     }
   }
 
@@ -455,8 +463,6 @@ class _PostListItemState extends State<PostListItem> {
 
       // Skip mention URLs (link text starts with @ and has no spaces)
       if (_isMentionUrl(linkText)) {
-        AppLogger.debug(
-            'PostListItem: Skipping mention URL from preview: url=$url, linkText=$linkText');
         continue;
       }
 
@@ -923,21 +929,33 @@ class _PostListItemState extends State<PostListItem> {
         ? colorScheme.primaryContainer.withOpacity(0.4)
         : colorScheme.surface;
 
+    final body = Material(
+      color: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPostHeader(context),
+          _buildPostContent(context, data, colorScheme, textTheme),
+          _buildBottomDivider(colorScheme),
+        ],
+      ),
+    );
+    // The highlight is a flash one post shows for a few seconds. Only that
+    // post -- while lit, and until its fade-out ends -- pays for an
+    // AnimatedContainer; the rest of the thread is a ColoredBox.
+    if (!widget.isHighlighted && !_highlightFading) {
+      return ColoredBox(color: backgroundColor, child: body);
+    }
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
       color: backgroundColor,
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPostHeader(context),
-            _buildPostContent(context, data, colorScheme, textTheme),
-            _buildBottomDivider(colorScheme),
-          ],
-        ),
-      ),
+      onEnd: () {
+        if (mounted && !widget.isHighlighted && _highlightFading) {
+          setState(() => _highlightFading = false);
+        }
+      },
+      child: body,
     );
   }
 

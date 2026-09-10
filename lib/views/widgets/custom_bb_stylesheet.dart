@@ -1158,15 +1158,7 @@ class CustomBoldTag extends StyleTag {
   CustomBoldTag() : super("b");
 
   @override
-  void onTagStart(FlutterRenderer renderer) {
-    AppLogger.debug('Processing Bold tag:');
-    AppLogger.debug('  Content: ${renderer.currentTag?.children.map((e) => e.textContent).join()}');
-    super.onTagStart(renderer);
-  }
-
-  @override
   TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
-    AppLogger.debug('  Applying bold style (FontWeight.w700)');
     return oldStyle.copyWith(
       fontWeight: FontWeight.w700,
     );
@@ -1177,15 +1169,7 @@ class CustomHeadingTag extends StyleTag {
   CustomHeadingTag() : super("heading");
 
   @override
-  void onTagStart(FlutterRenderer renderer) {
-    AppLogger.debug('Processing Heading tag:');
-    AppLogger.debug('  Content: ${renderer.currentTag?.children.map((e) => e.textContent).join()}');
-    super.onTagStart(renderer);
-  }
-
-  @override
   TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
-    AppLogger.debug('  Applying bold style (FontWeight.w700)');
     return oldStyle.copyWith(
       fontWeight: FontWeight.w700,
     );
@@ -1196,15 +1180,7 @@ class CustomItalicTag extends StyleTag {
   CustomItalicTag() : super("i");
 
   @override
-  void onTagStart(FlutterRenderer renderer) {
-    AppLogger.debug('Processing Italic tag:');
-    AppLogger.debug('  Content: ${renderer.currentTag?.children.map((e) => e.textContent).join()}');
-    super.onTagStart(renderer);
-  }
-
-  @override
   TextStyle transformStyle(TextStyle oldStyle, Map<String, String>? attributes) {
-    AppLogger.debug('  Applying italic style');
     return oldStyle.copyWith(
       fontStyle: FontStyle.italic,
     );

@@ -92,6 +92,9 @@ enum _PagingDirection { none, earlier, later }
 
 class _PostsState extends State<PostsList> {
   late final PostController _postsController;
+  late final AvatarActions _avatarActions;
+  late final ImageActions _imageActions;
+  late final PostActionsHandler _postActionsHandler;
   final ItemScrollController _itemScrollController = ItemScrollController();
   final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isLoadingMore = false;
@@ -136,6 +139,13 @@ class _PostsState extends State<PostsList> {
   @override
   void initState() {
     super.initState();
+    // One of each per thread. They take only the controller, the site and
+    // the forum id, none of which change for the life of this list; they
+    // used to be allocated afresh for every post on every build. Not in the
+    // constructor above: `widget` is not attached yet there.
+    _avatarActions = AvatarActions();
+    _imageActions = ImageActions(_postsController, siteContext: widget.siteContext);
+    _postActionsHandler = PostActionsHandler(_postsController, widget.siteContext, fallbackForumId: widget.forumId);
 
     // Schedule callback for the next frame to avoid setState during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1042,9 +1052,9 @@ class _PostsState extends State<PostsList> {
   }
 
   Widget _buildPostItem(BuildContext context, FCPost post, int postIndex, int postsListLength, ThreadViewData data, {bool isHighlighted = false}) {
-    final avatarActions = AvatarActions();
-    final imageActions = ImageActions(_postsController, siteContext: widget.siteContext);
-    final postActionsHandler = PostActionsHandler(_postsController, widget.siteContext, fallbackForumId: widget.forumId);
+    final avatarActions = _avatarActions;
+    final imageActions = _imageActions;
+    final postActionsHandler = _postActionsHandler;
 
     // No VisibilityDetector here: the visible post is derived from
     // _itemPositionsListener in _updateVisiblePostIndex(), which costs no
@@ -1282,8 +1292,7 @@ class _PostsState extends State<PostsList> {
                 if (widget.siteContext.isLoggedIn && data.topic.canReply)
                   FilledButton.icon(
                     onPressed: () {
-                      final postActionsHandler = PostActionsHandler(_postsController, widget.siteContext, fallbackForumId: widget.forumId);
-                      postActionsHandler.handleReply(context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost);
+                      _postActionsHandler.handleReply(context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost);
                     },
                     icon: const Icon(Icons.reply),
                     label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),

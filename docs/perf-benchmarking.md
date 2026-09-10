@@ -26,11 +26,13 @@ PERF topic_list frames=1183 build p50=6.9 p90=14.9 p99=24.1 max=89 | raster p50=
 PERF thread     frames=965  build p50=0.8 p90=2.3  p99=30.2 max=83 | raster p50=4.6 ... | total>16.7ms=20  total>33ms=11 build>16.7ms=15 raster>16.7ms=0
 ```
 
-**Run the baseline twice before changing anything.** On the Discourse app two
-runs agreed within ~0.2 ms on p50 and ~10 % on jank counts — that spread is
-your noise floor, and it tells you what size of change is real.
+**Run the baseline three times before changing anything, and check the spread.**
+The target is the Discourse harness's noise floor: within ~0.2 ms on p50 and
+~10 % on jank counts. That spread is what tells you which later differences are
+real. If three baselines do not agree that closely, something is still varying —
+fix that before touching `lib/`, not after.
 
-## The forum it measures — read this first
+## What it measures — read this first
 
 This app is **single-forum**: the forum is baked in at build time by
 `lib/config/app_forum_config.dart`. There is no "open a forum by address"
@@ -38,32 +40,53 @@ step, which removes most of the flakiness the Discourse harness had.
 
 The flip side: unlike Discourse (whose public API any instance exposes), this
 app talks through the **ForumCopilot add-on endpoint**, so it can only measure
-a forum that has the add-on installed. The currently configured forum,
-`qhhtofficialforum.com`, **answers guests with HTTP 403** — a guest run will
-render no rows and the harness will fail fast with the on-screen text so you
-can see why.
+a forum that has the add-on installed.
 
-Two ways to get a measurable run:
+It is currently pointed at **SatelliteGuys.US** (`https://www.satelliteguys.us/xen`),
+which runs the add-on and lets guests read — so runs need no credentials. The
+app's own forum, `qhhtofficialforum.com`, answers guests with HTTP 403; if you
+point the config back at it, supply a throwaway account at run time (nothing is
+stored in the repo):
 
-1. **Supply a throwaway account at run time** (nothing is stored in the repo):
+```bash
+flutter drive --profile -d <device-id> \
+  --driver=test_driver/perf_driver.dart \
+  --target=integration_test/scroll_perf_test.dart \
+  --dart-define=PERF_USER=<user> --dart-define=PERF_PASS=<pass>
+```
 
-   ```bash
-   flutter drive --profile -d <device-id> \
-     --driver=test_driver/perf_driver.dart \
-     --target=integration_test/scroll_perf_test.dart \
-     --dart-define=PERF_USER=<user> --dart-define=PERF_PASS=<pass>
-   ```
+The harness signs in through `LoginController.handleLogin` rather than typing
+into the login form (form typing through the harness is unreliable on a device)
+and prints `PERF signin ok=true`.
 
-   The harness signs in through `LoginController.handleLogin` rather than
-   typing into the login form (form typing through the harness is unreliable
-   on a device) and prints `PERF signin ok=true`.
+### Both screens open pinned content
 
-2. **Point `AppForumConfig` at a forum that allows guest reading** and has the
-   add-on installed. Whichever you pick, keep it fixed — numbers are only
-   comparable against the same forum, same phone, same gestures.
+`integration_test/scroll_perf_test.dart` pushes **fixed** content on the app's
+own navigator instead of using whatever is on screen:
 
-Pick a forum with **long threads**; the `thread` numbers are the ones that
-expose per-post work.
+| Half | Target | Why |
+|---|---|---|
+| `topic_list` | node **42**, "Video Game Reviews & Discussions" | 2,194 threads; 18/20 rows have an avatar and a snippet |
+| `thread` | topic **203226**, "Where are my Satellite Guy's gamers at?" | 1,700 posts, ~700-char average with quotes throughout, avatar on nearly every post |
+
+Both sit under **SatelliteGuys Archives**, which is read-only — the add-on
+reports `canPost=false, canReply=false`, so nobody can post and the bytes the
+app receives are identical on every run.
+
+This is not a detail. The first version of this harness measured the "latest"
+feed and tapped whatever sat in row 2. Two runs of **identical code** gave:
+
+```
+run 1  topic_list  build p50=7.8  raster p50=3.0  total>16.7ms=139
+run 2  topic_list  build p50=9.9  raster p50=7.0  total>16.7ms=850
+```
+
+Thermals were ruled out (all sensors `mStatus=0`, 735 %/800 % CPU idle, skin
+23–28 °C). The feed had simply turned over between runs. Reported as a
+before/after, run 2 → run 1 would read as an 84 % reduction in jank from a
+change that did nothing.
+
+**Changing either constant invalidates every earlier number.** Re-baseline.
 
 ## Reading the numbers
 
@@ -76,9 +99,9 @@ expose per-post work.
   viewport: a post's BBCode parse, a batch of image decodes.
 - **raster high** → GPU-side layers: `Opacity`, antialiased clips,
   `ShaderMask`, `ColorFiltered`, `BackdropFilter`, shadows.
-- The thread section opens whatever is **second in the list at run time**, so
-  its p99 is only comparable between runs made close together. The topic-list
-  numbers are the stable ones.
+- Both sections open pinned, frozen content, so both are comparable across
+  runs — including the p99s, which is where per-item cost (a BBCode parse, a
+  batch of image decodes) shows up.
 
 ## Counting side effects from the log
 
@@ -118,6 +141,7 @@ fixes; that finding came entirely from the log, not the frame timer.
 
 Screens are detected by **widget type** (`TopicListItem`, `PostListItem`) not
 by on-screen text, so the harness is independent of locale and of which forum
-is configured, and the thread tap targets the second row by finder rather than
-by screen coordinates. Labels `topic_list` and `thread` are kept so results
-line up with the Discourse audit tables.
+is configured. Navigation is by direct `Navigator.push` on `globalNavigatorKey`
+rather than by tapping rows, which is both faster and what makes the pinned
+targets possible. Labels `topic_list` and `thread` are kept so results line up
+with the Discourse audit tables.

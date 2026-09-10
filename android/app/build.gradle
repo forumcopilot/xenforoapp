@@ -54,6 +54,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Distinct package so the XenForo build coexists with the
+            // Discourse template build (com.example.forumapp) on one device.
+            applicationIdSuffix ".xf"
+        }
         release {
             signingConfig signingConfigs.release
         }

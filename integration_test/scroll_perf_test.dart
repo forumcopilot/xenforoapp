@@ -19,28 +19,71 @@
 //    AppForumConfig — so there is no "open a forum by address" step and none
 //    of the flakiness that came with it.
 //  * Screens are detected by widget type (TopicListItem / PostListItem) rather
-//    than by on-screen text, so the harness does not depend on locale or on
-//    which forum is configured.
-//  * If the configured forum requires a login to read anything (the default
-//    qhhtofficialforum.com answers guests with HTTP 403), pass a throwaway
-//    account at run time. Nothing is stored in the repo:
+//    than by on-screen text, so the harness does not depend on locale.
+//  * Both halves open PINNED content (see below) rather than whatever the
+//    "latest" feed happens to hold, because the feed churns between runs.
+//  * If the configured forum requires a login to read anything, pass a
+//    throwaway account at run time. Nothing is stored in the repo:
 //
 //      --dart-define=PERF_USER=<user> --dart-define=PERF_PASS=<pass>
 //
 // See docs/perf-benchmarking.md for the traps — especially the stale Gradle
 // kernel, which silently makes a run measure the previous build.
 
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:integration_test/integration_test.dart';
 
+import 'package:forumcopilot_sdk/context/site_context.dart';
+import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' show globalNavigatorKey;
+import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
+
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/controllers/site_controller.dart';
 import 'package:forumcopilot_flutter/main.dart' as app;
+import 'package:forumcopilot_flutter/views/forum_topics_page.dart';
 import 'package:forumcopilot_flutter/views/listitems/post_list_item.dart';
 import 'package:forumcopilot_flutter/views/listitems/topic_list_item.dart';
+import 'package:forumcopilot_flutter/views/post_page.dart';
+
+// ---------------------------------------------------------------------------
+// Pinned benchmark content
+// ---------------------------------------------------------------------------
+//
+// Both measured screens open FIXED content. This is the difference between a
+// harness you can trust and one you cannot: the first version of this file
+// measured the "latest" feed and tapped whatever sat in row 2, and two runs of
+// IDENTICAL code disagreed by 7.0 vs 3.0 ms raster p50 and 139 vs 850 janky
+// frames — purely because the feed had turned over between runs. Read as a
+// before/after that would have looked like an 84 % improvement from no change
+// at all.
+//
+// Both targets live under SatelliteGuys Archives, which is READ-ONLY
+// (`canPost=false, canReply=false` from the add-on's getForum). Nothing can be
+// posted, so the rows and the posts are byte-identical on every run — the only
+// thing left varying is the code under test.
+//
+// Chosen for content, not just stability: 18/20 rows carry an avatar and a
+// snippet; the thread averages ~700-char posts with quotes throughout and an
+// avatar on nearly every post, which is what actually exercises the BBCode
+// parse and image-decode paths the audit is about.
+//
+// CHANGING EITHER CONSTANT INVALIDATES EVERY EARLIER NUMBER. Re-baseline.
+
+/// Node 42 — "Video Game Reviews & Discussions" (SatelliteGuys Archives).
+/// 2,194 threads, guest-readable, read-only since 2024-04-03.
+const String _perfForumId = '42';
+const String _perfForumName = 'Video Game Reviews & Discussions';
+
+/// Thread 203226 — "Where are my Satellite Guy's gamers at?", 1,700 posts.
+/// Deep enough that eight flings never reach the end, so pagination is
+/// measured too.
+const String _perfTopicId = '203226';
+const String _perfTopicTitle = "Where are my Satellite Guy's gamers at?";
 
 const String _perfUser = String.fromEnvironment('PERF_USER');
 const String _perfPass = String.fromEnvironment('PERF_PASS');
@@ -51,13 +94,24 @@ void main() {
 
   testWidgets('topic list and thread scrolling', (tester) async {
     // main() is `void async`: it cannot be awaited. Start it and pump until
-    // the first screen exists.
+    // the app has a SiteContext, which is what both screens need.
     app.main();
     await tester.pump(const Duration(seconds: 3));
 
+    final siteContext = await _awaitSiteContext(tester);
+
     if (_perfUser.isNotEmpty && _perfPass.isNotEmpty) {
-      await _signIn(tester);
+      await _signIn(tester, siteContext);
     }
+
+    // --- topic list: a fixed forum node, not the churning "latest" feed ---
+    await _push(
+      tester,
+      ForumTopicsPage(
+        siteContext: siteContext,
+        forum: FCForum(id: _perfForumId, name: _perfForumName),
+      ),
+    );
 
     // Rows on screen == the list actually rendered.
     await _pumpUntil(tester, find.byType(TopicListItem),
@@ -66,14 +120,18 @@ void main() {
 
     await _measure('topic_list', () => _flings(tester, 8));
 
-    // Back to the top, then open the second topic.
-    for (var i = 0; i < 2; i++) {
-      await tester.fling(
-          find.byType(Scrollable).first, const Offset(0, 4000), 8000);
-      await _settle(tester, frames: 60);
-    }
-    await tester.tap(find.byType(TopicListItem).at(1), warnIfMissed: false);
-    await tester.pump(const Duration(seconds: 4));
+    // --- thread: a fixed long thread, not whatever sat in row 2 ---
+    globalNavigatorKey.currentState!.pop();
+    await _settle(tester, frames: 30);
+
+    await _push(
+      tester,
+      PostPage(
+        siteContext: siteContext,
+        topicId: _perfTopicId,
+        title: _perfTopicTitle,
+      ),
+    );
 
     // Prove a thread actually opened before attributing frames to it.
     await _pumpUntil(tester, find.byType(PostListItem),
@@ -84,25 +142,37 @@ void main() {
   });
 }
 
-/// Signs in through the app's own controller rather than the login form —
-/// typing into a form through the harness is unreliable on a device. The
-/// credentials come from --dart-define at run time and are never committed.
-Future<void> _signIn(WidgetTester tester) async {
+/// Pushes [page] on the app's own navigator. The returned route future only
+/// completes when the route is popped, so it is deliberately not awaited.
+Future<void> _push(WidgetTester tester, Widget page) async {
+  final navigator = globalNavigatorKey.currentState;
+  if (navigator == null) {
+    throw TestFailure('No navigator — the app never built its MaterialApp.');
+  }
+  unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) => page)));
+  await _settle(tester, frames: 60);
+}
+
+/// Blocks until the app has initialised its forum. Both measured screens take
+/// a [SiteContext], and sign-in needs one too.
+Future<SiteContext> _awaitSiteContext(WidgetTester tester) async {
   final deadline = DateTime.now().add(const Duration(seconds: 90));
-  dynamic siteContext;
   while (DateTime.now().isBefore(deadline)) {
     await tester.pump(const Duration(milliseconds: 200));
     if (Get.isRegistered<SiteController>()) {
-      siteContext = Get.find<SiteController>().currentSiteContext.value;
-      if (siteContext != null) break;
+      final ctx = Get.find<SiteController>().currentSiteContext.value;
+      if (ctx != null) return ctx;
     }
   }
-  if (siteContext == null) {
-    throw TestFailure(
-        'No SiteContext after 90s — the forum never initialised, so sign-in '
-        'cannot run. Check the device has network and AppForumConfig is valid.');
-  }
+  throw TestFailure(
+      'No SiteContext after 90s — the forum never initialised. Check the '
+      'device has network and AppForumConfig is valid.');
+}
 
+/// Signs in through the app's own controller rather than the login form —
+/// typing into a form through the harness is unreliable on a device. The
+/// credentials come from --dart-define at run time and are never committed.
+Future<void> _signIn(WidgetTester tester, SiteContext siteContext) async {
   final login = Get.isRegistered<LoginController>()
       ? Get.find<LoginController>()
       : Get.put(LoginController());

@@ -59,10 +59,10 @@ The benchmark forum is supplied at build time —
 `--dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen` — and
 `AppForumConfig` reads it through `String.fromEnvironment`. The harness pins
 content on that forum, which runs the add-on and lets guests read, so runs
-need no credentials, and the committed config stays the template placeholder. The
-app's own forum, `qhhtofficialforum.com`, answers guests with HTTP 403; if you
-point the config back at it, supply a throwaway account at run time (nothing is
-stored in the repo):
+need no credentials, and the committed config stays the template placeholder. A
+forum that answers guests with HTTP 403 (a members-only board, for example)
+needs a throwaway account supplied at run time instead; nothing is stored in
+the repo:
 
 ```bash
 flutter drive --profile -d <device-id> \

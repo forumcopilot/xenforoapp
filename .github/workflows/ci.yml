@@ -25,9 +25,9 @@ jobs:
         run: ./buildlib.sh
 
       - name: Analyze
-        # Errors only for now: the tree carries ~80 analyzer warnings (unused imports and
-        # elements), most inside packages/ that are synced byte-identical from the
-        # canonical SDK. Tighten to --fatal-warnings once those are cleaned up.
+        # Errors only for now: lib/ carries ~80 pre-existing analyzer warnings
+        # (unused imports, dead null-aware expressions, unused elements).
+        # Drop --no-fatal-warnings once those are cleaned up.
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Test

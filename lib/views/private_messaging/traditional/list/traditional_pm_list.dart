@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
-import 'package:forumcopilot_flutter/views/widgets/resettable_widget.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_message_result.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
-import '../../../../utils/time_utils.dart';
 import '../../../../theme/design_tokens.dart';
-import '../../../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../pages/traditional_pm_page.dart';
 import 'traditional_pm_list_item.dart';
@@ -40,9 +37,6 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
   int _currentPage = 0;
   final int _itemsPerPage = 20;
   final ScrollController _scrollController = ScrollController();
-
-  // Track when we last became visible to refresh on return
-  bool _wasVisible = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -250,7 +244,6 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       key: Key('traditional_pm_${widget.isInbox ? 'inbox' : 'sent'}'),
       onVisibilityChanged: (VisibilityInfo info) {
         final isVisible = info.visibleFraction > 0.5;
-        _wasVisible = isVisible;
 
         if (isVisible && _shouldLoadMessages()) {
           loadMessages();

@@ -138,36 +138,6 @@ class TwitterCache {
     return null;
   }
 
-  /// Extracts Twitter handle from tweet content
-  static String? _extractHandleFromContent(String? content) {
-    if (content == null) return null;
-
-    // Extract handle from content like "— Crypto Briefing (@Crypto_Briefing) July 7, 2025"
-    final handleRegex = RegExp(r'@([a-zA-Z0-9_]+)');
-    final match = handleRegex.firstMatch(content);
-    return match?.group(1);
-  }
-
-  /// Cleans the tweet content by removing attribution and decoding HTML entities
-  static String _cleanTweetContent(String? content) {
-    if (content == null) return '';
-
-    // Remove the author attribution part at the end
-    // Pattern: "— Author Name (@handle) Date"
-    final attributionRegex = RegExp(r'\s*—\s*[^@]+\(@[^)]+\)\s+\w+\s+\d+,\s+\d+$');
-    String cleaned = content.replaceAll(attributionRegex, '');
-
-    // Decode HTML entities
-    cleaned = cleaned.replaceAll('&mdash;', '—');
-    cleaned = cleaned.replaceAll('&amp;', '&');
-    cleaned = cleaned.replaceAll('&lt;', '<');
-    cleaned = cleaned.replaceAll('&gt;', '>');
-    cleaned = cleaned.replaceAll('&quot;', '"');
-    cleaned = cleaned.replaceAll('&#39;', "'");
-
-    return cleaned.trim();
-  }
-
   /// Gets cached data from local storage
   static Future<TwitterPreviewData?> _getCachedData(String cacheKey) async {
     try {
@@ -234,7 +204,7 @@ class TwitterCache {
   /// Gets cache statistics for debugging
   static Future<Map<String, dynamic>> getCacheStats() async {
     try {
-      final cacheInfo = await _cacheManager.getFileFromCache('dummy');
+      await _cacheManager.getFileFromCache('dummy');
       // This is a simple way to check cache status
       return {
         'cacheAvailable': true,

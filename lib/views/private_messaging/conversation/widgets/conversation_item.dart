@@ -97,7 +97,7 @@ class ConversationHeaderItem extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final processedText = BBCodeProcessor.processText(message.textBody ?? '', siteContext: siteContext).trimRight();
+    final processedText = BBCodeProcessor.processText(message.textBody, siteContext: siteContext).trimRight();
 
     // Filter out attachments that are already displayed inline
     final nonInlineAttachments = message.attachments.where((att) {
@@ -245,21 +245,21 @@ class ConversationHeaderItem extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => UserProfilePage(
                                 siteContext: siteContext,
-                                userId: message.userId ?? '',
-                                userName: message.username ?? 'Unknown',
+                                userId: message.userId,
+                                userName: message.username,
                                 profilePictureUrl: message.iconUrl,
                               ),
                             ),
                           );
                         },
                         child: UserAvatar(
-                          username: message.username ?? 'Unknown',
+                          username: message.username,
                           iconUrl: message.iconUrl,
                           radius: DesignTokens.avatarRadiusM,
                           cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
                               ? AvatarCacheUtils.generateAvatarCacheKey(
-                                  userId: message.userId ?? '',
-                                  username: message.username ?? 'Unknown',
+                                  userId: message.userId,
+                                  username: message.username,
                                   avatarUrl: message.iconUrl!,
                                 )
                               : null,
@@ -296,15 +296,15 @@ class ConversationHeaderItem extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => UserProfilePage(
                                   siteContext: siteContext,
-                                  userId: message.userId ?? '',
-                                  userName: message.username ?? 'Unknown',
+                                  userId: message.userId,
+                                  userName: message.username,
                                   profilePictureUrl: message.iconUrl,
                                 ),
                               ),
                             );
                           },
                           child: Text(
-                            message.username ?? 'Unknown',
+                            message.username,
                             style: textTheme.titleMedium?.copyWith(
                               color: colorScheme.onSurface,
                               fontWeight: DesignTokens.fontWeightMedium,
@@ -477,53 +477,6 @@ class ConversationHeaderItem extends StatelessWidget {
     );
   }
 
-  List<PopupMenuEntry<String>> _buildPopupMenuItemsHeader(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final items = <PopupMenuEntry<String>>[];
-    
-    // Edit button (only for XenForo and if canEdit is true)
-    if ((message.canEdit ?? false) && siteContext.siteType == 'xenforo' && onEdit != null) {
-      items.add(
-        PopupMenuItem<String>(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(
-                Icons.edit_outlined,
-                size: DesignTokens.iconSizeM,
-                color: colorScheme.primary,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
-            ],
-          ),
-        ),
-      );
-    }
-    
-    // Report button (if canReport is true)
-    if (message.canReport == true) {
-      items.add(
-        PopupMenuItem<String>(
-          value: 'report',
-          child: Row(
-            children: [
-              Icon(
-                Icons.flag_outlined,
-                size: DesignTokens.iconSizeM,
-                color: colorScheme.secondary,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.report ?? 'Report'),
-            ],
-          ),
-        ),
-      );
-    }
-    
-    return items;
-  }
-
   List<PopupMenuEntry<String>> _buildPopupMenuItems(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final items = <PopupMenuEntry<String>>[];
@@ -679,138 +632,6 @@ class ConversationHeaderItem extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionIcon(BuildContext context, FCLike like) {
-    final avatarSize = DesignTokens.avatarRadiusM * 2; // Same size as avatar
-    final colorScheme = Theme.of(context).colorScheme;
-    
-    Widget? content;
-    
-    // If emoji is available, display it
-    if (like.reactionEmoji != null && like.reactionEmoji!.isNotEmpty) {
-      content = Text(
-        like.reactionEmoji!,
-        style: TextStyle(fontSize: avatarSize * 0.6), // Emoji size relative to circle
-      );
-    }
-    // If icon URL is available, display it
-    else if (like.reactionIconUrl != null && like.reactionIconUrl!.isNotEmpty) {
-      content = ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: like.reactionIconUrl!,
-          width: avatarSize * 0.7,
-          height: avatarSize * 0.7,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => SizedBox(width: avatarSize * 0.7, height: avatarSize * 0.7),
-        ),
-      );
-    }
-    // Backward compatibility: if no reaction info, return empty widget
-    if (content == null) {
-      return const SizedBox.shrink();
-    }
-    
-    // Wrap content in grey circle
-    return Container(
-      width: avatarSize,
-      height: avatarSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScheme.surfaceVariant,
-      ),
-      alignment: Alignment.center,
-      child: content,
-    );
-  }
-
-  void _showLikesBottomSheet(BuildContext context) {
-    if (message.likesInfo.isEmpty) return;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.2,
-          maxChildSize: 0.8,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.favorite, color: Theme.of(context).colorScheme.error),
-                      SizedBox(width: DesignTokens.spacingS),
-                      Expanded(
-                        child: Text(AppLocalizations.of(context)?.reactedBy ?? 'Reacted by', style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                        alignment: Alignment.centerRight,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DesignTokens.spacingL),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: message.likesInfo.length,
-                      itemBuilder: (context, index) {
-                        final like = message.likesInfo[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingS),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
-                                    siteContext: siteContext,
-                                    userId: like.userId,
-                                    userName: like.username,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                UserAvatar(
-                                  username: like.username,
-                                  iconUrl: like.avatarUrl,
-                                  radius: DesignTokens.avatarRadiusM,
-                                ),
-                                SizedBox(width: DesignTokens.spacingM),
-                                Expanded(
-                                  child: Text(like.username, style: Theme.of(context).textTheme.bodyLarge),
-                                ),
-                                SizedBox(width: DesignTokens.spacingS),
-                                _buildReactionIcon(context, like),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   /// Build attachment actions for conversation messages
   dynamic _buildAttachmentActions(BuildContext context) {
     return _ConversationAttachmentActions(
@@ -898,15 +719,6 @@ class _ConversationAttachmentActions {
       ),
     );
   }
-
-  /// Build attachment actions for conversation messages
-  dynamic _buildAttachmentActions(BuildContext context) {
-    return _ConversationAttachmentActions(
-      message: message,
-      context: context,
-      siteContext: siteContext,
-    );
-  }
 }
 
 class ConversationItem extends StatelessWidget {
@@ -947,7 +759,7 @@ class ConversationItem extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final processedText = BBCodeProcessor.processText(message.textBody ?? '', siteContext: siteContext).trimRight();
+    final processedText = BBCodeProcessor.processText(message.textBody, siteContext: siteContext).trimRight();
 
     // Filter out attachments that are already displayed inline
     final nonInlineAttachments = message.attachments.where((att) {
@@ -1095,21 +907,21 @@ class ConversationItem extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => UserProfilePage(
                                 siteContext: siteContext,
-                                userId: message.userId ?? '',
-                                userName: message.username ?? 'Unknown',
+                                userId: message.userId,
+                                userName: message.username,
                                 profilePictureUrl: message.iconUrl,
                               ),
                             ),
                           );
                         },
                         child: UserAvatar(
-                          username: message.username ?? 'Unknown',
+                          username: message.username,
                           iconUrl: message.iconUrl,
                           radius: DesignTokens.avatarRadiusM,
                           cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
                               ? AvatarCacheUtils.generateAvatarCacheKey(
-                                  userId: message.userId ?? '',
-                                  username: message.username ?? 'Unknown',
+                                  userId: message.userId,
+                                  username: message.username,
                                   avatarUrl: message.iconUrl!,
                                 )
                               : null,
@@ -1146,15 +958,15 @@ class ConversationItem extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => UserProfilePage(
                                   siteContext: siteContext,
-                                  userId: message.userId ?? '',
-                                  userName: message.username ?? 'Unknown',
+                                  userId: message.userId,
+                                  userName: message.username,
                                   profilePictureUrl: message.iconUrl,
                                 ),
                               ),
                             );
                           },
                           child: Text(
-                            message.username ?? 'Unknown',
+                            message.username,
                             style: textTheme.titleMedium?.copyWith(
                               color: colorScheme.onSurface,
                               fontWeight: DesignTokens.fontWeightMedium,

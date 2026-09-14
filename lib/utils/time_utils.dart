@@ -69,16 +69,6 @@ String _formatUserDateTimeInternal(DateTime localDateTime, BuildContext context)
 }
 
 /// Internal helper that works with already localized DateTime
-String _formatUserDateInternal(DateTime localDateTime, BuildContext context) {
-  try {
-    final locale = Localizations.localeOf(context);
-    return DateFormat.yMMMd(locale.toString()).format(localDateTime);
-  } catch (e) {
-    return DateFormat.yMMMd().format(localDateTime);
-  }
-}
-
-/// Internal helper that works with already localized DateTime
 String _formatUserTimeInternal(DateTime localDateTime, BuildContext context) {
   try {
     final locale = Localizations.localeOf(context);

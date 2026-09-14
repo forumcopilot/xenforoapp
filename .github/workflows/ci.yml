@@ -25,10 +25,10 @@ jobs:
         run: ./buildlib.sh
 
       - name: Analyze
-        # Errors only for now: lib/ carries ~80 pre-existing analyzer warnings
-        # (unused imports, dead null-aware expressions, unused elements).
-        # Drop --no-fatal-warnings once those are cleaned up.
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+        # Warnings are fatal. Scoped to lib/ and test/ because packages/ is a
+        # byte-identical sync of the canonical SDK copy and must not be edited
+        # here (it currently carries one unused_import warning of its own).
+        run: flutter analyze lib test --no-fatal-infos
 
       - name: Test
         run: flutter test

@@ -185,20 +185,18 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
       AppLogger.debug('[ForumList] getForumAsync completed:');
       AppLogger.debug('   - result: ${getForumsResult.result}');
       AppLogger.debug('   - resultText: ${getForumsResult.resultText}');
-      AppLogger.debug('   - forums count: ${getForumsResult.forums?.length ?? 'null'}');
+      AppLogger.debug('   - forums count: ${getForumsResult.forums.length}');
 
       if (!getForumsResult.result && (getForumsResult.resultText?.isNotEmpty ?? false)) {
         AppLogger.debug('[ForumList] ⚠️ API call returned result=false: ${getForumsResult.resultText}');
       }
 
       final allForums = getForumsResult.forums;
-      AppLogger.debug('[ForumList] All forums loaded: ${allForums?.length ?? 0} forums');
+      AppLogger.debug('[ForumList] All forums loaded: ${allForums.length} forums');
 
       // Debug print for sub_only status
-      if (allForums != null) {
-        for (var forum in allForums) {
-          AppLogger.debug('[ForumList] Forum "${forum.name}" (ID: ${forum.id}) sub_only: ${forum.isSubForumContainer} childForums: ${forum.childForums?.length ?? 'null'}');
-        }
+      for (var forum in allForums) {
+        AppLogger.debug('[ForumList] Forum "${forum.name}" (ID: ${forum.id}) sub_only: ${forum.isSubForumContainer} childForums: ${forum.childForums.length}');
       }
 
       // Clear subscribed forums if user is not logged in
@@ -498,10 +496,10 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
         );
 
         // Add child forums as cards
-        if (forum.childForums != null && forum.childForums!.isNotEmpty) {
+        if (forum.childForums.isNotEmpty) {
           // Removed per-child-forum debug logging to reduce noise
           widgets.addAll(
-            forum.childForums!.map((childForum) {
+            forum.childForums.map((childForum) {
               return ForumListItem(
                 siteContext: widget.siteContext,
                 forum: childForum,

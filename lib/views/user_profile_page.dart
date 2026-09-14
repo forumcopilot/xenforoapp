@@ -43,7 +43,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   FCUserInfoResult? _userInfo;
   bool _isLoading = true;
   String? _error;
-  int _postsRefreshKey = 0; // Key to force UserRepliedPosts to refresh
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _userRepliedPostsKey = GlobalKey();
   bool _didAttemptAutoLogin = false;
@@ -134,7 +133,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
       _userInfo = null;
       _isLoading = true;
       _error = null;
-      _postsRefreshKey++;
     });
     await _fetchUserInfo();
   }
@@ -342,7 +340,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     iconUrl: (_userInfo!.iconUrl != null && _userInfo!.iconUrl!.isNotEmpty) ? _userInfo!.iconUrl! : widget.profilePictureUrl,
                                     radius: 50,
                                     showOnlineIndicator: true,
-                                    isOnline: _userInfo!.isOnline ?? false,
+                                    isOnline: _userInfo!.isOnline,
                                     cacheKey: () {
                                       final avatarUrl = (_userInfo!.iconUrl != null && _userInfo!.iconUrl!.isNotEmpty) ? _userInfo!.iconUrl! : widget.profilePictureUrl;
                                       if (avatarUrl != null && avatarUrl.isNotEmpty) {
@@ -452,7 +450,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                   //       ),
                                   //     ),
                                   // ],
-                                  if (_userInfo!.acceptsPM ?? false) ...[
+                                  if (_userInfo!.acceptsPM) ...[
                                     SizedBox(width: DesignTokens.spacingM),
                                     FilledButton.icon(
                                       onPressed: () {
@@ -556,7 +554,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       title: AppLocalizations.of(context)?.lastActivity ?? 'Last Activity',
                                       subtitle: DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(_userInfo!.lastActivityTime!.toLocal()),
                                     ),
-                                  if (_userInfo!.postCount != null && _userInfo!.postCount != 0)
+                                  if (_userInfo!.postCount != 0)
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.post_add,
@@ -590,7 +588,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       }
                                       return fields;
                                     })(),
-                                  if (_userInfo!.followingCount != null && _userInfo!.followingCount != 0)
+                                  if (_userInfo!.followingCount != 0)
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.people_outline,
@@ -1410,7 +1408,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       // Otherwise, continue loop to show first dialog again
     }
 
-    if (banConfigResult != null && context.mounted) {
+    if (context.mounted) {
       // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

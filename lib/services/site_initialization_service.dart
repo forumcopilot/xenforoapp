@@ -10,7 +10,6 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
-import 'package:xenforo_core/xenforo_core.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {

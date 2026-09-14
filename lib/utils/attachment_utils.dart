@@ -92,7 +92,7 @@ class AttachmentUtils {
       return true;
     }
 
-    return _isImageFile(attachment.filename ?? '');
+    return _isImageFile(attachment.filename);
   }
 
   /// Gets the appropriate icon for an attachment based on content type

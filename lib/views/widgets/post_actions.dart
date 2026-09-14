@@ -121,7 +121,7 @@ class PostActionsHandler {
       // threadDataOutput exists - must use topic.id from it (don't use placeholder)
       actualTopicId = data.topic.id;
       AppLogger.debug('🔵 [POST_ACTIONS] Using actualTopicId from threadDataOutput: $actualTopicId');
-      if (actualTopicId == null || actualTopicId.isEmpty) {
+      if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
@@ -191,7 +191,7 @@ class PostActionsHandler {
     }
 
     AppLogger.debug('🔵 [POST_ACTIONS] Navigating to ReplyPage with:');
-    AppLogger.debug('   - threadId: ${actualTopicId!}');
+    AppLogger.debug('   - threadId: $actualTopicId');
     AppLogger.debug('   - forumId: $forumId');
     AppLogger.debug('   - topicTitle: $topicTitle');
     AppLogger.debug('   - postId: $postId');
@@ -321,7 +321,7 @@ class PostActionsHandler {
       // threadDataOutput exists - must use topic.id from it (don't use placeholder)
       actualTopicId = data.topic.id;
       AppLogger.debug('🔵 [POST_ACTIONS] Using actualTopicId from threadDataOutput: $actualTopicId');
-      if (actualTopicId == null || actualTopicId.isEmpty) {
+      if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
@@ -365,7 +365,7 @@ class PostActionsHandler {
     }
 
     AppLogger.debug('🔵 [POST_ACTIONS] Navigating to ReplyPage (quote) with:');
-    AppLogger.debug('   - threadId: ${actualTopicId!}');
+    AppLogger.debug('   - threadId: $actualTopicId');
     AppLogger.debug('   - forumId: $forumId');
     AppLogger.debug('   - topicTitle: $topicTitle');
     AppLogger.debug('   - postId: $postId');

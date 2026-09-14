@@ -170,7 +170,7 @@ class ProfileInfoSection extends StatelessWidget {
                   title: 'Last Activity',
                   subtitle: DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(userInfo.lastActivityTime!.toLocal()),
                 ),
-              if (userInfo.postCount != null && userInfo.postCount != 0)
+              if (userInfo.postCount != 0)
                 _buildInfoTile(
                   context,
                   icon: Icons.post_add,
@@ -202,7 +202,7 @@ class ProfileInfoSection extends StatelessWidget {
                   }
                   return fields;
                 })(),
-              if (userInfo.followingCount != null && userInfo.followingCount != 0)
+              if (userInfo.followingCount != 0)
                 _buildInfoTile(
                   context,
                   icon: Icons.people_outline,

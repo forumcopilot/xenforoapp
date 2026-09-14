@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_message_result.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
-import 'package:intl/intl.dart';
 import 'appbars/private_message_app_bar.dart';
 import 'reply_private_message_page.dart';
-import 'new_private_message_page.dart';
-import 'user_profile_page.dart';
-import 'widgets/user_avatar.dart';
 import 'listitems/message_item.dart';
-import 'dart:io';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../l10n/generated/app_localizations.dart';
 

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'error_handler.dart';
 import 'app_exceptions.dart';
 import '../logging/app_logger.dart';

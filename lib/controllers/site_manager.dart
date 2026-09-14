@@ -3,7 +3,6 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
-import 'package:forumcopilot_flutter/core/errors/app_exceptions.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/core/cache/cache_manager.dart';

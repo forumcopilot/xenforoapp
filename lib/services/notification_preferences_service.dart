@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/notification_preferences.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
-import 'package:forumcopilot_flutter/core/errors/app_exceptions.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/core/cache/cache_manager.dart';

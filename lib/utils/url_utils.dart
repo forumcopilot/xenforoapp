@@ -228,7 +228,6 @@ class UrlUtils {
         break;
 
       case ForumTemplate.unknown:
-      default:
         postUrl = cleanForumUrl;
         break;
     }
@@ -332,7 +331,6 @@ class UrlUtils {
         break;
 
       case ForumTemplate.unknown:
-      default:
         topicUrl = cleanForumUrl;
         break;
     }
@@ -994,7 +992,7 @@ class UrlUtils {
           break;
       }
 
-      final bool isSameForum = topicId != null || postId != null || forumId != null;
+      final bool isSameForum = topicId != null || postId != null;
       return _ForumUrlAnalysis(
         isSameForum: isSameForum,
         topicId: topicId,

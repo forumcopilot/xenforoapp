@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
 
 abstract class FCStatefulWidget<T extends StatefulWidget> extends State<T> {

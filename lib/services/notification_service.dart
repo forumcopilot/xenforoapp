@@ -569,7 +569,7 @@ class NotificationService with ServiceErrorHandlingMixin {
           await Future.delayed(const Duration(milliseconds: 500));
 
           AppLogger.debug('✅ [NotificationService] Forum initialized successfully');
-          AppLogger.debug('🔐 [NotificationService] Login state: isLoggedIn=${siteContext!.isLoggedIn}, hasLoginData=${siteContext.loginDataOutput != null}');
+          AppLogger.debug('🔐 [NotificationService] Login state: isLoggedIn=${siteContext.isLoggedIn}, hasLoginData=${siteContext.loginDataOutput != null}');
           return siteController;
         }
         await Future.delayed(const Duration(milliseconds: 200));

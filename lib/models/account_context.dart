@@ -2,7 +2,6 @@ import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:get/get.dart';
-import '../utils/site_utils.dart';
 import '../controllers/site_controller.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'secure_credential_store.dart';

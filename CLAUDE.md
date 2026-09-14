@@ -76,4 +76,5 @@ macOS-only utilities:
 - **Linting.** `analysis_options.yaml` extends `package:flutter_lints/flutter.yaml` and excludes `Original/**` and `docs/xenforo_api_docs/**`.
 
 ## Known issues
-- None open. `flutter analyze` should report no errors; the former `PushNotificationService.baseUrl` undefined getter was fixed in the canonical SDK migration.
+- None open in `lib/`. `flutter analyze lib test` should report no errors and no warnings (CI runs exactly that, with warnings fatal); the former `PushNotificationService.baseUrl` undefined getter was fixed in the canonical SDK migration.
+- `packages/forumcopilot_sdk/lib/forumcopilot_sdk.dart` has one `unused_import` warning (`flutter_inappwebview`). It lives in the canonical copy at `/Volumes/CRUCIAL/tapatalk_flutter` and must be fixed there, not here.

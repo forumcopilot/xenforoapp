@@ -216,7 +216,7 @@ class YouTubeCache {
   /// Gets cache statistics for debugging
   static Future<Map<String, dynamic>> getCacheStats() async {
     try {
-      final cacheInfo = await _cacheManager.getFileFromCache('dummy');
+      await _cacheManager.getFileFromCache('dummy');
       // This is a simple way to check cache status
       return {
         'cacheAvailable': true,

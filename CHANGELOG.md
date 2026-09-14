@@ -6,6 +6,38 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-14
+
+Scroll-performance release, plus a security fix for how the app stores your forum password. The thread view no longer rebuilds every post on scroll, image memory drops by about 70% on photo-heavy threads, and the home feed is virtualised. Ships with bundled ForumCopilot addon v1.8.1 (unchanged). The hosted Forum Copilot app and Forum Copilot Push are now free.
+
+### Added
+- Build-time forum override. `forumName` and `forumBaseUrl` in `AppForumConfig` now read `--dart-define=FORUM_NAME=...` and `--dart-define=FORUM_BASE_URL=...`, falling back to the committed placeholders. Lets a benchmark, CI or preview build target a forum without editing or committing the config.
+- Device scroll-performance harness (`integration_test/scroll_perf_test.dart` + `test_driver/perf_driver.dart`) that flings the topic list, a thread and the home feed on a connected phone and prints `FrameTiming` percentiles. How to run it, what the numbers can and cannot gate, and the measured baseline live in `docs/perf-benchmarking.md`; the audit that drove this release is `docs/perf-audit-2026-09.md`.
+- Hermetic widget tests for the post-content cache, BBCode image Hero tags, vBulletin-import attachment ids and link-preview selection (`test/`). `flutter test` now covers them.
+
+### Changed
+- **Thread view scroll performance.** Scrolling no longer rebuilds the whole thread: the visible-post counter and first-post flag are `ValueNotifier`s, rows are keyed by post id, and the per-post `VisibilityDetector` is gone. Post content is derived once per input and memoised in a process-wide LRU cache; the BBCode body is parsed to spans once per widget State rather than on every build. On the pinned benchmark thread, build p99 fell from 27 ms to 12–13 ms and in-place republishes (page load, reaction, poll vote) no longer produce a single build frame over 16.7 ms. Leaked `TapGestureRecognizer`s from `flutter_bbcode` are now disposed.
+- **Images decode at display size and are fetched once.** `CachedRedirectImage` honours `cacheWidth`/`cacheHeight` on its primary path and every call site now passes a size. Image-cache occupancy on a photo-heavy thread dropped from 25.9 MB to 7.8 MB with the same images loaded.
+- **Home feed virtualised.** The landing tab's rows now live in a `SliverList` instead of one `Column`, and the four hidden filter lists no longer build a full `ListView` off-screen every frame. Feed build p50 went from about 10 ms to 1 ms and janky frames per benchmark run from several hundred to under twenty. The feed header drops its `IntrinsicHeight` and full-width `ColorFiltered`.
+- One link-preview card per post, resolved from the in-memory caches on first build instead of after a rebuild.
+- Per-thread `AvatarActions`, `ImageActions` and `PostActionsHandler` are allocated once per list instead of once per post per build; only the highlighted post carries an `AnimatedContainer`; per-render BBCode debug logging removed; the unused `RichTextContent` renderer deleted.
+- `forumcopilot_sdk` and `xenforo_core` synced byte-identical with the canonical copies (additive optional model fields; XenForo behaviour unchanged). Picks up the canonical Cloudflare interceptor fixes: a dismissed challenge now rejects the request instead of hanging it, concurrent challenges share one solve, and HTTP init can no longer clear an already-attached interceptor.
+- Hosted Forum Copilot app and Forum Copilot Push no longer cost anything; README and config comments updated accordingly.
+
+### Fixed
+- **Security:** forum passwords are stored in the OS keystore (iOS/macOS Keychain, Android Keystore via `flutter_secure_storage`) instead of XOR-obfuscated in `SharedPreferences`, where they were effectively plaintext in any device backup. Existing installs migrate on first read and the legacy blobs are deleted. Auto-login keeps working.
+- Opening a thread anchored to a post (unread, or a specific post) no longer shows duplicate posts; posts are de-duplicated by id on merge and load-more stops when a page adds nothing new.
+- The tap-to-view image transition now actually animates: openers pass the tapped image's Hero tag through instead of inventing one nothing on screen carried, and the attachment grid and carousel gained Heroes.
+- `[ATTACH]` tags carrying the vBulletin-import `.vB` suffix now resolve to their attachment instead of a "0 B" placeholder card.
+- The push backend row in Notification Settings no longer references an undefined getter (the analyzer error listed under "Known issues" in `CLAUDE.md`).
+- The app-level smoke test (`test/widget_test.dart`) passes again. It used to end with the bootstrap's 10-second timeout timers still pending; it now lets them elapse under fake time, so `flutter test` is green with no network.
+
+### Notes for forks
+- No config changes are required. If you build with `--dart-define`, the two new keys are optional and default to whatever is committed in `app_forum_config.dart`.
+- Add `flutter_secure_storage` to your platform setup if you had stripped it: macOS needs the Keychain entitlement it already ships with; nothing else is new.
+
+[0.10.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.10.0
+
 ## [0.9.0] - 2026-08-04
 
 Multi-reaction support for posts and direct messages — tap-to-choose Like/Love/Haha/etc. instead of a like-only button — plus a hardened photo-upload path and a Google Play policy fix. Ships with bundled ForumCopilot addon v1.8.1 (up from v1.4.5), which brings private-conversation push and the server side of multi-reactions.
@@ -73,6 +105,7 @@ Quality-of-life patch release. Three forks-driven improvements moved upstream so
 
 [0.6.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.1
 
+## [0.6.0] - 2026-05-08
 
 First public release of the standalone XenForo Flutter template — a fork-friendly, build-it-yourself mobile app for any XenForo community.
 
@@ -94,5 +127,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.0...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

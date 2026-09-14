@@ -70,7 +70,7 @@ class AppForumConfig {
   ///      name, and an APNs auth key (`.p8`); ForumCopilot issues the
   ///      `GoogleService-Info.plist` / `google-services.json` your build
   ///      needs. Set this URL to the endpoint shown in your ForumCopilot
-  ///      dashboard. See https://forumcopilot.com for sign-up and pricing.
+  ///      dashboard. Free; see https://forumcopilot.com to sign up.
   static const String pushApiBaseUrl = '';
 
   /// Android package name used for passkey assetlinks validation.

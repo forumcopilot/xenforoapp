@@ -76,4 +76,4 @@ macOS-only utilities:
 - **Linting.** `analysis_options.yaml` extends `package:flutter_lints/flutter.yaml` and excludes `Original/**` and `docs/xenforo_api_docs/**`.
 
 ## Known issues
-- `lib/views/settings/notification_settings_page.dart:176` references `PushNotificationService.baseUrl`, which is not defined on that service. Reported by the analyzer as `undefined_getter`. Doesn't crash at runtime unless that page is opened — fix when wiring up the push backend.
+- None open. `flutter analyze` should report no errors; the former `PushNotificationService.baseUrl` undefined getter was fixed in the canonical SDK migration.

@@ -4,6 +4,12 @@ This repository is an open-source Flutter template for building a **single-forum
 
 The app connects directly to one XenForo forum through the Forum Copilot add-on endpoint (for example `forumcopilot.php`) and does not require `forumcopilot.com` runtime APIs.
 
+> **Try the free hosted app first.** Forum Copilot is already on the [App Store](https://apps.apple.com/app/id6755660616) and [Google Play](https://play.google.com/store/apps/details?id=com.forumcopilot.mobile), and it is completely free. It gives your members essentially the same experience as an app built from this template. Install the XenForo add-on from `plugins/FC_XenForo2/`, register your forum at [forumcopilot.com](https://forumcopilot.com), and you are done. Build from this repository only if you want your own branded app in the stores.
+
+- [CHANGELOG.md](CHANGELOG.md) — what changed in each release
+- [RELEASING.md](RELEASING.md) — how releases are cut and versioned
+- [docs/](docs/README.md) — platform guides and the scroll-performance benchmark
+
 ---
 
 ## Features
@@ -48,7 +54,7 @@ This app provides a full-featured forum experience for a single XenForo site:
 ### Settings & UX
 - **Forum settings** – Per-category settings from XenForo (when provided by add-on).
 - **Notification settings** – Control push and in-app notification behavior.
-- **Localization** – Multi-language support (e.g. English, Spanish, Italian) via `gen-l10n`.
+- **Localization** – 11 languages (English, German, Spanish, French, Italian, Japanese, Korean, Dutch, Portuguese, Russian, Chinese) via `gen-l10n`.
 - **Theme** – Material Design with forum-aware styling.
 
 ### Technical
@@ -105,6 +111,16 @@ static const String pluginEndpoint = 'forumcopilot.php';
 
 Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `pushApiBaseUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed.
 
+`forumName` and `forumBaseUrl` can also be overridden at build time without editing the file, which is handy for a CI build, a preview against a staging forum, or the benchmark harness:
+
+```bash
+flutter run -d macos \
+  --dart-define=FORUM_NAME="My Forum" \
+  --dart-define=FORUM_BASE_URL=https://forum.example.com
+```
+
+The values committed in `app_forum_config.dart` remain the defaults.
+
 ### 4. Install dependencies
 
 From the project root:
@@ -121,7 +137,7 @@ The app uses local packages (`forumcopilot_sdk`, `xenforo_core`) and generated l
 ./buildlib.sh
 ```
 
-This runs `build_runner` in `packages/forumcopilot_sdk` and then `flutter gen-l10n`. On Windows use the equivalent steps (e.g. run the SDK build and `flutter gen-l10n` manually).
+This runs `build_runner` in `packages/forumcopilot_sdk` and then `flutter gen-l10n`. On Windows run `buildlib.bat` instead. Re-run it whenever you change an ARB file or an annotated model in the SDK.
 
 ### 6. Run the app on macOS
 
@@ -163,9 +179,9 @@ You have three ways to set this up. Pick the one that matches your operational c
 
 ### Path 1 — Hosted ForumCopilot Push (managed, easiest)
 
-ForumCopilot Push is a managed service that handles the Firebase project AND the dispatcher for you. You provide your iOS bundle ID, Android package name, and an APNs auth key (`.p8`) generated in your Apple Developer account; ForumCopilot issues the `GoogleService-Info.plist` / `google-services.json` your build needs and gives you a push API endpoint.
+ForumCopilot Push is a free managed service that handles the Firebase project AND the dispatcher for you. You provide your iOS bundle ID, Android package name, and an APNs auth key (`.p8`) generated in your Apple Developer account; ForumCopilot issues the `GoogleService-Info.plist` / `google-services.json` your build needs and gives you a push API endpoint.
 
-Setup overview (see https://forumcopilot.com for full details and pricing):
+Setup overview (see https://forumcopilot.com for full details):
 
 1. Sign up at https://forumcopilot.com and register your forum.
 2. Provide your iOS bundle ID, Android package name, and macOS bundle ID in the dashboard.
@@ -216,6 +232,36 @@ For unusual setups where you need a custom routing layer between the addon and F
    - accepts FCM token registrations from the app at `POST <pushApiBaseUrl>/...` endpoints
    - receives notification events from the `forumcopilot.php` addon and dispatches them via the FCM HTTP v1 API
 4. Configure the `forumcopilot.php` addon's hosted-push admin options to point at your backend.
+
+---
+
+## Tests and benchmarks
+
+Unit and widget tests run without a device or network access to a forum:
+
+```bash
+flutter test
+```
+
+Live REST integration tests for the XenForo package need a reachable forum with the add-on installed:
+
+```bash
+XF_BASE_URL=https://your.forum XF_API_KEY=<key> \
+  flutter test packages/xenforo_core/test/rest -r compact
+```
+
+Scroll performance is measured on a real phone with `flutter drive --profile`. The harness, the recorded baseline, and the traps that produce misleading numbers are documented in [docs/perf-benchmarking.md](docs/perf-benchmarking.md). Run it before and after any change to the topic list, thread view or home feed.
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome at https://github.com/forumcopilot/xenforoapp.
+
+- Run `flutter analyze` and `flutter test` before opening a pull request; both run in CI.
+- Keep `lib/config/app_forum_config.dart` on the template placeholders. Point a build at a real forum with `--dart-define` instead.
+- Commit messages follow the conventional `type(scope): summary` form used in the history; `RELEASING.md` explains how they roll up into release notes.
+- Changes to the SDK or XenForo packages need their code generators re-run (see step 5 above and `CLAUDE.md`).
 
 ---
 

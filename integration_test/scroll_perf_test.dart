@@ -3,14 +3,19 @@
 // Run (phone connected, developer mode, listed by `adb devices`):
 //
 //   flutter drive --profile -d <device-id> \
-//     --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
+//     --dart-define=FORUM_BASE_URL=https://<benchmark-forum> \
+//     --dart-define=PERF_FORUM_ID=<node-id> \
+//     --dart-define=PERF_TOPIC_ID=<thread-id> \
+//     --dart-define=PERF_MEDIA_TOPIC_ID=<thread-id> \
 //     --driver=test_driver/perf_driver.dart \
 //     --target=integration_test/scroll_perf_test.dart > /tmp/drive.log 2>&1
 //   grep PERF /tmp/drive.log
 //
-// The --dart-define is required: the committed config points at a placeholder
-// host, and against it the app renders nothing and the run ends green with
-// no PERF lines.
+// Every --dart-define is required. FORUM_BASE_URL because the committed config
+// points at a placeholder host, and against it the app renders nothing and the
+// run ends green with no PERF lines. The three PERF_*_ID values because the
+// harness refuses to start without pinned targets (see below); nothing about
+// any particular forum is committed.
 //
 // Prints one summary line per screen so before/after runs line up with the
 // Discourse audit tables:
@@ -73,17 +78,19 @@ import 'package:forumcopilot_flutter/views/post_page.dart';
 // before/after that would have looked like an 84 % improvement from no change
 // at all.
 //
-// Both targets live under SatelliteGuys Archives, which is READ-ONLY
-// (`canPost=false, canReply=false` from the add-on's getForum). Nothing can be
+// The targets are supplied at build time (PERF_FORUM_ID, PERF_TOPIC_ID,
+// PERF_MEDIA_TOPIC_ID) so that no particular forum is ever named in the
+// template. Pick all of them under a node that is READ-ONLY (an archive:
+// `canPost=false, canReply=false` from the add-on's getForum). Nothing can be
 // posted, so the rows and the posts are byte-identical on every run — the only
 // thing left varying is the code under test.
 //
-// Chosen for content, not just stability: 18/20 rows carry an avatar and a
-// snippet; the thread averages ~700-char posts with quotes throughout and an
-// avatar on nearly every post, which is what actually exercises the BBCode
+// Choose for content, not just stability: a node where most rows carry an
+// avatar and a snippet, and a thread of long posts with quotes throughout and
+// an avatar on nearly every post, which is what actually exercises the BBCode
 // parse and image-decode paths the audit is about.
 //
-// CHANGING EITHER CONSTANT INVALIDATES EVERY EARLIER NUMBER. Re-baseline.
+// CHANGING ANY TARGET INVALIDATES EVERY EARLIER NUMBER. Re-baseline.
 //
 // The third line, `home_feed`, is the app's landing tab, and it is measured
 // LAST and on purpose despite being unpinnable. Pinning is not available to it
@@ -100,25 +107,30 @@ import 'package:forumcopilot_flutter/views/post_page.dart';
 // 10x structural fix to that tab has a number attached to it. It runs last so
 // its noise cannot contaminate the two pinned measurements.
 
-/// Node 42 — "Video Game Reviews & Discussions" (SatelliteGuys Archives).
-/// 2,194 threads, guest-readable, read-only since 2024-04-03.
-const String _perfForumId = '42';
-const String _perfForumName = 'Video Game Reviews & Discussions';
+/// The forum node whose topic list is measured: a few thousand threads,
+/// guest-readable, read-only. The name is display-only (the app bar) and the
+/// server's own name replaces it once the node loads.
+const String _perfForumId = String.fromEnvironment('PERF_FORUM_ID');
+const String _perfForumName =
+    String.fromEnvironment('PERF_FORUM_NAME', defaultValue: 'Benchmark forum');
 
-/// Thread 203226 — "Where are my Satellite Guy's gamers at?", 1,700 posts.
-/// Deep enough that eight flings never reach the end, so pagination is
-/// measured too.
-const String _perfTopicId = '203226';
-const String _perfTopicTitle = "Where are my Satellite Guy's gamers at?";
+/// The text thread: 1,000+ posts, so that eight flings never reach the end
+/// and pagination is measured too. Long posts with quotes and avatars; few or
+/// no inline images in its first 60 posts, which is what `thread_media` is
+/// for. The title is display-only, as above.
+const String _perfTopicId = String.fromEnvironment('PERF_TOPIC_ID');
+const String _perfTopicTitle = String.fromEnvironment('PERF_TOPIC_TITLE',
+    defaultValue: 'Benchmark thread');
 
-/// Thread 345894 -- "PC Owners Thread", same read-only archive node. The
-/// benchmark thread above is text: ~0 inline images in its first 60 posts.
-/// This one has six full-size [img] tags in its first 60 (imgur PNG/JPEG
-/// 62-473 KB, one 5 MB animated GIF, one URL repeated in two posts), all of
-/// which still resolve. It exists to measure image decode size, which the
-/// frame timings cannot see and the text thread cannot exercise.
-const String _perfMediaTopicId = '345894';
-const String _perfMediaTopicTitle = 'PC Owners Thread';
+/// A second thread from the same read-only node with several full-size [img]
+/// tags in its first 60 posts, all of which still resolve — ideally a range of
+/// sizes, one large animated GIF and one URL repeated in two posts. It exists
+/// to measure image decode size, which the frame timings cannot see and the
+/// text thread cannot exercise.
+const String _perfMediaTopicId = String.fromEnvironment('PERF_MEDIA_TOPIC_ID');
+const String _perfMediaTopicTitle = String.fromEnvironment(
+    'PERF_MEDIA_TOPIC_TITLE',
+    defaultValue: 'Benchmark media thread');
 
 const String _perfUser = String.fromEnvironment('PERF_USER');
 const String _perfPass = String.fromEnvironment('PERF_PASS');
@@ -128,6 +140,8 @@ void main() {
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets('topic list and thread scrolling', (tester) async {
+    _requirePinnedTargets();
+
     // main() is `void async`: it cannot be awaited. Start it and pump until
     // the app has a SiteContext, which is what both screens need.
     app.main();
@@ -237,6 +251,21 @@ void main() {
 
 // ignore: avoid_print
 void _stage(String s) => print('PERFSTAGE $s ${DateTime.now().toIso8601String()}');
+
+/// Refuses to run without pinned targets. Otherwise the harness would push an
+/// empty forum id, time out on the first screen, and the failure would read as
+/// a network problem rather than a missing --dart-define.
+void _requirePinnedTargets() {
+  final missing = <String>[
+    if (_perfForumId.isEmpty) 'PERF_FORUM_ID',
+    if (_perfTopicId.isEmpty) 'PERF_TOPIC_ID',
+    if (_perfMediaTopicId.isEmpty) 'PERF_MEDIA_TOPIC_ID',
+  ];
+  if (missing.isNotEmpty) {
+    throw TestFailure('Missing --dart-define: ${missing.join(', ')}. The '
+        'harness measures pinned content only; see docs/perf-benchmarking.md.');
+  }
+}
 
 /// Pushes [page] on the app's own navigator. The returned route future only
 /// completes when the route is popped, so it is deliberately not awaited.

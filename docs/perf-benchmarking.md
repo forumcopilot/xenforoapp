@@ -10,15 +10,19 @@ Phone connected, developer mode on, listed by `adb devices`.
 
 ```bash
 flutter drive --profile -d <device-id> \
-  --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
+  --dart-define=FORUM_BASE_URL=https://<benchmark-forum> \
+  --dart-define=PERF_FORUM_ID=<node-id> \
+  --dart-define=PERF_TOPIC_ID=<thread-id> \
+  --dart-define=PERF_MEDIA_TOPIC_ID=<thread-id> \
   --driver=test_driver/perf_driver.dart \
   --target=integration_test/scroll_perf_test.dart > /tmp/drive.log 2>&1
 grep PERF /tmp/drive.log
 ```
 
-The `--dart-define` is not optional: without it the app boots against the
-template's placeholder host, renders nothing, and the run ends green with
-zero `PERF` lines (trap 8).
+None of the `--dart-define`s is optional. Without `FORUM_BASE_URL` the app
+boots against the template's placeholder host, renders nothing, and the run
+ends green with zero `PERF` lines (trap 8). Without the three `PERF_*_ID`
+values the harness refuses to start — see "Both screens open pinned content".
 
 ~3 minutes per run (profile build, install, test, uninstall). Keep the whole
 log — it also holds the app's own debug output, which is useful for counting
@@ -56,17 +60,21 @@ app talks through the **ForumCopilot add-on endpoint**, so it can only measure
 a forum that has the add-on installed.
 
 The benchmark forum is supplied at build time —
-`--dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen` — and
-`AppForumConfig` reads it through `String.fromEnvironment`. The harness pins
-content on that forum, which runs the add-on and lets guests read, so runs
-need no credentials, and the committed config stays the template placeholder. A
-forum that answers guests with HTTP 403 (a members-only board, for example)
-needs a throwaway account supplied at run time instead; nothing is stored in
-the repo:
+`--dart-define=FORUM_BASE_URL=https://<benchmark-forum>` — and
+`AppForumConfig` reads it through `String.fromEnvironment`; the content the
+harness pins on it arrives the same way (`PERF_*`, next section). The
+committed config stays the template placeholder, and no particular forum is
+named anywhere in the repo. Pick a forum that runs the add-on and lets guests
+read, and runs need no credentials. A forum that answers guests with HTTP 403
+(a members-only board, for example) needs a throwaway account supplied at run
+time instead; nothing is stored in the repo:
 
 ```bash
 flutter drive --profile -d <device-id> \
-  --dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen \
+  --dart-define=FORUM_BASE_URL=https://<benchmark-forum> \
+  --dart-define=PERF_FORUM_ID=<node-id> \
+  --dart-define=PERF_TOPIC_ID=<thread-id> \
+  --dart-define=PERF_MEDIA_TOPIC_ID=<thread-id> \
   --driver=test_driver/perf_driver.dart \
   --target=integration_test/scroll_perf_test.dart \
   --dart-define=PERF_USER=<user> --dart-define=PERF_PASS=<pass>
@@ -79,15 +87,26 @@ and prints `PERF signin ok=true`.
 ### Both screens open pinned content
 
 `integration_test/scroll_perf_test.dart` pushes **fixed** content on the app's
-own navigator instead of using whatever is on screen:
+own navigator instead of using whatever is on screen. The targets are yours to
+choose, passed at build time and never committed:
 
-| Half | Target | Why |
+| Define | Segment(s) | What to pick |
 |---|---|---|
-| `topic_list` | node **42**, "Video Game Reviews & Discussions" | 2,194 threads; 18/20 rows have an avatar and a snippet |
-| `thread` | topic **203226**, "Where are my Satellite Guy's gamers at?" | 1,700 posts, ~700-char average with quotes throughout, avatar on nearly every post |
+| `PERF_FORUM_ID` | `topic_list` | A node with a few thousand threads where most rows carry an avatar and a snippet |
+| `PERF_TOPIC_ID` | `thread`, `thread_back`, `thread_rebuild` | A thread of 1,000+ posts, several hundred characters each, with quotes throughout and an avatar on nearly every post; deep enough that eight flings never reach the end, so pagination is measured too |
+| `PERF_MEDIA_TOPIC_ID` | `thread_media` | A thread from the same node with several full-size `[img]` tags in its first 60 posts (see below) |
 
-Pagination is deterministic as a result: the node loads `startNum` 0/21/42/63/84
-and the thread loads posts 1/21/41 on every run.
+`PERF_FORUM_NAME`, `PERF_TOPIC_TITLE` and `PERF_MEDIA_TOPIC_TITLE` are optional
+app-bar strings; the server's own titles replace them once the content loads.
+The harness refuses to start if any of the three IDs is missing, so a forgotten
+define is a hard failure rather than a green run that measured nothing.
+
+All three must sit under a node that is **read-only** — an archive, for which
+the add-on reports `canPost=false, canReply=false`. Nobody can post, so the
+rows and the posts the app receives are byte-identical on every run, and the
+only thing left varying is the code under test. Pagination is deterministic as
+a result: the node loads `startNum` 0/21/42/63/84 and the thread loads posts
+1/21/41 on every run.
 
 ### `thread_back` — why a fourth line exists
 
@@ -132,17 +151,14 @@ the image set is identical every run, so `bytes` compares directly across
 builds — an image decoded at display size occupies a fraction of one decoded
 at the size the forum stored.
 
-The benchmark thread is text (~0 inline images in its first 60 posts), so
-`thread_media` opens a second pinned thread from the same read-only archive
-node: **345894, "PC Owners Thread"**, six full-size `[img]` tags in its first
-60 posts (imgur PNG/JPEG 62–473 KB, one 5 MB animated GIF, one URL repeated
-in two posts), all of which still resolve. Its `PERFIMG bytes` is the
+The benchmark thread should be text (few or no inline images in its first 60
+posts), so `thread_media` opens a second pinned thread, `PERF_MEDIA_TOPIC_ID`,
+from the same read-only node. Pick one with several full-size `[img]` tags in
+its first 60 posts, all of which still resolve, and ideally a mix — a range of
+sizes, one large animated GIF, one URL repeated in two posts — so decode size,
+cache reuse and animation are all exercised. Its `PERFIMG bytes` is the
 evidence for decode-size changes; its frame timings are a bonus. It runs
 after `thread_rebuild` and before `home_feed`.
-
-Both sit under **SatelliteGuys Archives**, which is read-only — the add-on
-reports `canPost=false, canReply=false`, so nobody can post and the bytes the
-app receives are identical on every run.
 
 This is not a detail. The first version of this harness measured the "latest"
 feed and tapped whatever sat in row 2. Two runs of **identical code** gave:
@@ -157,7 +173,8 @@ Thermals were ruled out (all sensors `mStatus=0`, 735 %/800 % CPU idle, skin
 before/after, run 2 → run 1 would read as an 84 % reduction in jank from a
 change that did nothing.
 
-**Changing either constant invalidates every earlier number.** Re-baseline.
+**Changing any pinned target invalidates every earlier number.** Re-baseline,
+and record which targets a set of numbers was taken against.
 
 ### `home_feed` is the exception, and it is deliberate
 
@@ -184,7 +201,10 @@ pinned measurements.
 ## Baseline — 2026-09-09, Pixel `5B291JEA321887`
 
 Three runs, no `lib/` changes between them, commit `3f14783`. Median of the
-three; the spread column is max − min across the three.
+three; the spread column is max − min across the three. Every number in this
+section and in the results log was taken against one fixed set of pinned
+targets on this one phone, so they are comparable with each other and not
+with runs against other targets. A different forum needs its own baseline.
 
 | | build p50 | p90 | p99 | raster p50 | p90 | total>16.7 | total>33 |
 |---|---|---|---|---|---|---|---|

@@ -22,9 +22,9 @@ class AppForumConfig {
   ///
   /// Overridable at build time. The scroll benchmark
   /// (docs/perf-benchmarking.md) passes
-  /// `--dart-define=FORUM_BASE_URL=https://www.satelliteguys.us/xen`; the
-  /// harness pins content on that forum, which is guest-readable and runs
-  /// the add-on. Nothing about the benchmark lives in this file.
+  /// `--dart-define=FORUM_BASE_URL=https://<benchmark-forum>` and pins
+  /// content on it through further `PERF_*` defines. Nothing about the
+  /// benchmark, or about any particular forum, lives in this file.
   static const String forumBaseUrl = String.fromEnvironment('FORUM_BASE_URL',
       defaultValue: 'https://forum.example.com');
 

@@ -6,6 +6,22 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-09-14
+
+Security patch. v0.10.0 moved saved passwords into the OS keystore but left one plaintext copy behind: the login result echoed the submitted password into the persisted site-context blob. This release removes it and scrubs old blobs on load. Also restores the template's Android app label and strips the last customer-specific strings from the template, and CI now fails on analyzer warnings again. Bundled ForumCopilot addon stays at v1.8.1.
+
+### Fixed
+- **Security:** `XenForoUserProxy.loginAsync` no longer copies the submitted password into `FCLoginResult.userpassword`, `SiteContext` strips that field before persisting, and a blob written by an older build is rewritten the moment it is loaded rather than on some later save. The in-memory context keeps the password for the session; later launches read it from the keystore. macOS gains the `keychain-access-groups` entitlement that `flutter_secure_storage` requires. Tests cover the XOR-to-keystore migration and the blob never carrying a password.
+- Android app label is "Forum App" again, matching iOS, macOS, Windows and web. A perf commit in 0.10.0 had accidentally committed a customer fork's label to the template. The debug `applicationIdSuffix` stays.
+- The add-on's admin explanation for the "mobile activity label" option and the perf docs no longer name a customer's forum or app. The phrase's version stamp and `hashes.json` are updated so the add-on installer and file-health check still see the file as pristine.
+
+### Changed
+- The scroll benchmark's pinned targets (forum node, text thread, media thread) are supplied at run time with `--dart-define=PERF_FORUM_ID / PERF_TOPIC_ID / PERF_MEDIA_TOPIC_ID` instead of being named in the code and docs. The harness refuses to start if any is missing. `docs/perf-benchmarking.md` now describes what kind of content to pick, and notes that the recorded baseline compares only with runs against the same targets.
+- All 81 analyzer warnings in `lib/` cleared without behaviour changes (unused imports, fields and locals; null checks on values the analyzer proves non-null; two unreachable switch defaults). CI runs `flutter analyze lib test --no-fatal-infos`, so warnings fail the build again. The single remaining warning is in the synced SDK package and is already fixed in the canonical repo.
+- Storage-reset docs and script note that the password lives in the keystore, outside the macOS app container.
+
+[0.10.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.10.1
+
 ## [0.10.0] - 2026-09-14
 
 Scroll-performance release, plus a security fix for how the app stores your forum password. The thread view no longer rebuilds every post on scroll, image memory drops by about 70% on photo-heavy threads, and the home feed is virtualised. Ships with bundled ForumCopilot addon v1.8.1 (unchanged). The hosted Forum Copilot app and Forum Copilot Push are now free.
@@ -127,5 +143,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.1...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

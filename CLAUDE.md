@@ -51,10 +51,11 @@ Tests:
 
 ```bash
 flutter test                          # app-level (just test/widget_test.dart)
-flutter test packages/xenforo_core/test/rest -r compact   # live REST integration tests
-# Override the target forum:
-XF_BASE_URL=https://your.forum XF_API_KEY=<key> \
-  flutter test packages/xenforo_core/test/rest -r compact
+# Live API suite (writes to the forum; use a throwaway instance). Reads
+# packages/xenforo_core/test/config.json (copy from config.json.example):
+cd packages/xenforo_core && flutter test test/xenforo_basic_tests.dart
+# Full local E2E (local XenForo + add-on + ngrok + app on a Pixel):
+# docs/guides/LOCAL_E2E_TESTING.md ; add-on deploy helper: scripts/xf_dev_sync.sh
 flutter test test/widget_test.dart -p chrome              # single file / single platform
 ```
 

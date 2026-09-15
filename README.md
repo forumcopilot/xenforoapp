@@ -270,14 +270,15 @@ Unit and widget tests run without a device or network access to a forum:
 flutter test
 ```
 
-Live REST integration tests for the XenForo package need a reachable forum with the add-on installed:
+The live API suite in `packages/xenforo_core` runs the SDK's proxy tests against a real forum with the add-on installed. It writes to that forum, so use a throwaway instance. Copy `test/config.json.example` to `test/config.json`, fill in the forum URL, a test account and a few content ids, then:
 
 ```bash
-XF_BASE_URL=https://your.forum XF_API_KEY=<key> \
-  flutter test packages/xenforo_core/test/rest -r compact
+cd packages/xenforo_core && flutter test test/xenforo_basic_tests.dart
 ```
 
 Scroll performance is measured on a real phone with `flutter drive --profile`. The harness, the recorded baseline, and the traps that produce misleading numbers are documented in [docs/perf-benchmarking.md](docs/perf-benchmarking.md). Run it before and after any change to the topic list, thread view or home feed.
+
+For the full local setup, from a local XenForo with the add-on through ngrok to the app running on a phone, see [docs/guides/LOCAL_E2E_TESTING.md](docs/guides/LOCAL_E2E_TESTING.md).
 
 ---
 

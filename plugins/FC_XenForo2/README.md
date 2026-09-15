@@ -5,11 +5,10 @@ The add-on is developed and released from this repository
 (`forumcopilot/xenforoapp`). Do not maintain a second copy elsewhere; other
 repositories that need it should point here.
 
-The one sanctioned exception is a customer-specific build (the "-qhht"
-flavour) kept in that customer's private fork. It carries features that only
-apply to that forum (a push bridge for a third-party chat add-on) and is
-**not** upstream. Generic fixes flow from here to there, never the other way
-without review.
+The one sanctioned exception is a customer-specific build kept in that
+customer's private fork. It carries features that only apply to that forum
+(a push bridge for a third-party chat add-on) and is **not** upstream.
+Generic fixes flow from here to there, never the other way without review.
 
 Current version: see `version_string` in
 [`upload/src/addons/ForumCopilot/addon.json`](upload/src/addons/ForumCopilot/addon.json).

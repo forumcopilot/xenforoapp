@@ -4,11 +4,38 @@ This repository is an open-source Flutter template for building a **single-forum
 
 The app connects directly to one XenForo forum through the Forum Copilot add-on endpoint (for example `forumcopilot.php`) and does not require `forumcopilot.com` runtime APIs.
 
-> **Try the free hosted app first.** Forum Copilot is already on the [App Store](https://apps.apple.com/app/id6755660616) and [Google Play](https://play.google.com/store/apps/details?id=com.forumcopilot.mobile), and it is completely free. It gives your members essentially the same experience as an app built from this template. Install the XenForo add-on from `plugins/FC_XenForo2/`, register your forum at [forumcopilot.com](https://forumcopilot.com), and you are done. Build from this repository only if you want your own branded app in the stores.
+## Forum Copilot: the only full-featured mobile app built specifically for XenForo
 
-- [CHANGELOG.md](CHANGELOG.md) — what changed in each release
+[**forumcopilot.com**](https://forumcopilot.com) is the home of this project. Forum Copilot is not a generic forum reader with a XenForo adapter bolted on: it speaks XenForo's own API through a purpose-built add-on, so threads, reactions, polls, attachments, conversations, alerts, custom profile fields, passkeys and push notifications all work the way your members expect. There are two ways to give your community that experience:
+
+| | Hosted Forum Copilot app | Build your own from this template |
+|---|---|---|
+| **Cost** | Free. The app is free on the [App Store](https://apps.apple.com/app/id6755660616) and [Google Play](https://play.google.com/store/apps/details?id=com.forumcopilot.mobile); hosted push is free too. | Free (MIT), plus your own Apple and Google developer accounts. |
+| **Setup** | Install the add-on below; it registers your forum with [forumcopilot.com](https://forumcopilot.com) automatically. Then tell your members. | Install the add-on, edit one config file, build and publish the app yourself. |
+| **Branding** | Forum Copilot branding; your forum appears alongside others. | Your name, icon and store listing. |
+| **Best for** | Most forums. Try this first and confirm everything works before deciding to build. | Communities that want their own branded app in the stores. |
+
+**Want a branded app without doing the build yourself?** The Forum Copilot team builds and publishes customised, fully branded apps for individual forums, including store listing, push setup and ongoing maintenance. See [forumcopilot.com/support](https://forumcopilot.com/support) or email [forumcopilot@gmail.com](mailto:forumcopilot@gmail.com?subject=Custom%20App%20Development) for a quote.
+
+Project links:
+
+- [CHANGELOG.md](CHANGELOG.md) — what changed in each app release
 - [RELEASING.md](RELEASING.md) — how releases are cut and versioned
 - [docs/](docs/README.md) — platform guides and the scroll-performance benchmark
+- [Add-on changelog](https://forumcopilot.com/addon-changelog) — release notes for the XenForo add-on
+
+---
+
+## Install the XenForo add-on (required for both paths)
+
+Whichever path you choose, your forum needs the **Forum Copilot Mobile App API** add-on. It exposes the `forumcopilot.php` endpoint the app talks to, handles device registration for push, and adds the smart banner that invites web visitors to open the app. The add-on's source ships in this repository under [`plugins/FC_XenForo2/`](plugins/FC_XenForo2/) (currently v1.8.1, MIT licensed), and the packaged ZIP for each release is available at [forumcopilot.com/addon-download-notice](https://forumcopilot.com/addon-download-notice).
+
+1. **Download the ZIP** from [forumcopilot.com/addon-download-notice](https://forumcopilot.com/addon-download-notice), or build one from `plugins/FC_XenForo2/upload/` (zip the `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`).
+2. **Install it in XenForo.** In the Admin Control Panel go to **Add-ons**, click **Install/upgrade from archive**, and upload the ZIP. Upgrading an existing install works the same way. (XenForo 2.2 or newer is required, and you need a valid XenForo licence from XenForo Ltd.)
+3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your dashboard there, where you manage push, branding and the smart banner.
+4. **Check the endpoint.** `https://your.forum/forumcopilot.php` should answer, and `https://your.forum/forumcopilot.php?method=getConfig` should return JSON describing your forum.
+5. **Try it in the hosted app.** Install Forum Copilot from the App Store or Google Play; your forum is listed as soon as step 3 succeeds. Sign in with a forum account and use it end to end. Push notifications work out of the box on the hosted path.
+6. **Then, if you want your own app,** continue with the build steps below and point `lib/config/app_forum_config.dart` at your forum.
 
 ---
 

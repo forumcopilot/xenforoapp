@@ -478,7 +478,9 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
       passkeyChallenge: response['passkeyChallenge']?.toString(),
       passkeyRpId: response['passkeyRpId']?.toString(),
       passkeyTimeout: passkeyTimeout,
-      userpassword: password, // Store password for internal use
+      // The submitted password is deliberately not echoed into the result:
+      // FCLoginResult is persisted with the SiteContext, and nothing reads
+      // userpassword back.
       isProblematicUrl: response['isProblematicUrl'] ?? false,
     );
   }

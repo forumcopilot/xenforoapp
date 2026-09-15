@@ -117,12 +117,21 @@ Example code would need to:
 The app stores the following in SharedPreferences:
 
 - **Settings**: `theme_mode`, `page_per_size`
-- **Site Data**: `site_accounts`, `site_passwords`, `site_visit_history`
+- **Site Data**: `site_accounts`, `site_visit_history`, `site_usernames`
 - **Site Contexts**: `site_context_<url>` (one per site)
 - **Cache**: `CACHE_<siteKey>_<key>`, `CACHE_EXPIRATION_<key>`
 - **Search**: `search_history`
 
 All of these will be cleared when you delete the app container.
+
+The saved forum **password** is not in SharedPreferences. It lives in the
+platform keystore via `flutter_secure_storage` (keys `visit_password.<siteId>`
+and `site_password.<host>`), which on macOS is the login Keychain, *outside*
+the app container. Deleting the container therefore leaves it behind; to
+remove it too, open Keychain Access and delete the `flutter_secure_storage_service`
+item whose account is `visit_password.1`. (Older builds kept an XOR-obfuscated
+copy in prefs under `site_credentials` / `site_passwords`; the first launch of a
+newer build moves it into the keystore and deletes those keys.)
 
 
 

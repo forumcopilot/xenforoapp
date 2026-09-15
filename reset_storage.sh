@@ -31,7 +31,9 @@ fi
 
 echo "This will delete:"
 echo "  - All app preferences and settings"
-echo "  - All account credentials"
+echo "  - All account credentials in the container (the saved forum password"
+echo "    lives in the login Keychain and is NOT removed - see"
+echo "    docs/guides/RESET_LOCAL_STORAGE.md)"
 echo "  - All site visit history"
 echo "  - All cached data"
 echo "  - All application files"

@@ -131,13 +131,25 @@ class SiteContext {
       // only in memory at runtime and re-loaded on demand from the
       // platform keystore (SiteVisitTracker / secure credential store).
       // fromJson still reads a legacy 'password' key so old blobs load,
-      // and the next saveToDevice rewrites this entry without it.
+      // and loadFromDevice rewrites such a blob without it right away.
       'lastSuccessfulLoginMethod': lastSuccessfulLoginMethod,
       // Serialize complex objects
       'site': site.toJson(),
       'configDataOutput': configDataOutput?.toJson(),
-      'loginDataOutput': loginDataOutput?.toJson(),
+      'loginDataOutput': _loginDataOutputForPersistence(),
     };
+  }
+
+  /// [loginDataOutput] serialized for the on-device blob, minus the
+  /// `userpassword` field. XenForo's loginAsync used to echo the submitted
+  /// password into the login result, which put a second plaintext copy of it
+  /// into SharedPreferences next to the one removed above. Nothing reads the
+  /// field back, so it is dropped here regardless of who populated it.
+  String? _loginDataOutputForPersistence() {
+    final loginData = loginDataOutput;
+    if (loginData == null) return null;
+    final map = loginData.toMap()..remove('userpassword');
+    return jsonEncode(map);
   }
 
   static SiteContext fromJson(Map<String, dynamic> json) {
@@ -202,15 +214,49 @@ class SiteContext {
           prefs.getString('site_context_$pluginUrl');
 
       if (siteContextJson != null) {
-        final loadedContext = SiteContext.fromJson(jsonDecode(siteContextJson));
+        final Map<String, dynamic> json = jsonDecode(siteContextJson);
+        final loadedContext = SiteContext.fromJson(json);
 
         print('✅ [SITE_CONTEXT] Loaded context for: $pluginUrl');
+
+        // Blobs written before the keystore change carried the password in
+        // plaintext (top-level, and echoed inside loginDataOutput). Rewrite
+        // such a blob now rather than waiting for the next save, which on a
+        // still-valid cookie session may not happen for a long time. The
+        // in-memory context keeps the password for this session; later
+        // launches load it from the platform keystore via SiteVisitTracker.
+        if (_carriesPlaintextPassword(json)) {
+          print(
+              '🔒 [SITE_CONTEXT] Legacy blob carried a plaintext password; rewriting it without one');
+          await loadedContext.saveToDevice();
+        }
         return loadedContext;
       }
     } catch (e) {
       print('❌ [SITE_CONTEXT_ERROR] Error loading site context: $e');
     }
     return null;
+  }
+
+  /// True when a persisted blob still contains a password, either as the
+  /// legacy top-level field or echoed inside the serialized login result.
+  static bool _carriesPlaintextPassword(Map<String, dynamic> json) {
+    final topLevel = json['password'];
+    if (topLevel is String && topLevel.isNotEmpty) return true;
+
+    var loginData = json['loginDataOutput'];
+    if (loginData is String && loginData.isNotEmpty) {
+      try {
+        loginData = jsonDecode(loginData);
+      } catch (_) {
+        return false; // Unparseable login data is fromJson's problem, not ours.
+      }
+    }
+    if (loginData is Map) {
+      final echoed = loginData['userpassword'];
+      if (echoed is String && echoed.isNotEmpty) return true;
+    }
+    return false;
   }
 
   /// Clear all saved data (call when user logs out)

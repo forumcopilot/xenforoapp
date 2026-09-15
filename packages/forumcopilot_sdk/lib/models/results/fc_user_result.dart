@@ -87,7 +87,8 @@ class FCLoginResult extends FCBaseResult with FCLoginResultMappable {
   /// Passkey timeout (ms)
   int? passkeyTimeout;
 
-  /// User password (for internal use)
+  /// Legacy: XenForo's loginAsync used to echo the submitted password here.
+  /// No longer populated, and SiteContext strips it before persisting.
   String? userpassword;
 
   /// Whether the URL is problematic

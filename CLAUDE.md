@@ -77,4 +77,4 @@ macOS-only utilities:
 
 ## Known issues
 - None open in `lib/`. `flutter analyze lib test` should report no errors and no warnings (CI runs exactly that, with warnings fatal); the former `PushNotificationService.baseUrl` undefined getter was fixed in the canonical SDK migration.
-- `packages/forumcopilot_sdk/lib/forumcopilot_sdk.dart` has one `unused_import` warning (`flutter_inappwebview`). It lives in the canonical copy at `/Volumes/CRUCIAL/tapatalk_flutter` and must be fixed there, not here.
+- `packages/forumcopilot_sdk/lib/forumcopilot_sdk.dart` has one `unused_import` warning (`flutter_inappwebview`). Do not fix it here: `packages/` is synced byte-identical from `/Volumes/CRUCIAL/tapatalk_flutter`, which already dropped the import (canonical commit `f3529d24`). It clears on the next `packages/` re-sync, at which point the CI analyze step can widen back to the whole tree.

@@ -97,6 +97,15 @@ git push origin main
 
 The site redeploys automatically (CI/CD). Within a few minutes, `https://forumcopilot.com/github-notice` shows the new release in the "Release history" section below the GitHub-redirect notice, with the latest-version overview cards refreshed.
 
+## Releasing the XenForo add-on
+
+The add-on under `plugins/FC_XenForo2/` is released from this repo too, on its
+own version line (1.8.1, 1.8.2, …) independent of the app version. The full
+procedure (version stamps, `hashes.json`, building the ZIP, publishing to the
+site and to GitHub) is in [`plugins/FC_XenForo2/README.md`](plugins/FC_XenForo2/README.md).
+When an app release bundles a new add-on version, say so in the app's
+CHANGELOG entry and release notes.
+
 ## Drafting release notes from the commit log
 
 The fastest way to draft notes:

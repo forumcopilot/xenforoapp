@@ -11,9 +11,14 @@
 #      whose hash entry differs from what's currently on disk).
 #
 # This wrapper runs xf-addon:build-release and then injects both.
+#
+# Lives one level above upload/ on purpose: XenForo's packer must never pick
+# it up, and hashes.json must not list it.
 set -euo pipefail
 
-XF_ROOT="/Volumes/CRUCIAL/qhtt/xenforoweb"
+# A XenForo install with this add-on deployed into src/addons/ForumCopilot/
+# (not a git repo). Override with XF_ROOT=/path/to/xenforo.
+XF_ROOT="${XF_ROOT:-/Volumes/CRUCIAL/qhtt/xenforoweb}"
 ADDON_ID="ForumCopilot"
 ASSETS_SRC="$XF_ROOT/js/ForumCopilot"
 

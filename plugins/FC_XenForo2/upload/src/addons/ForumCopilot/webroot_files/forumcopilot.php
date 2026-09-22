@@ -300,7 +300,10 @@ class ForumCopilotPubApp extends PubApp
                 return;
             }
 
-            $activityRepo = \XF::repository(\XF\Repository\SessionActivityRepository::class);
+            // Short id: XF\Repository\SessionActivity on 2.2, aliased to
+            // SessionActivityRepository on 2.3. The 2.3 class name threw on every
+            // 2.2 request, so the mobile activity label never appeared there.
+            $activityRepo = \XF::repository('XF:SessionActivity');
             $activityRepo->updateSessionActivity(
                 (int) $visitor->user_id,
                 $this->request()->getIp(),

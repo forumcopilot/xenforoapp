@@ -141,7 +141,7 @@
     "src/addons/ForumCopilot/XF/Admin/Controller/Option.php": "054395ebaa1e8fb3144e57063ce2cef98243063c8e336d9df505765d37691249",
     "src/addons/ForumCopilot/XF/Entity/UserFcPushOptOut.php": "e41d710ef9b57eb7d063eb9bffb2c4f11313d713775da361b921f9a3daef162f",
     "src/addons/ForumCopilot/XF/Entity/UserOption.php": "9ee357ee396c4dccf6f726fc4c0f83b8c4c4c79ef59553232fd368224148318e",
-    "src/addons/ForumCopilot/XF/Pub/Controller/AccountController.php": "1cea72d9aee9d52744b027868a411f4bad7a9ca3c8616069ee7950a129a77a40",
+    "src/addons/ForumCopilot/XF/Pub/Controller/AccountController.php": "f26f3d8b3f973e76d8b180ba8bd48e542f31014fd301e51e29f25786fed5784d",
     "src/addons/ForumCopilot/XF/Repository/UserAlert.php": "68aadf7ed69780b619e85277f0ffd07cb6458a238f6b9666b8c301db4e9118fd",
     "src/addons/ForumCopilot/XF/Repository/UserAlertRepository.php": "01fc7dd7d4059ac10ab5e634acb03c773ded2b990b0021e82df9ecdb1d03dce4",
     "src/addons/ForumCopilot/XF/Service/Conversation/PusherService.php": "f24c51d9cd9497b62fef943976c7d791e3a5c9b0e01bf457f46caa8ff4352f8e",
@@ -187,5 +187,5 @@
     "src/addons/ForumCopilot/docs/GET-FORUM-LINK-SUBFORUMS.md": "8208631a8cfb4331ae4b504a7a4bc56fd5fbf4871695c9d1c4a0cfaa992c69fc",
     "src/addons/ForumCopilot/docs/URL-Parsing-Rules.md": "041c68b754c9df192d20b3b29ec3de7b122b64788358fdfe8b5b728afa4f2ee8",
     "src/addons/ForumCopilot/docs/iOS-Passkeys-Associated-Domains.md": "262c2b4c1de6e8e11342c33e9a723585a2c9787963ee69e25ce4c9d5feefcf4e",
-    "src/addons/ForumCopilot/webroot_files/forumcopilot.php": "9fd4a9c29765e2867b799b65e2a2cd4a47dd2f22ab41ca9372c21847f5bd8277"
+    "src/addons/ForumCopilot/webroot_files/forumcopilot.php": "0fa3a674ff219e320708d916e8631fc96bdb77a95d8ad87baec52dcc72c85572"
 }

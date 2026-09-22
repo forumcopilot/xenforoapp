@@ -11,7 +11,7 @@ class AccountController extends XFCP_AccountController
         $options = $this->app()->options();
         if (isset($options->fc_push_enabled) && $options->fc_push_enabled)
         {
-            $alertRepo = $this->repository(\XF\Repository\UserAlertRepository::class);
+            $alertRepo = $this->repository('XF:UserAlert'); // 2.2 name; aliased on 2.3
             $optOutActions = $alertRepo->getAlertOptOutActions();
             $fcPush = $this->filter('fc_push', 'array-bool');
             $fcPushShown = $this->filter('fc_push_shown', 'array-bool');

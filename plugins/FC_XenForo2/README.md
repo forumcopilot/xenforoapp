@@ -40,6 +40,21 @@ regenerate the entry (or the whole manifest) before committing. The manifest
 never lists `hashes.json` itself, `build_release.sh`, or anything outside
 `upload/`.
 
+The hash is **not** a plain SHA-256 of the file. XenForo computes
+`sha256(bytes with every "\r" removed)` (`\XF\Util\Hash::hashTextFile`),
+for binaries too. A manifest built with raw digests marks every CRLF file and
+most images as "unexpected contents" on every install. Regenerate with:
+
+```bash
+cd plugins/FC_XenForo2/upload && python3 - <<'PY'
+import json, os, hashlib
+m = 'src/addons/ForumCopilot/hashes.json'
+h = {os.path.relpath(os.path.join(r, f), '.'): hashlib.sha256(open(os.path.join(r, f), 'rb').read().replace(b'\r', b'')).hexdigest()
+     for r, _, fs in os.walk('.') for f in fs if f != '.DS_Store' and os.path.relpath(os.path.join(r, f), '.') != m}
+json.dump(h, open(m, 'w'), indent=4, sort_keys=True); open(m, 'a').write('\n')
+PY
+```
+
 ## Installing on a forum
 
 See the top-level [README](../../README.md#install-the-xenforo-add-on-required-for-both-paths):

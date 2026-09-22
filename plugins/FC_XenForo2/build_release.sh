@@ -62,7 +62,9 @@ with open(hashes_path) as f:
 for name in ("smartbanner.js", "smartbanner.css", "smartbanner-icon.png"):
     path = os.path.join(assets_src, name)
     with open(path, "rb") as f:
-        digest = hashlib.sha256(f.read()).hexdigest()
+        # XenForo hashes with every "\r" stripped (\XF\Util\Hash::hashText);
+        # a raw digest makes the file health check flag the file as modified.
+        digest = hashlib.sha256(f.read().replace(b"\r", b"")).hexdigest()
     key = f"js/ForumCopilot/{name}"
     hashes[key] = digest
     print(f"  + {key}  {digest[:12]}…")

@@ -123,18 +123,26 @@ every add-on edit; XenForo caches nothing that matters for PHP changes, but
 `_data/*.xml` changes (phrases, options, listeners) only take effect after the
 upgrade step, which the script always runs.
 
-The first time on an instance that had an older add-on (2.2.19 currently has
-1.3.2), the upgrade walks every intermediate migration, including the
-listener rewrites from 1.6 to 1.8. That is itself a useful test: it is what a
-real forum on an old version goes through.
+The first time on an instance that had an older add-on, the upgrade walks
+every intermediate migration, including the listener rewrites from 1.6 to
+1.8. That is itself a useful test: it is what a real forum on an old version
+goes through. (Done on 2026-09-21: 1.3.2 → 1.8.1 upgraded cleanly on 2.2.19.)
+
+If XenForo prints *"N files which have unexpected contents"* during the
+upgrade, the repo's `hashes.json` is out of step with the files. It hashes
+with carriage returns stripped; see `plugins/FC_XenForo2/README.md` for the
+one-liner that regenerates it correctly.
 
 ### 1d. Verify the add-on
 
 ```bash
-curl -s 'http://127.0.0.1:8091/forumcopilot.php?method=getConfig' | head -c 400
+curl -s -X POST -H 'Content-Type: application/json' -d '{"method":"getConfig"}' \
+  http://127.0.0.1:8091/forumcopilot.php | head -c 400
 ```
 
-You should get JSON with `version` (the add-on) and `systemVersion` (XenForo).
+You should get `"result":true` with `version` (the add-on) and `systemVersion`
+(XenForo). A GET, or a POST without the JSON content type, is rejected with
+`"result":false` and a message saying so.
 Then in the Admin CP open **Options → ForumCopilot Options** once. On first
 visit it copies `forumcopilot.php` if missing and tries to register the forum
 with forumcopilot.com. **Registration needs the forum reachable from the

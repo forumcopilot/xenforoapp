@@ -54,14 +54,20 @@ fi
 cp "$ENTRY" "$XF_ROOT/forumcopilot.php"
 
 cd "$XF_ROOT"
-# xf-addon:upgrade fails when the add-on is not installed yet; fall back to install.
-if "$PHP_BIN" cmd.php xf-addon:upgrade "$ADDON_ID" -n; then
-  echo "Upgraded $ADDON_ID to $VERSION"
-else
-  echo "Upgrade did not apply (not installed yet?); installing"
+# What XenForo thinks is installed (version_id, or empty when not installed).
+INSTALLED_ID=$("$PHP_BIN" -r 'require "src/XF.php"; XF::start(__DIR__); echo (string) XF::db()->fetchOne("SELECT version_id FROM xf_addon WHERE addon_id = ?", $argv[1]);' "$ADDON_ID" 2>/dev/null || true)
+NEW_ID=$(sed -n 's/.*"version_id": *\([0-9]*\).*/\1/p' "src/addons/$ADDON_ID/addon.json")
+
+if [[ -z "$INSTALLED_ID" ]]; then
+  echo "Not installed here yet; installing $VERSION"
   "$PHP_BIN" cmd.php xf-addon:install "$ADDON_ID" -n
-  echo "Installed $ADDON_ID $VERSION"
+elif [[ "$INSTALLED_ID" == "$NEW_ID" ]]; then
+  echo "Already at $VERSION ($NEW_ID); re-importing add-on data (xf-addon:rebuild)"
+  "$PHP_BIN" cmd.php xf-addon:rebuild "$ADDON_ID" -n
+else
+  echo "Installed version_id $INSTALLED_ID -> $NEW_ID; upgrading"
+  "$PHP_BIN" cmd.php xf-addon:upgrade "$ADDON_ID" -n
 fi
 
 BOARD=$("$PHP_BIN" -r 'require "src/XF.php"; XF::start(__DIR__); echo XF::options()->boardUrl;' 2>/dev/null || true)
-echo "Done. Check: curl -s '${BOARD:-http://127.0.0.1:8091}/forumcopilot.php?method=getConfig' | head -c 300"
+echo "Done. Check: curl -s -X POST -H 'Content-Type: application/json' -d '{\"method\":\"getConfig\"}' '${BOARD:-http://127.0.0.1:8091}/forumcopilot.php' | head -c 300"

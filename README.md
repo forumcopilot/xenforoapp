@@ -33,7 +33,11 @@ Whichever path you choose, your forum needs the **Forum Copilot Mobile App API**
 1. **Get the add-on.** The simplest way is to visit [forumcopilot.com/console](https://forumcopilot.com/console) and download the latest stable ZIP from there. Or take it directly from GitHub: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
 2. **Install it in XenForo.** In the Admin Control Panel go to **Add-ons**, click **Install/upgrade from archive**, and upload the ZIP. Upgrading an existing install works the same way. (XenForo 2.2 or newer is required, and you need a valid XenForo licence from XenForo Ltd.)
 3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your dashboard there, where you manage push, branding and the smart banner.
-4. **Check the endpoint.** `https://your.forum/forumcopilot.php` should answer, and `https://your.forum/forumcopilot.php?method=getConfig` should return JSON describing your forum.
+4. **Check the endpoint.** It only accepts JSON over POST:
+   ```bash
+   curl -s -X POST -H 'Content-Type: application/json' -d '{"method":"getConfig"}' https://your.forum/forumcopilot.php
+   ```
+   should return JSON with `"result":true`, the add-on `version` and XenForo's `systemVersion`.
 5. **Try it in the hosted app.** Install Forum Copilot from the App Store or Google Play; your forum is listed as soon as step 3 succeeds. Sign in with a forum account and use it end to end. Push notifications work out of the box on the hosted path.
 6. **Then, if you want your own app,** continue with the build steps below and point `lib/config/app_forum_config.dart` at your forum.
 

@@ -488,8 +488,12 @@ abstract class AbstractController extends Controller
         $likesInfo = [];
         
         try {
-            // Check if reaction system is available
-            if (!class_exists('\XF\Repository\ReactionRepository')) {
+            // Check if reaction system is available. XenForo 2.3 names the
+            // repository ReactionRepository; 2.2 names it Reaction. Checking
+            // only the 2.3 name returned an empty list on every 2.2 forum.
+            if (!class_exists('\XF\Repository\ReactionRepository')
+                && !class_exists('\XF\Repository\Reaction')
+            ) {
                 return $likesInfo;
             }
             
@@ -525,19 +529,12 @@ abstract class AbstractController extends Controller
                             $reactionName = 'Reaction ' . $reactionId;
                         }
                         
-                        // Get emoji character if available
-                        if ($reaction->emoji_shortname) {
-                            try {
-                                $reactionEmoji = $reaction->emoji;
-                            } catch (\Exception $e) {
-                                // If emoji conversion fails, leave as null
-                            }
-                        }
-                        
-                        // Get icon URL if using custom image
-                        if ($reaction->image_url) {
-                            $reactionIconUrl = $this->getAbsoluteUrl($reaction->image_url);
-                        }
+                        // Native emoji (2.3's emoji_shortname, or the
+                        // built-in set mapped by name) and a usable icon URL,
+                        // shared with getConfig so the picker and the "who
+                        // reacted" list agree.
+                        $reactionEmoji = ConfigController::emojiForReaction($reaction);
+                        $reactionIconUrl = ConfigController::iconUrlForReaction($reaction, $this);
                     }
                     
                     $likesInfo[] = [

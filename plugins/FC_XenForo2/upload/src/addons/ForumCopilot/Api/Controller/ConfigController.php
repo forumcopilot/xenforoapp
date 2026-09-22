@@ -147,22 +147,14 @@ class ConfigController extends AbstractController
             return [];
         }
 
-        $boardUrl = rtrim((string) $this->app()->options()->boardUrl, '/');
         $out = [];
 
         foreach ($reactions as $reaction) {
-            $imageUrl = (string) $reaction->image_url;
-            // XenForo stores a style-relative path (styles/…/reactions/…/love.png).
-            // Absolutize it so the app can load it directly if needed.
-            if ($imageUrl !== '' && !preg_match('#^https?://#i', $imageUrl)) {
-                $imageUrl = $boardUrl . '/' . ltrim($imageUrl, '/');
-            }
-
             $out[] = [
                 'id'           => (int) $reaction->reaction_id,
                 'title'        => (string) $reaction->title,
                 'emoji'        => self::emojiForReaction($reaction),
-                'imageUrl'     => $imageUrl,
+                'imageUrl'     => (string) (self::iconUrlForReaction($reaction) ?? ''),
                 'displayOrder' => (int) $reaction->display_order,
             ];
         }
@@ -176,7 +168,7 @@ class ConfigController extends AbstractController
      * dislike). Returns null for anything we don't recognise so the app falls
      * back to the reaction's image.
      */
-    protected static function emojiForReaction($reaction): ?string
+    public static function emojiForReaction($reaction): ?string
     {
         // 1. AUTHORITATIVE: XenForo's own "Emoji replacement" field. When the
         //    admin sets it (e.g. :exploding_head:), $reaction->emoji returns the
@@ -186,7 +178,7 @@ class ConfigController extends AbstractController
         //    the Emoji replacement field and clears the image URL (XenForo
         //    requires one or the other, not both).
         try {
-            if (!empty($reaction->emoji_shortname)) {
+            if ($reaction->isValidColumn('emoji_shortname') && !empty($reaction->emoji_shortname)) { // column exists on 2.3+ only
                 $native = $reaction->emoji;
                 if (is_string($native) && $native !== '') {
                     return $native;
@@ -218,8 +210,10 @@ class ConfigController extends AbstractController
             if (isset($defaultSet[$base])) {
                 return $defaultSet[$base];
             }
-        } else {
-            // Sprite-mode reaction: XenForo's built-in set ships this way by
+        }
+        {
+            // Sprite-mode or otherwise unmatched reaction (2.2's built-ins carry
+            // the shared sprite sheet as image_url, 2.3's carry no image_url):
             // default — no emoji_shortname AND no image_url, rendered from a
             // shared sprite sheet via sprite_params. Neither a native emoji nor
             // a plain <img> is available, so the app would otherwise draw a
@@ -235,5 +229,30 @@ class ConfigController extends AbstractController
 
         // Custom reaction with an uploaded image and no emoji — app renders image.
         return null;
+    }
+
+    /**
+     * Absolute URL of a reaction's image, or null when the reaction has no
+     * usable standalone icon: no image_url, or sprite mode, where image_url
+     * points at the shared sprite sheet (the whole sheet, not one reaction).
+     * XenForo 2.2's built-in reactions are exactly that case.
+     */
+    public static function iconUrlForReaction($reaction): ?string
+    {
+        try {
+            if ($reaction->isValidColumn('sprite_mode') && $reaction->sprite_mode) {
+                return null;
+            }
+        } catch (\Throwable $e) {
+        }
+        $imageUrl = (string) $reaction->image_url;
+        if ($imageUrl === '') {
+            return null;
+        }
+        if (!preg_match('#^https?://#i', $imageUrl)) {
+            $boardUrl = rtrim((string) \XF::options()->boardUrl, '/');
+            $imageUrl = $boardUrl . '/' . ltrim($imageUrl, '/');
+        }
+        return $imageUrl;
     }
 }

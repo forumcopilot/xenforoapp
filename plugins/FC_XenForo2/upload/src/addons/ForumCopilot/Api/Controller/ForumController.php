@@ -4,6 +4,7 @@ namespace ForumCopilot\Api\Controller;
 
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCForumDataResult;
+use ForumCopilot\Result\FCLoginForumResult;
 use ForumCopilot\Result\FCBoardStatResult;
 use ForumCopilot\Result\FCMarkAllAsReadResult;
 use ForumCopilot\Result\FCForumStatusResult;
@@ -283,6 +284,17 @@ class ForumController extends AbstractController
         } catch (\Throwable $e) {
             return $this->apiError('Failed to mark forum as read: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * loginForum: XenForo has no password-protected forums, so there is
+     * nothing to unlock. The dispatcher routes the method here; without this
+     * action the call was a 500 ("Call to undefined method"). Answer with a
+     * plain success so clients following the generic flow can continue.
+     */
+    public function actionLoginForum(ParameterBag $params)
+    {
+        return $this->apiSuccess((new FCLoginForumResult(true, 'success'))->toArray());
     }
 
     public function actionGetForumStatus(ParameterBag $params)

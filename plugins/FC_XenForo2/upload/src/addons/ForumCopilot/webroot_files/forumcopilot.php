@@ -185,7 +185,6 @@ class ForumCopilotPubApp extends PubApp
             'follow' => 'SocialController@actionFollow',
             'unfollow' => 'SocialController@actionUnfollow',
             'getAlert' => 'SocialController@actionGetAlert',
-            'thankPost' => 'SocialController@actionThankPost',
 
             // Subscription
             'getSubscribedForum' => 'SubscriptionController@actionGetSubscribedForum',

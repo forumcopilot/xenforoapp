@@ -3,13 +3,11 @@
 namespace ForumCopilot\Api\Controller;
 
 use XF\Mvc\ParameterBag;
-use XF\Service\User\LoginService;
 use ForumCopilot\Result\FCLoginModResult;
 use ForumCopilot\Result\FCStickTopicResult;
 use ForumCopilot\Result\FCCloseTopicResult;
 use ForumCopilot\Result\FCDeleteTopicResult;
 use ForumCopilot\Result\FCDeletePostResult;
-use XF\Service\Thread\DeleterService;
 use ForumCopilot\Result\FCUndeleteTopicResult;
 use ForumCopilot\Result\FCUndeletePostResult;
 use ForumCopilot\Result\FCMoveTopicResult;
@@ -42,7 +40,7 @@ class ModerationController extends AbstractController
 
         try {
             // Use XenForo's LoginService for authentication
-            $loginService = $this->service(LoginService::class, $username, $this->request()->getIp());
+            $loginService = $this->service('XF:User\Login', $username, $this->request()->getIp());
             if ($loginService->isLoginLimited($limitType)) {
                 return $this->apiError('Account temporarily locked due to failed login attempts');
             }
@@ -254,8 +252,8 @@ class ModerationController extends AbstractController
             }
 
             // Use XenForo's Thread Deleter service (standard way to delete threads)
-            /** @var DeleterService $deleter */
-            $deleter = $this->service(DeleterService::class, $thread);
+            /** @var \XF\Service\Thread\Deleter $deleter */
+            $deleter = $this->service('XF:Thread\Deleter', $thread);
 
             // Set alert if requested
             if ($starterAlert) {
@@ -309,7 +307,7 @@ class ModerationController extends AbstractController
             }
 
             // Use XenForo's Post Deleter service
-            /** @var \XF\Service\Post\DeleterService $deleter */
+            /** @var \XF\Service\Post\Deleter $deleter */
             $deleter = $this->service('XF:Post\Deleter', $post);
             $deleter->delete($type, $reason);
 

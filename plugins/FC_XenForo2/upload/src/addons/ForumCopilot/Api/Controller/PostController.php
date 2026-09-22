@@ -973,7 +973,7 @@ class PostController extends AbstractController
 
             $responseIds = array_values(array_map('intval', $responseIds));
 
-            $voter = $this->service(\XF\Service\Poll\VoterService::class, $poll, $responseIds);
+            $voter = $this->service('XF:Poll\Voter', $poll, $responseIds);
             if (!$voter->validate($errors)) {
                 if (is_array($errors)) {
                     $errors = array_map('strval', $errors);
@@ -1290,7 +1290,7 @@ class PostController extends AbstractController
                 }
 
                 if ($needsThreadEditor) {
-                    /** @var \XF\Service\Thread\EditorService $threadEditor */
+                    /** @var \XF\Service\Thread\Editor $threadEditor */
                     $threadEditor = $this->service('XF:Thread\Editor', $thread);
 
                     // Handle title if provided

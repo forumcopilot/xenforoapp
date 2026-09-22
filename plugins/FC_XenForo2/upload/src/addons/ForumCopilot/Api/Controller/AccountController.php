@@ -631,7 +631,7 @@ class AccountController extends AbstractController
             }
 
             // Use XenForo's Registration service
-            /** @var \XF\Service\User\RegistrationService $registration */
+            /** @var \XF\Service\User\Registration $registration */
             $registration = $this->service('XF:User\Registration');
             
             // Set basic fields
@@ -939,7 +939,7 @@ class AccountController extends AbstractController
                     || ($visitor->user_id != $user->user_id && $visitor->is_moderator);
                 
                 if ($canEditSig) {
-                    /** @var \XF\Service\User\SignatureEditService $sigEditor */
+                    /** @var \XF\Service\User\SignatureEdit $sigEditor */
                     $sigEditor = $this->service('XF:User\SignatureEdit', $user);
                     if ($sigEditor->setSignature($profileData['signature'], $errors)) {
                         $profileInput['signature'] = $sigEditor->getNewSignature();
@@ -1113,7 +1113,7 @@ class AccountController extends AbstractController
             }
 
             // Use XenForo's Password Reset service
-            /** @var \XF\Service\User\PasswordResetService $passwordReset */
+            /** @var \XF\Service\User\PasswordReset $passwordReset */
             $passwordReset = $this->service('XF:User\PasswordReset', $user);
             
             // Check if password reset can be triggered

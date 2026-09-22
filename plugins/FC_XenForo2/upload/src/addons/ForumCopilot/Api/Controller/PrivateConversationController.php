@@ -3,9 +3,6 @@
 namespace ForumCopilot\Api\Controller;
 
 use XF\Mvc\ParameterBag;
-use XF\Service\Conversation\CreatorService;
-use XF\Service\Conversation\ReplierService;
-use XF\Service\Conversation\InviterService;
 use ForumCopilot\Result\FCNewConversationResult;
 use ForumCopilot\Result\FCReplyConversationResult;
 use ForumCopilot\Result\FCConversationsResult;
@@ -22,8 +19,6 @@ use ForumCopilot\Result\FCRawConversationResult;
 use ForumCopilot\Result\FCSaveRawConversationResult;
 use ForumCopilot\Result\FCRawMessageResult;
 use ForumCopilot\Result\FCSaveRawMessageResult;
-use XF\Service\Conversation\EditorService;
-use XF\Service\Conversation\MessageEditorService;
 use ForumCopilot\Result\FCUnlikePostResult;
 
 /**
@@ -67,8 +62,8 @@ class PrivateConversationController extends AbstractController
             }
 
             // Use XenForo's Conversation Creator service (like XenForo core does)
-            /** @var CreatorService $creator */
-            $creator = $this->service(CreatorService::class, $visitor);
+            /** @var \XF\Service\Conversation\Creator $creator */
+            $creator = $this->service('XF:Conversation\Creator', $visitor);
             
             // Set options - use provided values or defaults
             $options = [];
@@ -155,8 +150,8 @@ class PrivateConversationController extends AbstractController
             }
 
             // Use XenForo's Conversation Replier service (like XenForo core does)
-            /** @var ReplierService $replier */
-            $replier = $this->service(ReplierService::class, $conversation, $visitor);
+            /** @var \XF\Service\Conversation\Replier $replier */
+            $replier = $this->service('XF:Conversation\Replier', $conversation, $visitor);
             $replier->setMessageContent($textBody);
 
             // Handle attachments if provided
@@ -1097,8 +1092,8 @@ class PrivateConversationController extends AbstractController
             }
 
             // Use XenForo's Conversation Inviter service (like XenForo core does)
-            /** @var InviterService $inviter */
-            $inviter = $this->service(InviterService::class, $conversation, $visitor);
+            /** @var \XF\Service\Conversation\Inviter $inviter */
+            $inviter = $this->service('XF:Conversation\Inviter', $conversation, $visitor);
             
             // Set recipients as comma-separated string (getValidatedRecipients accepts string or array)
             // Convert array to comma-separated string for consistency with XenForo web interface
@@ -1582,8 +1577,8 @@ class PrivateConversationController extends AbstractController
             }
 
             // Use XenForo's EditorService (same as core API uses)
-            /** @var EditorService $editor */
-            $editor = $this->service(EditorService::class, $conversation);
+            /** @var \XF\Service\Conversation\Editor $editor */
+            $editor = $this->service('XF:Conversation\Editor', $conversation);
 
             if (!empty($conversationTitle)) {
                 $editor->setTitle($conversationTitle);
@@ -1715,8 +1710,8 @@ class PrivateConversationController extends AbstractController
             }
 
             // Use XenForo's MessageEditorService (same as core API uses)
-            /** @var MessageEditorService $editor */
-            $editor = $this->service(MessageEditorService::class, $message);
+            /** @var \XF\Service\Conversation\MessageEditor $editor */
+            $editor = $this->service('XF:Conversation\MessageEditor', $message);
             $editor->setMessageContent($messageContent);
 
             // Handle attachments if provided (same pattern as saveRawPost)

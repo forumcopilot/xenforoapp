@@ -821,11 +821,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Échec du remerciement du message : $error';
-  }
-
-  @override
   String get signInToViewMessages => 'Connectez-vous pour voir les messages';
 
   @override
@@ -1542,13 +1537,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unlikePost => 'Ne plus aimer';
 
   @override
-  String get thankPost => 'Remercier le message';
-
-  @override
   String get showLikes => 'Afficher les j\'aime';
-
-  @override
-  String get showThanks => 'Afficher les remerciements';
 
   @override
   String get quotePost => 'Citer le message';

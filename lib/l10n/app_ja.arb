@@ -315,15 +315,6 @@
       }
     }
   },
-  "failedToThankPost": "投稿に感謝できませんでした: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "メッセージを表示するにはログインしてください",
   "youNeedToBeSignedInToViewConversations": "会話を表示するにはログインする必要があります。",
   "errorLoadingConversations": "会話の読み込みエラー: {error}",
@@ -903,9 +894,7 @@
   
   "likePost": "いいね",
   "unlikePost": "いいねを取り消す",
-  "thankPost": "投稿に感謝",
   "showLikes": "いいねを表示",
-  "showThanks": "感謝を表示",
   "quotePost": "投稿を引用",
   "twoFactorAuthentication": "2 要素認証",
   "authenticationCodeLabel": "認証コード",

@@ -216,9 +216,8 @@ class PostListItem extends StatefulWidget {
 }
 
 class _PostListItemState extends State<PostListItem> {
-  // Local state for like and thanks
+  // Local state for likes
   late bool _isLiked;
-  bool _isThanked = false;
   late final PostController _postsController;
   late int _likeCount; // Add local state for like count
   late final PostActionsHandler _postActionsHandler;
@@ -899,14 +898,11 @@ class _PostListItemState extends State<PostListItem> {
           PostListItemSocial(
             post: widget.post,
             isLiked: _isLiked,
-            isThanked: _isThanked,
             likeCount: _likeCount,
             currentReaction: _currentReaction,
             isLoggedIn: widget.siteContext.isLoggedIn,
             onLike: _handleLikeAction,
-            onThank: _handleThankAction,
             onShowLikes: _showLikesBottomSheet,
-            onShowThanks: _showThanksBottomSheet,
             trailing: (widget.siteContext.isLoggedIn &&
                     (_postsController.threadDataOutput.value?.topic.canReply ??
                         false))
@@ -1148,11 +1144,6 @@ class _PostListItemState extends State<PostListItem> {
         context, widget.post, widget.siteContext);
   }
 
-  void _showThanksBottomSheet() {
-    PostListItemSocial.showThanksBottomSheet(
-        context, widget.post, widget.siteContext);
-  }
-
   void _handleLikeAction() async {
     // Multi-reaction path: if the forum exposes a reaction set (newer plugin),
     // tapping opens the chooser. Picking the current reaction toggles it off.
@@ -1196,17 +1187,6 @@ class _PostListItemState extends State<PostListItem> {
       setIsLiked: (val) => setState(() => _isLiked = val),
       setLikeCount: (val) => setState(() => _likeCount = val),
       isLiked: _isLiked,
-    );
-  }
-
-  void _handleThankAction() async {
-    await _postActionsHandler.handleThank(
-      context: context,
-      siteContext: widget.siteContext,
-      post: widget.post,
-      onRefresh: widget.actions?.onRefresh ?? () {},
-      setIsThanked: (val) => setState(() => _isThanked = val),
-      isThanked: _isThanked,
     );
   }
 }

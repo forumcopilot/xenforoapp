@@ -424,15 +424,6 @@
       }
     }
   },
-  "failedToThankPost": "Failed to thank post: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Sign in to view messages",
   "youNeedToBeSignedInToViewConversations": "You need to be signed in to view your conversations.",
   "errorLoadingConversations": "Error loading conversations: {error}",
@@ -1382,17 +1373,9 @@
   "@unlikePost": {
     "description": "Accessibility label for unlike button"
   },
-  "thankPost": "Thank post",
-  "@thankPost": {
-    "description": "Accessibility label for thank button"
-  },
   "showLikes": "Show likes",
   "@showLikes": {
     "description": "Accessibility hint for showing likes list"
-  },
-  "showThanks": "Show thanks",
-  "@showThanks": {
-    "description": "Accessibility hint for showing thanks list"
   },
   "quotePost": "Quote post",
   "@quotePost": {

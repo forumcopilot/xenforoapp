@@ -419,15 +419,6 @@
       }
     }
   },
-  "failedToThankPost": "感谢帖子失败: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "登录以查看消息",
   "youNeedToBeSignedInToViewConversations": "您需要登录才能查看您的对话。",
   "errorLoadingConversations": "加载对话错误: {error}",
@@ -927,9 +918,7 @@
   
   "likePost": "点赞帖子",
   "unlikePost": "取消点赞",
-  "thankPost": "感谢帖子",
   "showLikes": "显示点赞",
-  "showThanks": "显示感谢",
   "quotePost": "引用帖子",
   "twoFactorAuthentication": "双重身份验证",
   "authenticationCodeLabel": "验证码",

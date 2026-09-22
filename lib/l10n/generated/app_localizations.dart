@@ -1526,12 +1526,6 @@ abstract class AppLocalizations {
   /// **'Failed to like post: {error}'**
   String failedToLikePost(String error);
 
-  /// Error message when thanking post fails
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to thank post: {error}'**
-  String failedToThankPost(String error);
-
   /// Message asking user to sign in to view messages
   ///
   /// In en, this message translates to:
@@ -2774,23 +2768,11 @@ abstract class AppLocalizations {
   /// **'Unlike post'**
   String get unlikePost;
 
-  /// Accessibility label for thank button
-  ///
-  /// In en, this message translates to:
-  /// **'Thank post'**
-  String get thankPost;
-
   /// Accessibility hint for showing likes list
   ///
   /// In en, this message translates to:
   /// **'Show likes'**
   String get showLikes;
-
-  /// Accessibility hint for showing thanks list
-  ///
-  /// In en, this message translates to:
-  /// **'Show thanks'**
-  String get showThanks;
 
   /// Accessibility label for quote button
   ///

@@ -816,11 +816,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Fehler beim Danken des Beitrags: $error';
-  }
-
-  @override
   String get signInToViewMessages =>
       'Melden Sie sich an, um Nachrichten anzuzeigen';
 
@@ -1541,13 +1536,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unlikePost => 'Like entfernen';
 
   @override
-  String get thankPost => 'Beitrag danken';
-
-  @override
   String get showLikes => 'Likes anzeigen';
-
-  @override
-  String get showThanks => 'Danksagungen anzeigen';
 
   @override
   String get quotePost => 'Beitrag zitieren';

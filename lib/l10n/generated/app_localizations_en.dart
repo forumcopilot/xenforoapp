@@ -803,11 +803,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Failed to thank post: $error';
-  }
-
-  @override
   String get signInToViewMessages => 'Sign in to view messages';
 
   @override
@@ -1521,13 +1516,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unlikePost => 'Unlike post';
 
   @override
-  String get thankPost => 'Thank post';
-
-  @override
   String get showLikes => 'Show likes';
-
-  @override
-  String get showThanks => 'Show thanks';
 
   @override
   String get quotePost => 'Quote post';

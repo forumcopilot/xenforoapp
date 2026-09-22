@@ -757,11 +757,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return '感谢帖子失败: $error';
-  }
-
-  @override
   String get signInToViewMessages => '请登录以查看消息';
 
   @override
@@ -1455,13 +1450,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unlikePost => '取消点赞';
 
   @override
-  String get thankPost => '感谢帖子';
-
-  @override
   String get showLikes => '显示点赞';
-
-  @override
-  String get showThanks => '显示感谢';
 
   @override
   String get quotePost => '引用帖子';

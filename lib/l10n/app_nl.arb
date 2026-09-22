@@ -424,15 +424,6 @@
       }
     }
   },
-  "failedToThankPost": "Kon bericht niet bedanken: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Log in om berichten te bekijken",
   "youNeedToBeSignedInToViewConversations": "U moet ingelogd zijn om uw gesprekken te bekijken.",
   "errorLoadingConversations": "Fout bij laden van gesprekken: {error}",
@@ -1346,17 +1337,9 @@
   "@unlikePost": {
     "description": "Accessibility label for unlike button"
   },
-  "thankPost": "Bericht bedanken",
-  "@thankPost": {
-    "description": "Accessibility label for thank button"
-  },
   "showLikes": "Likes tonen",
   "@showLikes": {
     "description": "Accessibility hint for showing likes list"
-  },
-  "showThanks": "Bedankingen tonen",
-  "@showThanks": {
-    "description": "Accessibility hint for showing thanks list"
   },
   "quotePost": "Bericht citeren",
   "@quotePost": {

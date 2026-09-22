@@ -419,15 +419,6 @@
       }
     }
   },
-  "failedToThankPost": "게시물 감사 실패: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "메시지를 보려면 로그인하세요",
   "youNeedToBeSignedInToViewConversations": "대화를 보려면 로그인해야 합니다.",
   "errorLoadingConversations": "대화 로드 오류: {error}",
@@ -927,9 +918,7 @@
   
   "likePost": "좋아요",
   "unlikePost": "좋아요 취소",
-  "thankPost": "게시물 감사",
   "showLikes": "좋아요 보기",
-  "showThanks": "감사 보기",
   "quotePost": "게시물 인용",
   "twoFactorAuthentication": "2단계 인증",
   "authenticationCodeLabel": "인증 코드",

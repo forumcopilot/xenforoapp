@@ -101,11 +101,6 @@ class AccessibilityHelpers {
     }
   }
 
-  /// Creates an accessibility label for thank button.
-  static String getThankButtonLabel(BuildContext context, bool isThanked) {
-    return 'Thank post';
-  }
-
   /// Creates an accessibility label for quote button.
   static String getQuoteButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
@@ -151,11 +146,6 @@ class AccessibilityHelpers {
   /// Creates an accessibility hint for showing likes.
   static String getShowLikesHint(BuildContext context, int count) {
     return 'Show $count likes';
-  }
-
-  /// Creates an accessibility hint for showing thanks.
-  static String getShowThanksHint(BuildContext context, int count) {
-    return 'Show $count thanks';
   }
 
   /// Ensures minimum touch target size for interactive elements.

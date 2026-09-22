@@ -315,15 +315,6 @@
       }
     }
   },
-  "failedToThankPost": "Fehler beim Danken des Beitrags: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Melden Sie sich an, um Nachrichten anzuzeigen",
   "youNeedToBeSignedInToViewConversations": "Sie müssen angemeldet sein, um Ihre Unterhaltungen anzuzeigen.",
   "errorLoadingConversations": "Fehler beim Laden der Unterhaltungen: {error}",
@@ -903,9 +894,7 @@
   
   "likePost": "Beitrag liken",
   "unlikePost": "Like entfernen",
-  "thankPost": "Beitrag danken",
   "showLikes": "Likes anzeigen",
-  "showThanks": "Danksagungen anzeigen",
   "quotePost": "Beitrag zitieren",
   "twoFactorAuthentication": "Zwei-Faktor-Authentifizierung",
   "authenticationCodeLabel": "Authentifizierungscode",

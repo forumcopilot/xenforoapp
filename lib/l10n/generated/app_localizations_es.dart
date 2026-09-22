@@ -814,11 +814,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Error al agradecer publicación: $error';
-  }
-
-  @override
   String get signInToViewMessages => 'Inicia sesión para ver mensajes';
 
   @override
@@ -1536,13 +1531,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unlikePost => 'Ya no me gusta';
 
   @override
-  String get thankPost => 'Agradecer publicación';
-
-  @override
   String get showLikes => 'Mostrar me gusta';
-
-  @override
-  String get showThanks => 'Mostrar agradecimientos';
 
   @override
   String get quotePost => 'Citar publicación';

@@ -315,15 +315,6 @@
       }
     }
   },
-  "failedToThankPost": "Échec du remerciement du message : {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Connectez-vous pour voir les messages",
   "youNeedToBeSignedInToViewConversations": "Vous devez être connecté pour voir vos conversations.",
   "errorLoadingConversations": "Erreur lors du chargement des conversations : {error}",
@@ -903,9 +894,7 @@
   
   "likePost": "Aimer le message",
   "unlikePost": "Ne plus aimer",
-  "thankPost": "Remercier le message",
   "showLikes": "Afficher les j'aime",
-  "showThanks": "Afficher les remerciements",
   "quotePost": "Citer le message",
   "twoFactorAuthentication": "Authentification à deux facteurs",
   "authenticationCodeLabel": "Code d'authentification",

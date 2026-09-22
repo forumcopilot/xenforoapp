@@ -806,11 +806,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Kon bericht niet bedanken: $error';
-  }
-
-  @override
   String get signInToViewMessages => 'Log in om berichten te bekijken';
 
   @override
@@ -1522,13 +1517,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get unlikePost => 'Bericht unliken';
 
   @override
-  String get thankPost => 'Bericht bedanken';
-
-  @override
   String get showLikes => 'Likes tonen';
-
-  @override
-  String get showThanks => 'Bedankingen tonen';
 
   @override
   String get quotePost => 'Bericht citeren';

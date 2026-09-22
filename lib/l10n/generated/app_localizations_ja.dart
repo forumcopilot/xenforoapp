@@ -775,11 +775,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return '投稿に感謝できませんでした: $error';
-  }
-
-  @override
   String get signInToViewMessages => 'メッセージを表示するにはログインしてください';
 
   @override
@@ -1479,13 +1474,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unlikePost => 'いいねを取り消す';
 
   @override
-  String get thankPost => '投稿に感謝';
-
-  @override
   String get showLikes => 'いいねを表示';
-
-  @override
-  String get showThanks => '感謝を表示';
 
   @override
   String get quotePost => '投稿を引用';

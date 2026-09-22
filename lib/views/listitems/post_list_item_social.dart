@@ -5,7 +5,6 @@ import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import '../../utils/time_utils.dart';
 import '../../utils/accessibility_helpers.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
@@ -16,13 +15,10 @@ import '../../theme/design_tokens.dart';
 class PostListItemSocial extends StatelessWidget {
   final FCPost post;
   final bool isLiked;
-  final bool isThanked;
   final int likeCount;
   final bool isLoggedIn;
   final VoidCallback? onLike;
-  final VoidCallback? onThank;
   final VoidCallback? onShowLikes;
-  final VoidCallback? onShowThanks;
   final Widget? trailing;
 
   /// The viewer's current reaction (multi-reaction). When set, the react
@@ -34,14 +30,11 @@ class PostListItemSocial extends StatelessWidget {
     super.key,
     required this.post,
     required this.isLiked,
-    required this.isThanked,
     required this.likeCount,
     this.currentReaction,
     this.isLoggedIn = false,
     this.onLike,
-    this.onThank,
     this.onShowLikes,
-    this.onShowThanks,
     this.trailing,
   });
 
@@ -69,28 +62,6 @@ class PostListItemSocial extends StatelessWidget {
         //       if (post.likesInfo.length > 4)
         //         Text(
         //           ' + {post.likesInfo.length - 4} more people',
-        //           style: textTheme.bodySmall,
-        //         ),
-        //     ],
-        //   ),
-        // ],
-        // if (post.thanksInfo.isNotEmpty) ...[
-        //   const SizedBox(height: 12),
-        //   Row(
-        //     children: [
-        //       Icon(Icons.thumb_up_alt_outlined, size: 18, color: colorScheme.primary),
-        //       const SizedBox(width: 6),
-        //       Text('Thanks: ', style: textTheme.bodySmall),
-        //       ...post.thanksInfo.take(4).map((t) => Padding(
-        //             padding: const EdgeInsets.symmetric(horizontal: 2.0),
-        //             child: Chip(
-        //               label: Text(t.username, style: textTheme.bodySmall),
-        //               visualDensity: VisualDensity.compact,
-        //             ),
-        //           )),
-        //       if (post.thanksInfo.length > 4)
-        //         Text(
-        //           ' + {post.thanksInfo.length - 4} more people',
         //           style: textTheme.bodySmall,
         //         ),
         //     ],
@@ -153,7 +124,7 @@ class PostListItemSocial extends StatelessWidget {
             },
           ),
         ],
-        // Like/Thank button row
+        // Like button row
         SizedBox(height: DesignTokens.spacingM),
         Row(
           children: [
@@ -190,67 +161,6 @@ class PostListItemSocial extends StatelessWidget {
                   );
                 },
               ),
-            ],
-            // Show thank button only if logged in and (can thank or has thanks)
-            if (isLoggedIn && (post.canThank || post.thanksInfo.isNotEmpty)) ...[
-              if (trailing != null || (isLoggedIn && (post.canLike || post.likesInfo.isNotEmpty))) SizedBox(width: DesignTokens.spacingXL),
-              Builder(
-                builder: (context) {
-                  return AccessibilityHelpers.accessibleIconButton(
-                    icon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          isThanked ? Icons.emoji_emotions : Icons.emoji_emotions_outlined,
-                          color: post.canThank ? (isThanked ? Colors.orange : colorScheme.onSurfaceVariant) : colorScheme.onSurfaceVariant.withOpacity(DesignTokens.opacityMediumLow),
-                          size: DesignTokens.iconSizeMedium,
-                        ),
-                        if (post.thanksInfo.isNotEmpty) ...[
-                          SizedBox(width: DesignTokens.spacingXS),
-                          Text(
-                            '${post.thanksInfo.length}',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    onTap: onThank,
-                    label: AccessibilityHelpers.getThankButtonLabel(context, isThanked),
-                    hint: post.thanksInfo.isNotEmpty 
-                        ? 'Show ${post.thanksInfo.length} thanks'
-                        : null,
-                    isSelected: isThanked,
-                    context: context,
-                  );
-                },
-              ),
-              // Separate button for showing thanks count if available
-              if (post.thanksInfo.isNotEmpty) ...[
-                SizedBox(width: DesignTokens.spacingXS),
-                Builder(
-                  builder: (context) {
-                    return Semantics(
-                      label: '${post.thanksInfo.length} thanks',
-                      hint: 'Show thanks',
-                      button: true,
-                      enabled: onShowThanks != null,
-                      child: GestureDetector(
-                        onTap: onShowThanks,
-                        child: Text(
-                          '${post.thanksInfo.length}',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
             ],
           ],
         ),
@@ -459,81 +369,4 @@ class PostListItemSocial extends StatelessWidget {
     );
   }
 
-  static void showThanksBottomSheet(BuildContext context, FCPost post, SiteContext siteContext) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.2,
-          maxChildSize: 0.8,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Thanked By',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Semantics(
-                        label: 'Close',
-                        button: true,
-                        child: IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DesignTokens.spacingL),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: post.thanksInfo.length,
-                      itemBuilder: (context, index) {
-                        final thank = post.thanksInfo[index];
-                        return ListTile(
-                          leading: UserAvatar(
-                            username: thank.username,
-                            iconUrl: thank.avatarUrl,
-                            radius: DesignTokens.avatarRadiusM,
-                          ),
-                          title: Text(thank.username),
-                          subtitle: Text(formatTimeAgo(thank.timestamp ?? DateTime.now(), context)),
-                          onTap: () {
-                            Navigator.pop(context); // Close bottom sheet
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProfilePage(
-                                  siteContext: siteContext,
-                                  userId: thank.userId,
-                                  userName: thank.username,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 }

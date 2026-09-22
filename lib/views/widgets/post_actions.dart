@@ -5,7 +5,6 @@ import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
-import 'package:forumcopilot_sdk/models/entities/fc_thanks.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/post_controller.dart';
 import 'package:forumcopilot_flutter/views/reply_page.dart';
@@ -1198,49 +1197,6 @@ class PostActionsHandler {
             ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike message: $e')
             : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like message: $e'))),
         );
-      }
-    }
-  }
-
-  // --- Thank Post ---
-  Future<void> handleThank({
-    required BuildContext context,
-    required FCPost post,
-    required SiteContext siteContext,
-    required VoidCallback onRefresh,
-    required ValueSetter<bool> setIsThanked,
-    required bool isThanked,
-  }) async {
-    if (!siteContext.isLoggedIn) {
-      showPostLoginPrompt(context, onRefresh: onRefresh);
-      return;
-    }
-    if (post.canThank && !isThanked) {
-      // Optimistically update UI
-      setIsThanked(true);
-      final alreadyThanked = post.thanksInfo.any((thank) => thank.username == siteContext.currentUsername);
-      if (!alreadyThanked) {
-        post.thanksInfo.add(FCThanks(
-          userId: siteContext.currentUserId ?? '',
-          username: siteContext.currentUsername ?? '',
-          avatarUrl: siteContext.currentAvatarUrl ?? '',
-          timestamp: DateTime.now(),
-        ));
-      }
-      // Removed onRefresh() call - local state updates are sufficient for thank actions
-      try {
-        final socialProxy = SiteProxyFactory.getSocialProxy();
-        await socialProxy.thankPostAsync(post.id);
-      } catch (e) {
-        // Revert UI if failed
-        setIsThanked(false);
-        post.thanksInfo.removeWhere((thank) => thank.username == siteContext.currentUsername);
-        // Removed onRefresh() call - local state updates are sufficient for thank actions
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)?.failedToThankPost(e.toString()) ?? 'Failed to thank post: $e')),
-          );
-        }
       }
     }
   }

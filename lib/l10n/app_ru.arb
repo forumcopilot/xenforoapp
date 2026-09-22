@@ -419,15 +419,6 @@
       }
     }
   },
-  "failedToThankPost": "Ошибка при благодарности сообщению: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Войдите, чтобы просмотреть сообщения",
   "youNeedToBeSignedInToViewConversations": "Вам нужно войти, чтобы просмотреть ваши разговоры.",
   "errorLoadingConversations": "Ошибка при загрузке разговоров: {error}",
@@ -927,9 +918,7 @@
   
   "likePost": "Нравится",
   "unlikePost": "Больше не нравится",
-  "thankPost": "Поблагодарить",
   "showLikes": "Показать лайки",
-  "showThanks": "Показать благодарности",
   "quotePost": "Цитировать пост",
   "twoFactorAuthentication": "Двухфакторная аутентификация",
   "authenticationCodeLabel": "Код аутентификации",

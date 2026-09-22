@@ -771,11 +771,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return '게시물 감사 실패: $error';
-  }
-
-  @override
   String get signInToViewMessages => '메시지를 보려면 로그인하세요';
 
   @override
@@ -1472,13 +1467,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unlikePost => '좋아요 취소';
 
   @override
-  String get thankPost => '게시물 감사';
-
-  @override
   String get showLikes => '좋아요 보기';
-
-  @override
-  String get showThanks => '감사 보기';
 
   @override
   String get quotePost => '게시물 인용';

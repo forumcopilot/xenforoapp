@@ -811,11 +811,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String failedToThankPost(String error) {
-    return 'Ошибка при благодарности сообщению: $error';
-  }
-
-  @override
   String get signInToViewMessages => 'Войдите, чтобы просмотреть сообщения';
 
   @override
@@ -1529,13 +1524,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unlikePost => 'Больше не нравится';
 
   @override
-  String get thankPost => 'Поблагодарить';
-
-  @override
   String get showLikes => 'Показать лайки';
-
-  @override
-  String get showThanks => 'Показать благодарности';
 
   @override
   String get quotePost => 'Цитировать пост';

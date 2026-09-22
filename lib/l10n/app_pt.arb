@@ -419,15 +419,6 @@
       }
     }
   },
-  "failedToThankPost": "Falha ao agradecer publicação: {error}",
-  "@failedToThankPost": {
-    "description": "Error message when thanking post fails",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "signInToViewMessages": "Faça login para ver mensagens",
   "youNeedToBeSignedInToViewConversations": "Você precisa estar conectado para ver suas conversas.",
   "errorLoadingConversations": "Erro ao carregar conversas: {error}",
@@ -927,9 +918,7 @@
   
   "likePost": "Curtir publicação",
   "unlikePost": "Descurtir publicação",
-  "thankPost": "Agradecer publicação",
   "showLikes": "Mostrar curtidas",
-  "showThanks": "Mostrar agradecimentos",
   "quotePost": "Citar publicação",
   "twoFactorAuthentication": "Autenticação de dois fatores",
   "authenticationCodeLabel": "Código de autenticação",

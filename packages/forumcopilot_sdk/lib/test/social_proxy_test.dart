@@ -26,15 +26,26 @@ void runSocialProxyTests(IFCSocialProxy socialProxy, IFCPostProxy postProxy, IFC
     });
 
     test('followAsync returns result: true', () async {
-      final testName = 'followAsync returns result: true';
-      final result = await socialProxy.followAsync(config.userId);
-      helper.assertResultTrue(result, 'followAsync', testName: testName);
+      // A user cannot follow themselves, so this needs the second user.
+      final target = helper.recipientUsername;
+      if (target == null) {
+        print('⚠️  Skipping followAsync - secondUsername not configured (a user cannot follow themselves)');
+        helper.tracker.recordSkipped('followAsync returns result: true', methodName: 'followAsync', reason: 'secondUsername not configured');
+        return;
+      }
+      final result = await socialProxy.followAsync(target);
+      helper.assertResultTrue(result, 'followAsync');
     });
 
     test('unfollowAsync returns result: true', () async {
-      final testName = 'unfollowAsync returns result: true';
-      final result = await socialProxy.unfollowAsync(config.userId);
-      helper.assertResultTrue(result, 'unfollowAsync', testName: testName);
+      final target = helper.recipientUsername;
+      if (target == null) {
+        print('⚠️  Skipping unfollowAsync - secondUsername not configured');
+        helper.tracker.recordSkipped('unfollowAsync returns result: true', methodName: 'unfollowAsync', reason: 'secondUsername not configured');
+        return;
+      }
+      final result = await socialProxy.unfollowAsync(target);
+      helper.assertResultTrue(result, 'unfollowAsync');
     });
 
     test('likePostAsync returns result: true', () async {

@@ -53,6 +53,9 @@ class TestEnv {
     return config[key]?.toString() ?? defaultValue ?? '';
   }
 
+  /// Third user (invited into the created conversation), optional
+  static String thirdUsername() => _getValue('thirdUsername', '');
+
   /// Base URL of the forum
   static String baseUrl() {
     return _getValue('baseUrl', 'https://example.com');

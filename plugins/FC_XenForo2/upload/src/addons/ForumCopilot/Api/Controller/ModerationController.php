@@ -663,6 +663,12 @@ class ModerationController extends AbstractController
         if (empty($userId) && empty($userName)) {
             return $this->apiError('User ID or username is required');
         }
+        // A non-numeric "userId" is a username (the SDK's unbanUserAsync has a
+        // single identifier parameter; banUserAsync takes a username).
+        if (!empty($userId) && !is_numeric($userId) && empty($userName)) {
+            $userName = $userId;
+            $userId = '';
+        }
 
         try {
             // Find user by ID or username

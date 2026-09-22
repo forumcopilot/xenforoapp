@@ -150,12 +150,27 @@ void runModerationProxyTests(IFCModerationProxy moderationProxy, IFCForumProxy f
     });
 
     test('banUserAsync returns result: true', () async {
-      final result = await moderationProxy.banUserAsync(config.username, 'Test reason', 0, 0, 0);
+      // Banning the test account itself is refused by every platform.
+      final target = helper.recipientUsername;
+      if (target == null) {
+        print('⚠️  Skipping banUserAsync - secondUsername not configured (a user cannot ban themselves)');
+        helper.tracker.recordSkipped('banUserAsync returns result: true', methodName: 'banUserAsync', reason: 'secondUsername not configured');
+        return;
+      }
+      final result = await moderationProxy.banUserAsync(target, 'Test reason', 0, 0, 0);
       helper.assertResultTrue(result, 'banUserAsync');
     });
 
     test('unbanUserAsync returns result: true', () async {
-      final result = await moderationProxy.unbanUserAsync(config.userId);
+      final target = helper.recipientUsername;
+      if (target == null) {
+        print('⚠️  Skipping unbanUserAsync - secondUsername not configured');
+        helper.tracker.recordSkipped('unbanUserAsync returns result: true', methodName: 'unbanUserAsync', reason: 'secondUsername not configured');
+        return;
+      }
+      // The id parameter also accepts a username, so the user banned above is
+      // the one unbanned here.
+      final result = await moderationProxy.unbanUserAsync(target);
       helper.assertResultTrue(result, 'unbanUserAsync');
     });
 

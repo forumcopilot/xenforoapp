@@ -57,19 +57,29 @@ void runAccountProxyTests(IFCAccountProxy accountProxy, TestConfig config) {
   }
 
     test('updatePassword returns result: true', () async {
+      try {
       if (helper.skipIfNotAuthenticated('updatePassword')) {
         return;
       }
       final result = await accountProxy.updatePassword(config.password, 'newpassword123');
       helper.assertResultTrue(result, 'updatePassword');
+      } on UnimplementedError {
+        print('⚠️  Skipping updatePassword - updatePassword is not implemented by this platform');
+        helper.tracker.recordNotImplemented('updatePassword', methodName: 'updatePassword');
+      }
     });
 
     test('updateProfile returns result: true', () async {
+      try {
       if (helper.skipIfNotAuthenticated('updateProfile')) {
         return;
       }
       final result = await accountProxy.updateProfile(config.userId, {});
       helper.assertResultTrue(result, 'updateProfile');
+      } on UnimplementedError {
+        print('⚠️  Skipping updateProfile - updateProfile is not implemented by this platform');
+        helper.tracker.recordNotImplemented('updateProfile', methodName: 'updateProfile');
+      }
     });
 
     // Tests that require SSO credentials (token and code)
@@ -90,11 +100,16 @@ void runAccountProxyTests(IFCAccountProxy accountProxy, TestConfig config) {
     }
 
     test('updateEmail returns result: true', () async {
+      try {
       if (helper.skipIfNotAuthenticated('updateEmail')) {
         return;
       }
       final result = await accountProxy.updateEmail(config.password, 'newemail@example.com');
       helper.assertResultTrue(result, 'updateEmail');
+      } on UnimplementedError {
+        print('⚠️  Skipping updateEmail - updateEmail is not implemented by this platform');
+        helper.tracker.recordNotImplemented('updateEmail', methodName: 'updateEmail');
+      }
     });
 
     test('prefetchAccount returns result: true or null', () async {

@@ -30,6 +30,7 @@ void main() async {
     password: TestEnv.password(),
     secondUsername: TestEnv.secondUsername(),
     secondPassword: TestEnv.secondPassword(),
+    thirdUsername: TestEnv.thirdUsername(),
     moderatorUsername: TestEnv.moderatorUsername(),
     moderatorPassword: TestEnv.moderatorPassword(),
     conversationId: TestEnv.conversationId(),

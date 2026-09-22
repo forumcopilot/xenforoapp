@@ -32,6 +32,10 @@ class TestConfig {
   /// Second password for dual-user conversation tests (optional)
   String? secondPassword;
 
+  /// Third username, invited into the conversation created by the
+  /// conversation tests (optional; the invite test is skipped without it)
+  String? thirdUsername;
+
   /// Moderator username for moderation tests (optional)
   String? moderatorUsername;
 
@@ -89,6 +93,7 @@ class TestConfig {
     required this.password,
     this.secondUsername,
     this.secondPassword,
+    this.thirdUsername,
     this.moderatorUsername,
     this.moderatorPassword,
     required this.conversationId,

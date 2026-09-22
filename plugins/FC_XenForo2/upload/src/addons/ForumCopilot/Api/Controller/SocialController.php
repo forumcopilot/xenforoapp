@@ -230,18 +230,22 @@ class SocialController extends AbstractController
         }
 
         try {
-            $user = $this->em()->find('XF:User', $userId);
+            // A non-numeric id is a username (the SDK passes one identifier).
+            $user = is_numeric($userId)
+                ? $this->em()->find('XF:User', (int)$userId)
+                : $this->em()->findOne('XF:User', ['username' => $userId]);
             if (!$user) {
                 return $this->apiError('User not found');
             }
 
             $visitor = \XF::visitor();
             
-            if (!$visitor->canFollow($user)) {
+            if (!$visitor->canFollowUser($user)) {
                 return $this->apiError('Cannot follow this user');
             }
 
-            $visitor->follow($user);
+            // XF:User\Follow on 2.2; aliased to FollowService on 2.3.
+            $this->service('XF:User\Follow', $user, $visitor)->follow();
 
             $result = new FCFollowResult(true, null, true);
             return $this->apiSuccess($result);
@@ -262,13 +266,16 @@ class SocialController extends AbstractController
         }
 
         try {
-            $user = $this->em()->find('XF:User', $userId);
+            // A non-numeric id is a username (the SDK passes one identifier).
+            $user = is_numeric($userId)
+                ? $this->em()->find('XF:User', (int)$userId)
+                : $this->em()->findOne('XF:User', ['username' => $userId]);
             if (!$user) {
                 return $this->apiError('User not found');
             }
 
             $visitor = \XF::visitor();
-            $visitor->unfollow($user);
+            $this->service('XF:User\Follow', $user, $visitor)->unfollow();
 
             $result = new FCUnfollowResult(true, null, false);
             return $this->apiSuccess($result);

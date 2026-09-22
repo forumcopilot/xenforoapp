@@ -186,9 +186,17 @@ Fill it in for the 2.2.19 instance:
   "groupId": "2",
   "testUrl": "http://127.0.0.1:8091/threads/42/",
   "email": "admin@example.com",
-  "privateMessagingType": "conversations"
+  "privateMessagingType": "conversations",
+  "secondUsername": "<a demo user>",
+  "secondPassword": "password123",
+  "thirdUsername": "<another demo user>"
 }
 ```
+
+`secondUsername` is who conversations, follows and bans are aimed at (a
+forum refuses all three against yourself); `thirdUsername` is invited into
+the conversation the suite creates. Both are optional; the affected tests
+are recorded as skipped without them.
 
 Get the ids from MySQL rather than guessing:
 
@@ -206,6 +214,13 @@ flutter test test/xenforo_interface_tests.dart -r expanded
 Both write to the forum (posts, replies, reactions, conversations), which is
 why they run against a throwaway instance and never against a customer's
 forum. Reset with `install-xf2219.sh` when the demo data gets messy.
+
+Expected outcome on 2.2.19 with add-on 1.8.2+ (2026-09-22): basic suite
+49/49, interface suite 100/100 with about 30 recorded as *skipped*. A skip
+is a method XenForo does not implement (moderator login, avatar URL lookup,
+"thanks", …) or a test whose second/third user is not configured; the
+summary printed at the end lists them. Anything reported as *failed* is a
+real regression in the add-on or in `xenforo_core`.
 
 ## Layer 3: the app on the Pixel
 

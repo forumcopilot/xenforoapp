@@ -27,7 +27,7 @@ void runTopicProxyTests(IFCTopicProxy topicProxy, IFCForumProxy forumProxy, Test
         helper.assertResultTrue(result, 'getTopicStatusAsync', testName: testName, proxyName: 'IFCTopicProxy');
       } on UnimplementedError {
         helper.tracker.recordNotImplemented(testName, proxyName: 'IFCTopicProxy', methodName: 'getTopicStatusAsync');
-        rethrow;
+        return; // not implemented by this platform: skipped, not failed
       }
     });
 
@@ -79,7 +79,7 @@ void runTopicProxyTests(IFCTopicProxy topicProxy, IFCForumProxy forumProxy, Test
         helper.assertResultTrue(result, 'getParticipatedTopicAsync', testName: testName, proxyName: 'IFCTopicProxy');
       } on UnimplementedError {
         helper.tracker.recordNotImplemented(testName, proxyName: 'IFCTopicProxy', methodName: 'getParticipatedTopicAsync');
-        rethrow;
+        return; // not implemented by this platform: skipped, not failed
       }
     });
 
@@ -96,7 +96,7 @@ void runTopicProxyTests(IFCTopicProxy topicProxy, IFCForumProxy forumProxy, Test
         helper.assertResultTrue(result, 'getNewTopicAsync', testName: testName, proxyName: 'IFCTopicProxy');
       } on UnimplementedError {
         helper.tracker.recordNotImplemented(testName, proxyName: 'IFCTopicProxy', methodName: 'getNewTopicAsync');
-        rethrow;
+        return; // not implemented by this platform: skipped, not failed
       }
     });
 

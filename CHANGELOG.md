@@ -6,6 +6,13 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon (unreleased, will ship as v1.8.3)
+- `followUser` / `unfollowUser` called `User::canFollow()`, `follow()` and `unfollow()`, which exist in no XenForo version; they now use `canFollowUser()` and the `XF:User\Follow` service. `markConversationRead` called a nonexistent `ConversationMaster::markAsRead()`; it now marks the visitor's `ConversationUser` row read through the conversation repository, like `markConversationUnread` already did. Found by the live API suite.
+- `follow`, `unfollow` and `unbanUser` accept a username where the SDK only carries one identifier.
+
+### Changed
+- The shared SDK test suite (`packages/forumcopilot_sdk/lib/test`, synced from canonical) is now runnable against a real forum: it picks a postable forum instead of a category, records unimplemented methods as skipped, logs back in after its logout test, addresses conversations, follows and bans to a second user, and cleans up its own uploads. `packages/xenforo_core` passes `secondUsername`, `secondPassword` and the new `thirdUsername` through from `test/config.json`. On XenForo 2.2.19: basic suite 49/49, interface suite 100/100.
+
 ## [0.10.2] - 2026-09-22
 
 Add-on release. Ships with bundled ForumCopilot addon **v1.8.2**, which fixes three defects in 1.8.1 found by running the new local end-to-end setup against XenForo 2.2.19: the file health check flagged 76 files on every install, six features crashed on XenForo 2.2, and two API methods returned HTTP 500. The app itself gains the end-to-end testing guide, the add-on ownership docs, and loses a dead thank-post code path.

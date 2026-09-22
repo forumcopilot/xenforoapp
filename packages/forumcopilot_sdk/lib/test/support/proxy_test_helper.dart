@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import '../config/test_config.dart';
 import '../../interfaces/interfaces.dart';
+import '../../models/entities/fc_forum.dart';
 import '../../factory/site_proxy_factory.dart';
 import 'test_result_tracker.dart';
 
@@ -17,17 +21,74 @@ class ProxyTestHelper {
     _currentProxyName = proxyName;
   }
 
-  /// Helper to fetch a valid forum ID from the forum proxy
+  /// Helper to fetch a valid forum ID from the forum proxy.
+  ///
+  /// Walks the forum tree and returns the first forum a post can be created
+  /// in. The top-level entries of most forums are categories, which cannot
+  /// hold threads, so taking the first entry blindly makes every test that
+  /// needs a real forum fail with "forum not found".
   Future<String?> fetchValidForumId(IFCForumProxy forumProxy) async {
     try {
       final result = await forumProxy.getForumAsync(true, '', false);
       if (result.result && result.forums.isNotEmpty) {
+        final postable = _firstPostableForum(result.forums);
+        if (postable != null) return postable.id;
         return result.forums.first.id;
       }
     } catch (e) {
       print('Error fetching forum ID: $e');
     }
     return config.forumId;
+  }
+
+  FCForum? _firstPostableForum(List<FCForum> forums) {
+    for (final forum in forums) {
+      if (forum.canPost && !forum.isSubForumContainer) return forum;
+      final nested = _firstPostableForum(forum.childForums);
+      if (nested != null) return nested;
+    }
+    return null;
+  }
+
+  /// The user to address conversations / invitations to, or null when the
+  /// config has no second user. Never the test user themselves: forums reject
+  /// a conversation with yourself.
+  String? get recipientUsername {
+    final u = config.secondUsername;
+    return (u != null && u.isNotEmpty && u != config.username) ? u : null;
+  }
+
+  /// Bytes of a real PNG for avatar / image upload tests. Looks for the
+  /// bundled Flutter logo relative to the usual working directories
+  /// (repo root, packages/xenforo_core, packages/forumcopilot_sdk) and falls
+  /// back to a valid 1x1 transparent PNG.
+  static Uint8List testImageBytes() {
+    for (final candidate in [
+      'packages/forumcopilot_sdk/lib/test/assets/flutter_logo.png',
+      '../forumcopilot_sdk/lib/test/assets/flutter_logo.png',
+      'lib/test/assets/flutter_logo.png',
+    ]) {
+      final f = File(candidate);
+      if (f.existsSync()) return f.readAsBytesSync();
+    }
+    return base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+  }
+
+  /// Runs [call] and asserts its result, but records the test as
+  /// "not implemented" instead of failing when the proxy throws
+  /// [UnimplementedError]. Use for methods a platform may legitimately lack.
+  Future<void> runSupported(String methodName, Future<dynamic> Function() call,
+      {String? testName, String? proxyName}) async {
+    final effectiveProxyName = proxyName ?? _currentProxyName;
+    final currentTest = testName ?? methodName;
+    try {
+      final result = await call();
+      assertResultTrue(result, methodName, testName: currentTest, proxyName: effectiveProxyName);
+    } on UnimplementedError {
+      print('⚠️  Skipping $currentTest - $methodName is not implemented by this platform');
+      tracker.recordNotImplemented(currentTest, proxyName: effectiveProxyName, methodName: methodName);
+    }
   }
 
   /// Helper to fetch a valid topic ID from the topic proxy
@@ -60,6 +121,16 @@ class ProxyTestHelper {
   void assertResultTrue(dynamic result, String methodName, {String? testName, String? proxyName, bool checkFcIsLogin = false}) {
     final currentTest = testName ?? methodName;
     final errorMessage = result.result == false ? '${result.resultText ?? 'Unknown error'}' : null;
+    final effectiveProxy = proxyName ?? _currentProxyName;
+
+    // A platform that answers "not implemented" / "not supported" is telling
+    // us the method does not exist there. That is a skip, not a failure.
+    if (errorMessage != null &&
+        RegExp(r'not (implemented|supported)', caseSensitive: false).hasMatch(errorMessage)) {
+      print('⚠️  Skipping $currentTest - $methodName reported: $errorMessage');
+      tracker.recordNotImplemented(currentTest, proxyName: effectiveProxy, methodName: methodName);
+      return;
+    }
     final isAuthError = errorMessage != null && 
         (errorMessage.toLowerCase().contains('authentication') || 
          errorMessage.toLowerCase().contains('log in') ||

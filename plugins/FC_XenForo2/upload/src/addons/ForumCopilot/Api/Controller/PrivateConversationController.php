@@ -939,13 +939,21 @@ class PrivateConversationController extends AbstractController
         }
 
         try {
-            $conversation = $this->em()->find('XF:ConversationMaster', $conversationId);
-            if (!$conversation) {
+            $visitor = \XF::visitor();
+            $conversationRepo = $this->repository('XF:Conversation');
+
+            // The visitor's own ConversationUser row (no forUser() so a deleted
+            // conversation is still found), same lookup as markConversationUnread.
+            $finder = $this->finder('XF:ConversationUser');
+            $finder->where('conversation_id', $conversationId);
+            $finder->where('owner_user_id', $visitor->user_id);
+
+            $userConv = $finder->fetchOne();
+            if (!$userConv || !$userConv->Master) {
                 return $this->apiError('Conversation not found');
             }
 
-            $visitor = \XF::visitor();
-            $conversation->markAsRead($visitor);
+            $conversationRepo->markUserConversationRead($userConv);
 
             $result = new FCMarkConversationReadResult(true, null);
             return $this->apiSuccess($result);

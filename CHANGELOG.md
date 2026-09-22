@@ -6,7 +6,7 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
-### Bundled addon (unreleased, will ship as v1.8.3)
+### Bundled addon (v1.8.2 → v1.8.3, published 2026-09-22 as the `addon-v1.8.3` release)
 - `followUser` / `unfollowUser` called `User::canFollow()`, `follow()` and `unfollow()`, which exist in no XenForo version; they now use `canFollowUser()` and the `XF:User\Follow` service. `markConversationRead` called a nonexistent `ConversationMaster::markAsRead()`; it now marks the visitor's `ConversationUser` row read through the conversation repository, like `markConversationUnread` already did. Found by the live API suite.
 - `follow`, `unfollow` and `unbanUser` accept a username where the SDK only carries one identifier.
 

@@ -35,7 +35,8 @@ Four layers, cheapest first. Stop at the first one that fails.
 |---|---|
 | XenForo dev tree | `/Volumes/CRUCIAL/xenforo` (a byte-identical copy of `/Users/tung/xenforo`, 593 MB; the helper scripts hard-code the `/Users/tung` path) |
 | XenForo 2.2.19 test instance | `/Volumes/CRUCIAL/xenforo/instances/xf-2.2.19-forumcopilot`, DB `xenforo_2219_fc`, cookie prefix `xf2219_`, runs on PHP 8.2 at `127.0.0.1:8091` |
-| XenForo 2.3.7 instance | `/Volumes/CRUCIAL/xenforo/upload`, DB `xenforo`. Its docs say port 8080, but nginx now owns 8080, so use 8092 |
+| XenForo 2.3.7 test instance | `/Volumes/CRUCIAL/xenforo/instances/xf-2.3.7-forumcopilot`, DB `xenforo_237_fc`, cookie prefix `xf237_`, PHP 8.3 at `127.0.0.1:8092`. Created 2026-09-22 by copying the code of the 2.3.7 tree below and running the installer; demo content: 61 users, 43 threads, ~1,600 posts |
+| XenForo 2.3.7 working tree | `/Volumes/CRUCIAL/xenforo/upload`, DB `xenforo`, shared with the customer staging tree below. Not for open-source testing |
 | Customer staging tree | `/Volumes/CRUCIAL/qhtt/xenforoweb` shares DB `xenforo` and carries the customer add-on flavour. **Do not test the open-source add-on there.** |
 | Demo content (2.2.19) | 31 users, 43 threads, 1,375 posts. Long threads with image attachments: 42, 43, 44. Forum nodes: 45 General Chat, 48 Installation Help |
 | Admin account (2.2.19) | `Admin`; the password is whatever `XF2219_ADMIN_PASSWORD` was when `install-xf2219.sh` last ran (the script has a default; check it there, and reset with `restore_admin_password.php` in the xenforo tree if lost) |
@@ -43,7 +44,7 @@ Four layers, cheapest first. Stop at the first one that fails.
 | MySQL | Homebrew MySQL 9.5 as a service, root without password, TCP 3306 and socket `/tmp/mysql.sock` |
 | PHP | 8.4 default (`php`), 8.2 at `/opt/homebrew/opt/php@8.2/bin/php`, 8.3 installed |
 | ngrok | `/opt/homebrew/bin/ngrok`, authenticated, v3 config. A reserved free domain on this account is already set as both forums' board URL; read it with `mysql -u root -N -e "select option_value from xenforo_2219_fc.xf_option where option_id='boardUrl'"` and use it as `<ngrok-domain>` below |
-| Helper scripts | `/Volumes/CRUCIAL/xenforo/scripts/start-xf-instance.sh`, `install-xf2219.sh`, `update-board-url-instance.php`; `/Volumes/CRUCIAL/xenforo/start-ngrok.sh`, `get-ngrok-url.sh`; notes in `XENFORO_INSTANCES.md` and `NGROK_SETUP.md` |
+| Helper scripts | `/Volumes/CRUCIAL/xenforo/scripts/start-xf-instance.sh`, `install-xf-instance.sh` (any instance; env `XF_INSTANCE_DIR`, `XF_BASE_URL`, `XF_MYSQL_DB`, `XF_ADMIN_PASSWORD`), the older `install-xf2219.sh`, `update-board-url-instance.php`; `/Volumes/CRUCIAL/xenforo/start-ngrok.sh`, `get-ngrok-url.sh`; notes in `XENFORO_INSTANCES.md` and `NGROK_SETUP.md` |
 | Phone | Pixel 4a, Android 13, serial `08041JEC212433`, USB debugging on |
 
 Two of those scripts are stale and should not be used as-is:
@@ -102,8 +103,43 @@ cd /Volumes/CRUCIAL/xenforo/instances/xf-2.2.19-forumcopilot
 /opt/homebrew/opt/php@8.2/bin/php generate-demo-data.php --users=30 --threads=40
 ```
 
-For 2.3.7, the same script with the other instance name and port 8092, and
-plain `php` (8.4) or `/opt/homebrew/opt/php@8.3/bin/php`.
+### 1b'. The 2.3.7 instance
+
+Same idea on port 8092 with PHP 8.3 (`start-xf-instance.sh` picks PHP 8.2
+only for `xf-2.2*` names, so pass the binary explicitly):
+
+```bash
+cd /Volumes/CRUCIAL/xenforo/instances/xf-2.3.7-forumcopilot && \
+  /opt/homebrew/opt/php@8.3/bin/php -S 127.0.0.1:8092 -t .
+```
+
+To rebuild it from scratch: copy the 2.3.7 code out of the working tree
+(everything except `data/`, `internal_data/`, `src/config.php`,
+`src/addons/ForumCopilot`, third-party add-ons, `forumcopilot.php` and
+`js/ForumCopilot`), give it empty `data/` and `internal_data/` folders and a
+`src/config.php` pointing at `127.0.0.1` / `xenforo_237_fc` / cookie prefix
+`xf237_`, then:
+
+```bash
+XF_INSTANCE_DIR=/Volumes/CRUCIAL/xenforo/instances/xf-2.3.7-forumcopilot \
+XF_BASE_URL=http://127.0.0.1:8092 XF_MYSQL_DB=xenforo_237_fc \
+XF_ADMIN_PASSWORD='choose-one' /Volumes/CRUCIAL/xenforo/scripts/install-xf-instance.sh http://127.0.0.1:8092
+cd /Volumes/CRUCIAL/xenforo/instances/xf-2.3.7-forumcopilot
+cp ../xf-2.2.19-forumcopilot/generate-demo-data.php . && /opt/homebrew/opt/php@8.3/bin/php generate-demo-data.php --users=30 --threads=40
+```
+
+Use the 2.2.19 instance's copy of `generate-demo-data.php`: it is the newer
+one (recent timestamps so the latest-topics APIs return content, and a fix
+for a PHP 8.3 fatal on the fresh install's unnamed default nodes). It exits
+non-zero after the conversations step on 2.3.7 but everything up to and
+including conversations is created.
+
+Two quirks of a generator-built 2.3.7 forum: the generated categories are
+not viewable by the admin until XenForo's permission cache is rebuilt (ACP →
+Tools → Rebuild caches → permissions), so point the test config at the
+installer's own **Main forum** (node 2) or rebuild first; and the 2.3
+installer names its default nodes `NULL`, which is what the generator fix
+above is for.
 
 ### 1c. Deploy the add-on from this repo
 
@@ -204,6 +240,13 @@ Get the ids from MySQL rather than guessing:
 mysql -u root xenforo_2219_fc -e "select post_id from xf_post where thread_id=42 limit 1; select attachment_id from xf_attachment where content_type='post' limit 1; select conversation_id, first_message_id from xf_conversation_master limit 1;"
 ```
 
+Keep one config per instance outside the repo (only `test/config.json` is
+gitignored) and copy the one you want into place before a run, for example
+`config.xf22.json` / `config.xf23.json` in a scratch folder. For 2.3.7 the
+URL is `http://127.0.0.1:8092`, the ids from the fresh demo data are forum
+2, thread 4, post 4, attachment 1, and the seeded conversation 159 / message
+2259 with demo users `EmilyMoore599` and `DavidThomas100`.
+
 Run the basic suite first, then the full interface suite:
 
 ```bash
@@ -215,8 +258,9 @@ Both write to the forum (posts, replies, reactions, conversations), which is
 why they run against a throwaway instance and never against a customer's
 forum. Reset with `install-xf2219.sh` when the demo data gets messy.
 
-Expected outcome on 2.2.19 with add-on 1.8.2+ (2026-09-22): basic suite
-49/49, interface suite 100/100 with about 30 recorded as *skipped*. A skip
+Expected outcome with add-on 1.8.3 (2026-09-22), on both 2.2.19 and 2.3.7:
+basic suite 49/49, interface suite 100/100 with about 30 recorded as
+*skipped*. A skip
 is a method XenForo does not implement (moderator login, avatar URL lookup,
 "thanks", …) or a test whose second/third user is not configured; the
 summary printed at the end lists them. Anything reported as *failed* is a
@@ -354,7 +398,8 @@ from the internet (ngrok) and a real Firebase project.
 ## Before a release
 
 1. Layers 1 and 2 on 2.2.19, upgrading from the previous add-on version.
-2. Layers 1 and 2 on 2.3.7, port 8092, PHP 8.3.
+2. Layers 1 and 2 on 2.3.7 (`xf-2.3.7-forumcopilot`, port 8092, PHP 8.3), with
+   `config.xf23.json` copied into place.
 3. Layer 3 full checklist on 2.2.19, starred items on 2.3.7.
 4. Layer 4 once, compared with your previous run.
 5. `flutter analyze` and `flutter test` are green (CI enforces this).

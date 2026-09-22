@@ -33,7 +33,7 @@ Four layers, cheapest first. Stop at the first one that fails.
 
 | Thing | Where / value |
 |---|---|
-| XenForo dev tree | `/Volumes/CRUCIAL/xenforo` (a byte-identical copy of `/Users/tung/xenforo`, 593 MB; the helper scripts hard-code the `/Users/tung` path) |
+| XenForo dev tree | `/Volumes/CRUCIAL/xenforo` (the only copy; the duplicate under `/Users/tung` was deleted on 2026-09-22 and the helper scripts now point here) |
 | XenForo 2.2.19 test instance | `/Volumes/CRUCIAL/xenforo/instances/xf-2.2.19-forumcopilot`, DB `xenforo_2219_fc`, cookie prefix `xf2219_`, runs on PHP 8.2 at `127.0.0.1:8091` |
 | XenForo 2.3.7 test instance | `/Volumes/CRUCIAL/xenforo/instances/xf-2.3.7-forumcopilot`, DB `xenforo_237_fc`, cookie prefix `xf237_`, PHP 8.3 at `127.0.0.1:8092`. Created 2026-09-22 by copying the code of the 2.3.7 tree below and running the installer; demo content: 61 users, 43 threads, ~1,600 posts |
 | XenForo 2.3.7 working tree | `/Volumes/CRUCIAL/xenforo/upload`, DB `xenforo`, shared with the customer staging tree below. Not for open-source testing |
@@ -406,8 +406,6 @@ from the internet (ngrok) and a real Firebase project.
 
 ## Known rough edges worth fixing
 
-- `/Users/tung/xenforo` and `/Volumes/CRUCIAL/xenforo` are identical copies.
-  Keep one; the scripts inside hard-code `/Users/tung/xenforo`.
 - The `xenforo` database says add-on 1.4.5 while the customer staging tree on
   top of it has 1.8.1 files. Something there was deployed by file copy without
   an upgrade. Not this repo's problem, but do not draw conclusions from that

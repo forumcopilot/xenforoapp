@@ -6,6 +6,27 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-09-22
+
+Add-on release. Ships with bundled ForumCopilot addon **v1.8.2**, which fixes three defects in 1.8.1 found by running the new local end-to-end setup against XenForo 2.2.19: the file health check flagged 76 files on every install, six features crashed on XenForo 2.2, and two API methods returned HTTP 500. The app itself gains the end-to-end testing guide, the add-on ownership docs, and loses a dead thank-post code path.
+
+### Bundled addon (v1.8.1 → v1.8.2)
+- **XenForo 2.2 works again.** Five controllers referenced service classes by their XenForo 2.3 names, which do not exist on 2.2, so replying to, creating, inviting to or editing a conversation, voting in a poll and deleting a thread failed with "Class ... does not exist". They now use the legacy short ids, which 2.2 resolves directly and 2.3 aliases to the new classes.
+- **Clean file health check.** `hashes.json` is generated the way XenForo verifies it (SHA-256 with carriage returns stripped). 1.8.1 marked 75 CRLF-ended files and one image as "unexpected contents" on every install.
+- `loginForum` no longer returns a 500: XenForo has no password-protected forums, so it answers with a plain success.
+- The dead `thankPost` route and its result class are removed ("thanks" has no XenForo equivalent; the app never called it).
+
+### Added
+- `docs/guides/LOCAL_E2E_TESTING.md`: the local end-to-end strategy in four layers (local XenForo + add-on, live API suite, app on a connected Pixel, perf harness), with the machine inventory, ngrok vs adb reverse, a manual checklist and the rough edges found on the way.
+- `scripts/xf_dev_sync.sh`: deploys `plugins/FC_XenForo2/upload/` into a local XenForo install and installs, upgrades or rebuilds the add-on as appropriate.
+- `plugins/FC_XenForo2/README.md`: this repo is the add-on's official source; layout, manifest rules, building the ZIP, and the release procedure.
+
+### Changed
+- README leads with Forum Copilot (the hosted app is free), a hosted-vs-build comparison, the branded-app service, and add-on install steps; the live API suite command is corrected (it reads `packages/xenforo_core/test/config.json`).
+- Removed the dead thank-post UI (handler, button, "thanked by" sheet, accessibility helpers, three strings in 11 locales). XenForo never enables it.
+
+[0.10.2]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.10.2
+
 ## [0.10.1] - 2026-09-14
 
 Security patch. v0.10.0 moved saved passwords into the OS keystore but left one plaintext copy behind: the login result echoed the submitted password into the persisted site-context blob. This release removes it and scrubs old blobs on load. Also restores the template's Android app label and strips the last customer-specific strings from the template, and CI now fails on analyzer warnings again. Bundled ForumCopilot addon stays at v1.8.1.
@@ -143,5 +164,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.2...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

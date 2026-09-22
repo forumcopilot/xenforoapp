@@ -6,7 +6,7 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
-### Bundled addon (unreleased, will ship as v1.8.5)
+### Bundled addon (v1.8.4 → v1.8.5, published 2026-09-22 as the `addon-v1.8.5` release)
 - XenForo 2.2: the entry file looked up the session-activity repository by its 2.3 class name, which threw (caught and logged) on every authenticated API request, so the "Using Forum Copilot Mobile App" activity label never appeared and the error log filled up. The push opt-out settings page had the same problem with the alert repository. Both now use the short repository ids that resolve on 2.2 and 2.3. Found while verifying hosted push end to end (a mention on the 2.2.19 test forum reached a Pixel through push.forumcopilot.com).
 
 ### Bundled addon (v1.8.3 → v1.8.4, published 2026-09-22 as the `addon-v1.8.4` release)

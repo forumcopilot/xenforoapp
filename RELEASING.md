@@ -8,6 +8,10 @@ A release lives in two places:
 
 Both must be updated together. Total time per release: ~10 minutes.
 
+Pushing `main` of the marketing repo deploys production directly (there is
+no staging branch); see `docs/REPOSITORIES.md` for the full picture of how
+the repositories relate.
+
 ## Versioning
 
 We follow [Semantic Versioning](https://semver.org/). Pre-1.0 (which we are):
@@ -62,7 +66,7 @@ GitHub creates the tag, the Release page, and (by default) attaches a source tar
 ### 2. In the marketing repo (`forumcopilot/siteowners`)
 
 ```bash
-cd /path/to/siteowners
+cd /Users/tung/siteowners        # the only local checkout to use (see docs/REPOSITORIES.md)
 git checkout main
 git pull origin main
 

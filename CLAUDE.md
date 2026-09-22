@@ -21,6 +21,7 @@ Flutter `^3.6.1` / Dart `^3.6.1`. Targets Android, iOS, macOS, Windows, Linux, w
 - `packages/xenforo_core/` — local package. Concrete XenForo implementation of the SDK proxies (`XenForoProxyFactory` + per-area proxies + XenForo→FC converters). Uses the forum's REST API plus the Forum Copilot add-on.
 - `plugins/FC_XenForo2/` — the server-side XenForo add-on (PHP). **This is the add-on's official source**; no other repo should carry a copy (a customer-specific fork exists and is not upstream). `plugins/FC_XenForo2/README.md` covers layout, building the ZIP and releasing. `deploy_plugin.sh` rsyncs it to a server. Not part of the Flutter build.
 - `docs/guides/` — platform-specific setup notes (macOS file picker entitlements, splash, icons, reset).
+- `docs/REPOSITORIES.md` — the four related repositories, the one local checkout to use for each, what each owns, and how app and add-on releases flow to forumcopilot.com. Read it before touching `packages/`, `plugins/`, or anything release-related.
 - `docs/xenforo_api_docs/` — XenForo REST reference; **excluded from analysis** (`analysis_options.yaml`).
 
 ## Architecture in one paragraph

@@ -98,7 +98,9 @@ produces an equivalent archive as long as `hashes.json` is current.
 5. Publish, in this order:
    - Attach the ZIP to the next app release on GitHub (or create a dedicated
      `addon-v1.8.2` release if no app release is due).
-   - In the `forumcopilot/siteowners` repo, copy the ZIP to
+   - In the `forumcopilot/siteowners` repo (local checkout
+     `/Users/tung/siteowners`; a push to its `main` deploys production, see
+     `docs/REPOSITORIES.md`), copy the ZIP to
      `frontend/public/downloads/ForumCopilot_1_8_2.zip` and add an entry to
      `frontend/src/data/xenforoAddonReleases.js`. The site redeploys on push;
      `/addon-changelog` and the console download link update from that file.

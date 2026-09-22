@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -156,6 +157,19 @@ class CloudflareInterceptor extends Interceptor {
       debugPrint('🌐 [WEBVIEW_DNS] DNS pre-resolution complete');
     } catch (e) {
       debugPrint('⚠️ [WEBVIEW_DNS] DNS pre-resolution failed: $e');
+    }
+
+    // Step 2a: Start the challenge from a clean webview. This replaces the
+    // deprecated `clearCache` / `clearSessionCache` InAppWebViewSettings;
+    // it runs BEFORE the cookie injection below so the cookies survive.
+    try {
+      await InAppWebViewController.clearAllCache();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        // Android-only API; iOS has no session-cookie notion to clear.
+        await CookieManager.instance().removeSessionCookies();
+      }
+    } catch (e) {
+      debugPrint('⚠️ [CLOUDFLARE] Could not clear webview cache: $e');
     }
 
     // Step 2: Inject Dio cookies into WebView before loading

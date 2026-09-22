@@ -23,6 +23,14 @@ class FCGroup with FCGroupMappable {
 
   int memberCount;
 
+  /// Whether the viewer is allowed to see who is in this group.
+  ///
+  /// When false, [memberCount] is not a real count — the server withheld
+  /// the number rather than reporting zero, and a UI that prints it
+  /// states the group is empty when it may be full. Defaults true so
+  /// every existing caller keeps its current behaviour.
+  bool canSeeMembers;
+
   /// True for auto-managed groups (trust level, staff, everyone).
   bool automatic;
 
@@ -63,6 +71,7 @@ class FCGroup with FCGroupMappable {
     this.fullName,
     this.bio,
     this.memberCount = 0,
+    this.canSeeMembers = true,
     this.automatic = false,
     this.visible = true,
     this.publicAdmission = false,

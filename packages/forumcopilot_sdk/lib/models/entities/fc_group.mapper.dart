@@ -41,6 +41,13 @@ class FCGroupMapper extends ClassMapperBase<FCGroup> {
     opt: true,
     def: 0,
   );
+  static bool _$canSeeMembers(FCGroup v) => v.canSeeMembers;
+  static const Field<FCGroup, bool> _f$canSeeMembers = Field(
+    'canSeeMembers',
+    _$canSeeMembers,
+    opt: true,
+    def: true,
+  );
   static bool _$automatic(FCGroup v) => v.automatic;
   static const Field<FCGroup, bool> _f$automatic = Field(
     'automatic',
@@ -128,6 +135,7 @@ class FCGroupMapper extends ClassMapperBase<FCGroup> {
     #fullName: _f$fullName,
     #bio: _f$bio,
     #memberCount: _f$memberCount,
+    #canSeeMembers: _f$canSeeMembers,
     #automatic: _f$automatic,
     #visible: _f$visible,
     #publicAdmission: _f$publicAdmission,
@@ -149,6 +157,7 @@ class FCGroupMapper extends ClassMapperBase<FCGroup> {
       fullName: data.dec(_f$fullName),
       bio: data.dec(_f$bio),
       memberCount: data.dec(_f$memberCount),
+      canSeeMembers: data.dec(_f$canSeeMembers),
       automatic: data.dec(_f$automatic),
       visible: data.dec(_f$visible),
       publicAdmission: data.dec(_f$publicAdmission),
@@ -227,6 +236,7 @@ abstract class FCGroupCopyWith<$R, $In extends FCGroup, $Out>
     String? fullName,
     String? bio,
     int? memberCount,
+    bool? canSeeMembers,
     bool? automatic,
     bool? visible,
     bool? publicAdmission,
@@ -258,6 +268,7 @@ class _FCGroupCopyWithImpl<$R, $Out>
     Object? fullName = $none,
     Object? bio = $none,
     int? memberCount,
+    bool? canSeeMembers,
     bool? automatic,
     bool? visible,
     bool? publicAdmission,
@@ -277,6 +288,7 @@ class _FCGroupCopyWithImpl<$R, $Out>
       if (fullName != $none) #fullName: fullName,
       if (bio != $none) #bio: bio,
       if (memberCount != null) #memberCount: memberCount,
+      if (canSeeMembers != null) #canSeeMembers: canSeeMembers,
       if (automatic != null) #automatic: automatic,
       if (visible != null) #visible: visible,
       if (publicAdmission != null) #publicAdmission: publicAdmission,
@@ -299,6 +311,7 @@ class _FCGroupCopyWithImpl<$R, $Out>
     fullName: data.get(#fullName, or: $value.fullName),
     bio: data.get(#bio, or: $value.bio),
     memberCount: data.get(#memberCount, or: $value.memberCount),
+    canSeeMembers: data.get(#canSeeMembers, or: $value.canSeeMembers),
     automatic: data.get(#automatic, or: $value.automatic),
     visible: data.get(#visible, or: $value.visible),
     publicAdmission: data.get(#publicAdmission, or: $value.publicAdmission),

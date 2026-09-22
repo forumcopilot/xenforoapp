@@ -27,11 +27,10 @@ If you find another copy, it is stale.
   this one. Details: `plugins/FC_XenForo2/README.md`.
 - **The SDK packages** (`packages/forumcopilot_sdk`, `packages/xenforo_core`)
   are owned by the canonical repo and synced into `packages/` here. The
-  sync is meant to be byte-identical; as of 2026-09-22 it is not (this repo
-  has the keystore password fix and the device proxy, canonical has newer
-  model fields and a Cloudflare fix), and a deliberate two-way sync is
-  pending. The shared test suite under `packages/forumcopilot_sdk/lib/test`
-  was fixed in canonical and synced here on 2026-09-22.
+  sync is byte-identical (last two-way sync 2026-09-22: the device proxy and
+  test fixes went into canonical, newer model fields and a Cloudflare fix
+  came here). Fix SDK defects in canonical first, then re-sync; only the two
+  `LICENSE` files and the gitignored `test/config.json` differ by design.
 - **The app** (`lib/`) here is the open-source template. Portable fixes are
   made here first and cherry-picked outward; single-forum bootstrap code
   stays here, multi-forum features stay in the canonical repo.

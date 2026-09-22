@@ -585,3 +585,22 @@ class FCSaveRawMessageResult extends FCBaseResult with FCSaveRawMessageResultMap
     this.messageContent,
   }) : super(result: result, resultText: resultText);
 }
+
+/// Forum Copilot Archive Conversation Result
+///
+/// Discourse-only. A personal message can be moved out of the inbox into the
+/// archive (PUT /t/{id}/archive-message) and back (PUT /t/{id}/move-to-inbox).
+/// XenForo has no equivalent — its interface default reports not-supported.
+@MappableClass()
+class FCArchiveConversationResult extends FCBaseResult
+    with FCArchiveConversationResultMappable {
+  /// True when the message is archived after this call, false when it is back
+  /// in the inbox. Lets a caller update its row without refetching.
+  bool isArchived;
+
+  FCArchiveConversationResult({
+    required bool result,
+    String? resultText,
+    this.isArchived = false,
+  }) : super(result: result, resultText: resultText);
+}

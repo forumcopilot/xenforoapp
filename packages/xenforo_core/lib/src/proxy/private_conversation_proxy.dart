@@ -756,6 +756,30 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     }
   }
 
+  /// XenForo has no archive for conversations — a user leaves one or it stays
+  /// in the list. Reported as not-supported so callers can hide the action
+  /// rather than offering a control that does nothing.
+  ///
+  /// Implemented here rather than inherited: this class `implements` the
+  /// interface, and a default body on an implemented member does not satisfy it.
+  @override
+  Future<FCArchiveConversationResult> archiveConversationAsync(
+      String conversationId) async {
+    return FCArchiveConversationResult(
+      result: false,
+      resultText: 'Archiving conversations is not supported on this forum.',
+    );
+  }
+
+  @override
+  Future<FCArchiveConversationResult> unarchiveConversationAsync(
+      String conversationId) async {
+    return FCArchiveConversationResult(
+      result: false,
+      resultText: 'Archiving conversations is not supported on this forum.',
+    );
+  }
+
   @override
   Future<FCCloseConversationResult> uncloseConversationAsync(String conversationId) async {
     print('✅ [XENFORO_PRIVATE_CONVERSATION] uncloseConversationAsync called via plugin API');

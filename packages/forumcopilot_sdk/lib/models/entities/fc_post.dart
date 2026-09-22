@@ -72,6 +72,43 @@ class FCPost with FCPostMappable {
   /// POst number of this post in the forum
   int? postNumber;
 
+  /// The post number this post is a reply to, within the same topic
+  /// (Discourse: `reply_to_post_number`). Null when the post replies to the
+  /// topic as a whole rather than to a specific post.
+  ///
+  /// This is what makes a topic a conversation rather than a list. Without
+  /// it a branching discussion renders as one flat run and readers cannot
+  /// tell who is answering whom.
+  /// The author's title as the forum displays it beside their name
+  /// (Discourse: `user_title`, e.g. "Contributor"). Null when they have
+  /// none.
+  ///
+  /// Distinct from a group flair: a title is free text the forum grants a
+  /// person, flair is the badge of a group they belong to. Discourse shows
+  /// both, and they are frequently different.
+  String? authorTitle;
+
+  /// The author's primary-group flair name (Discourse: `flair_name`, e.g.
+  /// "team"). Null when they have no flair group.
+  String? authorFlairName;
+
+  int? replyToPostNumber;
+
+  /// Display name of the author of [replyToPostNumber], when the platform
+  /// names them (Discourse: `reply_to_user`).
+  ///
+  /// Null does NOT mean "no reply": Discourse omits this when the reply
+  /// targets the opening post, treating that as a reply to the topic.
+  /// Callers should fall back to showing the post number.
+  String? replyToUsername;
+
+  /// Avatar for [replyToUsername], ready to load. Null when unavailable.
+  String? replyToIconUrl;
+
+  /// How many posts reply to this one (Discourse: `reply_count`). 0 when
+  /// unreported or when nothing replies to it.
+  int replyCount;
+
   /// Moderation capabilities
   bool canBan;
   bool canDelete;
@@ -164,5 +201,11 @@ class FCPost with FCPostMappable {
       this.reactions = const [],
       this.vote,
       this.editVersion,
-      this.isWiki = false});
+      this.isWiki = false,
+      this.replyToPostNumber,
+      this.replyToUsername,
+      this.replyToIconUrl,
+      this.replyCount = 0,
+      this.authorTitle,
+      this.authorFlairName});
 }

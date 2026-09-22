@@ -230,6 +230,33 @@ class FCUserMapper extends ClassMapperBase<FCUser> {
     opt: true,
     def: 'valid',
   );
+  static int _$profileViewCount(FCUser v) => v.profileViewCount;
+  static const Field<FCUser, int> _f$profileViewCount = Field(
+    'profileViewCount',
+    _$profileViewCount,
+    opt: true,
+    def: 0,
+  );
+  static bool _$canChatUser(FCUser v) => v.canChatUser;
+  static const Field<FCUser, bool> _f$canChatUser = Field(
+    'canChatUser',
+    _$canChatUser,
+    opt: true,
+    def: false,
+  );
+  static int _$badgeCount(FCUser v) => v.badgeCount;
+  static const Field<FCUser, int> _f$badgeCount = Field(
+    'badgeCount',
+    _$badgeCount,
+    opt: true,
+    def: 0,
+  );
+  static DateTime? _$lastSeenAt(FCUser v) => v.lastSeenAt;
+  static const Field<FCUser, DateTime> _f$lastSeenAt = Field(
+    'lastSeenAt',
+    _$lastSeenAt,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCUser> fields = const {
@@ -265,6 +292,10 @@ class FCUserMapper extends ClassMapperBase<FCUser> {
     #canModerate: _f$canModerate,
     #canSearch: _f$canSearch,
     #userState: _f$userState,
+    #profileViewCount: _f$profileViewCount,
+    #canChatUser: _f$canChatUser,
+    #badgeCount: _f$badgeCount,
+    #lastSeenAt: _f$lastSeenAt,
   };
 
   static FCUser _instantiate(DecodingData data) {
@@ -301,6 +332,10 @@ class FCUserMapper extends ClassMapperBase<FCUser> {
       canModerate: data.dec(_f$canModerate),
       canSearch: data.dec(_f$canSearch),
       userState: data.dec(_f$userState),
+      profileViewCount: data.dec(_f$profileViewCount),
+      canChatUser: data.dec(_f$canChatUser),
+      badgeCount: data.dec(_f$badgeCount),
+      lastSeenAt: data.dec(_f$lastSeenAt),
     );
   }
 
@@ -390,6 +425,10 @@ abstract class FCUserCopyWith<$R, $In extends FCUser, $Out>
     bool? canModerate,
     bool? canSearch,
     String? userState,
+    int? profileViewCount,
+    bool? canChatUser,
+    int? badgeCount,
+    DateTime? lastSeenAt,
   });
   FCUserCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -452,6 +491,10 @@ class _FCUserCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCUser, $Out>
     bool? canModerate,
     bool? canSearch,
     Object? userState = $none,
+    int? profileViewCount,
+    bool? canChatUser,
+    int? badgeCount,
+    Object? lastSeenAt = $none,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -486,6 +529,10 @@ class _FCUserCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCUser, $Out>
       if (canModerate != null) #canModerate: canModerate,
       if (canSearch != null) #canSearch: canSearch,
       if (userState != $none) #userState: userState,
+      if (profileViewCount != null) #profileViewCount: profileViewCount,
+      if (canChatUser != null) #canChatUser: canChatUser,
+      if (badgeCount != null) #badgeCount: badgeCount,
+      if (lastSeenAt != $none) #lastSeenAt: lastSeenAt,
     }),
   );
   @override
@@ -525,6 +572,10 @@ class _FCUserCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCUser, $Out>
     canModerate: data.get(#canModerate, or: $value.canModerate),
     canSearch: data.get(#canSearch, or: $value.canSearch),
     userState: data.get(#userState, or: $value.userState),
+    profileViewCount: data.get(#profileViewCount, or: $value.profileViewCount),
+    canChatUser: data.get(#canChatUser, or: $value.canChatUser),
+    badgeCount: data.get(#badgeCount, or: $value.badgeCount),
+    lastSeenAt: data.get(#lastSeenAt, or: $value.lastSeenAt),
   );
 
   @override

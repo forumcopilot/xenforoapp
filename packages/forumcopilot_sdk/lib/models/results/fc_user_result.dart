@@ -183,6 +183,13 @@ class FCLoginTwoStepResult extends FCUser with FCLoginTwoStepResultMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -231,6 +238,10 @@ class FCLoginTwoStepResult extends FCUser with FCLoginTwoStepResultMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,
@@ -293,6 +304,13 @@ class FCOnlineUser extends FCUser with FCOnlineUserMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -329,6 +347,10 @@ class FCOnlineUser extends FCUser with FCOnlineUserMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,
@@ -463,6 +485,13 @@ class FCUserInfoResult extends FCUser with FCUserInfoResultMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -523,6 +552,10 @@ class FCUserInfoResult extends FCUser with FCUserInfoResultMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,
@@ -695,6 +728,18 @@ class FCUserReply with FCUserReplyMappable {
   /// Short content
   String? shortContent;
 
+  /// Who performed the action that put this item in the feed, when that
+  /// is somebody other than the post's author.
+  ///
+  /// Separate from [authorName] because the two come apart: in an
+  /// activity feed of accepted answers, the post is the profile owner's
+  /// and the actor is whoever accepted it. Null when the feed has no
+  /// actor distinct from the author, which is the common case.
+  String? actorName;
+
+  /// Avatar for [actorName]. Null whenever [actorName] is.
+  String? actorIconUrl;
+
   FCUserReply({
     required this.postId,
     required this.topicId,
@@ -708,6 +753,8 @@ class FCUserReply with FCUserReplyMappable {
     this.replyNumber = 0,
     this.postContent,
     this.shortContent,
+    this.actorName,
+    this.actorIconUrl,
   });
 }
 
@@ -740,6 +787,13 @@ class FCRecommendedUser extends FCUser with FCRecommendedUserMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -776,6 +830,10 @@ class FCRecommendedUser extends FCUser with FCRecommendedUserMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,
@@ -844,6 +902,13 @@ class FCSearchUser extends FCUser with FCSearchUserMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -880,6 +945,10 @@ class FCSearchUser extends FCUser with FCSearchUserMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,
@@ -961,6 +1030,13 @@ class FCIgnoredUser extends FCUser with FCIgnoredUserMappable {
     // FCUser required fields
     required String id,
     required String username,
+    // Inherited from FCUser. These subclasses re-declare and forward every
+    // base field, so a new one that is not repeated here is unreachable
+    // through them and dart_mappable's copyWith stops matching the base.
+    int profileViewCount = 0,
+    bool canChatUser = false,
+    int badgeCount = 0,
+    DateTime? lastSeenAt,
     // FCUser optional fields
     String? loginName,
     String? email,
@@ -997,6 +1073,10 @@ class FCIgnoredUser extends FCUser with FCIgnoredUserMappable {
   }) : super(
           id: id,
           username: username,
+          profileViewCount: profileViewCount,
+          canChatUser: canChatUser,
+          badgeCount: badgeCount,
+          lastSeenAt: lastSeenAt,
           loginName: loginName,
           email: email,
           userType: userType,

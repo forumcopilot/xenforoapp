@@ -327,6 +327,74 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     opt: true,
     def: false,
   );
+  static String? _$lastPosterName(FCTopic v) => v.lastPosterName;
+  static const Field<FCTopic, String> _f$lastPosterName = Field(
+    'lastPosterName',
+    _$lastPosterName,
+    opt: true,
+  );
+  static String? _$lastPosterIconUrl(FCTopic v) => v.lastPosterIconUrl;
+  static const Field<FCTopic, String> _f$lastPosterIconUrl = Field(
+    'lastPosterIconUrl',
+    _$lastPosterIconUrl,
+    opt: true,
+  );
+  static DateTime? _$lastPostedAt(FCTopic v) => v.lastPostedAt;
+  static const Field<FCTopic, DateTime> _f$lastPostedAt = Field(
+    'lastPostedAt',
+    _$lastPostedAt,
+    opt: true,
+    hook: MillisOrIsoDateHook(),
+  );
+  static bool _$isHot(FCTopic v) => v.isHot;
+  static const Field<FCTopic, bool> _f$isHot = Field(
+    'isHot',
+    _$isHot,
+    opt: true,
+    def: false,
+  );
+  static int _$participantCount(FCTopic v) => v.participantCount;
+  static const Field<FCTopic, int> _f$participantCount = Field(
+    'participantCount',
+    _$participantCount,
+    opt: true,
+    def: 0,
+  );
+  static int _$linkCount(FCTopic v) => v.linkCount;
+  static const Field<FCTopic, int> _f$linkCount = Field(
+    'linkCount',
+    _$linkCount,
+    opt: true,
+    def: 0,
+  );
+  static List<String> _$participantIconUrls(FCTopic v) => v.participantIconUrls;
+  static const Field<FCTopic, List<String>> _f$participantIconUrls = Field(
+    'participantIconUrls',
+    _$participantIconUrls,
+    opt: true,
+    def: const [],
+  );
+  static int _$voteCount(FCTopic v) => v.voteCount;
+  static const Field<FCTopic, int> _f$voteCount = Field(
+    'voteCount',
+    _$voteCount,
+    opt: true,
+    def: 0,
+  );
+  static bool _$canVote(FCTopic v) => v.canVote;
+  static const Field<FCTopic, bool> _f$canVote = Field(
+    'canVote',
+    _$canVote,
+    opt: true,
+    def: false,
+  );
+  static bool _$userVoted(FCTopic v) => v.userVoted;
+  static const Field<FCTopic, bool> _f$userVoted = Field(
+    'userVoted',
+    _$userVoted,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCTopic> fields = const {
@@ -378,6 +446,16 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     #unreadCount: _f$unreadCount,
     #tags: _f$tags,
     #isSolved: _f$isSolved,
+    #lastPosterName: _f$lastPosterName,
+    #lastPosterIconUrl: _f$lastPosterIconUrl,
+    #lastPostedAt: _f$lastPostedAt,
+    #isHot: _f$isHot,
+    #participantCount: _f$participantCount,
+    #linkCount: _f$linkCount,
+    #participantIconUrls: _f$participantIconUrls,
+    #voteCount: _f$voteCount,
+    #canVote: _f$canVote,
+    #userVoted: _f$userVoted,
   };
 
   static FCTopic _instantiate(DecodingData data) {
@@ -430,6 +508,16 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
       unreadCount: data.dec(_f$unreadCount),
       tags: data.dec(_f$tags),
       isSolved: data.dec(_f$isSolved),
+      lastPosterName: data.dec(_f$lastPosterName),
+      lastPosterIconUrl: data.dec(_f$lastPosterIconUrl),
+      lastPostedAt: data.dec(_f$lastPostedAt),
+      isHot: data.dec(_f$isHot),
+      participantCount: data.dec(_f$participantCount),
+      linkCount: data.dec(_f$linkCount),
+      participantIconUrls: data.dec(_f$participantIconUrls),
+      voteCount: data.dec(_f$voteCount),
+      canVote: data.dec(_f$canVote),
+      userVoted: data.dec(_f$userVoted),
     );
   }
 
@@ -494,6 +582,8 @@ abstract class FCTopicCopyWith<$R, $In extends FCTopic, $Out>
   get participatedUserIds;
   FCPollCopyWith<$R, FCPoll, FCPoll>? get poll;
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get tags;
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
+  get participantIconUrls;
   $R call({
     String? id,
     String? title,
@@ -543,6 +633,16 @@ abstract class FCTopicCopyWith<$R, $In extends FCTopic, $Out>
     int? unreadCount,
     List<String>? tags,
     bool? isSolved,
+    String? lastPosterName,
+    String? lastPosterIconUrl,
+    DateTime? lastPostedAt,
+    bool? isHot,
+    int? participantCount,
+    int? linkCount,
+    List<String>? participantIconUrls,
+    int? voteCount,
+    bool? canVote,
+    bool? userVoted,
   });
   FCTopicCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -572,6 +672,13 @@ class _FCTopicCopyWithImpl<$R, $Out>
         (v, t) => ObjectCopyWith(v, $identity, t),
         (v) => call(tags: v),
       );
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
+  get participantIconUrls => ListCopyWith(
+    $value.participantIconUrls,
+    (v, t) => ObjectCopyWith(v, $identity, t),
+    (v) => call(participantIconUrls: v),
+  );
   @override
   $R call({
     String? id,
@@ -622,6 +729,16 @@ class _FCTopicCopyWithImpl<$R, $Out>
     int? unreadCount,
     List<String>? tags,
     bool? isSolved,
+    Object? lastPosterName = $none,
+    Object? lastPosterIconUrl = $none,
+    Object? lastPostedAt = $none,
+    bool? isHot,
+    int? participantCount,
+    int? linkCount,
+    List<String>? participantIconUrls,
+    int? voteCount,
+    bool? canVote,
+    bool? userVoted,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -673,6 +790,17 @@ class _FCTopicCopyWithImpl<$R, $Out>
       if (unreadCount != null) #unreadCount: unreadCount,
       if (tags != null) #tags: tags,
       if (isSolved != null) #isSolved: isSolved,
+      if (lastPosterName != $none) #lastPosterName: lastPosterName,
+      if (lastPosterIconUrl != $none) #lastPosterIconUrl: lastPosterIconUrl,
+      if (lastPostedAt != $none) #lastPostedAt: lastPostedAt,
+      if (isHot != null) #isHot: isHot,
+      if (participantCount != null) #participantCount: participantCount,
+      if (linkCount != null) #linkCount: linkCount,
+      if (participantIconUrls != null)
+        #participantIconUrls: participantIconUrls,
+      if (voteCount != null) #voteCount: voteCount,
+      if (canVote != null) #canVote: canVote,
+      if (userVoted != null) #userVoted: userVoted,
     }),
   );
   @override
@@ -728,6 +856,22 @@ class _FCTopicCopyWithImpl<$R, $Out>
     unreadCount: data.get(#unreadCount, or: $value.unreadCount),
     tags: data.get(#tags, or: $value.tags),
     isSolved: data.get(#isSolved, or: $value.isSolved),
+    lastPosterName: data.get(#lastPosterName, or: $value.lastPosterName),
+    lastPosterIconUrl: data.get(
+      #lastPosterIconUrl,
+      or: $value.lastPosterIconUrl,
+    ),
+    lastPostedAt: data.get(#lastPostedAt, or: $value.lastPostedAt),
+    isHot: data.get(#isHot, or: $value.isHot),
+    participantCount: data.get(#participantCount, or: $value.participantCount),
+    linkCount: data.get(#linkCount, or: $value.linkCount),
+    participantIconUrls: data.get(
+      #participantIconUrls,
+      or: $value.participantIconUrls,
+    ),
+    voteCount: data.get(#voteCount, or: $value.voteCount),
+    canVote: data.get(#canVote, or: $value.canVote),
+    userVoted: data.get(#userVoted, or: $value.userVoted),
   );
 
   @override

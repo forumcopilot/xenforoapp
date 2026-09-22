@@ -39,6 +39,57 @@ class FCTopic with FCTopicMappable {
   @MappableField(hook: MillisOrIsoDateHook())
   DateTime timestamp;
 
+  /// Display name of whoever posted most recently in the topic.
+  ///
+  /// Distinct from [authorName], which is whoever *started* it. Forum web
+  /// UIs lead their topic rows with "X replied 2 hours ago", because on a
+  /// busy list the last voice is the reason to open a topic and the
+  /// original author usually is not.
+  ///
+  /// Null when the platform does not report it, or when nobody has replied
+  /// yet — a topic whose only post is the opening one has no last *poster*
+  /// distinct from its author, and callers should fall back to [timestamp].
+  String? lastPosterName;
+
+  /// Avatar for [lastPosterName], ready to load. Null when unavailable.
+  String? lastPosterIconUrl;
+
+  /// When the most recent post landed, for the "replied 2 hours ago" half
+  /// of the line. Null when unreported; [timestamp] (topic creation) is the
+  /// fallback, but the two mean different things — do not conflate them.
+  @MappableField(hook: MillisOrIsoDateHook())
+  DateTime? lastPostedAt;
+
+  /// Whether the platform flags this topic as currently hot / trending
+  /// (Discourse: `is_hot`, its own popularity heuristic — not a count the
+  /// client can derive). False when unreported.
+  bool isHot;
+
+  /// How many distinct people have posted in the topic, as the server
+  /// counts them (Discourse: `participant_count`).
+  ///
+  /// Not the same as `participatedUserIds.length`: that list is a capped
+  /// *summary* of posters, so on a busy topic it under-reports. Prefer this
+  /// when showing a number; use the id list when you need the identities.
+  int participantCount;
+
+  /// How many outbound links the topic contains (Discourse:
+  /// `details.links`). 0 when unreported.
+  int linkCount;
+
+  /// How many people have voted for this topic, where the platform has a
+  /// voting concept (Discourse: the `discourse-topic-voting` plugin's
+  /// `vote_count`). 0 when voting is off or unreported.
+  int voteCount;
+
+  /// Whether the current viewer may cast a vote here (`can_vote`). False
+  /// for guests, for forums without voting, and in categories where it is
+  /// not enabled — the server's answer, not a guess from vote_count.
+  bool canVote;
+
+  /// Whether the viewer has already voted (`user_voted`).
+  bool userVoted;
+
   /// Number of replies in the topic
   int replyCount;
 
@@ -65,6 +116,16 @@ class FCTopic with FCTopicMappable {
 
   /// List of user IDs who participated in this topic
   List<String> participatedUserIds;
+
+  /// Avatar URLs for [participatedUserIds], in the same order and ready to
+  /// load.
+  ///
+  /// Forum web UIs show a cluster of participant faces on each topic row —
+  /// on a busy list that is the fastest signal of who is in a conversation.
+  /// Kept parallel to the id list rather than folded into it because the
+  /// ids are useful on their own, and a platform may know who took part
+  /// without being able to picture them.
+  List<String> participantIconUrls;
 
   /// Indicates if the topic is pinned/sticky
   @MappableField(hook: FlexibleBoolHook())
@@ -180,5 +241,18 @@ class FCTopic with FCTopicMappable {
     this.unreadCount = 0,
     this.tags = const [],
     this.isSolved = false,
+    // Optional with no default beyond null: a platform that cannot report
+    // the last poster leaves these unset, and the UI falls back to the
+    // topic's own author/timestamp rather than rendering a wrong name.
+    this.lastPosterName,
+    this.lastPosterIconUrl,
+    this.lastPostedAt,
+    this.isHot = false,
+    this.participantCount = 0,
+    this.linkCount = 0,
+    this.participantIconUrls = const [],
+    this.voteCount = 0,
+    this.canVote = false,
+    this.userVoted = false,
   });
 }

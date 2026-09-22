@@ -3906,3 +3906,176 @@ class _FCSaveRawMessageResultCopyWithImpl<$R, $Out>
       _FCSaveRawMessageResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
+class FCArchiveConversationResultMapper
+    extends ClassMapperBase<FCArchiveConversationResult> {
+  FCArchiveConversationResultMapper._();
+
+  static FCArchiveConversationResultMapper? _instance;
+  static FCArchiveConversationResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(
+        _instance = FCArchiveConversationResultMapper._(),
+      );
+      FCBaseResultMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCArchiveConversationResult';
+
+  static bool _$result(FCArchiveConversationResult v) => v.result;
+  static const Field<FCArchiveConversationResult, bool> _f$result = Field(
+    'result',
+    _$result,
+  );
+  static String? _$resultText(FCArchiveConversationResult v) => v.resultText;
+  static const Field<FCArchiveConversationResult, String> _f$resultText = Field(
+    'resultText',
+    _$resultText,
+    opt: true,
+  );
+  static bool _$isArchived(FCArchiveConversationResult v) => v.isArchived;
+  static const Field<FCArchiveConversationResult, bool> _f$isArchived = Field(
+    'isArchived',
+    _$isArchived,
+    opt: true,
+    def: false,
+  );
+
+  @override
+  final MappableFields<FCArchiveConversationResult> fields = const {
+    #result: _f$result,
+    #resultText: _f$resultText,
+    #isArchived: _f$isArchived,
+  };
+
+  static FCArchiveConversationResult _instantiate(DecodingData data) {
+    return FCArchiveConversationResult(
+      result: data.dec(_f$result),
+      resultText: data.dec(_f$resultText),
+      isArchived: data.dec(_f$isArchived),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCArchiveConversationResult fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCArchiveConversationResult>(map);
+  }
+
+  static FCArchiveConversationResult fromJson(String json) {
+    return ensureInitialized().decodeJson<FCArchiveConversationResult>(json);
+  }
+}
+
+mixin FCArchiveConversationResultMappable {
+  String toJson() {
+    return FCArchiveConversationResultMapper.ensureInitialized()
+        .encodeJson<FCArchiveConversationResult>(
+          this as FCArchiveConversationResult,
+        );
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCArchiveConversationResultMapper.ensureInitialized()
+        .encodeMap<FCArchiveConversationResult>(
+          this as FCArchiveConversationResult,
+        );
+  }
+
+  FCArchiveConversationResultCopyWith<
+    FCArchiveConversationResult,
+    FCArchiveConversationResult,
+    FCArchiveConversationResult
+  >
+  get copyWith =>
+      _FCArchiveConversationResultCopyWithImpl<
+        FCArchiveConversationResult,
+        FCArchiveConversationResult
+      >(this as FCArchiveConversationResult, $identity, $identity);
+  @override
+  String toString() {
+    return FCArchiveConversationResultMapper.ensureInitialized().stringifyValue(
+      this as FCArchiveConversationResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCArchiveConversationResultMapper.ensureInitialized().equalsValue(
+      this as FCArchiveConversationResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCArchiveConversationResultMapper.ensureInitialized().hashValue(
+      this as FCArchiveConversationResult,
+    );
+  }
+}
+
+extension FCArchiveConversationResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCArchiveConversationResult, $Out> {
+  FCArchiveConversationResultCopyWith<$R, FCArchiveConversationResult, $Out>
+  get $asFCArchiveConversationResult => $base.as(
+    (v, t, t2) => _FCArchiveConversationResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class FCArchiveConversationResultCopyWith<
+  $R,
+  $In extends FCArchiveConversationResult,
+  $Out
+>
+    implements FCBaseResultCopyWith<$R, $In, $Out> {
+  @override
+  $R call({bool? result, String? resultText, bool? isArchived});
+  FCArchiveConversationResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _FCArchiveConversationResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCArchiveConversationResult, $Out>
+    implements
+        FCArchiveConversationResultCopyWith<
+          $R,
+          FCArchiveConversationResult,
+          $Out
+        > {
+  _FCArchiveConversationResultCopyWithImpl(
+    super.value,
+    super.then,
+    super.then2,
+  );
+
+  @override
+  late final ClassMapperBase<FCArchiveConversationResult> $mapper =
+      FCArchiveConversationResultMapper.ensureInitialized();
+  @override
+  $R call({bool? result, Object? resultText = $none, bool? isArchived}) =>
+      $apply(
+        FieldCopyWithData({
+          if (result != null) #result: result,
+          if (resultText != $none) #resultText: resultText,
+          if (isArchived != null) #isArchived: isArchived,
+        }),
+      );
+  @override
+  FCArchiveConversationResult $make(CopyWithData data) =>
+      FCArchiveConversationResult(
+        result: data.get(#result, or: $value.result),
+        resultText: data.get(#resultText, or: $value.resultText),
+        isArchived: data.get(#isArchived, or: $value.isArchived),
+      );
+
+  @override
+  FCArchiveConversationResultCopyWith<$R2, FCArchiveConversationResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _FCArchiveConversationResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+

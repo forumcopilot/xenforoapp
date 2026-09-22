@@ -102,6 +102,33 @@ abstract class IFCPrivateConversationProxy {
   /// [conversationId] - Conversation ID to unclose
   Future<FCCloseConversationResult> uncloseConversationAsync(String conversationId);
 
+  /// Move a message out of the inbox into the archive (Discourse only).
+  ///
+  /// [conversationId] - Conversation ID to archive
+  ///
+  /// Given a default body rather than left abstract on purpose: every other
+  /// method here is abstract, so adding one would stop XenForo's implementation
+  /// compiling for a feature it does not have. Platforms without an archive
+  /// inherit this and report not-supported, and callers can gate on `result`.
+  Future<FCArchiveConversationResult> archiveConversationAsync(
+    String conversationId,
+  ) async =>
+      FCArchiveConversationResult(
+        result: false,
+        resultText: 'Archiving messages is not supported on this forum.',
+      );
+
+  /// Move an archived message back into the inbox (Discourse only).
+  ///
+  /// [conversationId] - Conversation ID to restore
+  Future<FCArchiveConversationResult> unarchiveConversationAsync(
+    String conversationId,
+  ) async =>
+      FCArchiveConversationResult(
+        result: false,
+        resultText: 'Archiving messages is not supported on this forum.',
+      );
+
   /// Get raw conversation data for editing
   ///
   /// [conversationId] - Conversation ID to get

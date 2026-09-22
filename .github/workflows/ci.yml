@@ -28,7 +28,7 @@ jobs:
         # Warnings are fatal. Scoped to lib/ and test/ because packages/ is a
         # byte-identical sync of the canonical SDK copy and must not be edited
         # here (it currently carries one unused_import warning of its own).
-        run: flutter analyze lib test --no-fatal-infos
+        run: flutter analyze --no-fatal-infos
 
       - name: Test
         run: flutter test

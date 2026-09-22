@@ -17,6 +17,7 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - `follow`, `unfollow` and `unbanUser` accept a username where the SDK only carries one identifier.
 
 ### Changed
+- `packages/forumcopilot_sdk` and `packages/xenforo_core` are byte-identical with the canonical repo again after a two-way sync. Into canonical: the XenForo device proxy (push device registration through `forumcopilot.php`), the shared-suite test fixes and the `test/config.json` ignore rule. From canonical: the Cloudflare challenge webview now clears its cache explicitly instead of through deprecated settings, `FCTopic` carries last-poster fields, `FCUser`/`FCGroup` gain a few platform-neutral fields, `IFCPrivateConversationProxy` has an `archiveConversationAsync` default that XenForo reports as unsupported, and `ForumCopilotApiService` reads its base URL from `FC_API_BASE_URL` (unused by this standalone app). The stray `flutter_inappwebview` import is gone, so CI now analyzes the whole tree.
 - The shared SDK test suite (`packages/forumcopilot_sdk/lib/test`, synced from canonical) is now runnable against a real forum: it picks a postable forum instead of a category, records unimplemented methods as skipped, logs back in after its logout test, addresses conversations, follows and bans to a second user, and cleans up its own uploads. `packages/xenforo_core` passes `secondUsername`, `secondPassword` and the new `thirdUsername` through from `test/config.json`. On XenForo 2.2.19: basic suite 49/49, interface suite 100/100.
 
 ## [0.10.2] - 2026-09-22

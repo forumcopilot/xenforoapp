@@ -264,6 +264,43 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     opt: true,
     def: false,
   );
+  static int? _$replyToPostNumber(FCPost v) => v.replyToPostNumber;
+  static const Field<FCPost, int> _f$replyToPostNumber = Field(
+    'replyToPostNumber',
+    _$replyToPostNumber,
+    opt: true,
+  );
+  static String? _$replyToUsername(FCPost v) => v.replyToUsername;
+  static const Field<FCPost, String> _f$replyToUsername = Field(
+    'replyToUsername',
+    _$replyToUsername,
+    opt: true,
+  );
+  static String? _$replyToIconUrl(FCPost v) => v.replyToIconUrl;
+  static const Field<FCPost, String> _f$replyToIconUrl = Field(
+    'replyToIconUrl',
+    _$replyToIconUrl,
+    opt: true,
+  );
+  static int _$replyCount(FCPost v) => v.replyCount;
+  static const Field<FCPost, int> _f$replyCount = Field(
+    'replyCount',
+    _$replyCount,
+    opt: true,
+    def: 0,
+  );
+  static String? _$authorTitle(FCPost v) => v.authorTitle;
+  static const Field<FCPost, String> _f$authorTitle = Field(
+    'authorTitle',
+    _$authorTitle,
+    opt: true,
+  );
+  static String? _$authorFlairName(FCPost v) => v.authorFlairName;
+  static const Field<FCPost, String> _f$authorFlairName = Field(
+    'authorFlairName',
+    _$authorFlairName,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCPost> fields = const {
@@ -305,6 +342,12 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #vote: _f$vote,
     #editVersion: _f$editVersion,
     #isWiki: _f$isWiki,
+    #replyToPostNumber: _f$replyToPostNumber,
+    #replyToUsername: _f$replyToUsername,
+    #replyToIconUrl: _f$replyToIconUrl,
+    #replyCount: _f$replyCount,
+    #authorTitle: _f$authorTitle,
+    #authorFlairName: _f$authorFlairName,
   };
 
   static FCPost _instantiate(DecodingData data) {
@@ -347,6 +390,12 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       vote: data.dec(_f$vote),
       editVersion: data.dec(_f$editVersion),
       isWiki: data.dec(_f$isWiki),
+      replyToPostNumber: data.dec(_f$replyToPostNumber),
+      replyToUsername: data.dec(_f$replyToUsername),
+      replyToIconUrl: data.dec(_f$replyToIconUrl),
+      replyCount: data.dec(_f$replyCount),
+      authorTitle: data.dec(_f$authorTitle),
+      authorFlairName: data.dec(_f$authorFlairName),
     );
   }
 
@@ -457,6 +506,12 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     FCPostVote? vote,
     int? editVersion,
     bool? isWiki,
+    int? replyToPostNumber,
+    String? replyToUsername,
+    String? replyToIconUrl,
+    int? replyCount,
+    String? authorTitle,
+    String? authorFlairName,
   });
   FCPostCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -557,6 +612,12 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     Object? vote = $none,
     Object? editVersion = $none,
     bool? isWiki,
+    Object? replyToPostNumber = $none,
+    Object? replyToUsername = $none,
+    Object? replyToIconUrl = $none,
+    int? replyCount,
+    Object? authorTitle = $none,
+    Object? authorFlairName = $none,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -597,6 +658,12 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (vote != $none) #vote: vote,
       if (editVersion != $none) #editVersion: editVersion,
       if (isWiki != null) #isWiki: isWiki,
+      if (replyToPostNumber != $none) #replyToPostNumber: replyToPostNumber,
+      if (replyToUsername != $none) #replyToUsername: replyToUsername,
+      if (replyToIconUrl != $none) #replyToIconUrl: replyToIconUrl,
+      if (replyCount != null) #replyCount: replyCount,
+      if (authorTitle != $none) #authorTitle: authorTitle,
+      if (authorFlairName != $none) #authorFlairName: authorFlairName,
     }),
   );
   @override
@@ -642,6 +709,15 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     vote: data.get(#vote, or: $value.vote),
     editVersion: data.get(#editVersion, or: $value.editVersion),
     isWiki: data.get(#isWiki, or: $value.isWiki),
+    replyToPostNumber: data.get(
+      #replyToPostNumber,
+      or: $value.replyToPostNumber,
+    ),
+    replyToUsername: data.get(#replyToUsername, or: $value.replyToUsername),
+    replyToIconUrl: data.get(#replyToIconUrl, or: $value.replyToIconUrl),
+    replyCount: data.get(#replyCount, or: $value.replyCount),
+    authorTitle: data.get(#authorTitle, or: $value.authorTitle),
+    authorFlairName: data.get(#authorFlairName, or: $value.authorFlairName),
   );
 
   @override

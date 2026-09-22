@@ -38,8 +38,9 @@ extension RequestOptionsExtension on RequestOptions {
   InAppWebViewSettings getWebViewSettings() {
     return InAppWebViewSettings(
       userAgent: headers['user-agent'] as String?,
-      clearCache: true,
-      clearSessionCache: true,
+      // Cache and session cookies are cleared explicitly by the interceptor
+      // before this webview is created (the settings that used to do it are
+      // deprecated).
       transparentBackground: true,
       useShouldOverrideUrlLoading: true,
       useOnLoadResource: false,

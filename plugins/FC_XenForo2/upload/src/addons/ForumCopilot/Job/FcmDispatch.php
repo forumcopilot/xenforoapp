@@ -32,7 +32,7 @@ class FcmDispatch extends AbstractJob
     public function run($maxRunTime)
     {
         $userIds = $this->data['userIds'] ?? [];
-        \XF::logError('[FC DEBUG] FcmDispatch.run: userIds=[' . implode(',', $userIds) . ']');
+        \ForumCopilot\Util\Log::debug('[FC DEBUG] FcmDispatch.run: userIds=[' . implode(',', $userIds) . ']');
         if (!$userIds) {
             return $this->complete();
         }
@@ -42,7 +42,7 @@ class FcmDispatch extends AbstractJob
             $repo = \XF::repository('ForumCopilot:DeviceToken');
             $devices = $repo->findValidTokensForUsers((array)$userIds, 'direct')->fetch()->toArray();
 
-            \XF::logError(sprintf(
+            \ForumCopilot\Util\Log::debug(sprintf(
                 '[FC DEBUG] FcmDispatch.run: %d device(s) found for direct dispatch',
                 count($devices)
             ));
@@ -65,7 +65,7 @@ class FcmDispatch extends AbstractJob
                 (array)($this->data['data'] ?? [])
             );
 
-            \XF::logError(sprintf(
+            \ForumCopilot\Util\Log::debug(sprintf(
                 'FC FcmDispatch: sent=%d failed=%d invalidated=%d (target=%d devices)',
                 $stats['sent'] ?? 0,
                 $stats['failed'] ?? 0,

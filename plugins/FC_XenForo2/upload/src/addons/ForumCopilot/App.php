@@ -297,11 +297,11 @@ class App extends \XF\App
         // Debug: log device-registration dispatches so opcache/upload issues are
         // visible in /admin.php?logs/server-errors. Remove once stable.
         if (in_array($method, ['registerDevice', 'unregisterDevice', 'updateDeviceToken'], true)) {
-            \XF::logError('[FC DEBUG] Dispatch ' . $method . ' (mapped=' . (isset($map[$method]) ? 'yes' : 'NO') . ')');
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] Dispatch ' . $method . ' (mapped=' . (isset($map[$method]) ? 'yes' : 'NO') . ')');
         }
 
         if(!isset($map[$method])) {
-            \XF::logError('[FC DEBUG] Unknown API method: ' . $method);
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] Unknown API method: ' . $method);
             return $this->createJsonError("Unknown method: $method", 400);
         }
         $controllerClass = explode('@', $map[$method])[0];

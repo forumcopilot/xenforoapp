@@ -29,14 +29,14 @@ class DispatchRouter
         $action = $data['action'] ?? 'unknown';
 
         if (!$userIds) {
-            \XF::logError('[FC DEBUG] DispatchRouter: skip — empty userIds (' . $contentType . '/' . $action . ')');
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] DispatchRouter: skip — empty userIds (' . $contentType . '/' . $action . ')');
             return;
         }
 
         $opts = \XF::options();
         $globallyEnabled = !empty($opts->fc_push_enabled);
         if (!$globallyEnabled) {
-            \XF::logError('[FC DEBUG] DispatchRouter: skip — fc_push_enabled is OFF');
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] DispatchRouter: skip — fc_push_enabled is OFF');
             return;
         }
 
@@ -48,11 +48,11 @@ class DispatchRouter
         $directEnabled = !empty($opts->fc_push_direct_enabled)
             && !empty(trim((string)($opts->fc_push_direct_creds_path ?? '')));
         if (!$hostedEnabled && !$directEnabled) {
-            \XF::logError('[FC DEBUG] DispatchRouter: skip — both hosted and direct disabled');
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] DispatchRouter: skip — both hosted and direct disabled');
             return;
         }
 
-        \XF::logError(sprintf(
+        \ForumCopilot\Util\Log::debug(sprintf(
             '[FC DEBUG] DispatchRouter: dispatching %s/%s to %d user(s) [hosted=%s, direct=%s]',
             $contentType, $action, count($userIds),
             $hostedEnabled ? 'on' : 'off',
@@ -65,7 +65,7 @@ class DispatchRouter
             try {
                 $hosted = new \ForumCopilot\Push\ForumCopilotPush();
                 $hosted->sendPushNotification($userIds, $title, $body, $url, $data);
-                \XF::logError('[FC DEBUG] DispatchRouter: hosted sendPushNotification returned (HTTP outcome logged separately)');
+                \ForumCopilot\Util\Log::debug('[FC DEBUG] DispatchRouter: hosted sendPushNotification returned (HTTP outcome logged separately)');
             } catch (\Throwable $e) {
                 \XF::logError('FC DispatchRouter hosted push error: ' . $e->getMessage());
             }

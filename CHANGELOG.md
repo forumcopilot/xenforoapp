@@ -6,6 +6,9 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon (v1.8.5 → v1.8.6, published 2026-09-28 as the `addon-v1.8.6` release)
+- The push pipeline no longer writes its trace lines to the server error log by default. Since 1.6.0 every push decision (`[FC DEBUG] AlertPushProcessor: 0/1 receiver(s) have app installed`, `[FC PM TRACE] gate=...`, `[FC BOOT] ...`; 43 call sites in nine files) went through `XF::logError`, which XenForo displays as an ErrorException, so a forum whose members had not yet logged into the app collected three "error" rows per alert and owners read them as failures. A new admin option, **Diagnostic logging** (ForumCopilot Options, off by default), turns them back on for troubleshooting; genuine failures (caught exceptions, HTTP errors, missing configuration) are logged regardless. The skipped-push line is reworded to say what it means. Verified on 2.2.19 by inserting alerts with the option off (no rows, push job still runs) and on (the trace appears), plus both live suites on 2.2.19 and 2.3.7.
+
 ### Bundled addon (v1.8.4 → v1.8.5, published 2026-09-22 as the `addon-v1.8.5` release)
 - XenForo 2.2: the entry file looked up the session-activity repository by its 2.3 class name, which threw (caught and logged) on every authenticated API request, so the "Using Forum Copilot Mobile App" activity label never appeared and the error log filled up. The push opt-out settings page had the same problem with the alert repository. Both now use the short repository ids that resolve on 2.2 and 2.3. Found while verifying hosted push end to end (a mention on the 2.2.19 test forum reached a Pixel through push.forumcopilot.com).
 

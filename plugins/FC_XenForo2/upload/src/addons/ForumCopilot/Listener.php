@@ -39,7 +39,7 @@ class Listener
             return;
         }
 
-        \XF::logError('[FC DEBUG] Listener.processBatchedAlerts: enqueuing job with ' . count($collected) . ' alert(s)');
+        \ForumCopilot\Util\Log::debug('[FC DEBUG] Listener.processBatchedAlerts: enqueuing job with ' . count($collected) . ' alert(s)');
 
         $jobManager = XF::app()->jobManager();
         $jobManager->enqueueUnique(
@@ -64,7 +64,7 @@ class Listener
 
         $appOptions = \XF::options();
         if (empty($appOptions->fc_push_enabled)) {
-            \XF::logError('[FC PM] app_pub_complete: fc_push_enabled off — skipping ' . count(self::$pendingConversationPushes) . ' pending');
+            \ForumCopilot\Util\Log::debug('[FC PM] app_pub_complete: fc_push_enabled off — skipping ' . count(self::$pendingConversationPushes) . ' pending');
             self::$pendingConversationPushes = [];
             return;
         }
@@ -86,7 +86,7 @@ class Listener
                 $messageId      = (int) $pendingMessage->message_id;
 
                 if ($conversationId <= 0 || $messageId <= 0) {
-                    \XF::logError(sprintf(
+                    \ForumCopilot\Util\Log::debug(sprintf(
                         '[FC PM] resolve — unsaved/bad ids conv=%d msg=%d, skipping',
                         $conversationId, $messageId
                     ));
@@ -103,7 +103,7 @@ class Listener
                 );
 
                 if (empty($recipientIds)) {
-                    \XF::logError(sprintf(
+                    \ForumCopilot\Util\Log::debug(sprintf(
                         '[FC PM] resolve conv=%d msg=%d — no recipients',
                         $conversationId, $messageId
                     ));
@@ -120,7 +120,7 @@ class Listener
                     array_merge($recipientIds, [$cutoffTime])
                 );
 
-                \XF::logError(sprintf(
+                \ForumCopilot\Util\Log::debug(sprintf(
                     '[FC PM] resolve conv=%d msg=%d — %d/%d recipients have app installed [%s]',
                     $conversationId, $messageId,
                     count($appInstalledIds), count($recipientIds),
@@ -134,12 +134,12 @@ class Listener
                 // 3. Load message + conversation for title/body/URL
                 $message = $em->find('XF:ConversationMessage', $messageId);
                 if (!$message) {
-                    \XF::logError('[FC PM] SKIP — message not loadable id=' . $messageId);
+                    \ForumCopilot\Util\Log::debug('[FC PM] SKIP — message not loadable id=' . $messageId);
                     continue;
                 }
                 $conversation = $message->Conversation;
                 if (!$conversation) {
-                    \XF::logError('[FC PM] SKIP — conversation not loadable id=' . $conversationId);
+                    \ForumCopilot\Util\Log::debug('[FC PM] SKIP — conversation not loadable id=' . $conversationId);
                     continue;
                 }
 
@@ -182,7 +182,7 @@ class Listener
                     'event_date'      => time(),
                 ];
 
-                \XF::logError(sprintf(
+                \ForumCopilot\Util\Log::debug(sprintf(
                     '[FC PM] dispatching conv=%d msg=%d to %d user(s) title="%s" body_len=%d',
                     $conversationId, $messageId,
                     count($appInstalledIds),
@@ -229,7 +229,7 @@ class Listener
                 return;
             }
 
-            \XF::logError('[FC BOOT] v11 running: migrate PM listener post_save → pre_save + isInsert');
+            \ForumCopilot\Util\Log::debug('[FC BOOT] v11 running: migrate PM listener post_save → pre_save + isInsert');
 
             $db = \XF::db();
             $mutated = false;
@@ -249,7 +249,7 @@ class Listener
             );
             foreach ($obsolete as $r) {
                 $db->delete('xf_code_event_listener', 'event_listener_id = ?', $r['event_listener_id']);
-                \XF::logError(sprintf(
+                \ForumCopilot\Util\Log::debug(sprintf(
                     '[FC BOOT] deleted stale PM listener id=%d event=%s method=%s',
                     (int) $r['event_listener_id'], $r['event_id'], $r['callback_method']
                 ));
@@ -267,7 +267,7 @@ class Listener
                 'description'     => 'Collect ConversationMessage inserts for deferred PM push (pre_save so isInsert() is reliable)',
                 'addon_id'        => 'ForumCopilot',
             ]);
-            \XF::logError('[FC BOOT] INSERTED conversationMessageEntityPreSave listener id=' . $db->lastInsertId());
+            \ForumCopilot\Util\Log::debug('[FC BOOT] INSERTED conversationMessageEntityPreSave listener id=' . $db->lastInsertId());
             $mutated = true;
 
             if ($mutated) {
@@ -275,7 +275,7 @@ class Listener
                     $repo = \XF::repository('XF:CodeEventListener');
                     if (method_exists($repo, 'rebuildListenerCache')) {
                         $repo->rebuildListenerCache();
-                        \XF::logError('[FC BOOT] rebuilt listener cache via repository');
+                        \ForumCopilot\Util\Log::debug('[FC BOOT] rebuilt listener cache via repository');
                     }
                 } catch (\Throwable $e) {
                     \XF::logError('[FC BOOT] cache rebuild warning: ' . $e->getMessage());
@@ -283,7 +283,7 @@ class Listener
             }
 
             $reg->set('fcBootV11Done', time());
-            \XF::logError('[FC BOOT] v11 done');
+            \ForumCopilot\Util\Log::debug('[FC BOOT] v11 done');
         } catch (\Throwable $e) {
             \XF::logError('[FC BOOT] error: ' . $e->getMessage()
                 . ' at ' . $e->getFile() . ':' . $e->getLine());
@@ -328,7 +328,7 @@ class Listener
             }
             self::$seenMessageIds[$key] = true;
 
-            \XF::logError(sprintf(
+            \ForumCopilot\Util\Log::debug(sprintf(
                 '[FC PM] conversationMessageEntityPreSave: INSERT sender=%d — deferring recipient lookup',
                 (int) $entity->user_id
             ));

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <options>
+  <option option_id="fc_debug_logging" edit_format="onoff" data_type="boolean" advanced="0">
+    <default_value>0</default_value>
+    <relation group_id="fc_options" display_order="60"/>
+  </option>
   <option option_id="fc_mobile_activity_label" edit_format="textbox" data_type="string" advanced="0">
     <default_value>Using Forum Copilot Mobile App</default_value>
     <relation group_id="fc_options" display_order="50"/>

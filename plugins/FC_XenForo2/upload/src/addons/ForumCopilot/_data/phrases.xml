@@ -14,6 +14,8 @@
         Your site is not registered yet. Please register your site first.]]></phrase>
   <phrase title="fc_smart_banner" version_id="1000000" version_string="1.0.0"><![CDATA[
         Smart Banner]]></phrase>
+  <phrase title="option.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
+        Diagnostic logging]]></phrase>
   <phrase title="option.fc_mobile_activity_label" version_id="1040370" version_string="1.4.3"><![CDATA[
         Mobile app activity label]]></phrase>
   <phrase title="option.fc_mobile_activity_url" version_id="1040370" version_string="1.4.3"><![CDATA[
@@ -40,6 +42,8 @@
         Banner icon URL]]></phrase>
   <phrase title="option.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
         iOS App Store ID]]></phrase>
+  <phrase title="option_explain.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
+        Write a trace of every push decision ("[FC DEBUG]", "[FC PM]") to the server error log. XenForo has no log level below error, so these lines show up as ErrorException entries even though nothing failed. Leave this off in normal operation; turn it on only while troubleshooting push delivery with Forum Copilot support, then turn it off again. Genuine failures are always logged regardless of this setting.]]></phrase>
   <phrase title="option_explain.fc_mobile_activity_label" version_id="1080100" version_string="1.8.1"><![CDATA[
         Text shown next to a member's name in "Members Online" and "Currently viewing this thread" lists when their session was last touched by the mobile app API. Default is "Using Forum Copilot Mobile App". Customise for your brand (e.g. "On the Example Forum app"). Leave empty to disable the label entirely (the user will still appear online but with no activity description).]]></phrase>
   <phrase title="option_explain.fc_mobile_activity_url" version_id="1040370" version_string="1.4.3"><![CDATA[

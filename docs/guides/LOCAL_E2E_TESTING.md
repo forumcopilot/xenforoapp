@@ -202,7 +202,11 @@ cd packages/xenforo_core
 cp test/config.json.example test/config.json
 ```
 
-Fill it in for the 2.2.19 instance:
+Fill it in for the 2.2.19 instance. The instance's board URL is the ngrok
+domain (see the inventory), and with that setting the login call through
+`http://127.0.0.1:8091` answers with an HTML 400 page, so start the tunnel and
+use the ngrok domain for `baseUrl` and `pluginUrl` instead of the local port
+shown here (the 2.3.7 instance works on its local port):
 
 ```json
 {

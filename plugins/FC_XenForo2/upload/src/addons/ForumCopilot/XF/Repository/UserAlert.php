@@ -71,7 +71,7 @@ class UserAlert extends XFCP_UserAlert
         array $options = []
     )
     {
-        \XF::logError(sprintf(
+        \ForumCopilot\Util\Log::debug(sprintf(
             '[FC DEBUG] UserAlert.insertAlert: ENTER %s/%s recv=%d send=%d cid=%s',
             $contentType, $action, $receiverId, $senderId, $contentId
         ));
@@ -80,12 +80,12 @@ class UserAlert extends XFCP_UserAlert
         $appOptions = \XF::options();
         $pushOn = !empty($appOptions->fc_push_enabled);
         if (!$pushOn) {
-            \XF::logError('[FC DEBUG] UserAlert.insertAlert: fc_push_enabled is OFF — skipping collect');
+            \ForumCopilot\Util\Log::debug('[FC DEBUG] UserAlert.insertAlert: fc_push_enabled is OFF — skipping collect');
             return $alert;
         }
         if ($pushOn && $alert)
         {
-            \XF::logError(sprintf(
+            \ForumCopilot\Util\Log::debug(sprintf(
                 '[FC DEBUG] UserAlert.insertAlert: enqueueing push for %s/%s recv=%d send=%d cid=%s',
                 $contentType, $action, $receiverId, $senderId, $contentId
             ));
@@ -135,7 +135,7 @@ class UserAlert extends XFCP_UserAlert
         }
         else if (!$alert)
         {
-            \XF::logError(sprintf(
+            \ForumCopilot\Util\Log::debug(sprintf(
                 '[FC DEBUG] UserAlert.insertAlert: NO alert returned by parent for %s/%s recv=%d (XF skipped insert — recipient pref likely off)',
                 $contentType, $action, $receiverId
             ));

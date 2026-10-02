@@ -28,11 +28,11 @@ Project links:
 
 ## Install the XenForo add-on (required for both paths)
 
-Whichever path you choose, your forum needs the **Forum Copilot Mobile App API** add-on. It exposes the `forumcopilot.php` endpoint the app talks to, handles device registration for push, and adds the smart banner that invites web visitors to open the app. The add-on is MIT licensed and its source ships in this repository under [`plugins/FC_XenForo2/`](plugins/FC_XenForo2/) (currently v1.8.1).
+Whichever path you choose, your forum needs the **Forum Copilot Mobile App API** add-on. It exposes the `forumcopilot.php` endpoint the app talks to, handles device registration for push, and adds the smart banner that invites web visitors to open the app. The add-on is MIT licensed and its source ships in this repository under [`plugins/FC_XenForo2/`](plugins/FC_XenForo2/); the [add-on changelog](https://forumcopilot.com/addon-changelog) lists the latest version.
 
 1. **Get the add-on.** The simplest way is to visit [forumcopilot.com/console](https://forumcopilot.com/console) and download the latest stable ZIP from there. Or take it directly from GitHub: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
 2. **Install it in XenForo.** In the Admin Control Panel go to **Add-ons**, click **Install/upgrade from archive**, and upload the ZIP. Upgrading an existing install works the same way. (XenForo 2.2 or newer is required, and you need a valid XenForo licence from XenForo Ltd.)
-3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your dashboard there, where you manage push, branding and the smart banner.
+3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your forum's page on forumcopilot.com, where you can edit how it is listed in the hosted app (name, description, logo). Push and the smart banner are configured on this options page, not on forumcopilot.com.
 4. **Check the endpoint.** It only accepts JSON over POST:
    ```bash
    curl -s -X POST -H 'Content-Type: application/json' -d '{"method":"getConfig"}' https://your.forum/forumcopilot.php
@@ -140,7 +140,7 @@ static const String forumBaseUrl = 'https://forum.example.com';
 static const String pluginEndpoint = 'forumcopilot.php';
 ```
 
-Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `pushApiBaseUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed.
+Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed. Push has its own section: [Push notifications](#push-notifications-optional).
 
 `forumName` and `forumBaseUrl` can also be overridden at build time without editing the file, which is handy for a CI build, a preview against a staging forum, or the benchmark harness:
 
@@ -170,7 +170,14 @@ The app uses local packages (`forumcopilot_sdk`, `xenforo_core`) and generated l
 
 This runs `build_runner` in `packages/forumcopilot_sdk` and then `flutter gen-l10n`. On Windows run `buildlib.bat` instead. Re-run it whenever you change an ARB file or an annotated model in the SDK.
 
-### 6. Run the app on macOS
+### 6. Set your signing team and Firebase files
+
+A fresh clone does not build until two things are in place, even if you never turn on push:
+
+- **Apple signing team.** Open `macos/Runner.xcworkspace` in Xcode, select the Runner target and choose your Team under **Signing & Capabilities**. The template's entitlements (push, associated domains) require one; without it the build stops with `Signing for "Runner" requires a development team`. Do the same in `ios/Runner.xcworkspace` before building for iOS.
+- **Firebase config files.** The Xcode projects and the Android build expect `GoogleService-Info.plist` and `google-services.json` to exist, and the repository ships only `*.example` placeholders. Create your Firebase project and download the real files now ([Push notifications](#push-notifications-optional), steps 1 and 2); the rest of the push setup can wait.
+
+### 7. Run the app on macOS
 
 ```bash
 flutter run -d macos
@@ -178,7 +185,7 @@ flutter run -d macos
 
 If multiple devices are available, pick `macos` from the list. The app will start and connect to the forum configured in `app_forum_config.dart`.
 
-### 7. (Optional) Build a release macOS app
+### 8. (Optional) Build a release macOS app
 
 ```bash
 flutter build macos
@@ -189,80 +196,95 @@ The built app is under `build/macos/Build/Products/Release/`. You can sign and d
 ### macOS-specific notes
 
 - **File picker** – For attachments (e.g. in reply or PM), the app uses the native file picker. macOS entitlements for file access are set in `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` (e.g. `com.apple.security.files.user-selected.read-write`). See `docs/guides/MACOS_FILE_PICKER_SETUP.md` for details.
-- **Firebase (push)** – To enable push on macOS, add your `GoogleService-Info.plist` under `macos/Runner/` (see “Configure Firebase” below).
+- **Firebase (push)** – macOS reads `macos/Runner/GoogleService-Info.plist`; see [Push notifications](#push-notifications-optional).
 
 ---
 
 ## Push notifications (optional)
 
-Push notifications are **disabled by default**. The app needs two things to deliver them:
+Push stays off until you connect the app to **your own Firebase project**. Your app has its own bundle ID and is signed with your own Apple and Google accounts, so its notifications have to go through a Firebase project you own. Forum Copilot's hosted push only serves the official Forum Copilot app; it cannot send to a branded build.
 
-- A **Firebase project** that issues `GoogleService-Info.plist` (iOS/macOS) and `google-services.json` (Android), each registered with your app's bundle ID / package name.
-- A **dispatcher** that takes alert events from the XenForo `forumcopilot.php` addon and turns them into FCM/APNs pushes.
+You don't run any extra server. The XenForo add-on sends notifications to Firebase itself, using a key from your Firebase project:
 
-You have three ways to set this up. Pick the one that matches your operational comfort:
+```
+alert on your forum → add-on on your forum server → Firebase Cloud Messaging → Apple / Google → your app
+```
 
-| Path | Where Firebase lives | Where the dispatcher lives | Best for |
-|---|---|---|---|
-| **1. Hosted ForumCopilot Push** | ForumCopilot's project | ForumCopilot's backend | Anyone who doesn't want to manage Firebase or run a backend |
-| **2. BYO Firebase + direct dispatch** | Your project | Inside the addon (no extra backend) | Self-hosters who own their stack but don't want to write a dispatcher |
-| **3. BYO Firebase + your own dispatch backend** | Your project | Your own server | Advanced — you have a custom routing requirement that doesn't fit modes 1 or 2 |
+You need:
 
-### Path 1 — Hosted ForumCopilot Push (managed, easiest)
+- a Google account for the [Firebase console](https://console.firebase.google.com) (the free plan is enough);
+- for iOS and macOS, your Apple Developer account, your Team ID, and an APNs auth key (`.p8`) with its Key ID;
+- file access to your forum server, to put one key file on it.
 
-ForumCopilot Push is a free managed service that handles the Firebase project AND the dispatcher for you. You provide your iOS bundle ID, Android package name, and an APNs auth key (`.p8`) generated in your Apple Developer account; ForumCopilot issues the `GoogleService-Info.plist` / `google-services.json` your build needs and gives you a push API endpoint.
+Firebase and Apple rename their menus from time to time, so the labels below may drift slightly.
 
-Setup overview (see https://forumcopilot.com for full details):
+### 1. Settle your app identifiers
 
-1. Sign up at https://forumcopilot.com and register your forum.
-2. Provide your iOS bundle ID, Android package name, and macOS bundle ID in the dashboard.
-3. Upload an APNs auth key (`.p8`) and your Apple Team ID.
-4. Download the issued config files and drop them into your project:
+Firebase ties each app entry to an exact bundle ID or package name, so set yours before you register anything. All three platforms start as `com.example.forumapp`:
+
+| Platform | Where to change it |
+|---|---|
+| iOS | Xcode, Runner target, **Signing & Capabilities**: Bundle Identifier and Team (for all build configurations). |
+| macOS | `macos/Runner/Configs/AppInfo.xcconfig`, `PRODUCT_BUNDLE_IDENTIFIER`. Set the Team in Xcode as for iOS. |
+| Android | `android/app/build.gradle`, `applicationId`. Leave `namespace` as it is: the manifest and `MainActivity.kt` depend on it. |
+
+Also set `androidPackageName` in `lib/config/app_forum_config.dart` to your Android package name (passkeys use it).
+
+Two Android traps:
+
+- **Debug builds add `.xf` to the package name** (`applicationIdSuffix ".xf"` in `android/app/build.gradle`), so `flutter run` installs `your.package.xf`. Register that name in Firebase as a second Android app, or delete the suffix line. Otherwise the debug build fails with `No matching client found for package name`.
+- Edit `android/app/build.gradle`. The `build.gradle.kts` next to it is a leftover that Gradle ignores when both files exist.
+
+### 2. Create the Firebase project and register your apps
+
+1. In the Firebase console, create a project.
+2. Add an **Apple** app with your iOS bundle ID and download its `GoogleService-Info.plist`.
+3. Add an **Android** app with your package name (and the `.xf` debug name if you kept the suffix). Download `google-services.json` after adding every Android app, because the file lists all of them.
+4. macOS: if it uses the same bundle ID as iOS, reuse the iOS plist. If not, add it as another Apple app and download its own plist.
+5. Copy the files into the project. They are gitignored, so they stay out of your commits:
    ```bash
-   # files come from your ForumCopilot dashboard
    cp ~/Downloads/google-services.json     android/app/google-services.json
    cp ~/Downloads/GoogleService-Info.plist  ios/Runner/GoogleService-Info.plist
    cp ~/Downloads/GoogleService-Info.plist  macos/Runner/GoogleService-Info.plist
    ```
-5. In `lib/config/app_forum_config.dart`:
-   - Set `pushApiBaseUrl` to the endpoint shown in your dashboard.
-   - Leave `pushSource = 'forumcopilot'` (the default).
-6. Install the ForumCopilot xenForo addon (under `plugins/FC_XenForo2/`) and paste your customer API key into its admin settings so the addon can talk to ForumCopilot Push.
 
-### Path 2 — Bring your own Firebase + direct dispatch from the addon
+The Xcode projects already reference the plist at those paths, and the app reads these native files directly, so you don't need `flutterfire configure` or a `firebase_options.dart`.
 
-The most self-hosted path that doesn't require running an extra service. The addon (v1.3.4 or newer) ships its own FCM HTTP v1 client and can dispatch notifications **directly** using your Firebase service-account JSON. No separate dispatcher process needed.
+### 3. Upload your APNs key to Firebase (iOS and macOS)
 
-1. Create your own Firebase project. Register your iOS/macOS/Android apps in it (one entry per platform).
-2. Download the resulting Firebase config files into your project:
-   ```bash
-   cp ~/Downloads/google-services.json     android/app/google-services.json
-   cp ~/Downloads/GoogleService-Info.plist  ios/Runner/GoogleService-Info.plist
-   cp ~/Downloads/GoogleService-Info.plist  macos/Runner/GoogleService-Info.plist
-   ```
-3. In **Firebase Console → Project Settings → Service accounts → Generate new private key**, download the service-account JSON and upload it to your XenForo server, *outside* the web root for security (e.g. `/var/secrets/firebase-sa.json`).
-4. In `lib/config/app_forum_config.dart`:
-   - Set `pushSource = 'direct'`.
-   - Leave `pushApiBaseUrl = ''` (empty — there is no separate backend).
-5. Install the ForumCopilot xenForo addon (`plugins/FC_XenForo2/`). In **Admin CP → Options → ForumCopilot Options**:
-   - Enable the master push toggle.
-   - Enable **"Direct push (your own white-label app + Firebase)"**.
-   - Set **"Firebase service-account JSON path"** to the absolute path from step 3.
+This is where the `.p8` goes. Firebase uses it to hand notifications to Apple.
 
-When users open the app, it registers their FCM token directly with your XenForo server via the `registerDevice` plugin API. When a notification fires, the addon's dispatch router reads the token from `xf_fc_device_token` and POSTs to FCM HTTP v1 using your service-account credentials.
+1. If you don't have a key yet: Apple Developer, **Certificates, Identifiers & Profiles → Keys**, create a key with **Apple Push Notifications service (APNs)** enabled. Download the `.p8` (Apple lets you download it only once) and note its Key ID.
+2. Firebase console, **Project settings → Cloud Messaging → Apple app configuration**. Under **APNs Authentication Key**, upload the `.p8` and enter its Key ID and your Team ID. Repeat for each Apple app you registered.
 
-### Path 3 — Bring your own Firebase + custom dispatch backend (advanced)
+One key covers development and App Store builds. The template already carries the push entitlement (`aps-environment` in `ios/Runner/Runner.entitlements` and the macOS entitlements files) and the `remote-notification` background mode in `ios/Runner/Info.plist`. With automatic signing, Xcode enables Push Notifications on your App ID for you; with manual signing, enable it on the identifier in the Apple Developer portal.
 
-For unusual setups where you need a custom routing layer between the addon and FCM (e.g. multi-region routing, custom analytics, fan-out to non-FCM channels):
+### 4. Give the add-on your Firebase service-account key
 
-1. Same Firebase setup as Path 2.
-2. In `lib/config/app_forum_config.dart`:
-   - Set `pushApiBaseUrl` to your backend's base URL (e.g. `https://push.example.com/api`).
-   - Leave `pushSource = 'forumcopilot'` (the controller will register tokens with your backend the same way the hosted backend would).
-3. Stand up a push backend that:
-   - accepts FCM token registrations from the app at `POST <pushApiBaseUrl>/...` endpoints
-   - receives notification events from the `forumcopilot.php` addon and dispatches them via the FCM HTTP v1 API
-4. Configure the `forumcopilot.php` addon's hosted-push admin options to point at your backend.
+1. Firebase console, **Project settings → Service accounts → Generate new private key**. This downloads a JSON file. Treat it like a password: whoever holds it can send notifications to your members.
+2. Put it on your forum server **outside the web root**, owned by the user PHP runs as and readable only by it, for example `/var/secrets/firebase-sa.json` with `chmod 600`.
+3. XenForo Admin CP, **Options → ForumCopilot Options**:
+   - **Enable Push Notifications (master)**: on.
+   - **Direct push (your own white-label app + Firebase)**: on.
+   - **Firebase service-account JSON path**: the absolute path from step 2.
+
+The two switches are on by default; filling in the path is what starts direct push. Leave **Hosted push (official Forum Copilot app)** on if some of your members also use the official Forum Copilot app: each device gets its notifications through whichever service it registered with. The add-on needs PHP's `openssl` and `curl` extensions, which XenForo hosts normally have. Use the current add-on release; private-conversation pushes need v1.8.1 or newer.
+
+### 5. Check the app config and rebuild
+
+In `lib/config/app_forum_config.dart`, `pushSource` must be `'direct'` and `pushApiBaseUrl` must be `''`. Both are the template defaults. Then do a full rebuild (stop the app and `flutter run` again; a hot restart does not pick up the Firebase files).
+
+### 6. Test it
+
+1. Install the app on a real phone, allow notifications, and **sign in** with a forum account. The device registers with your forum only once someone is signed in.
+2. From a second account on the website, do something that alerts the first account (mention it, quote it, reply in a thread it watches) or send it a conversation message.
+3. The notification should arrive within seconds.
+
+If nothing arrives:
+
+- Turn on **Diagnostic logging** in ForumCopilot Options (add-on v1.8.6 or newer), repeat the test, then read **Admin CP → Logs → Server error log**. A line saying none of the recipients `have logged into the app in the last 90 days` means the device never registered: sign out and back in on the phone and check `pushSource`. Turn the option off again afterwards; it is noisy.
+- Problems with the key file (wrong path, unreadable, rejected by Google) are logged there even with diagnostic logging off.
+- Android works but iOS doesn't: the APNs key is missing in Firebase, was uploaded under a different Team ID, or the bundle ID in `GoogleService-Info.plist` doesn't match the app's.
 
 ---
 
@@ -302,8 +324,8 @@ Issues and pull requests are welcome at https://github.com/forumcopilot/xenforoa
 Before publishing your own fork:
 
 1. Confirm forum URL and branding values in `app_forum_config.dart`.
-2. Confirm Firebase files are your own values (or keep placeholders if push is disabled).
-3. Set your own bundle/application IDs for Android/iOS/macOS.
+2. Confirm the Firebase files come from your own Firebase project, and keep them out of version control (they are gitignored).
+3. Set your own bundle/application IDs for Android/iOS/macOS ([where](#1-settle-your-app-identifiers)).
 4. Set your Apple Development Team in Xcode project settings before signing.
 5. Configure passkey association files (`assetlinks.json`, `apple-app-site-association`) with your package/team IDs and certificate fingerprints.
 

@@ -39,38 +39,25 @@ class AppForumConfig {
   static const String? logoUrl = null;
   static const String? backgroundUrl = null;
 
-  /// Push notification dispatch source. Identifies which mode this build of
-  /// the app is registering against on the XenForo server. The server-side
-  /// addon's `DispatchRouter` uses this to pick the right dispatcher.
+  /// Push notification dispatch source: how this build registers devices
+  /// with the XenForo server. The add-on's `DispatchRouter` uses it to pick
+  /// the dispatcher.
   ///
-  ///   - 'forumcopilot' — official Forum Copilot app build, OR any fork that
-  ///                      uses the hosted ForumCopilot Push backend. Server
-  ///                      dispatches via the hosted backend.
-  ///   - 'direct'       — white-label / BYO Firebase build. Server dispatches
-  ///                      via the customer's own Firebase project (the addon
-  ///                      reads a service-account JSON path from its admin
-  ///                      options and calls FCM HTTP v1 directly).
-  ///                      Requires ForumCopilot xenForo addon v1.3.4+.
-  ///                      Set `pushApiBaseUrl = ''` for this mode.
-  static const String pushSource = 'forumcopilot';
+  ///   - 'direct'       — your own Firebase project (the default, and the
+  ///                      only mode documented for this template). The app
+  ///                      registers its FCM token with your forum, and the
+  ///                      add-on sends to FCM HTTP v1 using the service-account
+  ///                      JSON set in its admin options. Keep
+  ///                      `pushApiBaseUrl = ''`. Setup: README.md, "Push
+  ///                      notifications".
+  ///   - 'forumcopilot' — registers with the push relay at `pushApiBaseUrl`
+  ///                      instead. Forum Copilot's hosted relay only serves
+  ///                      the official Forum Copilot app, so a fork would need
+  ///                      to run its own relay.
+  static const String pushSource = 'direct';
 
-  /// Optional push backend base URL (leave empty to disable hosted push backend).
-  ///
-  /// You have two ways to enable push notifications:
-  ///
-  ///   1. **Run your own push backend.** Set this to your server's base URL
-  ///      (e.g. `https://push.example.com/api`) and provide your own Firebase
-  ///      project. Your backend stores FCM tokens registered by the app and
-  ///      relays notification events from the XenForo `forumcopilot.php`
-  ///      plugin to FCM/APNs.
-  ///
-  ///   2. **Use ForumCopilot Push (hosted).** A managed service that does the
-  ///      above for you — you skip running a backend and managing your own
-  ///      Firebase project. You provide your iOS bundle ID, Android package
-  ///      name, and an APNs auth key (`.p8`); ForumCopilot issues the
-  ///      `GoogleService-Info.plist` / `google-services.json` your build
-  ///      needs. Set this URL to the endpoint shown in your ForumCopilot
-  ///      dashboard. Free; see https://forumcopilot.com to sign up.
+  /// Base URL of a push relay, used only with `pushSource = 'forumcopilot'`.
+  /// Leave empty for direct mode.
   static const String pushApiBaseUrl = '';
 
   /// Android package name used for passkey assetlinks validation.

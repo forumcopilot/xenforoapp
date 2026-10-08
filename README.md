@@ -121,14 +121,18 @@ Follow these steps to build and start the app on macOS.
   ```
   Fix any reported issues (e.g. Xcode license, Android licenses) before continuing.
 
-### 2. Clone and open the project
+### 2. Get your own copy
+
+Click **[Use this template](https://github.com/forumcopilot/xenforoapp/generate)** → *Create a new repository*. You get a repository of your own — private if you like — that starts from a single commit. Clone it:
 
 ```bash
-git clone https://github.com/forumcopilot/xenforoapp.git
-cd xenforoapp
+git clone https://github.com/<you>/<your-app>.git
+cd <your-app>
 ```
 
 (Or open your existing clone in your editor.)
+
+A template copy shares no history with this repository, so later releases can't simply be merged into it. If you want to keep pulling them in, clone this repository instead, rename its remote with `git remote rename origin upstream`, and push to a repository of your own; `git pull upstream main` then brings in each release like any other merge.
 
 ### 3. Configure your forum
 
@@ -310,7 +314,7 @@ For the full local setup, from a local XenForo with the add-on through ngrok to 
 
 ## Contributing
 
-Issues and pull requests are welcome at https://github.com/forumcopilot/xenforoapp.
+Issues and pull requests are welcome at https://github.com/forumcopilot/xenforoapp. To contribute, **fork** the repository rather than using the template: a pull request needs the shared history that a template copy starts without.
 
 - Run `flutter analyze` and `flutter test` before opening a pull request; both run in CI.
 - Keep `lib/config/app_forum_config.dart` on the template placeholders. Point a build at a real forum with `--dart-define` instead.
@@ -321,7 +325,7 @@ Issues and pull requests are welcome at https://github.com/forumcopilot/xenforoa
 
 ## Open-source safety checklist
 
-Before publishing your own fork:
+Before publishing your app:
 
 1. Confirm forum URL and branding values in `app_forum_config.dart`.
 2. Confirm the Firebase files come from your own Firebase project, and keep them out of version control (they are gitignored).

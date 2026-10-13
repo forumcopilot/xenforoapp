@@ -41,6 +41,19 @@ On error:
 - `optional`: Works for guests if forum permissions allow; login cookies enable personalized data.
 - `none`: No login cookies required.
 
+## Board access checks
+
+Before any method runs, the endpoint applies the checks XenForo's own pages
+apply to every request: banned IP, banned / rejected / disabled account, the
+**View the board** permission, closed board (admins pass), required two-step
+verification and security lock. A refused call returns HTTP 200 with
+`result: false` and XenForo's message in `resultText`.
+
+- `getConfig`, `login`, `register`, `prefetchAccount`, `forgotPassword` and
+  `getPasskeyChallenge` only refuse banned IPs, like XenForo's login page.
+- `logout` and `unregisterDevice` are never refused.
+- `login` itself refuses an account without **View the board**.
+
 ## Config
 
 ### `getConfig`

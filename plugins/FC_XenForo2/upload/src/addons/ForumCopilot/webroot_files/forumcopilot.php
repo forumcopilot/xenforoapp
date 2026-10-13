@@ -37,6 +37,20 @@ catch (\Throwable $e)
 // Override PubApp to add API interception with full add-on loading
 class ForumCopilotPubApp extends PubApp
 {
+    /**
+     * Methods behind the sign-in screens. Like XenForo's login, register and
+     * lost-password pages they only refuse banned IPs, so a visitor without
+     * "View the board" can still reach the login form.
+     */
+    protected const SIGN_IN_METHODS = [
+        'getConfig', 'login', 'register', 'prefetchAccount', 'forgotPassword', 'getPasskeyChallenge',
+    ];
+
+    /**
+     * Sign-out and device cleanup must work for every visitor.
+     */
+    protected const ALWAYS_OPEN_METHODS = ['logout', 'unregisterDevice'];
+
     public function preDispatch(\XF\Mvc\RouteMatch $match)
     {
         // This is an API-only entry point - always return JSON
@@ -237,11 +251,6 @@ class ForumCopilotPubApp extends PubApp
                 return $this->createJsonError("Unknown method: $method", 400);
             }
 
-            // Mark this visitor's session as "Using mobile app" so they show
-            // up in /online/ and per-thread "X members watching" lists the
-            // same way web users do. Best-effort; never blocks the API call.
-            $this->recordMobileSessionActivity();
-
             // Extract controller and action
             [$controllerNames, $action] = explode('@', $map[$method]);
 
@@ -250,6 +259,21 @@ class ForumCopilotPubApp extends PubApp
 
             // Use XenForo's controller factory - this gets full add-on loading and initialization
             $controller = $this->controller($fullControllerName, $this->request());
+
+            // Actions are called directly below, so XenForo's own pre-dispatch
+            // checks (bans, "View the board", closed board...) never run.
+            // Apply them here before anything else happens for this visitor.
+            if (!in_array($method, self::ALWAYS_OPEN_METHODS, true)) {
+                $denied = $controller->checkBoardAccess(in_array($method, self::SIGN_IN_METHODS, true));
+                if ($denied) {
+                    return $denied;
+                }
+            }
+
+            // Mark this visitor's session as "Using mobile app" so they show
+            // up in /online/ and per-thread "X members watching" lists the
+            // same way web users do. Best-effort; never blocks the API call.
+            $this->recordMobileSessionActivity();
 
             // Convert array params to ParameterBag for controller methods if needed
             if (is_array($params)) {

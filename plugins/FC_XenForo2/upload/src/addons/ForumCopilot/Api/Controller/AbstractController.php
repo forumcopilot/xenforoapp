@@ -190,6 +190,104 @@ abstract class AbstractController extends Controller
     }
 
     /**
+     * The board-wide checks XenForo's public pages run before every action
+     * (XF\Pub\Controller\AbstractController::preDispatchType): banned IP,
+     * banned/rejected/disabled account, "View the board" permission, closed
+     * board, required two-step verification and security lock.
+     *
+     * forumcopilot.php calls actions directly, so none of those ran. Node
+     * permissions still applied, but a member who lost "View the board" (for
+     * example when a paid group expires) or was banned after signing in could
+     * keep reading and posting from the app in any forum their other groups
+     * open at node level.
+     *
+     * Errors use HTTP 200 like the rest of the API: the app only reads
+     * resultText from 2xx responses.
+     *
+     * @param bool $signInOnly Only refuse banned IPs, as XenForo's login,
+     *                         register and lost-password pages do
+     * @return Response|null an error response, or null if the visitor may continue
+     */
+    public function checkBoardAccess(bool $signInOnly = false)
+    {
+        $request = $this->request;
+        $bannedIps = $this->app->container('bannedIps');
+        if (!empty($bannedIps['data'])
+            && \XF\Util\Ip::checkIpsAgainstBinaryRangeList($request->getAllIps(), $bannedIps['data'])
+        ) {
+            return $this->apiError($this->plainText(\XF::phrase('your_ip_address_has_been_banned')));
+        }
+
+        if ($signInOnly) {
+            return null;
+        }
+
+        $visitor = \XF::visitor();
+        $errorPlugin = $this->plugin('XF:Error');
+
+        if ($visitor->is_banned) {
+            return $this->apiError($this->replyText($errorPlugin->actionBanned()));
+        }
+        if ($visitor->user_state == 'rejected') {
+            return $this->apiError($this->replyText($errorPlugin->actionRejected()));
+        }
+        if ($visitor->user_state == 'disabled') {
+            return $this->apiError($this->replyText($errorPlugin->actionDisabled()));
+        }
+
+        if (!$visitor->hasPermission('general', 'view')) {
+            return $this->apiError($this->plainText(
+                \XF::phrase($visitor->user_id ? 'do_not_have_permission' : 'login_required')
+            ));
+        }
+
+        $options = $this->options();
+        if (!$options->boardActive && !$visitor->is_admin) {
+            return $this->apiError($this->plainText($options->boardInactiveMessage));
+        }
+
+        if ($visitor->user_id
+            && empty($visitor->Option->use_tfa)
+            && \XF::config('enableTfa')
+            && $visitor->hasPermission('general', 'requireTfa')
+        ) {
+            // Plain text drops the phrase's link to the two-step setup page
+            return $this->apiError($this->plainText(
+                \XF::phrase('you_must_enable_two_step_to_continue', ['link' => ''])
+            ));
+        }
+
+        if ($visitor->user_id && $visitor->security_lock) {
+            return $this->apiError('Your account is currently security locked');
+        }
+
+        return null;
+    }
+
+    /**
+     * Message text of an error or message reply from XenForo's Error plugin
+     * (ban reason and end date, rejection reason, ...), as plain text.
+     */
+    protected function replyText(AbstractReply $reply): string
+    {
+        if ($reply instanceof \XF\Mvc\Reply\Error) {
+            return $this->plainText(implode("\n", array_map('strval', $reply->getErrors())));
+        }
+        if ($reply instanceof \XF\Mvc\Reply\Message) {
+            return $this->plainText($reply->getMessage());
+        }
+        return $this->plainText(\XF::phrase('do_not_have_permission'));
+    }
+
+    /**
+     * Phrases and admin-written messages here are HTML; the app shows text.
+     */
+    protected function plainText($html): string
+    {
+        return trim(html_entity_decode(strip_tags((string)$html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    }
+
+    /**
      * Check if the user is flooding (performing action too frequently)
      * Returns an error response if flooding, null otherwise
      * Consistent with web version

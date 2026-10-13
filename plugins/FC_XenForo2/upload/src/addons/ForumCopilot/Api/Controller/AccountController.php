@@ -23,6 +23,8 @@ require_once(__DIR__ . '/../../Result/FCAccountResult.php');
  */
 class AccountController extends AbstractController
 {
+    protected const NO_BOARD_ACCESS_MESSAGE = 'Your account does not currently have access to this forum';
+
     public function actionLogin(ParameterBag $params)
     {
         // Check for passkey-only login (webauthn_payload present)
@@ -57,6 +59,10 @@ class AccountController extends AbstractController
                 if ($user->security_lock) {
                     $challengeService->clearStoredChallenge($this->session());
                     return $this->apiError('Your account is currently security locked');
+                }
+                if (!$user->hasPermission('general', 'view')) {
+                    $challengeService->clearStoredChallenge($this->session());
+                    return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
                 }
                 $challengeService->clearStoredChallenge($this->session());
                 $challengeService->updatePasskeyLastUse($passkey, $this->request->getIp());
@@ -187,6 +193,12 @@ class AccountController extends AbstractController
             // Check for security lock
             if ($user->security_lock) {
                 return $this->apiError('Your account is currently security locked');
+            }
+
+            // Every other API method refuses members without "View the board"
+            // (see checkBoardAccess), so say so here instead of signing them in
+            if (!$user->hasPermission('general', 'view')) {
+                return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
             }
 
             // Check if user has two-factor authentication enabled

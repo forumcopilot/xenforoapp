@@ -198,7 +198,7 @@ class SiteInfoForm extends AbstractOption
             $app = \XF::app();
             $options = $app->options();
             
-            $apiUrl = BackendApi::API_URL . '/register-site-public';
+            $apiUrl = BackendApi::apiUrl() . '/register-site-public';
             
             $boardUrl = rtrim($options->boardUrl, '/');
             $boardTitle = $options->boardTitle ?? 'Community Forum';
@@ -343,7 +343,7 @@ class SiteInfoForm extends AbstractOption
     {
         try
         {
-            $apiUrl = BackendApi::API_URL . '/get-site-sso-token';
+            $apiUrl = BackendApi::apiUrl() . '/get-site-sso-token';
             
             $queryParams = http_build_query([
                 'apikey' => $apikey,

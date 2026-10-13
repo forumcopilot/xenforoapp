@@ -443,7 +443,7 @@ class ForumCopilotPubApp extends PubApp
      */
     protected function handleValidateConnection()
     {
-        $url = \ForumCopilot\BackendApi::API_URL . \ForumCopilot\BackendApi::VALIDATE_CONNECTION_PATH;
+        $url = \ForumCopilot\BackendApi::apiUrl() . \ForumCopilot\BackendApi::VALIDATE_CONNECTION_PATH;
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [

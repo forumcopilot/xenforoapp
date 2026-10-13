@@ -141,7 +141,7 @@ class Setup extends AbstractSetup
             $app = \XF::app();
             $options = $app->options();
             
-            $apiUrl = BackendApi::API_URL . '/register-site-public';
+            $apiUrl = BackendApi::apiUrl() . '/register-site-public';
             
             $boardUrl = rtrim($options->boardUrl, '/');
             $boardTitle = $options->boardTitle ?? 'Community Forum';

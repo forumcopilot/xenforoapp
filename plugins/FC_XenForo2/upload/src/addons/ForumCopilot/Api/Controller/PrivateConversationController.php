@@ -107,9 +107,10 @@ class PrivateConversationController extends AbstractController
             
             // Finalize conversation creation (like Tapatalk does)
             \XF\Draft::createFromKey('conversation')->delete();
-            
-            // Send notifications
-            $creator->sendNotifications();
+
+            // No sendNotifications(): XenForo's conversation Creator already
+            // sent them inside save(). A second call e-mailed every recipient
+            // twice and, on XF 2.3, pushed twice.
 
             $result = new FCNewConversationResult(
                 true,
@@ -177,11 +178,10 @@ class PrivateConversationController extends AbstractController
                 return $this->apiError('Validation failed: ' . implode(', ', $errors));
             }
 
-            // Save reply (returns ConversationMessage entity)
+            // Save reply (returns ConversationMessage entity). XenForo's
+            // conversation Replier sends the notifications inside save(), so
+            // there is no sendNotifications() call here.
             $message = $replier->save();
-
-            // Send notifications
-            $replier->sendNotifications();
 
             $result = new FCReplyConversationResult(true, null, (string)$message->message_id);
             return $this->apiSuccess($result);
@@ -1127,11 +1127,10 @@ class PrivateConversationController extends AbstractController
                 return $this->apiError('Validation failed: ' . implode(', ', $errorMessages));
             }
 
-            // Save (insertRecipients handles duplicates correctly)
+            // Save (insertRecipients handles duplicates correctly). XenForo's
+            // conversation Inviter sends the notifications inside save(), so
+            // there is no sendNotifications() call here.
             $inviter->save();
-
-            // Send notifications
-            $inviter->sendNotifications();
 
             $result = new FCInviteParticipantResult(true, null);
             return $this->apiSuccess($result);

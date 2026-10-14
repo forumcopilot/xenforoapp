@@ -489,8 +489,8 @@ class TestPushNotifications extends AbstractCommand
                 return false;
             }
             
+            // The conversation Creator sends notifications inside save().
             $conversation = $creator->save();
-            $creator->sendNotifications();
 
             $output->writeln("  <fg=green>✓</> Created new conversation to {$receiver->username} (ID: {$conversation->conversation_id})");
 
@@ -506,7 +506,6 @@ class TestPushNotifications extends AbstractCommand
             }
             
             $message = $replier->save();
-            $replier->sendNotifications();
 
             $output->writeln("  <fg=green>✓</> Created reply in conversation (Message ID: {$message->message_id})");
             

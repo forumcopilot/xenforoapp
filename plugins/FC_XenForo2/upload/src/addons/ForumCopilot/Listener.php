@@ -11,10 +11,17 @@ class Listener
 
     /**
      * Collected during the request. Populated in
-     * conversationMessageEntityPreSave (INSERT only); processed in
-     * processBatchedAlerts at app_pub_complete — by which time the message has
-     * been saved (message_id / conversation_id populated) and the
+     * conversationMessageEntityPreSave (INSERT only); processed at
+     * app_pub_complete (processBatchedAlerts) or app_api_complete
+     * (apiRequestComplete) — by which time the message has been saved
+     * (message_id / conversation_id populated) and the
      * xf_conversation_recipient rows are committed to the DB.
+     *
+     * This is the ONLY place a push for a new conversation or a reply is
+     * produced, on XenForo 2.2 and 2.3 alike. It keys on the message insert,
+     * not on XenForo's conversation notifier, so it sends once per message no
+     * matter how many times the notifier runs. The XF 2.3 PusherService
+     * extension leaves create/reply alone and only handles invites.
      *
      * Shape: [ ['entity' => \XF\Entity\ConversationMessage], ... ]
      */
@@ -53,8 +60,21 @@ class Listener
     }
 
     /**
+     * app_api_complete listener. Conversations and replies created through
+     * XenForo's own REST API (api.php) never reach app_pub_complete.
+     */
+    public static function apiRequestComplete()
+    {
+        self::processPendingConversationPushes();
+    }
+
+    /**
      * Process conversation messages queued during this request.
-     * Runs at app_pub_complete when recipient rows have been committed.
+     * Runs at app_pub_complete / app_api_complete when recipient rows have
+     * been committed.
+     *
+     * Deliberately not hooked to \XF::runOnce(): that also fires in CLI,
+     * jobs and importers, and an import would push every historical message.
      */
     protected static function processPendingConversationPushes()
     {
@@ -64,7 +84,7 @@ class Listener
 
         $appOptions = \XF::options();
         if (empty($appOptions->fc_push_enabled)) {
-            \ForumCopilot\Util\Log::debug('[FC PM] app_pub_complete: fc_push_enabled off — skipping ' . count(self::$pendingConversationPushes) . ' pending');
+            \ForumCopilot\Util\Log::debug('[FC PM] request complete: fc_push_enabled off — skipping ' . count(self::$pendingConversationPushes) . ' pending');
             self::$pendingConversationPushes = [];
             return;
         }
@@ -110,18 +130,30 @@ class Listener
                     continue;
                 }
 
-                // 2. Filter to only users with the app installed (fresh xf_fc_user.last_seen)
+                // 2. Keep users with the app installed (fresh xf_fc_user.last_seen)
+                //    whom XenForo's own conversation notifier would push to:
+                //    valid, not banned, "push_on_conversation" on. Also skip
+                //    anyone ignoring the sender.
                 $cutoffTime = time() - (90 * 24 * 60 * 60);
                 $placeholders = implode(',', array_fill(0, count($recipientIds), '?'));
                 $appInstalledIds = $db->fetchAllColumn(
-                    "SELECT user_id FROM xf_fc_user
-                     WHERE user_id IN ($placeholders)
-                     AND last_seen > ?",
-                    array_merge($recipientIds, [$cutoffTime])
+                    "SELECT fc.user_id
+                     FROM xf_fc_user AS fc
+                     INNER JOIN xf_user AS u ON u.user_id = fc.user_id
+                     INNER JOIN xf_user_option AS o ON o.user_id = fc.user_id
+                     LEFT JOIN xf_user_ignored AS ig
+                        ON ig.user_id = fc.user_id AND ig.ignored_user_id = ?
+                     WHERE fc.user_id IN ($placeholders)
+                     AND fc.last_seen > ?
+                     AND u.user_state = 'valid'
+                     AND u.is_banned = 0
+                     AND o.push_on_conversation = 1
+                     AND ig.user_id IS NULL",
+                    array_merge([$senderId], $recipientIds, [$cutoffTime])
                 );
 
                 \ForumCopilot\Util\Log::debug(sprintf(
-                    '[FC PM] resolve conv=%d msg=%d — %d/%d recipients have app installed [%s]',
+                    '[FC PM] resolve conv=%d msg=%d — %d/%d recipients have the app and accept DM pushes [%s]',
                     $conversationId, $messageId,
                     count($appInstalledIds), count($recipientIds),
                     implode(',', array_map('intval', $appInstalledIds))

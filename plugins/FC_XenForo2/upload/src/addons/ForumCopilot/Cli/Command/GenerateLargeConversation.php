@@ -98,8 +98,8 @@ class GenerateLargeConversation extends AbstractCommand
                 return 1;
             }
 
+            // The conversation Creator sends notifications inside save().
             $conversation = $creator->save();
-            $creator->sendNotifications();
 
             $output->writeln("  ✓ Created conversation: <comment>{$conversationTitle}</comment>");
             $output->writeln("  ✓ Conversation ID: <comment>{$conversation->conversation_id}</comment>");

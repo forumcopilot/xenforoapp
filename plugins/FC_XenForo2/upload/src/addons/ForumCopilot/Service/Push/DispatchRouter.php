@@ -10,9 +10,11 @@ namespace ForumCopilot\Service\Push;
  *   fc_push_direct_enabled        — route 'direct' devices through DirectDispatcher (FcmClient)
  *   fc_push_enabled               — legacy global gate; if false, both modes are off
  *
- * Both can be enabled simultaneously — devices are grouped by their `source`
- * column and each group goes through the matching dispatcher. A user with both
- * the official app and a white-label app installed receives both pushes.
+ * Both can be enabled simultaneously without doubling up: hosted posts the user
+ * ids to the hosted backend, which delivers only to devices registered with it
+ * (the official app), and direct sends only to this forum's xf_fc_device_token
+ * rows with source 'direct' (FcmDispatch). A user with both the official app
+ * and a white-label app installed receives one push on each.
  *
  * The hosted dispatcher is called inline (it's just an HTTP POST to the push
  * backend, which itself queues async). The direct dispatcher is enqueued as
@@ -72,10 +74,14 @@ class DispatchRouter
         }
 
         // Direct path — enqueue, run from cron to avoid blocking the request.
+        // The key includes the content so two messages with the same text
+        // ("ok", "ok") stay two jobs; enqueueUnique replaces a pending job
+        // with the same key.
         if ($directEnabled) {
             try {
                 \XF::app()->jobManager()->enqueueUnique(
-                    'fcDirectPush:' . md5(implode(',', $userIds) . ':' . $title . ':' . $body),
+                    'fcDirectPush:' . md5(implode(',', $userIds) . ':' . $contentType . ':'
+                        . ($data['content_id'] ?? '') . ':' . $action . ':' . $title . ':' . $body),
                     \ForumCopilot\Job\FcmDispatch::class,
                     [
                         'userIds' => array_values(array_map('intval', $userIds)),

@@ -99,10 +99,12 @@ produces an equivalent archive as long as `hashes.json` is current.
    - Attach the ZIP to the next app release on GitHub (or create a dedicated
      `addon-v1.8.2` release if no app release is due).
    - In the `forumcopilot/siteowners` repo (local checkout
-     `/Users/tung/siteowners`; a push to its `main` deploys production, see
+     `/Users/tung/siteowners`; its `main` is production, see
      `docs/REPOSITORIES.md`), copy the ZIP to
      `frontend/public/downloads/ForumCopilot_1_8_2.zip` and add an entry to
-     `frontend/src/data/xenforoAddonReleases.js`. The site redeploys on push;
-     `/addon-changelog` and the console download link update from that file.
+     `frontend/src/data/xenforoAddonReleases.js`, push, then run that repo's
+     deploy workflow by hand (Actions > Run workflow; a push alone does not
+     deploy for now). `/addon-changelog` and the console download link update
+     from that file once the site is deployed.
 6. Mention the new add-on version in the app `CHANGELOG.md` under the next
    app release ("Ships with bundled ForumCopilot addon vX.Y.Z").

@@ -52,10 +52,11 @@ attach it to a GitHub release here (`addon-vX.Y.Z`, or the next app
 release), copy it into the marketing repo's downloads, add the entry to
 `xenforoAddonReleases.js`, push.
 
-**Marketing site deployment**: a push to `main` of `forumcopilot/siteowners`
-triggers its `Deploy to AWS Server` workflow, which runs on a self-hosted
-runner on the production server and rebuilds the site in place. There is no
-staging branch or staging deployment as of 2026-09-22; `main` is production.
+**Marketing site deployment**: `main` of `forumcopilot/siteowners` is
+production. Its deploy workflow runs on a self-hosted runner on the
+production server and rebuilds the site in place. Since 2026-10-14, while the
+site moves to new servers, the workflow is started by hand (Actions > Run
+workflow in that repo); a push to `main` alone no longer deploys.
 An old `master` branch still exists on GitHub, 39 commits behind, and is not
 deployed.
 

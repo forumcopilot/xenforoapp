@@ -1441,9 +1441,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get follow => 'Folgen';
 
   @override
-  String get goToForums => 'Zu Foren gehen';
-
-  @override
   String get remove => 'Entfernen';
 
   @override

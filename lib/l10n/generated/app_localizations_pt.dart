@@ -1432,9 +1432,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get follow => 'Seguir';
 
   @override
-  String get goToForums => 'Ir para Fóruns';
-
-  @override
   String get remove => 'Remover';
 
   @override

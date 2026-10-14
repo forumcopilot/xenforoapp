@@ -1374,9 +1374,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get follow => '팔로우';
 
   @override
-  String get goToForums => '포럼으로 이동';
-
-  @override
   String get remove => '제거';
 
   @override

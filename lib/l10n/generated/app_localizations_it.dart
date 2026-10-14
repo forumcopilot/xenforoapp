@@ -1433,9 +1433,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get follow => 'Segui';
 
   @override
-  String get goToForums => 'Vai ai Forum';
-
-  @override
   String get remove => 'Rimuovi';
 
   @override

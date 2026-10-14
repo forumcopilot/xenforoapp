@@ -4,10 +4,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_forum_config.dart';
 import '../models/site_notification_state.dart';
-import '../models/notification_preferences.dart';
 import '../services/device_service.dart';
 import '../services/push_notification_service.dart';
-import '../services/notification_preferences_service.dart';
 import '../services/notification_service.dart';
 import '../services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
@@ -21,7 +19,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
   // Services
   final DeviceService _deviceService = DeviceService();
   final PushNotificationService _pushService = PushNotificationService();
-  final NotificationPreferencesService _preferencesService = NotificationPreferencesService();
   final NotificationService _notificationService = NotificationService();
 
   // Storage key
@@ -336,7 +333,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
             siteId: state.siteId,
             siteUserId: state.userId,
             siteUsername: state.username,
-            preferences: state.preferences,
           );
 
           if (success) {
@@ -373,7 +369,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
     required String siteName,
     required String userId,
     required String username,
-    NotificationPreferences? preferences,
     int maxRetries = 2,
     bool suppressToasts = false, // Suppress toast messages (e.g., during login)
     Duration? toastDelay, // Delay before showing toasts (useful for non-blocking operations)
@@ -402,9 +397,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
           _showToast('Registering for push notifications...', isError: false);
         }
       }
-
-      // Get or create preferences
-      final sitePreferences = preferences ?? await _preferencesService.getPreferences(siteId);
 
       // Get device info for registration
       final deviceInfo = await _deviceService.getDeviceInfo();
@@ -441,7 +433,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
             siteId: siteId,
             siteUserId: userId,
             siteUsername: username,
-            preferences: sitePreferences,
           );
 
           if (success) {
@@ -464,7 +455,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
           userId: userId,
           username: username,
           isRegistered: true,
-          preferences: sitePreferences,
           lastRegistration: DateTime.now(),
           registrationAttempts: attempts,
         );
@@ -494,7 +484,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
           userId: userId,
           username: username,
           isRegistered: false,
-          preferences: sitePreferences,
           lastRegistration: DateTime.now(),
           lastError: DateTime.now(),
           errorMessage: errorMsg,
@@ -527,9 +516,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       _lastError = e.toString();
       _hasNetworkError = isNetworkErr;
 
-      // Get or create preferences
-      final sitePreferences = preferences ?? await _preferencesService.getPreferences(siteId);
-
       // Mark as error
       _siteStates[siteId] = SiteNotificationState(
         siteId: siteId,
@@ -538,7 +524,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         userId: userId,
         username: username,
         isRegistered: false,
-        preferences: sitePreferences,
         lastRegistration: DateTime.now(),
         lastError: DateTime.now(),
         errorMessage: e.toString(),
@@ -602,57 +587,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       AppLogger.debug('Error unregistering site $siteId: $e');
       _showToast('Error disabling push notifications', isError: true);
       return false;
-    }
-  }
-
-  /// Update preferences for a site
-  Future<void> updatePreferences(String siteId, NotificationPreferences preferences) async {
-    try {
-      // Save preferences
-      await _preferencesService.savePreferences(siteId, preferences);
-
-      // Update local state
-      if (_siteStates.containsKey(siteId)) {
-        _siteStates[siteId] = _siteStates[siteId]!.updatePreferences(preferences);
-        
-        // Save to storage
-        await _saveSiteStates();
-        
-        // If site is registered, update backend
-        if (_siteStates[siteId]!.isRegistered && _deviceId != null && _fcmToken != null) {
-          try {
-            _showToast('Updating notification preferences...', isError: false);
-            final deviceInfo = await _deviceService.getDeviceInfo();
-            final success = await _pushService.registerDeviceForSite(
-              deviceId: _deviceId!,
-              firebaseToken: _fcmToken!,
-              platform: deviceInfo.platform,
-              appVersion: deviceInfo.appVersion,
-              siteId: siteId,
-              siteUserId: _siteStates[siteId]!.userId,
-              siteUsername: _siteStates[siteId]!.username,
-              preferences: preferences,
-            );
-            if (success) {
-              AppLogger.debug('Updated preferences on backend for site $siteId');
-              _showToast('Notification preferences updated', isError: false);
-            } else {
-              _showToast('Failed to update preferences on server', isError: true);
-            }
-          } catch (e) {
-            AppLogger.debug('Error updating preferences on backend: $e');
-            _showToast('Error updating preferences', isError: true);
-            // Don't fail - preferences are saved locally
-          }
-        }
-        
-        update();
-      }
-
-      AppLogger.debug('Updated preferences for site $siteId');
-    } catch (e) {
-      AppLogger.debug('Error updating preferences for site $siteId: $e');
-      _showToast('Error updating preferences', isError: true);
     }
   }
 
@@ -744,7 +678,6 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
           siteName: state.siteName,
           userId: state.userId,
           username: state.username,
-          preferences: state.preferences,
         );
       }
     } catch (e) {

@@ -1,5 +1,3 @@
-import 'notification_preferences.dart';
-
 /// State model for site notification registration and status
 class SiteNotificationState {
   final String siteId;
@@ -8,7 +6,6 @@ class SiteNotificationState {
   final String userId;
   final String username;
   final bool isRegistered;
-  final NotificationPreferences preferences;
   final DateTime lastRegistration;
   final DateTime? lastNotification;
   final DateTime? lastError;
@@ -23,7 +20,6 @@ class SiteNotificationState {
     required this.userId,
     required this.username,
     required this.isRegistered,
-    required this.preferences,
     required this.lastRegistration,
     this.lastNotification,
     this.lastError,
@@ -39,7 +35,6 @@ class SiteNotificationState {
     required String siteName,
     required String userId,
     required String username,
-    NotificationPreferences? preferences,
   }) {
     return SiteNotificationState(
       siteId: siteId,
@@ -48,7 +43,6 @@ class SiteNotificationState {
       userId: userId,
       username: username,
       isRegistered: false,
-      preferences: preferences ?? NotificationPreferences.defaultPreferences,
       lastRegistration: DateTime.now(),
       registrationAttempts: 0,
       isOnline: true,
@@ -64,7 +58,6 @@ class SiteNotificationState {
       'user_id': userId,
       'username': username,
       'is_registered': isRegistered,
-      'preferences': preferences.toJson(),
       'last_registration': lastRegistration.toIso8601String(),
       'last_notification': lastNotification?.toIso8601String(),
       'last_error': lastError?.toIso8601String(),
@@ -74,7 +67,9 @@ class SiteNotificationState {
     };
   }
 
-  /// Create from JSON
+  /// Create from JSON. States saved by older builds also carry a
+  /// 'preferences' map (per-device notification types that push-backend
+  /// never filtered on); it is ignored, and dropped on the next save.
   factory SiteNotificationState.fromJson(Map<String, dynamic> json) {
     return SiteNotificationState(
       siteId: json['site_id'] as String,
@@ -83,7 +78,6 @@ class SiteNotificationState {
       userId: json['user_id'] as String,
       username: json['username'] as String,
       isRegistered: json['is_registered'] as bool,
-      preferences: NotificationPreferences.fromJson(json['preferences'] as Map<String, dynamic>),
       lastRegistration: DateTime.parse(json['last_registration'] as String),
       lastNotification: json['last_notification'] != null ? DateTime.parse(json['last_notification'] as String) : null,
       lastError: json['last_error'] != null ? DateTime.parse(json['last_error'] as String) : null,
@@ -101,7 +95,6 @@ class SiteNotificationState {
     String? userId,
     String? username,
     bool? isRegistered,
-    NotificationPreferences? preferences,
     DateTime? lastRegistration,
     DateTime? lastNotification,
     DateTime? lastError,
@@ -116,7 +109,6 @@ class SiteNotificationState {
       userId: userId ?? this.userId,
       username: username ?? this.username,
       isRegistered: isRegistered ?? this.isRegistered,
-      preferences: preferences ?? this.preferences,
       lastRegistration: lastRegistration ?? this.lastRegistration,
       lastNotification: lastNotification ?? this.lastNotification,
       lastError: lastError ?? this.lastError,
@@ -152,13 +144,6 @@ class SiteNotificationState {
       lastError: DateTime.now(),
       errorMessage: error,
       registrationAttempts: registrationAttempts + 1,
-    );
-  }
-
-  /// Update preferences
-  SiteNotificationState updatePreferences(NotificationPreferences newPreferences) {
-    return copyWith(
-      preferences: newPreferences.updateTimestamp(),
     );
   }
 
@@ -243,7 +228,6 @@ class SiteNotificationState {
         other.userId == userId &&
         other.username == username &&
         other.isRegistered == isRegistered &&
-        other.preferences == preferences &&
         other.lastRegistration == lastRegistration &&
         other.lastNotification == lastNotification &&
         other.lastError == lastError &&
@@ -260,7 +244,6 @@ class SiteNotificationState {
         userId.hashCode ^
         username.hashCode ^
         isRegistered.hashCode ^
-        preferences.hashCode ^
         lastRegistration.hashCode ^
         lastNotification.hashCode ^
         lastError.hashCode ^

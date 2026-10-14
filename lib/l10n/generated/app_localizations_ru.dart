@@ -1431,9 +1431,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get follow => 'Подписаться';
 
   @override
-  String get goToForums => 'Перейти к форумам';
-
-  @override
   String get remove => 'Удалить';
 
   @override

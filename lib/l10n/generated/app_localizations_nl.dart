@@ -1424,9 +1424,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get follow => 'Volgen';
 
   @override
-  String get goToForums => 'Naar forums';
-
-  @override
   String get remove => 'Verwijderen';
 
   @override

@@ -1443,9 +1443,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get follow => 'Suivre';
 
   @override
-  String get goToForums => 'Aller aux Forums';
-
-  @override
   String get remove => 'Supprimer';
 
   @override

@@ -1436,9 +1436,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get follow => 'Seguir';
 
   @override
-  String get goToForums => 'Ir a Foros';
-
-  @override
   String get remove => 'Eliminar';
 
   @override

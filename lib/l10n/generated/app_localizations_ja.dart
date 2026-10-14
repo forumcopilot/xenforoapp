@@ -1381,9 +1381,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get follow => 'フォロー';
 
   @override
-  String get goToForums => 'フォーラムへ';
-
-  @override
   String get remove => '削除';
 
   @override

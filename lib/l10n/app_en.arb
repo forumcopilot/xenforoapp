@@ -1210,10 +1210,6 @@
     "description": "Button text to follow"
   },
   
-  "goToForums": "Go to Forums",
-  "@goToForums": {
-    "description": "Button text to go to forums"
-  },
   "remove": "Remove",
   "@remove": {
     "description": "Button text to remove"

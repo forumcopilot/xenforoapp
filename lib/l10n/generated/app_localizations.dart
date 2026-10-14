@@ -2618,12 +2618,6 @@ abstract class AppLocalizations {
   /// **'Follow'**
   String get follow;
 
-  /// Button text to go to forums
-  ///
-  /// In en, this message translates to:
-  /// **'Go to Forums'**
-  String get goToForums;
-
   /// Button text to remove
   ///
   /// In en, this message translates to:

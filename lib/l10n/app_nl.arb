@@ -1174,10 +1174,6 @@
     "description": "Button text to follow"
   },
   
-  "goToForums": "Naar forums",
-  "@goToForums": {
-    "description": "Button text to go to forums"
-  },
   "remove": "Verwijderen",
   "@remove": {
     "description": "Button text to remove"

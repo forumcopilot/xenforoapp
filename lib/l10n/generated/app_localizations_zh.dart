@@ -1357,9 +1357,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get follow => '关注';
 
   @override
-  String get goToForums => '前往论坛';
-
-  @override
   String get remove => '删除';
 
   @override

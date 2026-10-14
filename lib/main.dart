@@ -9,7 +9,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'utils/time_utils.dart';
 import 'services/notification_service.dart';
 import 'controllers/push_notification_controller.dart';
-import 'controllers/notification_settings_controller.dart';
 import 'controllers/global_loader_controller.dart';
 import 'core/errors/error_handling_init.dart';
 import 'core/logging/app_logger.dart';
@@ -276,13 +275,7 @@ void _createPushNotificationController() {
     // Controller will initialize itself in onInit() and get token from NotificationService
     // No need to poll - it will be ready when token is available
 
-    // Initialize notification settings controller
-    if (!Get.isRegistered<NotificationSettingsController>()) {
-      Get.put(NotificationSettingsController());
-      AppLogger.info('NotificationSettingsController initialized');
-    }
-
-    AppLogger.info('Push notification controllers initialized successfully');
+    AppLogger.info('Push notification controller initialized successfully');
   } catch (e) {
     AppLogger.warning('Error creating push notification controller', error: e);
   }

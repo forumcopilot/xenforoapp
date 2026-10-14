@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:forumcopilot_flutter/config/app_forum_config.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
-import '../models/notification_preferences.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 
@@ -56,7 +55,6 @@ class PushNotificationService with ServiceErrorHandlingMixin {
     required String siteId,
     required String siteUserId,
     required String siteUsername,
-    required NotificationPreferences preferences,
   }) async {
     // Skip the hosted-backend registration entirely when no backend URL is set.
     // BYO/direct builds set pushApiBaseUrl='' — there's nothing to register against.
@@ -79,7 +77,6 @@ class PushNotificationService with ServiceErrorHandlingMixin {
           'site_id': siteId,
           'site_user_id': siteUserId,
           'site_username': siteUsername,
-          'notification_preferences': preferences.toJson(),
         },
       );
 

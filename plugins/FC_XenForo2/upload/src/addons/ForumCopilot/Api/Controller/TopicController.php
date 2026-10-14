@@ -645,16 +645,18 @@ class TopicController extends AbstractController
         }
 
         try {
-            $visitor = \XF::visitor();
-
             // Convert topic IDs to integers for query
             $threadIds = array_map('intval', $topicIds);
-            
-            // Use basic finder to avoid add-on conflicts
+
+            // Load the visitor's thread and forum read markers with the threads
             $finder = $this->finder('XF:Thread');
             $finder->where('thread_id', $threadIds);
-            
+            $finder->withReadData();
+
             $threads = $finder->fetch();
+
+            /** @var \XF\Repository\Thread $threadRepo */
+            $threadRepo = $this->repository('XF:Thread');
 
             foreach ($threads as $thread) {
                 // Respect XenForo's permission system
@@ -663,32 +665,18 @@ class TopicController extends AbstractController
                     continue;
                 }
 
-                // Mark as read safely - avoid calling markThreadAsRead which may have XFMG conflicts
-                // Instead, update thread read tracking directly
-                try {
-                    $threadRead = $this->em()->find('XF:ThreadRead', [
-                        'thread_id' => $thread->thread_id,
-                        'user_id' => $visitor->user_id
-                    ]);
-                    
-                    if (!$threadRead) {
-                        $threadRead = $this->em()->create('XF:ThreadRead');
-                        $threadRead->thread_id = $thread->thread_id;
-                        $threadRead->user_id = $visitor->user_id;
-                    }
-                    
-                    $threadRead->thread_read_date = \XF::$time;
-                    $threadRead->save();
-                } catch (\Exception $e) {
-                    // If ThreadRead entity doesn't exist or has conflicts, skip silently
-                    // The thread will be marked as read on next view
-                }
+                // XenForo's own read marking, as when the thread is viewed on the web:
+                // xf_thread_read moves to the later of now and the last post, and the
+                // forum is marked read once none of its threads are unread. Watched-thread
+                // reply alerts depend on this date (AbstractWatch::canNotify).
+                $threadRepo->markThreadReadByVisitor($thread);
             }
 
             $result = new FCMarkTopicReadResult(true, null);
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot markTopicRead: ');
             return $this->apiError('Failed to mark topics as read: ' . $e->getMessage());
         }
     }

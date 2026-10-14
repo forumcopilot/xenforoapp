@@ -592,30 +592,14 @@ class PostController extends AbstractController
                 return $this->apiError('Thread not found');
             }
 
-            $visitor = \XF::visitor();
+            // XenForo's read date for the visitor: the later of the thread and forum read
+            // markers, never earlier than the read-marking cut-off
+            $readDate = (int)$thread->getVisitorReadDate();
 
-            // Get read date from ThreadRead entity - avoid add-on conflicts
-            $readDate = 0;
-            try {
-                $threadRead = $this->em()->find('XF:ThreadRead', [
-                    'thread_id' => $thread->thread_id,
-                    'user_id' => $visitor->user_id
-                ]);
-                
-                if ($threadRead && isset($threadRead->thread_read_date)) {
-                    $readDate = (int)$threadRead->thread_read_date;
-                }
-            } catch (\Exception $e) {
-                // If ThreadRead doesn't exist or has conflicts, use thread post_date as fallback
-                $readDate = (int)$thread->post_date;
-            }
-            
-            // If no read date found, use thread creation date or visitor registration date
-            if ($readDate === 0) {
-                $readDate = (int)$thread->post_date;
-                if ($visitor->user_id && $visitor->register_date > $thread->post_date) {
-                    $readDate = (int)$visitor->register_date;
-                }
+            // At the cut-off XenForo has no read data for this visitor, so like its own
+            // "unread" link (Pub\Controller\Thread::actionUnread) start from the first post
+            if ($readDate <= $this->repository('XF:Thread')->getReadMarkingCutOff()) {
+                $readDate = 0;
             }
 
             // Check if thread is fully read by comparing readDate with last_post_date

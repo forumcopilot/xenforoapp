@@ -6,6 +6,9 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon (v1.8.10 → v1.8.11, not yet released)
+- XenForo 2.2: the "who reacted" list on direct messages was always empty, so the app could not show which reaction anyone had given on a message. `getConversationMessageLikesInfo` returned nothing unless `\XF\Repository\ReactionRepository` existed, which is XenForo 2.3's name (2.2 calls it `\XF\Repository\Reaction`); 1.8.4 fixed the same check for posts but missed this copy. It also read `emoji_shortname`, a column 2.2 does not have, which would have dropped every entry with a logged error. It now accepts either class name and uses the emoji and icon helpers that posts and `getConfig` already use, so posts, messages and the reaction picker agree. On 2.3 nothing changes. Verified on 2.2.19 and 2.3.7 by upgrading 1.8.9 → 1.8.11 and reacting to a direct message through `forumcopilot.php`: on 2.2.19 with 1.8.9 a Wow was stored (`reaction_id` 4) but `likesInfo` was empty; with 1.8.11 it lists the member with Wow 😮, then Love ❤️ after switching, and removing it works. On 2.3.7 the response is the same before and after (Wow 😲). No new error-log rows on either.
+
 ### Bundled addon (v1.8.9 → v1.8.10, not yet released)
 - Test forums can point the add-on at another Forum Copilot API. If `src/config.php` sets `$config['forumCopilot']['apiUrl']`, the add-on registers, validates its connection and opens SSO against that base URL instead of `https://forumcopilot.com/api` (`BackendApi::apiUrl()`, used by all six outbound calls). Live forums never set it and behave exactly as before. Used by the staging test forum.
 
@@ -40,6 +43,11 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - `AppForumConfig.pushSource` now defaults to `'direct'`. Forks send push through their own Firebase project; Forum Copilot's hosted push serves only the official app. A fork that already set the value in its own config keeps it.
 - README: the push section is now a single walkthrough for your own Firebase project: app identifiers (including the `.xf` suffix on Android debug builds), where the APNs `.p8` key goes in Firebase, the add-on's direct-push options, and a test checklist. The previous "Hosted ForumCopilot Push" path described dashboard fields that never existed on forumcopilot.com. The undocumented custom-relay path is gone too. The macOS build steps now say to set a signing team and add the Firebase files before the first build, since a fresh clone fails without them.
 - Removed the per-device notification settings, which nothing linked to (screen, its controller, the preferences service and model, one string in 11 locales). The hosted backend registration no longer sends `notification_preferences`: the backend never filtered on them, and direct mode never sent them. Which pushes a member gets is the forum's **Push Notifications** setting (Settings in the app), which the add-on applies before sending. Push state saved by older builds still loads.
+
+### Fixed
+- Reactions, from the canonical SDK (`packages/` re-synced, which also brings canonical's SDK changes since 2026-09-22: the WebView's real User-Agent instead of a hard-coded Chrome/131, poll and author fields on `FCPost` and `FCConversationMessage`, `FCSearchPersonal.messages`, no request headers in Cloudflare-challenge logs):
+  - A forum whose add-on sends no reaction set (before 1.8.0) no longer shows the reaction set of a forum opened earlier in the same session. Only the multi-forum app opens several forums per session, where members could pick a Love that the old add-on stored as a Like and then could not remove it; this app opens one forum, so for it the change is a safeguard. A missing set now clears the registry, and those forums use the single Like.
+  - Direct-message reactions keep their type after the conversation is reloaded. The SDK dropped the reaction fields the add-on sends, so a Wow came back as a plain Like, the picker highlighted Like, and choosing Wow again removed it.
 
 ## [0.10.2] - 2026-09-22
 

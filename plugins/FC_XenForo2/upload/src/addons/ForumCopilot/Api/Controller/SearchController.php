@@ -740,8 +740,8 @@ class SearchController extends AbstractController
 
         // Get like count from first post
         $likeCount = 0;
-        if ($thread->FirstPost && isset($thread->FirstPost->reaction_score)) {
-            $likeCount = (int)$thread->FirstPost->reaction_score;
+        if ($thread->FirstPost) {
+            $likeCount = $this->getReactionCount($thread->FirstPost);
         }
 
         // Get short content from first post

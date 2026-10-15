@@ -73,7 +73,7 @@ class SocialController extends AbstractController
                 return $this->apiError('Failed to react to post: ' . $e->getMessage());
             }
 
-            // Refresh the post so reaction_score reflects the change.
+            // Refresh the post so its reaction counts reflect the change.
             $post = $this->em()->find('XF:Post', $contentId);
 
             // reactToContent returns the new reaction entity when one was
@@ -86,7 +86,7 @@ class SocialController extends AbstractController
                 true,
                 null,
                 $visitorReactionId !== null,
-                (isset($post->reaction_score) ? (int) $post->reaction_score : 0),
+                $this->getReactionCount($post),
                 $visitorReactionId
             );
 
@@ -147,7 +147,7 @@ class SocialController extends AbstractController
                     true,
                     null,
                     false,
-                    isset($post->reaction_score) ? (int)$post->reaction_score : 0
+                    $this->getReactionCount($post)
                 );
                 return $this->apiSuccess($result);
             }
@@ -158,7 +158,7 @@ class SocialController extends AbstractController
                     true,
                     null,
                     false,
-                    isset($post->reaction_score) ? (int)$post->reaction_score : 0
+                    $this->getReactionCount($post)
                 );
             } else {
                 // Use unlike system (like Tapatalk does)
@@ -182,7 +182,7 @@ class SocialController extends AbstractController
                             true,
                             null,
                             false,
-                            isset($post->reaction_score) ? (int)$post->reaction_score : 0
+                            $this->getReactionCount($post)
                         );
                     } catch (\Exception $e) {
                         return $this->apiError('Failed to unlike post: ' . $e->getMessage());
@@ -200,7 +200,7 @@ class SocialController extends AbstractController
                             true,
                             null,
                             false,
-                            isset($post->reaction_score) ? (int)$post->reaction_score : 0
+                            $this->getReactionCount($post)
                         );
                     } catch (\Exception $e) {
                         return $this->apiError('Failed to unlike post: ' . $e->getMessage());

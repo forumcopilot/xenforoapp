@@ -148,7 +148,7 @@ class PostController extends AbstractController
                     'canReport' => $canReport,
                     'canLike' => $canLike,
                     'isLiked' => $isLiked,
-                    'likeCount' => isset($post->reaction_score) ? (int)$post->reaction_score : 0,
+                    'likeCount' => $this->getReactionCount($post),
                     'likesInfo' => $likesInfo,
                     'isApproved' => $post->message_state === 'visible',
                     'isFirstPost' => $post->post_id === $thread->first_post_id,
@@ -200,8 +200,8 @@ class PostController extends AbstractController
             $likeCount = 0;
             if ($thread->first_post_id) {
                 $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                if ($firstPost && isset($firstPost->reaction_score)) {
-                    $likeCount = (int)$firstPost->reaction_score;
+                if ($firstPost) {
+                    $likeCount = $this->getReactionCount($firstPost);
                 }
             }
 
@@ -415,7 +415,7 @@ class PostController extends AbstractController
                     'canReport' => false,
                     'canLike' => $canLike,
                     'isLiked' => $isLiked,
-                    'likeCount' => isset($p->reaction_score) ? (int)$p->reaction_score : 0,
+                    'likeCount' => $this->getReactionCount($p),
                     'likesInfo' => $likesInfo,
                     'isApproved' => $p->message_state === 'visible',
                     'isFirstPost' => $p->post_id === $thread->first_post_id,
@@ -461,8 +461,8 @@ class PostController extends AbstractController
             $likeCount = 0;
             if ($thread->first_post_id) {
                 $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                if ($firstPost && isset($firstPost->reaction_score)) {
-                    $likeCount = (int)$firstPost->reaction_score;
+                if ($firstPost) {
+                    $likeCount = $this->getReactionCount($firstPost);
                 }
             }
 
@@ -756,7 +756,7 @@ class PostController extends AbstractController
                     'canReport' => $canReport,
                     'canLike' => $canLike,
                     'isLiked' => $isLiked,
-                    'likeCount' => isset($post->reaction_score) ? (int)$post->reaction_score : 0,
+                    'likeCount' => $this->getReactionCount($post),
                     'likesInfo' => $likesInfo,
                     'isApproved' => $post->message_state === 'visible',
                     'isFirstPost' => $post->post_id === $thread->first_post_id,
@@ -802,8 +802,8 @@ class PostController extends AbstractController
             $likeCount = 0;
             if ($thread->first_post_id) {
                 $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                if ($firstPost && isset($firstPost->reaction_score)) {
-                    $likeCount = (int)$firstPost->reaction_score;
+                if ($firstPost) {
+                    $likeCount = $this->getReactionCount($firstPost);
                 }
             }
 

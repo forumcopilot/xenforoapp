@@ -568,7 +568,7 @@ class PrivateConversationController extends AbstractController
                     'canReport' => $canReport,
                     'canLike' => $canLike,
                     'isLiked' => $isLiked,
-                    'likeCount' => isset($message->reaction_score) ? (int)$message->reaction_score : 0,
+                    'likeCount' => $this->getReactionCount($message),
                     'likesInfo' => $likesInfo,
                     'attachments' => $attachmentsArray,
                     'isUnread' => $isUnread,
@@ -825,7 +825,7 @@ class PrivateConversationController extends AbstractController
                     'canReport' => $canReport,
                     'canLike' => $canLike,
                     'isLiked' => $isLiked,
-                    'likeCount' => isset($msg->reaction_score) ? (int)$msg->reaction_score : 0,
+                    'likeCount' => $this->getReactionCount($msg),
                     'likesInfo' => $likesInfo,
                     'attachments' => $attachmentsArray,
                     'isUnread' => $isUnread,
@@ -1240,7 +1240,7 @@ class PrivateConversationController extends AbstractController
                 return $this->apiError('Failed to react to message: ' . $e->getMessage());
             }
 
-            // Refresh the message so reaction_score reflects the change.
+            // Refresh the message so its reaction counts reflect the change.
             $message = $this->em()->find('XF:ConversationMessage', $contentId);
 
             $visitorReactionId = ($reaction && isset($reaction->reaction_id))
@@ -1251,7 +1251,7 @@ class PrivateConversationController extends AbstractController
                 true,
                 null,
                 $visitorReactionId !== null,
-                (isset($message->reaction_score) ? (int) $message->reaction_score : 0),
+                $this->getReactionCount($message),
                 $visitorReactionId
             );
 
@@ -1312,7 +1312,7 @@ class PrivateConversationController extends AbstractController
                     true,
                     null,
                     false,
-                    isset($message->reaction_score) ? (int)$message->reaction_score : 0
+                    $this->getReactionCount($message)
                 );
                 return $this->apiSuccess($result);
             }
@@ -1323,7 +1323,7 @@ class PrivateConversationController extends AbstractController
                     true,
                     null,
                     false,
-                    isset($message->reaction_score) ? (int)$message->reaction_score : 0
+                    $this->getReactionCount($message)
                 );
             } else {
                 // Use unlike system
@@ -1347,7 +1347,7 @@ class PrivateConversationController extends AbstractController
                             true,
                             null,
                             false,
-                            isset($message->reaction_score) ? (int)$message->reaction_score : 0
+                            $this->getReactionCount($message)
                         );
                     } catch (\Exception $e) {
                         return $this->apiError('Failed to unlike message: ' . $e->getMessage());
@@ -1365,7 +1365,7 @@ class PrivateConversationController extends AbstractController
                             true,
                             null,
                             false,
-                            isset($message->reaction_score) ? (int)$message->reaction_score : 0
+                            $this->getReactionCount($message)
                         );
                     } catch (\Exception $e) {
                         return $this->apiError('Failed to unlike message: ' . $e->getMessage());

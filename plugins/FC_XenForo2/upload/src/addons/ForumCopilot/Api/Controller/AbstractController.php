@@ -575,6 +575,35 @@ abstract class AbstractController extends Controller
     }
 
     /**
+     * Number of reactions on a post or conversation message: what the API
+     * reports as likeCount. Not reaction_score, which sums each reaction's
+     * score: XenForo's stock Wow, Sad and Angry score 0, so content whose
+     * only reaction was a Wow reported 0 and the app hid its reaction row,
+     * and Like + Wow reported 1. The `reactions` column (reaction_id =>
+     * count, active reactions only) exists on 2.2 and 2.3.
+     *
+     * @param \XF\Mvc\Entity\Entity|null $content
+     * @return int
+     */
+    protected function getReactionCount($content)
+    {
+        if (!$content) {
+            return 0;
+        }
+
+        try {
+            if ($content->isValidColumn('reactions')) {
+                $counts = $content->reactions;
+                return is_array($counts) ? (int) array_sum($counts) : 0;
+            }
+        } catch (\Throwable $e) {
+            // fall back to the score below
+        }
+
+        return isset($content->reaction_score) ? max(0, (int) $content->reaction_score) : 0;
+    }
+
+    /**
      * Get list of users who liked/reacted to a post
      * Returns an array of like information with userId, username, avatarUrl, and timestamp
      * 
@@ -1034,8 +1063,8 @@ abstract class AbstractController extends Controller
         try {
             if ($thread->first_post_id) {
                 $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                if ($firstPost && isset($firstPost->reaction_score)) {
-                    $likeCount = (int)$firstPost->reaction_score;
+                if ($firstPost) {
+                    $likeCount = $this->getReactionCount($firstPost);
                 }
             }
         } catch (\Exception $e) {

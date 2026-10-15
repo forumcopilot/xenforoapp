@@ -20,6 +20,7 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       FCLikeMapper.ensureInitialized();
       FCPostReactionMapper.ensureInitialized();
       FCPostVoteMapper.ensureInitialized();
+      FCPollMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -264,6 +265,52 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     opt: true,
     def: false,
   );
+  static List<FCPoll> _$polls(FCPost v) => v.polls;
+  static const Field<FCPost, List<FCPoll>> _f$polls = Field(
+    'polls',
+    _$polls,
+    opt: true,
+    def: const [],
+  );
+  static String? _$actionCode(FCPost v) => v.actionCode;
+  static const Field<FCPost, String> _f$actionCode = Field(
+    'actionCode',
+    _$actionCode,
+    opt: true,
+  );
+  static String? _$actionCodeWho(FCPost v) => v.actionCodeWho;
+  static const Field<FCPost, String> _f$actionCodeWho = Field(
+    'actionCodeWho',
+    _$actionCodeWho,
+    opt: true,
+  );
+  static bool _$isModeratorAction(FCPost v) => v.isModeratorAction;
+  static const Field<FCPost, bool> _f$isModeratorAction = Field(
+    'isModeratorAction',
+    _$isModeratorAction,
+    opt: true,
+    def: false,
+  );
+  static bool _$isHidden(FCPost v) => v.isHidden;
+  static const Field<FCPost, bool> _f$isHidden = Field(
+    'isHidden',
+    _$isHidden,
+    opt: true,
+    def: false,
+  );
+  static String? _$authorDisplayName(FCPost v) => v.authorDisplayName;
+  static const Field<FCPost, String> _f$authorDisplayName = Field(
+    'authorDisplayName',
+    _$authorDisplayName,
+    opt: true,
+  );
+  static Map<String, int> _$linkClicks(FCPost v) => v.linkClicks;
+  static const Field<FCPost, Map<String, int>> _f$linkClicks = Field(
+    'linkClicks',
+    _$linkClicks,
+    opt: true,
+    def: const {},
+  );
   static int? _$replyToPostNumber(FCPost v) => v.replyToPostNumber;
   static const Field<FCPost, int> _f$replyToPostNumber = Field(
     'replyToPostNumber',
@@ -342,6 +389,13 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #vote: _f$vote,
     #editVersion: _f$editVersion,
     #isWiki: _f$isWiki,
+    #polls: _f$polls,
+    #actionCode: _f$actionCode,
+    #actionCodeWho: _f$actionCodeWho,
+    #isModeratorAction: _f$isModeratorAction,
+    #isHidden: _f$isHidden,
+    #authorDisplayName: _f$authorDisplayName,
+    #linkClicks: _f$linkClicks,
     #replyToPostNumber: _f$replyToPostNumber,
     #replyToUsername: _f$replyToUsername,
     #replyToIconUrl: _f$replyToIconUrl,
@@ -390,6 +444,13 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       vote: data.dec(_f$vote),
       editVersion: data.dec(_f$editVersion),
       isWiki: data.dec(_f$isWiki),
+      polls: data.dec(_f$polls),
+      actionCode: data.dec(_f$actionCode),
+      actionCodeWho: data.dec(_f$actionCodeWho),
+      isModeratorAction: data.dec(_f$isModeratorAction),
+      isHidden: data.dec(_f$isHidden),
+      authorDisplayName: data.dec(_f$authorDisplayName),
+      linkClicks: data.dec(_f$linkClicks),
       replyToPostNumber: data.dec(_f$replyToPostNumber),
       replyToUsername: data.dec(_f$replyToUsername),
       replyToIconUrl: data.dec(_f$replyToIconUrl),
@@ -467,6 +528,8 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
   >
   get reactions;
   FCPostVoteCopyWith<$R, FCPostVote, FCPostVote>? get vote;
+  ListCopyWith<$R, FCPoll, FCPollCopyWith<$R, FCPoll, FCPoll>> get polls;
+  MapCopyWith<$R, String, int, ObjectCopyWith<$R, int, int>> get linkClicks;
   $R call({
     String? id,
     String? title,
@@ -506,6 +569,13 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     FCPostVote? vote,
     int? editVersion,
     bool? isWiki,
+    List<FCPoll>? polls,
+    String? actionCode,
+    String? actionCodeWho,
+    bool? isModeratorAction,
+    bool? isHidden,
+    String? authorDisplayName,
+    Map<String, int>? linkClicks,
     int? replyToPostNumber,
     String? replyToUsername,
     String? replyToIconUrl,
@@ -573,6 +643,20 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
   FCPostVoteCopyWith<$R, FCPostVote, FCPostVote>? get vote =>
       $value.vote?.copyWith.$chain((v) => call(vote: v));
   @override
+  ListCopyWith<$R, FCPoll, FCPollCopyWith<$R, FCPoll, FCPoll>> get polls =>
+      ListCopyWith(
+        $value.polls,
+        (v, t) => v.copyWith.$chain(t),
+        (v) => call(polls: v),
+      );
+  @override
+  MapCopyWith<$R, String, int, ObjectCopyWith<$R, int, int>> get linkClicks =>
+      MapCopyWith(
+        $value.linkClicks,
+        (v, t) => ObjectCopyWith(v, $identity, t),
+        (v) => call(linkClicks: v),
+      );
+  @override
   $R call({
     String? id,
     String? title,
@@ -612,6 +696,13 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     Object? vote = $none,
     Object? editVersion = $none,
     bool? isWiki,
+    List<FCPoll>? polls,
+    Object? actionCode = $none,
+    Object? actionCodeWho = $none,
+    bool? isModeratorAction,
+    bool? isHidden,
+    Object? authorDisplayName = $none,
+    Map<String, int>? linkClicks,
     Object? replyToPostNumber = $none,
     Object? replyToUsername = $none,
     Object? replyToIconUrl = $none,
@@ -658,6 +749,13 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (vote != $none) #vote: vote,
       if (editVersion != $none) #editVersion: editVersion,
       if (isWiki != null) #isWiki: isWiki,
+      if (polls != null) #polls: polls,
+      if (actionCode != $none) #actionCode: actionCode,
+      if (actionCodeWho != $none) #actionCodeWho: actionCodeWho,
+      if (isModeratorAction != null) #isModeratorAction: isModeratorAction,
+      if (isHidden != null) #isHidden: isHidden,
+      if (authorDisplayName != $none) #authorDisplayName: authorDisplayName,
+      if (linkClicks != null) #linkClicks: linkClicks,
       if (replyToPostNumber != $none) #replyToPostNumber: replyToPostNumber,
       if (replyToUsername != $none) #replyToUsername: replyToUsername,
       if (replyToIconUrl != $none) #replyToIconUrl: replyToIconUrl,
@@ -709,6 +807,19 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     vote: data.get(#vote, or: $value.vote),
     editVersion: data.get(#editVersion, or: $value.editVersion),
     isWiki: data.get(#isWiki, or: $value.isWiki),
+    polls: data.get(#polls, or: $value.polls),
+    actionCode: data.get(#actionCode, or: $value.actionCode),
+    actionCodeWho: data.get(#actionCodeWho, or: $value.actionCodeWho),
+    isModeratorAction: data.get(
+      #isModeratorAction,
+      or: $value.isModeratorAction,
+    ),
+    isHidden: data.get(#isHidden, or: $value.isHidden),
+    authorDisplayName: data.get(
+      #authorDisplayName,
+      or: $value.authorDisplayName,
+    ),
+    linkClicks: data.get(#linkClicks, or: $value.linkClicks),
     replyToPostNumber: data.get(
       #replyToPostNumber,
       or: $value.replyToPostNumber,

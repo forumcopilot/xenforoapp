@@ -163,6 +163,9 @@ enum FCSearchStatus {
 /// a topic — bookmarks, likes, watching, etc.
 enum FCSearchPersonal {
   bookmarks('bookmarks', 'My bookmarks'),
+  // Discourse: the viewer's private messages (`in:messages`, alias
+  // `in:personal`).
+  messages('messages', 'My messages'),
   liked('liked', 'I liked'),
   posted('posted', 'I posted in'),
   watching('watching', 'Watching'),

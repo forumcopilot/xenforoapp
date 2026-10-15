@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -32,6 +32,14 @@ class CloudflareInterceptor extends Interceptor {
   final VoidCallback? onChallengeStart;
   final VoidCallback? onChallengeEnd;
 
+  /// Never the request's headers: they carry the forum credentials
+  /// (User-Api-Key, cookies), and print() reaches the device log in release.
+  static void _logChallenge(RequestOptions options) {
+    if (!kDebugMode) return;
+    final uri = options.uri;
+    debugPrint('🔒 [CLOUDFLARE] Challenge on ${options.method} ${uri.origin}${uri.path}');
+  }
+
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async {
     final cfMitigated = response.headers['cf-mitigated'];
@@ -40,7 +48,7 @@ class CloudflareInterceptor extends Interceptor {
       return;
     }
 
-    print('🔒 [CLOUDFLARE] Response headers: ${response.requestOptions.headers}');
+    _logChallenge(response.requestOptions);
     _notifyStart();
     try {
       final solvedData = await _obtainSolvedData(response.requestOptions);
@@ -79,7 +87,7 @@ class CloudflareInterceptor extends Interceptor {
       return;
     }
 
-    print('🔒 [CLOUDFLARE] Error headers: ${err.requestOptions.headers}');
+    _logChallenge(err.requestOptions);
     _notifyStart();
     try {
       final solvedData = await _obtainSolvedData(err.requestOptions);

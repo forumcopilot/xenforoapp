@@ -2,6 +2,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:forumcopilot_sdk/models/results/fc_base_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_poll.dart';
 
 part 'fc_private_conversation_result.mapper.dart';
 
@@ -399,6 +400,12 @@ class FCConversationMessage with FCConversationMessageMappable {
   /// Message number in the conversation (1-based position)
   int? messageNumber;
 
+  /// Every poll in this message, in the order its body shows them — as
+  /// [FCPost.polls] (Discourse: a private message is a topic, and each
+  /// message post carries its own `polls` array). Empty on platforms
+  /// without polls in conversations.
+  List<FCPoll> polls;
+
   FCConversationMessage({
     required this.messageId,
     required this.userId,
@@ -418,6 +425,7 @@ class FCConversationMessage with FCConversationMessageMappable {
     this.isIgnored,
     this.canEdit,
     this.messageNumber,
+    this.polls = const [],
   });
 
   // Compatibility properties for snake_case access

@@ -1989,6 +1989,7 @@ class FCConversationMessageMapper
       MapperContainer.globals.use(_instance = FCConversationMessageMapper._());
       FCLikeMapper.ensureInitialized();
       FCAttachmentMapper.ensureInitialized();
+      FCPollMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -2102,6 +2103,13 @@ class FCConversationMessageMapper
     _$messageNumber,
     opt: true,
   );
+  static List<FCPoll> _$polls(FCConversationMessage v) => v.polls;
+  static const Field<FCConversationMessage, List<FCPoll>> _f$polls = Field(
+    'polls',
+    _$polls,
+    opt: true,
+    def: const [],
+  );
 
   @override
   final MappableFields<FCConversationMessage> fields = const {
@@ -2123,6 +2131,7 @@ class FCConversationMessageMapper
     #isIgnored: _f$isIgnored,
     #canEdit: _f$canEdit,
     #messageNumber: _f$messageNumber,
+    #polls: _f$polls,
   };
 
   static FCConversationMessage _instantiate(DecodingData data) {
@@ -2145,6 +2154,7 @@ class FCConversationMessageMapper
       isIgnored: data.dec(_f$isIgnored),
       canEdit: data.dec(_f$canEdit),
       messageNumber: data.dec(_f$messageNumber),
+      polls: data.dec(_f$polls),
     );
   }
 
@@ -2225,6 +2235,7 @@ abstract class FCConversationMessageCopyWith<
     FCAttachmentCopyWith<$R, FCAttachment, FCAttachment>
   >
   get attachments;
+  ListCopyWith<$R, FCPoll, FCPollCopyWith<$R, FCPoll, FCPoll>> get polls;
   $R call({
     String? messageId,
     String? userId,
@@ -2244,6 +2255,7 @@ abstract class FCConversationMessageCopyWith<
     bool? isIgnored,
     bool? canEdit,
     int? messageNumber,
+    List<FCPoll>? polls,
   });
   FCConversationMessageCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -2277,6 +2289,13 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     (v) => call(attachments: v),
   );
   @override
+  ListCopyWith<$R, FCPoll, FCPollCopyWith<$R, FCPoll, FCPoll>> get polls =>
+      ListCopyWith(
+        $value.polls,
+        (v, t) => v.copyWith.$chain(t),
+        (v) => call(polls: v),
+      );
+  @override
   $R call({
     String? messageId,
     String? userId,
@@ -2296,6 +2315,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     Object? isIgnored = $none,
     Object? canEdit = $none,
     Object? messageNumber = $none,
+    List<FCPoll>? polls,
   }) => $apply(
     FieldCopyWithData({
       if (messageId != null) #messageId: messageId,
@@ -2316,6 +2336,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
       if (isIgnored != $none) #isIgnored: isIgnored,
       if (canEdit != $none) #canEdit: canEdit,
       if (messageNumber != $none) #messageNumber: messageNumber,
+      if (polls != null) #polls: polls,
     }),
   );
   @override
@@ -2341,6 +2362,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     isIgnored: data.get(#isIgnored, or: $value.isIgnored),
     canEdit: data.get(#canEdit, or: $value.canEdit),
     messageNumber: data.get(#messageNumber, or: $value.messageNumber),
+    polls: data.get(#polls, or: $value.polls),
   );
 
   @override

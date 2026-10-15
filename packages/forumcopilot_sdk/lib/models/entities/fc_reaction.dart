@@ -49,12 +49,19 @@ class FCReaction {
 }
 
 /// Process-wide registry of the forum's available reactions, populated from
-/// getConfig by the config proxy on each launch. Read by the reaction picker.
+/// getConfig by the config proxy each time a forum is opened. Read by the
+/// reaction picker.
+///
+/// The registry holds one forum's set at a time and remembers which forum
+/// ([siteKey]) it belongs to. A getConfig without `availableReactions` (add-on
+/// before 1.8.0) clears it, so a forum opened after a newer one does not
+/// inherit that forum's reactions and falls back to the single Like.
 class ReactionRegistry {
   ReactionRegistry._();
   static final ReactionRegistry instance = ReactionRegistry._();
 
   List<FCReaction> _reactions = const [];
+  String? _siteKey;
 
   /// All active reactions, in the forum's configured display order.
   List<FCReaction> get reactions => _reactions;
@@ -62,21 +69,48 @@ class ReactionRegistry {
   /// True when the server sent a reaction set (i.e. the newer plugin is live).
   bool get isAvailable => _reactions.isNotEmpty;
 
+  /// The forum the current set was loaded for (its plugin URL), or null when
+  /// the registry is empty or was filled without one.
+  String? get siteKey => _siteKey;
+
   /// Replace the set from a parsed getConfig payload.
-  void setReactions(List<FCReaction> reactions) {
+  void setReactions(List<FCReaction> reactions, {String? siteKey}) {
     final sorted = [...reactions]
       ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
     _reactions = List.unmodifiable(sorted);
+    _siteKey = siteKey;
   }
 
-  /// Populate from the raw `availableReactions` list in a getConfig response.
-  void setFromJsonList(dynamic rawList) {
-    if (rawList is List) {
-      setReactions(rawList
+  /// Populate from the raw `availableReactions` value in a getConfig response.
+  /// Anything but a list (the field is missing on add-on 1.3.x) clears the
+  /// set: keeping it would show the previously opened forum's reactions.
+  void setFromJsonList(dynamic rawList, {String? siteKey}) {
+    if (rawList is! List) {
+      clear();
+      _siteKey = siteKey;
+      return;
+    }
+    setReactions(
+      rawList
           .whereType<Map>()
           .map((m) => FCReaction.fromJson(Map<String, dynamic>.from(m)))
-          .toList());
-    }
+          .toList(),
+      siteKey: siteKey,
+    );
+  }
+
+  /// Drop the set, e.g. when getConfig failed for a forum other than the one
+  /// it was loaded for (see [clearUnlessFor]).
+  void clear() {
+    _reactions = const [];
+    _siteKey = null;
+  }
+
+  /// Clear unless the set belongs to [siteKey]. Used when getConfig fails: a
+  /// failed refresh of the same forum keeps its set, but another forum's set
+  /// must not carry over to the one being opened.
+  void clearUnlessFor(String siteKey) {
+    if (_siteKey != siteKey) clear();
   }
 
   /// Look up a reaction by id (e.g. to render the viewer's current reaction).

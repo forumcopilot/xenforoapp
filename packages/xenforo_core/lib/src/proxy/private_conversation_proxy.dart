@@ -374,21 +374,39 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     }
   }
 
-  /// Parse likes info from API response
+  /// Parse likes info from API response. Keeps the reaction fields the
+  /// add-on sends with each entry, so a message's reaction type (Wow, Love…)
+  /// survives a reload instead of turning into a plain Like.
   List<FCLike> _parseLikesInfo(dynamic likesInfoData) {
     if (likesInfoData == null || likesInfoData is! List) {
       return [];
     }
-    
+
+    String? nonEmpty(dynamic value) {
+      final text = value?.toString();
+      return (text == null || text.isEmpty) ? null : text;
+    }
+
     return likesInfoData.map((likeData) {
       if (likeData is Map<String, dynamic>) {
+        final timestamp = likeData['timestamp'];
+        final timestampMs = timestamp is num
+            ? timestamp.toInt()
+            : int.tryParse(timestamp?.toString() ?? '');
+        final reactionId = likeData['reactionId'];
         return FCLike(
           userId: likeData['userId']?.toString() ?? '',
           username: likeData['username']?.toString() ?? '',
           avatarUrl: likeData['avatarUrl']?.toString() ?? '',
-          timestamp: likeData['timestamp'] != null
-              ? DateTime.fromMillisecondsSinceEpoch(likeData['timestamp'] as int)
+          timestamp: timestampMs != null
+              ? DateTime.fromMillisecondsSinceEpoch(timestampMs)
               : null,
+          reactionId: reactionId is int
+              ? reactionId
+              : int.tryParse(reactionId?.toString() ?? ''),
+          reactionName: nonEmpty(likeData['reactionName']),
+          reactionEmoji: nonEmpty(likeData['reactionEmoji']),
+          reactionIconUrl: nonEmpty(likeData['reactionIconUrl']),
         );
       }
       return null;

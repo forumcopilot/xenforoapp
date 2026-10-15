@@ -39,9 +39,11 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
       }
 
       // Populate the reaction registry from the forum's configured reactions
-      // (newer plugin only; older plugins simply omit the field and the app
-      // falls back to a single Like). Held in-memory, re-fetched each launch.
-      ReactionRegistry.instance.setFromJsonList(response['availableReactions']);
+      // (newer plugin only; older plugins simply omit the field, which clears
+      // the registry, and the app falls back to a single Like). Held
+      // in-memory, re-fetched each time a forum is opened.
+      ReactionRegistry.instance
+          .setFromJsonList(response['availableReactions'], siteKey: url);
 
       // Convert response to FCConfigResult
       return FCConfigResult(
@@ -152,6 +154,10 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
       );
     } catch (e) {
       print('❌ [XENFORO_CONFIG] Error getting config: $e');
+
+      // The app carries on with the minimal config below, so make sure the
+      // previously opened forum's reactions don't carry over to this one.
+      ReactionRegistry.instance.clearUnlessFor(url);
 
       // Return a minimal config on error
       return FCConfigResult(

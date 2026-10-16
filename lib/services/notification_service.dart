@@ -80,6 +80,12 @@ class NotificationService with ServiceErrorHandlingMixin {
 
       await _createAndroidNotificationChannel();
 
+      try {
+        await _configureForegroundPresentation();
+      } catch (e) {
+        AppLogger.debug('⚠️ [NotificationService] Foreground presentation options failed: $e');
+      }
+
       // Get FCM token with better error handling
       try {
         await _getFCMToken();
@@ -239,6 +245,19 @@ class NotificationService with ServiceErrorHandlingMixin {
     AppLogger.debug('✅ [NotificationService] Android notification channel created');
   }
 
+  // On iOS and macOS firebase_messaging is the notification centre delegate,
+  // and without presentation options it shows nothing while the app is in the
+  // foreground: neither the push nor the local copy _showLocalNotification
+  // posts. Let the system present the push itself instead.
+  Future<void> _configureForegroundPresentation() async {
+    if (!Platform.isIOS && !Platform.isMacOS) return;
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  }
+
   // Get FCM token
   Future<void> _getFCMToken() async {
     try {
@@ -350,6 +369,10 @@ class NotificationService with ServiceErrorHandlingMixin {
     AppLogger.debug('Title: ${message.notification?.title}');
     AppLogger.debug('Body: ${message.notification?.body}');
     AppLogger.debug('Data: ${message.data}');
+
+    // iOS and macOS already show the push (see _configureForegroundPresentation);
+    // a local copy would appear twice.
+    if ((Platform.isIOS || Platform.isMacOS) && message.notification != null) return;
 
     // Show local notification when app is in foreground
     await _showLocalNotification(message);

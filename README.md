@@ -30,7 +30,7 @@ Project links:
 
 Whichever path you choose, your forum needs the **Forum Copilot Mobile App API** add-on. It exposes the `forumcopilot.php` endpoint the app talks to, handles device registration for push, and adds the smart banner that invites web visitors to open the app. The add-on is MIT licensed and its source ships in this repository under [`plugins/FC_XenForo2/`](plugins/FC_XenForo2/); the [add-on changelog](https://forumcopilot.com/addon-changelog) lists the latest version.
 
-1. **Get the add-on.** The simplest way is to visit [forumcopilot.com/console](https://forumcopilot.com/console) and download the latest stable ZIP from there. Or take it directly from GitHub: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
+1. **Get the add-on.** Download the ZIP attached to the newest `addon-v…` release on [GitHub Releases](https://github.com/forumcopilot/xenforoapp/releases). Or build it yourself: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
 2. **Install it in XenForo.** In the Admin Control Panel go to **Add-ons**, click **Install/upgrade from archive**, and upload the ZIP. Upgrading an existing install works the same way. (XenForo 2.2 or newer is required, and you need a valid XenForo licence from XenForo Ltd.)
 3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your forum's page on forumcopilot.com, where you can edit how it is listed in the hosted app (name, description, logo). Push and the smart banner are configured on this options page, not on forumcopilot.com.
 4. **Check the endpoint.** It only accepts JSON over POST:
@@ -63,6 +63,7 @@ This app provides a full-featured forum experience for a single XenForo site:
 - **New topic** – Create threads with optional poll.
 - **Reply** – Reply to threads with BBCode editor.
 - **Edit post** – Edit your own posts.
+- **Reactions** – React to posts and direct messages with the forum's own reactions, change or remove your reaction, and see which reactions were used and who gave them. Forums on an add-on older than 1.8.0 get a single Like.
 - **Attachments** – Add images (camera/gallery) and files (e.g. PDFs) when composing; image compression and file picker (including native macOS file picker).
 
 ### Private messaging
@@ -84,7 +85,6 @@ This app provides a full-featured forum experience for a single XenForo site:
 
 ### Settings & UX
 - **Forum settings** – Per-category settings from XenForo (when provided by add-on).
-- **Notification settings** – Control push and in-app notification behavior.
 - **Localization** – 11 languages (English, German, Spanish, French, Italian, Japanese, Korean, Dutch, Portuguese, Russian, Chinese) via `gen-l10n`.
 - **Theme** – Material Design with forum-aware styling.
 
@@ -282,7 +282,7 @@ In `lib/config/app_forum_config.dart`, `pushSource` must be `'direct'` and `push
 
 1. Install the app on a real phone, allow notifications, and **sign in** with a forum account. The device registers with your forum only once someone is signed in.
 2. From a second account on the website, do something that alerts the first account (mention it, quote it, reply in a thread it watches) or send it a conversation message.
-3. The notification should arrive within seconds.
+3. The notification should arrive within seconds. On iOS and macOS it also shows as a banner while the app is open.
 
 If nothing arrives:
 

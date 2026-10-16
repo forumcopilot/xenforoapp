@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
+import '../../l10n/generated/app_localizations.dart';
+
+/// The label on a post's or message's reaction summary row ("1 Like",
+/// "3 Reactions"). Forums with a reaction set count every reaction type, so
+/// they say "Reactions"; forums with the single Like say "Likes".
+String reactionCountLabel(BuildContext context, int count) {
+  final l10n = AppLocalizations.of(context);
+  if (ReactionRegistry.instance.isAvailable) {
+    return l10n?.reactionsCount(count) ??
+        (count == 1 ? '1 Reaction' : '$count Reactions');
+  }
+  return l10n?.likesCount(count) ?? (count == 1 ? '1 Like' : '$count Likes');
+}
+
 
 /// Presents the forum's configured reactions as a tap-to-choose sheet.
 ///

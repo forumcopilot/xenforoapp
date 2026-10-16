@@ -1029,6 +1029,56 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reactedBy => '已反应';
 
   @override
+  String likesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个赞',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个反应',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWhoReacted => '点按可查看谁做出了反应。';
+
+  @override
+  String get react => '添加反应';
+
+  @override
+  String get changeYourReaction => '更改反应';
+
+  @override
+  String get reactionsAll => '全部';
+
+  @override
+  String get reactionYou => '你';
+
+  @override
+  String reactionFilterSemantics(String reaction, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$reaction，$count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String viewProfileOfUser(String username) {
+    return '查看 $username 的个人资料';
+  }
+
+  @override
   String get enterKeywordsToFindTopicsAndPosts => '输入关键词以查找主题和帖子';
 
   @override

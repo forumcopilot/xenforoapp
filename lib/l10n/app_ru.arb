@@ -929,5 +929,64 @@
   "replyOptions": "Параметры ответа",
   "replyWithQuote": "Ответить с цитатой",
   "fileSavedToDownloads": "Файл сохранен в Загрузки: {filename}",
-  "fileSavedToDocuments": "Файл сохранен в Документы: {filename}"
+  "fileSavedToDocuments": "Файл сохранен в Документы: {filename}",
+  "likesCount": "{count, plural, one{{count} лайк} few{{count} лайка} many{{count} лайков} other{{count} лайка}}",
+  "@likesCount": {
+    "description": "Number of likes on a post or message, on forums without a reaction set (single Like)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionsCount": "{count, plural, one{{count} реакция} few{{count} реакции} many{{count} реакций} other{{count} реакции}}",
+  "@reactionsCount": {
+    "description": "Number of reactions (Like, Love, Wow…) on a post or message, on forums with a reaction set",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showWhoReacted": "Нажмите, чтобы увидеть, кто отреагировал.",
+  "@showWhoReacted": {
+    "description": "Screen-reader hint on the reaction summary under a post or message (its label is the count)"
+  },
+  "react": "Отреагировать",
+  "@react": {
+    "description": "Button at the bottom of the who-reacted sheet that opens the reaction picker"
+  },
+  "changeYourReaction": "Изменить реакцию",
+  "@changeYourReaction": {
+    "description": "The same button once the reader has reacted"
+  },
+  "reactionsAll": "Все",
+  "@reactionsAll": {
+    "description": "Filter chip in the who-reacted sheet that shows every reaction; followed by the total"
+  },
+  "reactionYou": "Вы",
+  "@reactionYou": {
+    "description": "Badge on the reader's own row in the who-reacted sheet"
+  },
+  "reactionFilterSemantics": "{count, plural, one{{reaction}, {count} человек} few{{reaction}, {count} человека} many{{reaction}, {count} человек} other{{reaction}, {count} человека}}",
+  "@reactionFilterSemantics": {
+    "description": "Screen-reader label of a reaction filter chip in the who-reacted sheet: the reaction's name and how many people used it",
+    "placeholders": {
+      "reaction": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewProfileOfUser": "Открыть профиль {username}",
+  "@viewProfileOfUser": {
+    "description": "Screen-reader label of a user row in the who-reacted sheet",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  }
 }

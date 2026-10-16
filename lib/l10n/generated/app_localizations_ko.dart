@@ -1044,6 +1044,56 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reactedBy => '반응한 사람';
 
   @override
+  String likesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '좋아요 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '반응 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWhoReacted => '탭하여 반응한 사람 보기.';
+
+  @override
+  String get react => '반응';
+
+  @override
+  String get changeYourReaction => '반응 바꾸기';
+
+  @override
+  String get reactionsAll => '전체';
+
+  @override
+  String get reactionYou => '나';
+
+  @override
+  String reactionFilterSemantics(String reaction, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$reaction, $count명',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String viewProfileOfUser(String username) {
+    return '$username님의 프로필 보기';
+  }
+
+  @override
   String get enterKeywordsToFindTopicsAndPosts => '키워드를 입력하여 주제와 게시물 찾기';
 
   @override

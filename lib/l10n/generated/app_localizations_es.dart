@@ -1096,6 +1096,59 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reactedBy => 'Reaccionado por';
 
   @override
+  String likesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Me gusta',
+      one: '$count Me gusta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reacciones',
+      one: '$count reacción',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWhoReacted => 'Toca para ver quién reaccionó.';
+
+  @override
+  String get react => 'Reaccionar';
+
+  @override
+  String get changeYourReaction => 'Cambiar tu reacción';
+
+  @override
+  String get reactionsAll => 'Todas';
+
+  @override
+  String get reactionYou => 'Tú';
+
+  @override
+  String reactionFilterSemantics(String reaction, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$reaction, $count personas',
+      one: '$reaction, $count persona',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String viewProfileOfUser(String username) {
+    return 'Ver el perfil de $username';
+  }
+
+  @override
   String get enterKeywordsToFindTopicsAndPosts =>
       'Ingresa palabras clave para encontrar temas y publicaciones';
 

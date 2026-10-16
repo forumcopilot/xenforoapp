@@ -2018,6 +2018,60 @@ abstract class AppLocalizations {
   /// **'Reacted by'**
   String get reactedBy;
 
+  /// Number of likes on a post or message, on forums without a reaction set (single Like)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} like} other{{count} likes}}'**
+  String likesCount(int count);
+
+  /// Number of reactions (Like, Love, Wow…) on a post or message, on forums with a reaction set
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} reaction} other{{count} reactions}}'**
+  String reactionsCount(int count);
+
+  /// Screen-reader hint on the reaction summary under a post or message (its label is the count)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see who reacted.'**
+  String get showWhoReacted;
+
+  /// Button at the bottom of the who-reacted sheet that opens the reaction picker
+  ///
+  /// In en, this message translates to:
+  /// **'React'**
+  String get react;
+
+  /// The same button once the reader has reacted
+  ///
+  /// In en, this message translates to:
+  /// **'Change your reaction'**
+  String get changeYourReaction;
+
+  /// Filter chip in the who-reacted sheet that shows every reaction; followed by the total
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get reactionsAll;
+
+  /// Badge on the reader's own row in the who-reacted sheet
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get reactionYou;
+
+  /// Screen-reader label of a reaction filter chip in the who-reacted sheet: the reaction's name and how many people used it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{reaction}, {count} person} other{{reaction}, {count} people}}'**
+  String reactionFilterSemantics(String reaction, int count);
+
+  /// Screen-reader label of a user row in the who-reacted sheet
+  ///
+  /// In en, this message translates to:
+  /// **'View profile of {username}'**
+  String viewProfileOfUser(String username);
+
   /// Hint text for searching topics and posts
   ///
   /// In en, this message translates to:

@@ -669,6 +669,65 @@
   "@reactedBy": {
     "description": "Label showing who reacted to a post or message"
   },
+  "likesCount": "{count, plural, one{{count} like} other{{count} likes}}",
+  "@likesCount": {
+    "description": "Number of likes on a post or message, on forums without a reaction set (single Like)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionsCount": "{count, plural, one{{count} reaction} other{{count} reactions}}",
+  "@reactionsCount": {
+    "description": "Number of reactions (Like, Love, Wow…) on a post or message, on forums with a reaction set",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showWhoReacted": "Tap to see who reacted.",
+  "@showWhoReacted": {
+    "description": "Screen-reader hint on the reaction summary under a post or message (its label is the count)"
+  },
+  "react": "React",
+  "@react": {
+    "description": "Button at the bottom of the who-reacted sheet that opens the reaction picker"
+  },
+  "changeYourReaction": "Change your reaction",
+  "@changeYourReaction": {
+    "description": "The same button once the reader has reacted"
+  },
+  "reactionsAll": "All",
+  "@reactionsAll": {
+    "description": "Filter chip in the who-reacted sheet that shows every reaction; followed by the total"
+  },
+  "reactionYou": "You",
+  "@reactionYou": {
+    "description": "Badge on the reader's own row in the who-reacted sheet"
+  },
+  "reactionFilterSemantics": "{count, plural, one{{reaction}, {count} person} other{{reaction}, {count} people}}",
+  "@reactionFilterSemantics": {
+    "description": "Screen-reader label of a reaction filter chip in the who-reacted sheet: the reaction's name and how many people used it",
+    "placeholders": {
+      "reaction": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewProfileOfUser": "View profile of {username}",
+  "@viewProfileOfUser": {
+    "description": "Screen-reader label of a user row in the who-reacted sheet",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
   "enterKeywordsToFindTopicsAndPosts": "Enter keywords to find topics and posts",
   "@enterKeywordsToFindTopicsAndPosts": {
     "description": "Hint text for searching topics and posts"

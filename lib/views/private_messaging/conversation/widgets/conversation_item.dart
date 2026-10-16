@@ -1,10 +1,10 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
+import 'package:forumcopilot_flutter/views/widgets/reaction_summary.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
-import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import '../../../../utils/bbcode_processor.dart';
@@ -20,7 +20,6 @@ import '../../../../utils/avatar_cache_utils.dart';
 import '../../../listitems/post_list_item_attachment.dart';
 import '../../../widgets/full_screen_image_viewer.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
@@ -64,7 +63,6 @@ class ConversationHeaderItem extends StatelessWidget {
   final List<FCParticipant> participants;
   final VoidCallback? onQuote;
   final VoidCallback? onLike;
-  final VoidCallback? onShowLikes;
   final VoidCallback? onEdit;
   final bool isHighlighted;
   final bool isClosed;
@@ -77,7 +75,6 @@ class ConversationHeaderItem extends StatelessWidget {
     required this.participants,
     this.onQuote,
     this.onLike,
-    this.onShowLikes,
     this.onEdit,
     this.isHighlighted = false,
     this.isClosed = false,
@@ -412,60 +409,6 @@ class ConversationHeaderItem extends StatelessWidget {
                 ),
               ),
             ],
-            // Like avatars card (if there are likes)
-            if (message.likeCount > 0) ...[
-              Padding(
-                padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, DesignTokens.spacingXL, DesignTokens.spacingL, 0.0),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final likeText = message.likeCount == 1 ? '1 Like' : '${message.likeCount} Likes';
-                    final textTheme = Theme.of(context).textTheme;
-
-                    return GestureDetector(
-                      onTap: () => onShowLikes?.call(),
-                      child: Container(
-                        margin: EdgeInsets.only(top: DesignTokens.spacingS),
-                        padding: DesignTokens.paddingS,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
-                            width: DesignTokens.borderWidthThin,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              likeText,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                height: DesignTokens.lineHeightTight,
-                              ),
-                            ),
-                            SizedBox(width: DesignTokens.spacingS),
-                            Flexible(
-                              child: LayoutBuilder(
-                                builder: (context, avatarConstraints) {
-                                  return _buildLikesAvatars(
-                                    context,
-                                    message.likesInfo,
-                                    message.likeCount,
-                                    () => onShowLikes?.call(),
-                                    colorScheme,
-                                    avatarConstraints.maxWidth,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
             // Social actions (like and quote buttons)
             SizedBox(height: DesignTokens.spacingM),
             _buildSocialActions(context, colorScheme, textTheme),
@@ -524,6 +467,19 @@ class ConversationHeaderItem extends StatelessWidget {
     return items;
   }
 
+  /// Who reacted, in the sheet ported from the Discourse app.
+  void _showReactors(BuildContext context) {
+    ReactionUsersSheet.show(
+      context: context,
+      siteContext: siteContext,
+      likes: message.likesInfo,
+      count: message.likeCount,
+      onReact: (message.canLike && ReactionRegistry.instance.isAvailable)
+          ? onLike
+          : null,
+    );
+  }
+
   Widget _buildSocialActions(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     // Get like data from message model
     final bool canLike = message.canLike;
@@ -531,6 +487,7 @@ class ConversationHeaderItem extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
+    final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
@@ -548,8 +505,22 @@ class ConversationHeaderItem extends StatelessWidget {
               label: AccessibilityHelpers.getQuoteButtonLabel(context),
               context: context,
             ),
-          if (canLike) ...[
+          // Reactions, as in the Discourse app: the summary (the emoji
+          // people used and how many; a tap lists who) packed against the
+          // react button it counts for.
+          if (showSummary) ...[
             if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
+            ReactionSummary(
+              likes: message.likesInfo,
+              count: message.likeCount,
+              besideReactButton: canLike,
+              onTap: message.likesInfo.isNotEmpty
+                  ? () => _showReactors(context)
+                  : null,
+            ),
+          ],
+          if (canLike) ...[
+            if (!isClosed && !showSummary) SizedBox(width: DesignTokens.spacingXL),
             AccessibilityHelpers.accessibleIconButton(
               icon: buildMessageReactButtonIcon(
                 siteContext: siteContext,
@@ -564,69 +535,6 @@ class ConversationHeaderItem extends StatelessWidget {
               context: context,
             ),
           ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLikesAvatars(
-    BuildContext context,
-    List<FCLike> likesInfo,
-    int likeCount,
-    VoidCallback onShowLikes,
-    ColorScheme colorScheme,
-    double availableWidth,
-  ) {
-    if (likesInfo.isEmpty || likeCount == 0) {
-      return const SizedBox.shrink();
-    }
-
-    final avatarRadius = 12.0; // Smaller avatars for overlapping display
-    final avatarSize = avatarRadius * 2;
-    final overlapOffset = avatarSize * 0.5; // 50% overlap - each avatar overlaps half of the previous one
-
-    // Calculate how many avatars can fit
-    // Each avatar after the first takes overlapOffset (12px) additional width
-    // Formula: width = avatarSize + (n - 1) * overlapOffset
-    // So: n = ((width - avatarSize) / overlapOffset) + 1
-    // Ensure we have at least enough space for one avatar
-    final int maxAvatarsToShow;
-    if (availableWidth < avatarSize) {
-      maxAvatarsToShow = 1; // Show at least one avatar even if space is tight
-    } else {
-      maxAvatarsToShow = math.max(1, ((availableWidth - avatarSize) / overlapOffset).floor() + 1);
-    }
-
-    // Show as many avatars as can fit, but limit to available likesInfo
-    final int avatarsToShow = math.min(maxAvatarsToShow, likesInfo.length);
-
-    return SizedBox(
-      width: avatarSize + (avatarsToShow - 1) * overlapOffset,
-      height: avatarSize,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Show avatars
-          ...List.generate(avatarsToShow, (index) {
-            final like = likesInfo[index];
-            return Positioned(
-              left: index * overlapOffset,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: colorScheme.surface,
-                    width: 2,
-                  ),
-                ),
-                child: UserAvatar(
-                  username: like.username,
-                  iconUrl: like.avatarUrl.isNotEmpty ? like.avatarUrl : null,
-                  radius: avatarRadius,
-                ),
-              ),
-            );
-          }),
         ],
       ),
     );
@@ -1074,59 +982,6 @@ class ConversationItem extends StatelessWidget {
                 ),
               ),
             ],
-            // Like avatars card (if there are likes)
-            if (message.likeCount > 0) ...[
-              Padding(
-                padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, DesignTokens.spacingXL, DesignTokens.spacingL, 0.0),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final likeText = message.likeCount == 1 ? '1 Like' : '${message.likeCount} Likes';
-
-                    return GestureDetector(
-                      onTap: () => _showLikesBottomSheet(context),
-                      child: Container(
-                        margin: EdgeInsets.only(top: DesignTokens.spacingS),
-                        padding: DesignTokens.paddingS,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
-                          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
-                            width: DesignTokens.borderWidthThin,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              likeText,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                height: DesignTokens.lineHeightTight,
-                              ),
-                            ),
-                            SizedBox(width: DesignTokens.spacingS),
-                            Flexible(
-                              child: LayoutBuilder(
-                                builder: (context, avatarConstraints) {
-                                  return _buildLikesAvatars(
-                                    context,
-                                    message.likesInfo,
-                                    message.likeCount,
-                                    () => _showLikesBottomSheet(context),
-                                    colorScheme,
-                                    avatarConstraints.maxWidth,
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
             // Social actions (like and quote buttons)
             SizedBox(height: DesignTokens.spacingM),
             _buildSocialActions(context, colorScheme, textTheme),
@@ -1194,6 +1049,19 @@ class ConversationItem extends StatelessWidget {
     return items;
   }
 
+  /// Who reacted, in the sheet ported from the Discourse app.
+  void _showReactors(BuildContext context) {
+    ReactionUsersSheet.show(
+      context: context,
+      siteContext: siteContext,
+      likes: message.likesInfo,
+      count: message.likeCount,
+      onReact: (message.canLike && ReactionRegistry.instance.isAvailable)
+          ? onLike
+          : null,
+    );
+  }
+
   Widget _buildSocialActions(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     // Get like data from message model
     final bool canLike = message.canLike;
@@ -1201,6 +1069,7 @@ class ConversationItem extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
+    final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
@@ -1218,8 +1087,22 @@ class ConversationItem extends StatelessWidget {
               label: AccessibilityHelpers.getQuoteButtonLabel(context),
               context: context,
             ),
-          if (canLike) ...[
+          // Reactions, as in the Discourse app: the summary (the emoji
+          // people used and how many; a tap lists who) packed against the
+          // react button it counts for.
+          if (showSummary) ...[
             if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
+            ReactionSummary(
+              likes: message.likesInfo,
+              count: message.likeCount,
+              besideReactButton: canLike,
+              onTap: message.likesInfo.isNotEmpty
+                  ? () => _showReactors(context)
+                  : null,
+            ),
+          ],
+          if (canLike) ...[
+            if (!isClosed && !showSummary) SizedBox(width: DesignTokens.spacingXL),
             AccessibilityHelpers.accessibleIconButton(
               icon: buildMessageReactButtonIcon(
                 siteContext: siteContext,
@@ -1236,201 +1119,6 @@ class ConversationItem extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-
-  Widget _buildLikesAvatars(
-    BuildContext context,
-    List<FCLike> likesInfo,
-    int likeCount,
-    VoidCallback onShowLikes,
-    ColorScheme colorScheme,
-    double availableWidth,
-  ) {
-    if (likesInfo.isEmpty || likeCount == 0) {
-      return const SizedBox.shrink();
-    }
-
-    final avatarRadius = 12.0; // Smaller avatars for overlapping display
-    final avatarSize = avatarRadius * 2;
-    final overlapOffset = avatarSize * 0.5; // 50% overlap - each avatar overlaps half of the previous one
-
-    // Calculate how many avatars can fit
-    // Each avatar after the first takes overlapOffset (12px) additional width
-    // Formula: width = avatarSize + (n - 1) * overlapOffset
-    // So: n = ((width - avatarSize) / overlapOffset) + 1
-    // Ensure we have at least enough space for one avatar
-    final int maxAvatarsToShow;
-    if (availableWidth < avatarSize) {
-      maxAvatarsToShow = 1; // Show at least one avatar even if space is tight
-    } else {
-      maxAvatarsToShow = math.max(1, ((availableWidth - avatarSize) / overlapOffset).floor() + 1);
-    }
-
-    // Show as many avatars as can fit, but limit to available likesInfo
-    final int avatarsToShow = math.min(maxAvatarsToShow, likesInfo.length);
-
-    return SizedBox(
-      width: avatarSize + (avatarsToShow - 1) * overlapOffset,
-      height: avatarSize,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Show avatars
-          ...List.generate(avatarsToShow, (index) {
-            final like = likesInfo[index];
-            return Positioned(
-              left: index * overlapOffset,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: colorScheme.surface,
-                    width: 2,
-                  ),
-                ),
-                child: UserAvatar(
-                  username: like.username,
-                  iconUrl: like.avatarUrl.isNotEmpty ? like.avatarUrl : null,
-                  radius: avatarRadius,
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReactionIcon(BuildContext context, FCLike like) {
-    final avatarSize = DesignTokens.avatarRadiusM * 2; // Same size as avatar
-    final colorScheme = Theme.of(context).colorScheme;
-    
-    Widget? content;
-    
-    // If emoji is available, display it
-    if (like.reactionEmoji != null && like.reactionEmoji!.isNotEmpty) {
-      content = Text(
-        like.reactionEmoji!,
-        style: TextStyle(fontSize: avatarSize * 0.6), // Emoji size relative to circle
-      );
-    }
-    // If icon URL is available, display it
-    else if (like.reactionIconUrl != null && like.reactionIconUrl!.isNotEmpty) {
-      content = ClipOval(
-        child: CachedNetworkImage(
-          imageUrl: like.reactionIconUrl!,
-          width: avatarSize * 0.7,
-          height: avatarSize * 0.7,
-          fit: BoxFit.cover,
-          errorWidget: (context, url, error) => SizedBox(width: avatarSize * 0.7, height: avatarSize * 0.7),
-        ),
-      );
-    }
-    // Backward compatibility: if no reaction info, return empty widget
-    if (content == null) {
-      return const SizedBox.shrink();
-    }
-    
-    // Wrap content in grey circle
-    return Container(
-      width: avatarSize,
-      height: avatarSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScheme.surfaceVariant,
-      ),
-      alignment: Alignment.center,
-      child: content,
-    );
-  }
-
-  void _showLikesBottomSheet(BuildContext context) {
-    if (message.likesInfo.isEmpty) return;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          minChildSize: 0.2,
-          maxChildSize: 0.8,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.favorite, color: Theme.of(context).colorScheme.error),
-                      SizedBox(width: DesignTokens.spacingS),
-                      Expanded(
-                        child: Text(AppLocalizations.of(context)?.reactedBy ?? 'Reacted by', style: Theme.of(context).textTheme.titleMedium),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                        alignment: Alignment.centerRight,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: DesignTokens.spacingL),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: message.likesInfo.length,
-                      itemBuilder: (context, index) {
-                        final like = message.likesInfo[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingS),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
-                                    siteContext: siteContext,
-                                    userId: like.userId,
-                                    userName: like.username,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                UserAvatar(
-                                  username: like.username,
-                                  iconUrl: like.avatarUrl,
-                                  radius: DesignTokens.avatarRadiusM,
-                                ),
-                                SizedBox(width: DesignTokens.spacingM),
-                                Expanded(
-                                  child: Text(like.username, style: Theme.of(context).textTheme.bodyLarge),
-                                ),
-                                SizedBox(width: DesignTokens.spacingS),
-                                _buildReactionIcon(context, like),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }

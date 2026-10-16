@@ -1050,6 +1050,56 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reactedBy => 'リアクションした人';
 
   @override
+  String likesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のいいね',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'リアクション $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWhoReacted => 'タップでリアクションした人を表示。';
+
+  @override
+  String get react => 'リアクション';
+
+  @override
+  String get changeYourReaction => 'リアクションを変更';
+
+  @override
+  String get reactionsAll => 'すべて';
+
+  @override
+  String get reactionYou => 'あなた';
+
+  @override
+  String reactionFilterSemantics(String reaction, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$reaction、$count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String viewProfileOfUser(String username) {
+    return '$username さんのプロフィールを見る';
+  }
+
+  @override
   String get enterKeywordsToFindTopicsAndPosts => 'キーワードを入力してトピックと投稿を検索';
 
   @override

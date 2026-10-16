@@ -23,6 +23,7 @@ import 'post_list_item_attachment.dart';
 import 'post_list_item_social.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../user_profile_page.dart';
 import 'package:get/get.dart';
@@ -1139,9 +1140,21 @@ class _PostListItemState extends State<PostListItem> {
     }
   }
 
+  /// Who reacted, in the sheet ported from the Discourse app. Its React
+  /// button opens the picker, for a reader who may react on a forum with a
+  /// reaction set.
   void _showLikesBottomSheet() {
-    PostListItemSocial.showLikesBottomSheet(
-        context, widget.post, widget.siteContext);
+    ReactionUsersSheet.show(
+      context: context,
+      siteContext: widget.siteContext,
+      likes: widget.post.likesInfo,
+      count: _likeCount,
+      onReact: (widget.siteContext.isLoggedIn &&
+              widget.post.canLike &&
+              ReactionRegistry.instance.isAvailable)
+          ? _handleLikeAction
+          : null,
+    );
   }
 
   void _handleLikeAction() async {

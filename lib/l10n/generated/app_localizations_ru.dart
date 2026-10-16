@@ -1094,6 +1094,65 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reactedBy => 'Отреагировали';
 
   @override
+  String likesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count лайка',
+      many: '$count лайков',
+      few: '$count лайка',
+      one: '$count лайк',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reactionsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count реакции',
+      many: '$count реакций',
+      few: '$count реакции',
+      one: '$count реакция',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWhoReacted => 'Нажмите, чтобы увидеть, кто отреагировал.';
+
+  @override
+  String get react => 'Отреагировать';
+
+  @override
+  String get changeYourReaction => 'Изменить реакцию';
+
+  @override
+  String get reactionsAll => 'Все';
+
+  @override
+  String get reactionYou => 'Вы';
+
+  @override
+  String reactionFilterSemantics(String reaction, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$reaction, $count человека',
+      many: '$reaction, $count человек',
+      few: '$reaction, $count человека',
+      one: '$reaction, $count человек',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String viewProfileOfUser(String username) {
+    return 'Открыть профиль $username';
+  }
+
+  @override
   String get enterKeywordsToFindTopicsAndPosts =>
       'Введите ключевые слова для поиска тем и сообщений';
 

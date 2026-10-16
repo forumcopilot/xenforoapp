@@ -929,5 +929,64 @@
   "replyOptions": "回复选项",
   "replyWithQuote": "引用回复",
   "fileSavedToDownloads": "文件已保存到下载：{filename}",
-  "fileSavedToDocuments": "文件已保存到文档：{filename}"
+  "fileSavedToDocuments": "文件已保存到文档：{filename}",
+  "likesCount": "{count, plural, other{{count} 个赞}}",
+  "@likesCount": {
+    "description": "Number of likes on a post or message, on forums without a reaction set (single Like)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionsCount": "{count, plural, other{{count} 个反应}}",
+  "@reactionsCount": {
+    "description": "Number of reactions (Like, Love, Wow…) on a post or message, on forums with a reaction set",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showWhoReacted": "点按可查看谁做出了反应。",
+  "@showWhoReacted": {
+    "description": "Screen-reader hint on the reaction summary under a post or message (its label is the count)"
+  },
+  "react": "添加反应",
+  "@react": {
+    "description": "Button at the bottom of the who-reacted sheet that opens the reaction picker"
+  },
+  "changeYourReaction": "更改反应",
+  "@changeYourReaction": {
+    "description": "The same button once the reader has reacted"
+  },
+  "reactionsAll": "全部",
+  "@reactionsAll": {
+    "description": "Filter chip in the who-reacted sheet that shows every reaction; followed by the total"
+  },
+  "reactionYou": "你",
+  "@reactionYou": {
+    "description": "Badge on the reader's own row in the who-reacted sheet"
+  },
+  "reactionFilterSemantics": "{count, plural, other{{reaction}，{count} 人}}",
+  "@reactionFilterSemantics": {
+    "description": "Screen-reader label of a reaction filter chip in the who-reacted sheet: the reaction's name and how many people used it",
+    "placeholders": {
+      "reaction": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewProfileOfUser": "查看 {username} 的个人资料",
+  "@viewProfileOfUser": {
+    "description": "Screen-reader label of a user row in the who-reacted sheet",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  }
 }

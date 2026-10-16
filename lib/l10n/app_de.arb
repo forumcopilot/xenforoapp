@@ -905,5 +905,64 @@
   "replyOptions": "Antwortoptionen",
   "replyWithQuote": "Mit Zitat antworten",
   "fileSavedToDownloads": "Datei in Downloads gespeichert: {filename}",
-  "fileSavedToDocuments": "Datei in Dokumente gespeichert: {filename}"
+  "fileSavedToDocuments": "Datei in Dokumente gespeichert: {filename}",
+  "likesCount": "{count, plural, other{{count} Gefällt mir}}",
+  "@likesCount": {
+    "description": "Number of likes on a post or message, on forums without a reaction set (single Like)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reactionsCount": "{count, plural, one{{count} Reaktion} other{{count} Reaktionen}}",
+  "@reactionsCount": {
+    "description": "Number of reactions (Like, Love, Wow…) on a post or message, on forums with a reaction set",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showWhoReacted": "Tippen, um zu sehen, wer reagiert hat.",
+  "@showWhoReacted": {
+    "description": "Screen-reader hint on the reaction summary under a post or message (its label is the count)"
+  },
+  "react": "Reagieren",
+  "@react": {
+    "description": "Button at the bottom of the who-reacted sheet that opens the reaction picker"
+  },
+  "changeYourReaction": "Reaktion ändern",
+  "@changeYourReaction": {
+    "description": "The same button once the reader has reacted"
+  },
+  "reactionsAll": "Alle",
+  "@reactionsAll": {
+    "description": "Filter chip in the who-reacted sheet that shows every reaction; followed by the total"
+  },
+  "reactionYou": "Du",
+  "@reactionYou": {
+    "description": "Badge on the reader's own row in the who-reacted sheet"
+  },
+  "reactionFilterSemantics": "{count, plural, one{{reaction}, {count} Person} other{{reaction}, {count} Personen}}",
+  "@reactionFilterSemantics": {
+    "description": "Screen-reader label of a reaction filter chip in the who-reacted sheet: the reaction's name and how many people used it",
+    "placeholders": {
+      "reaction": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "viewProfileOfUser": "Profil von {username} ansehen",
+  "@viewProfileOfUser": {
+    "description": "Screen-reader label of a user row in the who-reacted sheet",
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -4,6 +4,7 @@ import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.d
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCPrivateConversationProxy
 /// Handles private conversation operations for XenForo forums
@@ -20,19 +21,19 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     bool? openInvite,
     bool? conversationLocked,
   }) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] newConversationAsync called via plugin API');
-    print('   📋 Parameters: userName=$userName, subject=$subject, textBody length=${textBody.length}');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] newConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: userName=$userName, subject=$subject, textBody length=${textBody.length}');
     if (attachmentIds != null && attachmentIds.isNotEmpty) {
-      print('   📋 Attachment IDs: $attachmentIds');
+      xfDebug('   📋 Attachment IDs: $attachmentIds');
     }
     if (groupId != null && groupId.isNotEmpty) {
-      print('   📋 Group ID: $groupId');
+      xfDebug('   📋 Group ID: $groupId');
     }
     if (openInvite != null) {
-      print('   📋 Open Invite: $openInvite');
+      xfDebug('   📋 Open Invite: $openInvite');
     }
     if (conversationLocked != null) {
-      print('   📋 Conversation Locked: $conversationLocked');
+      xfDebug('   📋 Conversation Locked: $conversationLocked');
     }
 
     try {
@@ -56,20 +57,20 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
       final response = await callPluginApi('newConversation', params);
       
-      print('📥 [XENFORO_PRIVATE_CONVERSATION] newConversationAsync raw response: $response');
+      xfDebug('📥 [XENFORO_PRIVATE_CONVERSATION] newConversationAsync raw response: $response');
       
       final result = response['result'] ?? false;
       final resultText = response['resultText']?.toString() ?? '';
       final convId = response['convId']?.toString() ?? '';
       
-      print('📥 [XENFORO_PRIVATE_CONVERSATION] Parsed result: result=$result, resultText=$resultText, convId=$convId');
+      xfDebug('📥 [XENFORO_PRIVATE_CONVERSATION] Parsed result: result=$result, resultText=$resultText, convId=$convId');
       
       if (result && convId.isEmpty) {
-        print('⚠️  [XENFORO_PRIVATE_CONVERSATION] WARNING: result is true but convId is empty!');
+        xfDebug('⚠️  [XENFORO_PRIVATE_CONVERSATION] WARNING: result is true but convId is empty!');
       }
       
       if (!result) {
-        print('❌ [XENFORO_PRIVATE_CONVERSATION] Server returned result=false, resultText=$resultText');
+        xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] Server returned result=false, resultText=$resultText');
       }
 
       return FCNewConversationResult(
@@ -78,8 +79,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         convId: convId,
       );
     } catch (e, stackTrace) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] newConversationAsync error: $e');
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] Stack trace: $stackTrace');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] newConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] Stack trace: $stackTrace');
       return FCNewConversationResult(
         result: false,
         resultText: 'Error creating conversation: $e',
@@ -90,8 +91,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCReplyConversationResult> replyConversationAsync(String conversationId, String textBody, List<String>? attachmentIds, String? groupId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] replyConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] replyConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final params = <String, dynamic>{
@@ -112,7 +113,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] replyConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] replyConversationAsync error: $e');
       return FCReplyConversationResult(
         result: false,
         resultText: 'Error replying to conversation: $e',
@@ -122,8 +123,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCInviteParticipantResult> inviteParticipantAsync(List<String> userName, String conversationId, String? reason) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] inviteParticipantAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId, userName=$userName');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] inviteParticipantAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId, userName=$userName');
 
     try {
       final params = <String, dynamic>{
@@ -141,7 +142,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] inviteParticipantAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] inviteParticipantAsync error: $e');
       return FCInviteParticipantResult(
         result: false,
         resultText: 'Error inviting participant: $e',
@@ -151,7 +152,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCInboxStatResult> getInboxStatAsync() async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getInboxStatAsync called via plugin API');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getInboxStatAsync called via plugin API');
 
     try {
       final response = await callPluginApi('getInboxStat', {});
@@ -166,7 +167,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         unreadMessages: response['unreadMessages'] ?? response['unread_messages'] ?? 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatAsync error: $e');
       return FCInboxStatResult(
         result: false,
         resultText: 'Error getting inbox stats: $e',
@@ -180,7 +181,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
   /// Get inbox statistics including unread alerts
   /// Returns a map with both FCInboxStatResult and unreadAlerts
   Future<Map<String, dynamic>> getInboxStatWithAlertsAsync() async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync called via plugin API');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync called via plugin API');
 
     try {
       final response = await callPluginApi('getInboxStat', {});
@@ -200,7 +201,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         'unreadAlerts': unreadAlerts,
       };
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync error: $e');
       return {
         'inboxStat': FCInboxStatResult(
           result: false,
@@ -216,8 +217,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCConversationsResult> getConversationsAsync(int startNum, int lastNum) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationsAsync called via plugin API');
-    print('   📋 Parameters: startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationsAsync called via plugin API');
+    xfDebug('   📋 Parameters: startNum=$startNum, lastNum=$lastNum');
 
     try {
       final response = await callPluginApi('getConversations', {
@@ -362,7 +363,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         list: conversationList,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationsAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationsAsync error: $e');
       return FCConversationsResult(
         result: false,
         resultText: 'Error getting conversations: $e',
@@ -444,8 +445,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCConversationResult> getConversationAsync(String conversationId, int startNum, int lastNum, bool returnHtml) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId, startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId, startNum=$startNum, lastNum=$lastNum');
 
     try {
       final response = await callPluginApi('getConversation', {
@@ -521,7 +522,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         position: response['position'] != null ? int.tryParse(response['position'].toString()) : null,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationAsync error: $e');
       return FCConversationResult(
         result: false,
         resultText: 'Error getting conversation: $e',
@@ -534,8 +535,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCConversationResult> getConversationByMessageAsync(String messageId, {int messagesPerRequest = 20}) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationByMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId, messagesPerRequest=$messagesPerRequest');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getConversationByMessageAsync called via plugin API');
+    xfDebug('   📋 Parameters: messageId=$messageId, messagesPerRequest=$messagesPerRequest');
 
     try {
       final response = await callPluginApi('getConversationByMessage', {
@@ -611,7 +612,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
       
       return result;
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationByMessageAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationByMessageAsync error: $e');
       return FCConversationResult(
         result: false,
         resultText: 'Error getting conversation by message: $e',
@@ -624,8 +625,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCQuoteConversationResult> getQuoteConversationAsync(String conversationId, String messageId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getQuoteConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId, messageId=$messageId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getQuoteConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId, messageId=$messageId');
 
     try {
       // API only requires messageId
@@ -633,10 +634,10 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         'messageId': messageId,
       });
 
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation response keys: ${response.keys.toList()}');
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quote: ${response['quote']}');
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quote type: ${response['quote']?.runtimeType}');
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteContent: ${response['quoteContent']}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quote: ${response['quote']}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quote type: ${response['quote']?.runtimeType}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteContent: ${response['quoteContent']}');
 
       // PHP API returns 'quote' in the JSON response, but the result class uses 'quoteContent'
       // Try both 'quote' and 'quoteContent' for compatibility
@@ -651,19 +652,19 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         }
       }
       
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText (after processing): $quoteText');
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText is null: ${quoteText == null}');
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText isEmpty: ${quoteText?.isEmpty ?? true}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText (after processing): $quoteText');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText is null: ${quoteText == null}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation quoteText isEmpty: ${quoteText?.isEmpty ?? true}');
       
       final result = FCQuoteConversationResult(
         result: response['result'] ?? false,
         resultText: response['resultText']?.toString() ?? '',
         quoteText: quoteText,
       );
-      print('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation result.quoteText: ${result.quoteText}');
+      xfDebug('   📥 [XENFORO_PRIVATE_CONVERSATION] getQuoteConversation result.quoteText: ${result.quoteText}');
       return result;
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getQuoteConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getQuoteConversationAsync error: $e');
       return FCQuoteConversationResult(
         result: false,
         resultText: 'Error getting quote: $e',
@@ -673,8 +674,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCLeaveConversationResult> leaveConversationAsync(String conversationId, int mode) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] leaveConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId, mode=$mode');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] leaveConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId, mode=$mode');
 
     try {
       final response = await callPluginApi('leaveConversation', {
@@ -687,7 +688,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] leaveConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] leaveConversationAsync error: $e');
       return FCLeaveConversationResult(
         result: false,
         resultText: 'Error leaving conversation: $e',
@@ -697,28 +698,28 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCMarkConversationUnreadResult> markConversationUnreadAsync(String conversationId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final response = await callPluginApi('markConversationUnread', {
         'conversationId': conversationId,
       });
 
-      print('📥 [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync response: $response');
+      xfDebug('📥 [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync response: $response');
       
       final result = response['result'] ?? false;
       final resultText = response['resultText']?.toString() ?? '';
       
-      print('📥 [XENFORO_PRIVATE_CONVERSATION] Parsed result: result=$result, resultText=$resultText');
+      xfDebug('📥 [XENFORO_PRIVATE_CONVERSATION] Parsed result: result=$result, resultText=$resultText');
 
       return FCMarkConversationUnreadResult(
         result: result,
         resultText: resultText,
       );
     } catch (e, stackTrace) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync error: $e');
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] Stack trace: $stackTrace');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] markConversationUnreadAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] Stack trace: $stackTrace');
       return FCMarkConversationUnreadResult(
         result: false,
         resultText: 'Error marking conversation as unread: $e',
@@ -728,8 +729,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCMarkConversationReadResult> markConversationReadAsync(String conversationId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] markConversationReadAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] markConversationReadAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final response = await callPluginApi('markConversationRead', {
@@ -741,7 +742,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] markConversationReadAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] markConversationReadAsync error: $e');
       return FCMarkConversationReadResult(
         result: false,
         resultText: 'Error marking conversation as read: $e',
@@ -751,8 +752,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCCloseConversationResult> closeConversationAsync(String conversationId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] closeConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] closeConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final response = await callPluginApi('closeConversation', {
@@ -765,7 +766,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] closeConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] closeConversationAsync error: $e');
       return FCCloseConversationResult(
         result: false,
         resultText: 'Error closing conversation: $e',
@@ -800,8 +801,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCCloseConversationResult> uncloseConversationAsync(String conversationId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] uncloseConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] uncloseConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final response = await callPluginApi('uncloseConversation', {
@@ -814,7 +815,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] uncloseConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] uncloseConversationAsync error: $e');
       return FCCloseConversationResult(
         result: false,
         resultText: 'Error opening conversation: $e',
@@ -825,8 +826,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCRawConversationResult> getRawConversationAsync(String conversationId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getRawConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getRawConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId');
 
     try {
       final response = await callPluginApi('getRawConversation', {
@@ -842,7 +843,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         canEdit: response['canEdit'] as bool?,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getRawConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getRawConversationAsync error: $e');
       return FCRawConversationResult(
         result: false,
         resultText: 'Error getting raw conversation: $e',
@@ -857,8 +858,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     bool? openInvite,
     bool? conversationOpen,
   }) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] saveRawConversationAsync called via plugin API');
-    print('   📋 Parameters: conversationId=$conversationId, conversationTitle=$conversationTitle, openInvite=$openInvite, conversationOpen=$conversationOpen');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] saveRawConversationAsync called via plugin API');
+    xfDebug('   📋 Parameters: conversationId=$conversationId, conversationTitle=$conversationTitle, openInvite=$openInvite, conversationOpen=$conversationOpen');
 
     try {
       final params = <String, dynamic>{
@@ -882,7 +883,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         conversationTitle: response['conversationTitle']?.toString(),
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] saveRawConversationAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] saveRawConversationAsync error: $e');
       return FCSaveRawConversationResult(
         result: false,
         resultText: 'Error saving raw conversation: $e',
@@ -892,8 +893,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
 
   @override
   Future<FCRawMessageResult> getRawMessageAsync(String messageId) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] getRawMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getRawMessageAsync called via plugin API');
+    xfDebug('   📋 Parameters: messageId=$messageId');
 
     try {
       final response = await callPluginApi('getRawMessage', {
@@ -935,7 +936,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         attachments: attachments,
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] getRawMessageAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getRawMessageAsync error: $e');
       return FCRawMessageResult(
         result: false,
         resultText: 'Error getting raw message: $e',
@@ -950,13 +951,13 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     List<String>? attachmentIds,
     String? groupId,
   }) async {
-    print('✅ [XENFORO_PRIVATE_CONVERSATION] saveRawMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId, messageContent length=${messageContent.length}');
+    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] saveRawMessageAsync called via plugin API');
+    xfDebug('   📋 Parameters: messageId=$messageId, messageContent length=${messageContent.length}');
     if (attachmentIds != null && attachmentIds.isNotEmpty) {
-      print('   📋 Attachment IDs: $attachmentIds');
+      xfDebug('   📋 Attachment IDs: $attachmentIds');
     }
     if (groupId != null && groupId.isNotEmpty) {
-      print('   📋 Group ID: $groupId');
+      xfDebug('   📋 Group ID: $groupId');
     }
 
     try {
@@ -979,7 +980,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         messageContent: response['messageContent']?.toString(),
       );
     } catch (e) {
-      print('❌ [XENFORO_PRIVATE_CONVERSATION] saveRawMessageAsync error: $e');
+      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] saveRawMessageAsync error: $e');
       return FCSaveRawMessageResult(
         result: false,
         resultText: 'Error saving raw message: $e',

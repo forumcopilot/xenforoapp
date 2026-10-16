@@ -8,6 +8,7 @@ import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import 'package:forumcopilot_sdk/services/fc_http_overrides.dart';
 import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_directory_result.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCUserProxy
 /// Handles user operations and profile management for XenForo forums
@@ -34,7 +35,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<FCOnlineUserResult> getOnlineUsersAsync(int page, int perpage, String? id, String? area) async {
-    print('✅ [XENFORO_USER] getOnlineUsersAsync called via plugin API');
+    xfDebug('✅ [XENFORO_USER] getOnlineUsersAsync called via plugin API');
 
     try {
       final params = <String, dynamic>{
@@ -76,7 +77,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         list: userList,
       );
     } catch (e) {
-      print('❌ [XENFORO_USER] getOnlineUsersAsync error: $e');
+      xfDebug('❌ [XENFORO_USER] getOnlineUsersAsync error: $e');
       return FCOnlineUserResult(
         result: false,
         resultText: 'Error getting online users: $e',
@@ -94,8 +95,8 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<FCUserInfoResult> getUserInfoAsync(String? username, String? userId) async {
-    print('✅ [XENFORO_USER] getUserInfo called - IMPLEMENTED');
-    print('   📋 Parameters: username=$username, userId=$userId');
+    xfDebug('✅ [XENFORO_USER] getUserInfo called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: username=$username, userId=$userId');
 
     try {
       final response = await callPluginApi('getUserInfo', {
@@ -195,7 +196,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         bio: response['about']?.toString(), // Map 'about' from API to 'bio' field
       );
     } catch (e) {
-      print('❌ [XENFORO_USER] getUserInfo error: $e');
+      xfDebug('❌ [XENFORO_USER] getUserInfo error: $e');
       return FCUserInfoResult(
         result: false,
         resultText: 'Error getting user info: $e',
@@ -207,7 +208,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<FCUserReplyResult> getUserReplyPostAsync(int startNum, int lastNum, String? searchId, String? username, String? userId) async {
-    print('✅ [XENFORO_USER] getUserReplyPostAsync called via plugin API');
+    xfDebug('✅ [XENFORO_USER] getUserReplyPostAsync called via plugin API');
 
     try {
       final params = <String, dynamic>{
@@ -256,7 +257,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         list: replyList,
       );
     } catch (e) {
-      print('❌ [XENFORO_USER] getUserReplyPostAsync error: $e');
+      xfDebug('❌ [XENFORO_USER] getUserReplyPostAsync error: $e');
       return FCUserReplyResult(
         result: false,
         resultText: 'Error getting user reply posts: $e',
@@ -291,13 +292,13 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
     Map<String, String>? webauthnPayload,
     bool trustDevice = false,
   }) async {
-    print('✅ [XENFORO_USER] login called - IMPLEMENTED');
-    print(
+    xfDebug('✅ [XENFORO_USER] login called - IMPLEMENTED');
+    xfDebug(
         '   📋 Parameters: loginname=$loginname, password=***, anonymous=$anonymous, trustCode=$trustCode, tfaCode=${tfaCode != null ? '***' : null}, tfaProvider=$tfaProvider, trustDevice=$trustDevice');
 
     try {
       final cookieCountBefore = await FCDioClient.instance.cookieCountForUrl(Uri.parse(siteContext.site.pluginUrl));
-      print('🍪 [XENFORO_USER] Cookie count before login: $cookieCountBefore');
+      xfDebug('🍪 [XENFORO_USER] Cookie count before login: $cookieCountBefore');
 
       final params = <String, dynamic>{
         'loginname': loginname,
@@ -329,7 +330,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
       final response = await callPluginApi('login', params);
       final setCookieHeader = siteContext.lastCallResponse?.headers['set-cookie'] ?? siteContext.lastCallResponse?.headers['Set-Cookie'];
-      print('🍪 [XENFORO_USER] Login response Set-Cookie present: ${setCookieHeader != null && setCookieHeader.isNotEmpty}');
+      xfDebug('🍪 [XENFORO_USER] Login response Set-Cookie present: ${setCookieHeader != null && setCookieHeader.isNotEmpty}');
       final loginResult = _buildLoginResult(
         response,
         password: password,
@@ -342,14 +343,14 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
       if (loginResult.result) {
         siteContext.setLoginData(loginResult);
         siteContext.resetOnLogin();
-        print('✅ [XENFORO_USER] Login data saved to SiteContext');
+        xfDebug('✅ [XENFORO_USER] Login data saved to SiteContext');
         final cookieCountAfter = await FCDioClient.instance.cookieCountForUrl(Uri.parse(siteContext.site.pluginUrl));
-        print('🍪 [XENFORO_USER] Cookie count after login: $cookieCountAfter');
+        xfDebug('🍪 [XENFORO_USER] Cookie count after login: $cookieCountAfter');
       }
 
       return loginResult;
     } catch (e) {
-      print('❌ [XENFORO_USER] login error: $e');
+      xfDebug('❌ [XENFORO_USER] login error: $e');
       return FCLoginResult(
         result: false,
         resultText: 'Error logging in: $e',
@@ -487,7 +488,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<FCPasskeyChallengeResult> getPasskeyChallengeAsync() async {
-    print('✅ [XENFORO_USER] getPasskeyChallengeAsync called - IMPLEMENTED');
+    xfDebug('✅ [XENFORO_USER] getPasskeyChallengeAsync called - IMPLEMENTED');
 
     final response = await callPluginApi('getPasskeyChallenge', {});
     final timeout = response['timeout'] != null ? (response['timeout'] is int ? response['timeout'] as int : int.tryParse(response['timeout'].toString())) : null;
@@ -506,7 +507,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
     required String webauthnChallenge,
     required Map<String, String> webauthnPayload,
   }) async {
-    print('✅ [XENFORO_USER] loginWithPasskeyAsync called - IMPLEMENTED');
+    xfDebug('✅ [XENFORO_USER] loginWithPasskeyAsync called - IMPLEMENTED');
 
     final response = await callPluginApi('login', {
       'webauthn_challenge': webauthnChallenge,
@@ -518,7 +519,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
     if (loginResult.result) {
       siteContext.setLoginData(loginResult);
       siteContext.resetOnLogin();
-      print('✅ [XENFORO_USER] Login data saved to SiteContext (passkey)');
+      xfDebug('✅ [XENFORO_USER] Login data saved to SiteContext (passkey)');
     }
 
     return loginResult;
@@ -532,29 +533,29 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<void> logoutUserAsync() async {
-    print('✅ [XENFORO_USER] logoutUser called - IMPLEMENTED');
-    print('   📋 Parameters: none');
+    xfDebug('✅ [XENFORO_USER] logoutUser called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: none');
 
     try {
       final cookieCountBefore = await FCDioClient.instance.cookieCountForUrl(Uri.parse(siteContext.site.pluginUrl));
-      print('🍪 [XENFORO_USER] Cookie count before logout: $cookieCountBefore');
+      xfDebug('🍪 [XENFORO_USER] Cookie count before logout: $cookieCountBefore');
       await callPluginApi('logout', {});
       final setCookieHeader = siteContext.lastCallResponse?.headers['set-cookie'] ?? siteContext.lastCallResponse?.headers['Set-Cookie'];
-      print('🍪 [XENFORO_USER] Logout response Set-Cookie present: ${setCookieHeader != null && setCookieHeader.isNotEmpty}');
-      print('✅ [XENFORO_USER] Logout successful');
+      xfDebug('🍪 [XENFORO_USER] Logout response Set-Cookie present: ${setCookieHeader != null && setCookieHeader.isNotEmpty}');
+      xfDebug('✅ [XENFORO_USER] Logout successful');
     } catch (e) {
-      print('❌ [XENFORO_USER] logout error: $e');
+      xfDebug('❌ [XENFORO_USER] logout error: $e');
       // Don't throw - logout should be best effort
     }
     siteContext.resetOnLogout();
     final cookieCountAfter = await FCDioClient.instance.cookieCountForUrl(Uri.parse(siteContext.site.pluginUrl));
-    print('🍪 [XENFORO_USER] Cookie count after logout: $cookieCountAfter');
+    xfDebug('🍪 [XENFORO_USER] Cookie count after logout: $cookieCountAfter');
   }
 
   @override
   Future<FCSearchUserResult> searchUserAsync(String keywords, int page, int perpage) async {
-    print('✅ [XENFORO_USER] searchUserAsync called via plugin API');
-    print('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
+    xfDebug('✅ [XENFORO_USER] searchUserAsync called via plugin API');
+    xfDebug('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
 
     try {
       final response = await callPluginApi('searchUser', {
@@ -563,16 +564,16 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         'perpage': perpage,
       });
 
-      print('📥 [XENFORO_USER] searchUserAsync raw response: $response');
+      xfDebug('📥 [XENFORO_USER] searchUserAsync raw response: $response');
 
       // Parse total
       final total = response['total'] != null ? int.tryParse(response['total'].toString()) ?? 0 : 0;
-      print('📥 [XENFORO_USER] Parsed total: $total');
+      xfDebug('📥 [XENFORO_USER] Parsed total: $total');
 
       // Parse user list
       final List<FCSearchUser> userList = [];
       if (response['list'] != null && response['list'] is List) {
-        print('📥 [XENFORO_USER] Parsing ${(response['list'] as List).length} users from response');
+        xfDebug('📥 [XENFORO_USER] Parsing ${(response['list'] as List).length} users from response');
         for (var userData in response['list'] as List) {
           if (userData is Map<String, dynamic>) {
             try {
@@ -585,17 +586,17 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
                 isOnline: userData['isOnline'] ?? false,
               );
               userList.add(user);
-              print('   ✅ Parsed user: id=${user.id}, username=${user.username}, iconUrl=${user.iconUrl}');
+              xfDebug('   ✅ Parsed user: id=${user.id}, username=${user.username}, iconUrl=${user.iconUrl}');
             } catch (e) {
-              print('   ❌ Error parsing user: $e, userData: $userData');
+              xfDebug('   ❌ Error parsing user: $e, userData: $userData');
             }
           }
         }
       } else {
-        print('⚠️  [XENFORO_USER] No list field in response or list is not an array');
+        xfDebug('⚠️  [XENFORO_USER] No list field in response or list is not an array');
       }
 
-      print('📥 [XENFORO_USER] Final result: total=$total, userCount=${userList.length}');
+      xfDebug('📥 [XENFORO_USER] Final result: total=$total, userCount=${userList.length}');
 
       return FCSearchUserResult(
         result: response['result'] ?? false,
@@ -604,8 +605,8 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         list: userList,
       );
     } catch (e, stackTrace) {
-      print('❌ [XENFORO_USER] searchUserAsync error: $e');
-      print('❌ [XENFORO_USER] Stack trace: $stackTrace');
+      xfDebug('❌ [XENFORO_USER] searchUserAsync error: $e');
+      xfDebug('❌ [XENFORO_USER] Stack trace: $stackTrace');
       return FCSearchUserResult(
         result: false,
         resultText: 'Error searching users: $e',
@@ -617,8 +618,8 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
 
   @override
   Future<FCReportUserResult> reportUserAsync(String userId, String reason) async {
-    print('✅ [XENFORO_USER] reportUserAsync called - IMPLEMENTED');
-    print('   📋 Parameters: userId=$userId, reason=$reason');
+    xfDebug('✅ [XENFORO_USER] reportUserAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: userId=$userId, reason=$reason');
 
     try {
       final response = await callPluginApi('reportUser', {
@@ -631,7 +632,7 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
         resultText: response['resultText']?.toString(),
       );
     } catch (e) {
-      print('❌ [XENFORO_USER] reportUserAsync error: $e');
+      xfDebug('❌ [XENFORO_USER] reportUserAsync error: $e');
       return FCReportUserResult(
         result: false,
         resultText: 'Error reporting user: $e',

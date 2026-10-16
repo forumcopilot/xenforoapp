@@ -2,6 +2,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_social_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_social_result.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCSocialProxy
 /// Handles social operations for XenForo forums
@@ -10,8 +11,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCThankPostResult> thankPostAsync(String postId) async {
-    print('✅ [XENFORO_SOCIAL] thankPostAsync called via plugin API');
-    print('   📋 Parameters: postId=$postId');
+    xfDebug('✅ [XENFORO_SOCIAL] thankPostAsync called via plugin API');
+    xfDebug('   📋 Parameters: postId=$postId');
 
     try {
       final response = await callPluginApi('thankPost', {
@@ -23,7 +24,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] thankPostAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] thankPostAsync error: $e');
       return FCThankPostResult(
         result: false,
         resultText: 'Error thanking post: $e',
@@ -33,8 +34,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCFollowResult> followAsync(String userId) async {
-    print('✅ [XENFORO_SOCIAL] followAsync called via plugin API');
-    print('   📋 Parameters: userId=$userId');
+    xfDebug('✅ [XENFORO_SOCIAL] followAsync called via plugin API');
+    xfDebug('   📋 Parameters: userId=$userId');
 
     try {
       final response = await callPluginApi('follow', {
@@ -46,7 +47,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] followAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] followAsync error: $e');
       return FCFollowResult(
         result: false,
         resultText: 'Error following user: $e',
@@ -56,8 +57,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCUnfollowResult> unfollowAsync(String userId) async {
-    print('✅ [XENFORO_SOCIAL] unfollowAsync called via plugin API');
-    print('   📋 Parameters: userId=$userId');
+    xfDebug('✅ [XENFORO_SOCIAL] unfollowAsync called via plugin API');
+    xfDebug('   📋 Parameters: userId=$userId');
 
     try {
       final response = await callPluginApi('unfollow', {
@@ -69,7 +70,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] unfollowAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] unfollowAsync error: $e');
       return FCUnfollowResult(
         result: false,
         resultText: 'Error unfollowing user: $e',
@@ -79,8 +80,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCLikePostResult> likePostAsync(String postId, {int reactionId = 1}) async {
-    print('✅ [XENFORO_SOCIAL] likePostAsync called via plugin API');
-    print('   📋 Parameters: postId=$postId, reactionId=$reactionId');
+    xfDebug('✅ [XENFORO_SOCIAL] likePostAsync called via plugin API');
+    xfDebug('   📋 Parameters: postId=$postId, reactionId=$reactionId');
 
     try {
       final response = await callPluginApi('likePost', {
@@ -99,7 +100,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         likeCount: response['likeCount'] != null ? int.tryParse(response['likeCount'].toString()) ?? 0 : 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] likePostAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] likePostAsync error: $e');
       return FCLikePostResult(
         result: false,
         resultText: 'Error liking post: $e',
@@ -109,8 +110,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCUnlikePostResult> unlikePostAsync(String postId) async {
-    print('✅ [XENFORO_SOCIAL] unlikePostAsync called via plugin API');
-    print('   📋 Parameters: postId=$postId');
+    xfDebug('✅ [XENFORO_SOCIAL] unlikePostAsync called via plugin API');
+    xfDebug('   📋 Parameters: postId=$postId');
 
     try {
       final response = await callPluginApi('unlikePost', {
@@ -124,7 +125,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         likeCount: response['likeCount'] != null ? int.tryParse(response['likeCount'].toString()) ?? 0 : 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] unlikePostAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] unlikePostAsync error: $e');
       return FCUnlikePostResult(
         result: false,
         resultText: 'Error unliking post: $e',
@@ -134,8 +135,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCLikePostResult> likeConversationMessageAsync(String messageId, {int reactionId = 1}) async {
-    print('✅ [XENFORO_SOCIAL] likeConversationMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId, reactionId=$reactionId');
+    xfDebug('✅ [XENFORO_SOCIAL] likeConversationMessageAsync called via plugin API');
+    xfDebug('   📋 Parameters: messageId=$messageId, reactionId=$reactionId');
 
     try {
       final response = await callPluginApi('likeConversationMessage', {
@@ -150,7 +151,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         likeCount: response['likeCount'] != null ? int.tryParse(response['likeCount'].toString()) ?? 0 : 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] likeConversationMessageAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] likeConversationMessageAsync error: $e');
       return FCLikePostResult(
         result: false,
         resultText: 'Error liking conversation message: $e',
@@ -160,8 +161,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCUnlikePostResult> unlikeConversationMessageAsync(String messageId) async {
-    print('✅ [XENFORO_SOCIAL] unlikeConversationMessageAsync called via plugin API');
-    print('   📋 Parameters: messageId=$messageId');
+    xfDebug('✅ [XENFORO_SOCIAL] unlikeConversationMessageAsync called via plugin API');
+    xfDebug('   📋 Parameters: messageId=$messageId');
 
     try {
       final response = await callPluginApi('unlikeConversationMessage', {
@@ -175,7 +176,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         likeCount: response['likeCount'] != null ? int.tryParse(response['likeCount'].toString()) ?? 0 : 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] unlikeConversationMessageAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] unlikeConversationMessageAsync error: $e');
       return FCUnlikePostResult(
         result: false,
         resultText: 'Error unliking conversation message: $e',
@@ -185,8 +186,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCAlertResult> getAlertAsync(int page, int perpage, bool forceRefresh) async {
-    print('✅ [XENFORO_SOCIAL] getAlertAsync called via plugin API');
-    print('   📋 Parameters: page=$page, perpage=$perpage, forceRefresh=$forceRefresh');
+    xfDebug('✅ [XENFORO_SOCIAL] getAlertAsync called via plugin API');
+    xfDebug('   📋 Parameters: page=$page, perpage=$perpage, forceRefresh=$forceRefresh');
 
     try {
       final response = await callPluginApi('getAlert', {
@@ -234,6 +235,10 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
               actionUrl: alertData['actionUrl']?.toString(),
               fromUsername: alertData['fromUsername']?.toString(),
               action: alertData['action']?.toString(),
+              // Sent by the add-on all along but never mapped, so every
+              // alert looked read. Missing means read, as before.
+              isRead: alertData['isRead'] is bool ? alertData['isRead'] as bool : true,
+              alertId: int.tryParse(alertData['id']?.toString() ?? ''),
             ));
           }
         }
@@ -246,7 +251,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         items: alertList,
       );
     } catch (e) {
-      print('❌ [XENFORO_SOCIAL] getAlertAsync error: $e');
+      xfDebug('❌ [XENFORO_SOCIAL] getAlertAsync error: $e');
       return FCAlertResult(
         result: false,
         resultText: 'Error getting alerts: $e',
@@ -258,7 +263,7 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
 
   @override
   Future<FCActivityResult> getActivityAsync(int page, int perpage) async {
-    print('⚠️ [XENFORO_SOCIAL] getActivityAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_SOCIAL] getActivityAsync not fully implemented, returning stub result.');
     return FCActivityResult(
       result: false,
       resultText: 'Get activity not implemented',

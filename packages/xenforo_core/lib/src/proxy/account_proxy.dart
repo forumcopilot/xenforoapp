@@ -10,6 +10,7 @@ import 'package:forumcopilot_sdk/models/settings/fc_user_settings_result.dart';
 import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_notification_prefs.dart';
 import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCAccountProxy
 /// Handles user registration and authentication for XenForo forums
@@ -18,8 +19,8 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
 
   @override
   Future<FCForgetPasswordResult> forgetPassword(String username, String token, String code) async {
-    print('✅ [XENFORO_ACCOUNT] forgetPassword called via plugin API');
-    print('   📋 Parameters: username=$username');
+    xfDebug('✅ [XENFORO_ACCOUNT] forgetPassword called via plugin API');
+    xfDebug('   📋 Parameters: username=$username');
 
     try {
       // Call plugin API with forgotPassword method
@@ -35,7 +36,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         verified: response['verified'] ?? false,
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] forgetPassword error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] forgetPassword error: $e');
       return FCForgetPasswordResult(
         result: false,
         resultText: 'Error requesting password reset: $e',
@@ -46,23 +47,23 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
 
   @override
   Future<FCPrefetchAccountResult?> prefetchAccount() async {
-    print('✅ [XENFORO_ACCOUNT] prefetchAccount called via plugin API');
+    xfDebug('✅ [XENFORO_ACCOUNT] prefetchAccount called via plugin API');
 
     try {
       final response = await callPluginApi('prefetchAccount', {});
 
-      print('   📥 [XENFORO_ACCOUNT] prefetchAccount response keys: ${response.keys.toList()}');
-      print('   📥 [XENFORO_ACCOUNT] Full JSON response (formatted):');
+      xfDebug('   📥 [XENFORO_ACCOUNT] prefetchAccount response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] Full JSON response (formatted):');
       // Pretty print the JSON response
       try {
         final encoder = JsonEncoder.withIndent('  ');
-        print(encoder.convert(response));
+        xfDebug(encoder.convert(response));
       } catch (e) {
-        print('   ${response.toString()}');
+        xfDebug('   ${response.toString()}');
       }
-      print('   📥 [XENFORO_ACCOUNT] registrationOpen: ${response['registrationOpen']}');
-      print('   📥 [XENFORO_ACCOUNT] canRegisterViaAPI: ${response['canRegisterViaAPI']}');
-      print('   📥 [XENFORO_ACCOUNT] registerViaWebUrl: ${response['registerViaWebUrl']}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] registrationOpen: ${response['registrationOpen']}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] canRegisterViaAPI: ${response['canRegisterViaAPI']}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] registerViaWebUrl: ${response['registerViaWebUrl']}');
 
       // Parse registrationRequirements if present
       FCRegistrationRequirements? registrationRequirements;
@@ -84,7 +85,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         registrationRequirements: registrationRequirements,
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] prefetchAccount error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] prefetchAccount error: $e');
       return null;
     }
   }
@@ -201,8 +202,8 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
     bool? acceptTerms,
     bool? acceptPrivacy,
   }) async {
-    print('✅ [XENFORO_ACCOUNT] register called via plugin API');
-    print('   📋 Parameters: username=$username, email=$email');
+    xfDebug('✅ [XENFORO_ACCOUNT] register called via plugin API');
+    xfDebug('   📋 Parameters: username=$username, email=$email');
 
     try {
       final params = <String, dynamic>{
@@ -215,7 +216,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
       if (timezone != null) params['timezone'] = timezone;
       if (dateOfBirth != null && dateOfBirth.isNotEmpty) {
         params['dateOfBirth'] = dateOfBirth; // Send as YYYY-MM-DD format
-        print('   📋 dateOfBirth: $dateOfBirth');
+        xfDebug('   📋 dateOfBirth: $dateOfBirth');
       }
       if (location != null) params['location'] = location;
       if (emailChoice != null) params['emailChoice'] = emailChoice;
@@ -226,7 +227,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
 
       final response = await callPluginApi('register', params);
 
-      print('   📥 [XENFORO_ACCOUNT] register response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] register response keys: ${response.keys.toList()}');
 
       return FCRegisterResult(
         result: response['result'] ?? false,
@@ -240,7 +241,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         message: response['message']?.toString(),
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] register error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] register error: $e');
       return FCRegisterResult(
         result: false,
         resultText: 'Registration failed: $e',
@@ -298,12 +299,12 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
 
   /// Get list of available settings categories
   Future<FCUserSettingsCategoriesResult> getUserSettingsCategories() async {
-    print('✅ [XENFORO_ACCOUNT] getUserSettingsCategories called via plugin API');
+    xfDebug('✅ [XENFORO_ACCOUNT] getUserSettingsCategories called via plugin API');
 
     try {
       final response = await callPluginApi('getUserSettingsCategories', {});
 
-      print('   📥 [XENFORO_ACCOUNT] getUserSettingsCategories response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] getUserSettingsCategories response keys: ${response.keys.toList()}');
 
       // Parse categories
       List<FCSettingsCategory> categories = [];
@@ -326,7 +327,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         categories: categories,
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] getUserSettingsCategories error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] getUserSettingsCategories error: $e');
       return FCUserSettingsCategoriesResult(
         result: false,
         resultText: 'Error fetching settings categories: $e',
@@ -337,15 +338,15 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
 
   /// Get settings for a specific category
   Future<FCUserSettingsResult> getUserSettings(String category) async {
-    print('✅ [XENFORO_ACCOUNT] getUserSettings called via plugin API');
-    print('   📋 Parameters: category=$category');
+    xfDebug('✅ [XENFORO_ACCOUNT] getUserSettings called via plugin API');
+    xfDebug('   📋 Parameters: category=$category');
 
     try {
       final response = await callPluginApi('getUserSettings', {
         'category': category,
       });
 
-      print('   📥 [XENFORO_ACCOUNT] getUserSettings response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] getUserSettings response keys: ${response.keys.toList()}');
 
       // Parse settings
       List<FCUserSetting> settings = [];
@@ -364,7 +365,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         settings: settings,
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] getUserSettings error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] getUserSettings error: $e');
       return FCUserSettingsResult(
         result: false,
         resultText: 'Error fetching settings: $e',
@@ -380,8 +381,8 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
     String category,
     Map<String, dynamic> settings,
   ) async {
-    print('✅ [XENFORO_ACCOUNT] updateUserSettings called via plugin API');
-    print('   📋 Parameters: category=$category, settings keys: ${settings.keys.toList()}');
+    xfDebug('✅ [XENFORO_ACCOUNT] updateUserSettings called via plugin API');
+    xfDebug('   📋 Parameters: category=$category, settings keys: ${settings.keys.toList()}');
 
     try {
       final response = await callPluginApi('updateUserSettings', {
@@ -389,7 +390,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         'settings': settings,
       });
 
-      print('   📥 [XENFORO_ACCOUNT] updateUserSettings response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_ACCOUNT] updateUserSettings response keys: ${response.keys.toList()}');
 
       // Parse updated settings
       List<FCUserSetting> updatedSettings = [];
@@ -408,7 +409,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
         settings: updatedSettings,
       );
     } catch (e) {
-      print('❌ [XENFORO_ACCOUNT] updateUserSettings error: $e');
+      xfDebug('❌ [XENFORO_ACCOUNT] updateUserSettings error: $e');
       return FCUserSettingsResult(
         result: false,
         resultText: 'Error updating settings: $e',

@@ -4,6 +4,7 @@ import '../data/user/user.dart';
 import '../data/auth/auth_response.dart';
 import '../context/xenforo_site_context_extension.dart';
 import 'xenforo_client.dart';
+import '../xf_debug.dart';
 
 /// Plugin-based authentication for XenForo
 /// Simplified from OAuth2 to session-based authentication via plugin
@@ -45,7 +46,7 @@ class XenForoAuthManager {
 
       return null;
     } catch (e) {
-      print('Failed to get current user via plugin: $e');
+      xfDebug('Failed to get current user via plugin: $e');
       return null;
     }
   }
@@ -56,7 +57,7 @@ class XenForoAuthManager {
       // Clear any local session data if needed
       siteContext.clearOAuthTokens(); // Legacy cleanup, no longer needed but safe
     } catch (e) {
-      print('Logout error: $e');
+      xfDebug('Logout error: $e');
       // Continue with local logout even if there are issues
     }
   }

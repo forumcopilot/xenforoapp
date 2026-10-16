@@ -4,18 +4,23 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/network/fc_call_result.dart';
 import 'network/xenforo_client.dart';
 import 'proxy/user_proxy.dart';
+import 'xf_debug.dart';
 
 /// Base proxy class for XenForo API operations
 /// Provides common functionality for all XenForo proxies
 abstract class BaseXenForoProxy {
   final SiteContext siteContext;
-  final XenForoClient _client = XenForoClient();
+  final XenForoClient _client;
 
   // Mutex to serialize all API calls - ensures no parallel execution
   Future<void>? _apiCallMutex;
 
-  // Completer to ensure only one relogin happens at a time
-  Completer<void>? _reloginCompleter;
+  /// The session check (and relogin, if needed) running for each forum.
+  /// Keyed by [SiteContext], not held per proxy: the factory builds a new
+  /// proxy for every call, so a per-instance guard never saw the other calls,
+  /// and N parallel requests on an expired session ran N password logins
+  /// (and possibly N two-step prompts).
+  static final Expando<Future<bool>> _sessionChecks = Expando('xenforoSessionCheck');
 
   // Methods that should not trigger login retry
   static const List<String> _loginRetryExcludedMethods = [
@@ -25,7 +30,9 @@ abstract class BaseXenForoProxy {
     'getCurrentUser',
   ];
 
-  BaseXenForoProxy(this.siteContext);
+  /// [client] is for tests; the app always uses the real [XenForoClient].
+  BaseXenForoProxy(this.siteContext, {XenForoClient? client})
+      : _client = client ?? XenForoClient();
 
   /// Call ForumCopilot plugin API with method name and parameters
   /// This replaces all individual REST API calls
@@ -41,27 +48,19 @@ abstract class BaseXenForoProxy {
     _apiCallMutex = callCompleter.future;
 
     try {
-      print('🔍 [BASE_PROXY] callPluginApi called:');
-      print('   - method: "$method"');
-      print('   - params keys: ${params.keys.toList()}');
-      params.forEach((key, value) {
-        if (value is String) {
-          print('   - $key: "${value.length > 100 ? value.substring(0, 100) + "..." : value}" (length: ${value.length}, isEmpty: ${value.isEmpty})');
-        } else if (value is List) {
-          print('   - $key: List with ${value.length} items');
-        } else {
-          print('   - $key: $value');
-        }
-      });
+      xfDebug('🔍 [BASE_PROXY] callPluginApi called:');
+      xfDebug('   - method: "$method"');
+      xfDebug('   - params keys: ${params.keys.toList()}');
+      params.forEach((key, value) => xfDebug('   - $key: ${xfLoggableParam(key, value)}'));
 
       final requestData = {
         'method': method,
         'params': params,
       };
 
-      print('🔍 [BASE_PROXY] Calling _client.forumcopilotApi...');
+      xfDebug('🔍 [BASE_PROXY] Calling _client.forumcopilotApi...');
       var result = await _client.forumcopilotApi(siteContext, requestData);
-      print('🔍 [BASE_PROXY] API call completed, statusCode: ${result.statusCode}');
+      xfDebug('🔍 [BASE_PROXY] API call completed, statusCode: ${result.statusCode}');
 
       // When we see fc_is_login=false but have login data, confirm with getConfig before
       // updating state or relogin: a single request may have failed to send cookies.
@@ -70,36 +69,18 @@ abstract class BaseXenForoProxy {
           siteContext.loginDataOutput != null &&
           !result.fcIsLogin &&
           !_loginRetryExcludedMethods.contains(method)) {
-        print('🔄 [BASE_PROXY] fc_is_login=false with login data - confirming with getConfig before relogin for method: $method');
-
-        try {
-          final confirmRequest = {'method': 'getConfig', 'params': <String, dynamic>{}};
-          final confirmResult = await _client.forumcopilotApi(siteContext, confirmRequest);
-          final sessionStillValid = confirmResult.statusCode >= 200 &&
-              confirmResult.statusCode < 300 &&
-              confirmResult.fcIsLogin;
-
-          if (sessionStillValid) {
-            print('🔄 [BASE_PROXY] getConfig confirms session valid - retrying original request without relogin');
-            result = await _client.forumcopilotApi(siteContext, requestData);
-            print('🔍 [BASE_PROXY] Retry API call completed, statusCode: ${result.statusCode}');
-          } else {
-            print('🔄 [BASE_PROXY] getConfig confirms logged out - attempting relogin for method: $method');
-            await _doRelogin();
-
-            print('🔄 [BASE_PROXY] Retrying original request after relogin...');
-            result = await _client.forumcopilotApi(siteContext, requestData);
-            print('🔍 [BASE_PROXY] Retry API call completed, statusCode: ${result.statusCode}');
-          }
-        } catch (e) {
-          print('❌ [BASE_PROXY] Confirm/relogin failed: $e');
-          // Continue with original result - let handleResponse handle the error
+        xfDebug('🔄 [BASE_PROXY] fc_is_login=false with login data - checking the session before retrying $method');
+        if (await _checkSessionOrRelogin()) {
+          xfDebug('🔄 [BASE_PROXY] Session usable again - retrying $method');
+          result = await _client.forumcopilotApi(siteContext, requestData);
+          xfDebug('🔍 [BASE_PROXY] Retry API call completed, statusCode: ${result.statusCode}');
         }
+        // Otherwise keep the original result; handleResponse reports it.
       }
 
-      print('🔍 [BASE_PROXY] Calling handleResponse...');
+      xfDebug('🔍 [BASE_PROXY] Calling handleResponse...');
       final response = handleResponse(result);
-      print('🔍 [BASE_PROXY] Response handled, keys: ${response.keys.toList()}');
+      xfDebug('🔍 [BASE_PROXY] Response handled, keys: ${response.keys.toList()}');
 
       // Plugin returns data directly in FC format - return the parsed response
       return response;
@@ -124,55 +105,49 @@ abstract class BaseXenForoProxy {
 
   /// Handle API response and extract data
   Map<String, dynamic> handleResponse(FCCallResult result) {
-    print('🔍 [BASE_PROXY] handleResponse called:');
-    print('   - statusCode: ${result.statusCode}');
-    print('   - body length: ${result.body.length}');
-    print('   - fcIsLogin: ${result.fcIsLogin}');
+    xfDebug('🔍 [BASE_PROXY] handleResponse called:');
+    xfDebug('   - statusCode: ${result.statusCode}');
+    xfDebug('   - body length: ${result.body.length}');
+    xfDebug('   - fcIsLogin: ${result.fcIsLogin}');
 
     // Update site context with the response to track authentication state
-    print('🔍 [BASE_PROXY] Setting last call response...');
+    xfDebug('🔍 [BASE_PROXY] Setting last call response...');
     siteContext.setLastCallResponse(result);
 
     // Update login state from fc_is_login header
     // This ensures authentication state stays in sync with server
-    print('🔍 [BASE_PROXY] Updating login state from header...');
+    xfDebug('🔍 [BASE_PROXY] Updating login state from header...');
     siteContext.updateLoginStateFromHeader(result.fcIsLogin);
 
     if (result.statusCode < 200 || result.statusCode >= 300) {
-      print('❌ [BASE_PROXY] HTTP error status: ${result.statusCode}');
+      xfDebug('❌ [BASE_PROXY] HTTP error status: ${result.statusCode}');
       // Try to parse error from response body
       try {
-        print('🔍 [BASE_PROXY] Attempting to parse error from body...');
+        xfDebug('🔍 [BASE_PROXY] Attempting to parse error from body...');
         final errorData = jsonDecode(result.body);
-        print('❌ [BASE_PROXY] Error data: $errorData');
+        xfDebug('❌ [BASE_PROXY] Error data: $errorData');
         throw Exception('API request failed: ${errorData['error'] ?? 'Unknown error'}');
       } catch (e) {
-        print('❌ [BASE_PROXY] Failed to parse error, throwing generic exception');
+        xfDebug('❌ [BASE_PROXY] Failed to parse error, throwing generic exception');
         throw Exception('API request failed with status ${result.statusCode}: ${result.body}');
       }
     }
 
     try {
-      print('🔍 [BASE_PROXY] Parsing response body as JSON...');
-      print('🔍 [BASE_PROXY] Raw response body:');
-      // Pretty print the raw JSON if it's valid JSON
-      try {
-        final encoder = JsonEncoder.withIndent('  ');
-        final decodedForPrint = jsonDecode(result.body) as Map<String, dynamic>;
-        print(encoder.convert(decodedForPrint));
-      } catch (e) {
-        print('   ${result.body}');
-      }
-      final decoded = jsonDecode(result.body) as Map<String, dynamic>;
+      // XenForoClient already decoded the body once; reuse it rather than
+      // decoding (and, before, pretty-printing) every response again.
+      final decoded = (result is XenForoCallResult && result.decoded != null)
+          ? Map<String, dynamic>.of(result.decoded!)
+          : jsonDecode(result.body) as Map<String, dynamic>;
       // Thread fc_is_login from this HTTP response into the decoded map so callers
       // do not rely on SiteContext.lastCallFcIsLogin (which can be overwritten by a
       // concurrent API call from another BaseXenForoProxy instance).
       decoded['_fc_plugin_internal_fc_is_login'] = result.fcIsLogin;
-      print('🔍 [BASE_PROXY] JSON decoded successfully, keys: ${decoded.keys.toList()}');
+      xfDebug('🔍 [BASE_PROXY] JSON decoded successfully, keys: ${decoded.keys.toList()}');
       return decoded;
     } catch (e, stackTrace) {
-      print('❌ [BASE_PROXY] Failed to parse API response: $e');
-      print('❌ [BASE_PROXY] Stack trace: $stackTrace');
+      xfDebug('❌ [BASE_PROXY] Failed to parse API response: $e');
+      xfDebug('❌ [BASE_PROXY] Stack trace: $stackTrace');
       throw Exception('Failed to parse API response: $e');
     }
   }
@@ -262,101 +237,94 @@ abstract class BaseXenForoProxy {
 
   /// Log API call for debugging
   void logApiCall(String method, String endpoint, {Map<String, dynamic>? body}) {
-    print('🔍 [XENFORO_API] $method $endpoint');
+    xfDebug('🔍 [XENFORO_API] $method $endpoint');
     if (body != null) {
-      print('📤 [XENFORO_API] Body: $body');
+      xfDebug('📤 [XENFORO_API] Body keys: ${body.keys.toList()}');
     }
   }
 
   /// Log API response for debugging
   void logApiResponse(FCCallResult result) {
-    print('📥 [XENFORO_API] Status: ${result.statusCode}');
-    print('📥 [XENFORO_API] Success: ${result.statusCode >= 200 && result.statusCode < 300}');
-    if (result.body.isNotEmpty) {
-      print('📥 [XENFORO_API] Body: ${result.body}');
+    xfDebug('📥 [XENFORO_API] Status: ${result.statusCode}');
+    xfDebug('📥 [XENFORO_API] Success: ${result.statusCode >= 200 && result.statusCode < 300}');
+    xfDebug('📥 [XENFORO_API] Body: ${result.body.length} chars');
+  }
+
+  /// Confirm an apparently expired session with getConfig (one request may
+  /// simply have lost its cookies) and relogin if it really expired. Returns
+  /// whether the session is usable again. One check runs per forum at a time;
+  /// calls that arrive while it runs share its outcome instead of starting
+  /// their own getConfig and login.
+  Future<bool> _checkSessionOrRelogin() {
+    final running = _sessionChecks[siteContext];
+    if (running != null) {
+      xfDebug('🔄 [BASE_PROXY] Session check already running for this forum, waiting for it');
+      return running;
+    }
+    final check = _runSessionCheck();
+    _sessionChecks[siteContext] = check;
+    check.whenComplete(() {
+      if (identical(_sessionChecks[siteContext], check)) {
+        _sessionChecks[siteContext] = null;
+      }
+    });
+    return check;
+  }
+
+  Future<bool> _runSessionCheck() async {
+    try {
+      final confirm = await _client.forumcopilotApi(
+          siteContext, {'method': 'getConfig', 'params': <String, dynamic>{}});
+      if (confirm.statusCode >= 200 && confirm.statusCode < 300 && confirm.fcIsLogin) {
+        xfDebug('🔄 [BASE_PROXY] getConfig confirms the session is still valid');
+        return true;
+      }
+      xfDebug('🔄 [BASE_PROXY] getConfig confirms signed out - attempting relogin');
+      await _doRelogin();
+      return true;
+    } catch (e) {
+      xfDebug('❌ [BASE_PROXY] Session check / relogin failed: $e');
+      return false;
     }
   }
 
-  /// Attempt to relogin when session expires
-  /// This is called automatically when fc_is_login is false but we have login data
-  /// Ensures only one relogin happens at a time - other calls wait for the relogin to complete
+  /// Sign in again after the session expired. Throws when it can't. Only
+  /// called through [_checkSessionOrRelogin], which keeps it to one at a time
+  /// per forum.
   Future<void> _doRelogin() async {
-    // If a relogin is already in progress, wait for it to complete
-    if (_reloginCompleter != null) {
-      print('🔄 [BASE_PROXY] Relogin already in progress, waiting for completion...');
-      try {
-        await _reloginCompleter!.future;
-        print('🔄 [BASE_PROXY] Relogin completed, continuing...');
-        return;
-      } catch (e) {
-        print('❌ [BASE_PROXY] Previous relogin failed: $e');
-        // If the previous relogin failed, we still return - each call will handle its own error
+    // Prefer the app's relogin strategy when available: the full automatic
+    // login flow (cookies, passkey, credentials).
+    if (siteContext.reloginHandler != null) {
+      xfDebug('🔄 [BASE_PROXY] Attempting relogin via siteContext.reloginHandler...');
+      if (await siteContext.reloginHandler!(siteContext)) {
+        xfDebug('✅ [BASE_PROXY] Relogin via handler successful');
         return;
       }
+      throw Exception('Relogin failed via handler');
     }
 
-    // Create a new completer for this relogin
-    _reloginCompleter = Completer<void>();
-
-    try {
-      print('🔄 [BASE_PROXY] _doRelogin called');
-
-      // Prefer app-level relogin strategy when available.
-      // This allows using the full automatic login flow (cookies, passkey, credentials).
-      if (siteContext.reloginHandler != null) {
-        print('🔄 [BASE_PROXY] Attempting relogin via siteContext.reloginHandler...');
-        final handled = await siteContext.reloginHandler!(siteContext);
-        if (handled) {
-          print('✅ [BASE_PROXY] Relogin via handler successful');
-          _reloginCompleter!.complete();
-          return;
-        }
-        final error = Exception('Relogin failed via handler');
-        _reloginCompleter!.completeError(error);
-        throw error;
-      }
-
-      // Check if we have credentials
-      if (siteContext.username == null || siteContext.password == null || siteContext.username!.isEmpty || siteContext.password!.isEmpty) {
-        print('❌ [BASE_PROXY] Cannot relogin - no credentials available');
-        final error = Exception('Cannot relogin: no credentials available');
-        _reloginCompleter!.completeError(error);
-        throw error;
-      }
-
-      print('🔄 [BASE_PROXY] Attempting relogin with saved credentials for user: ${siteContext.username}');
-
-      final userProxy = XenForoUserProxy(siteContext);
-      final loginResult = await userProxy.loginAsync(
-        siteContext.username!,
-        siteContext.password!,
-        false, // not anonymous
-        null, // no trust code
-      );
-
-      if (loginResult.result && loginResult.user != null) {
-        print('✅ [BASE_PROXY] Relogin successful');
-        // Login data is already set by loginAsync via siteContext.setLoginData
-        _reloginCompleter!.complete();
-      } else {
-        // When server returns tfaRequired, there is no resultText; avoid empty "Relogin failed: "
-        final message = loginResult.tfaRequired == true
-            ? 'TFA required (use Sign in with passkey or complete TFA in app)'
-            : (loginResult.resultText?.trim().isNotEmpty == true ? loginResult.resultText! : 'Unknown error');
-        print('❌ [BASE_PROXY] Relogin failed: $message');
-        final error = Exception('Relogin failed: $message');
-        _reloginCompleter!.completeError(error);
-        throw error;
-      }
-    } catch (e) {
-      print('❌ [BASE_PROXY] Relogin error: $e');
-      if (!_reloginCompleter!.isCompleted) {
-        _reloginCompleter!.completeError(e);
-      }
-      rethrow;
-    } finally {
-      // Clear the completer so future calls can start a new relogin if needed
-      _reloginCompleter = null;
+    if (siteContext.username == null ||
+        siteContext.password == null ||
+        siteContext.username!.isEmpty ||
+        siteContext.password!.isEmpty) {
+      throw Exception('Cannot relogin: no credentials available');
     }
+
+    xfDebug('🔄 [BASE_PROXY] Attempting relogin with saved credentials');
+    final loginResult = await XenForoUserProxy(siteContext).loginAsync(
+      siteContext.username!,
+      siteContext.password!,
+      false, // not anonymous
+      null, // no trust code
+    );
+    if (loginResult.result && loginResult.user != null) {
+      xfDebug('✅ [BASE_PROXY] Relogin successful');
+      return; // loginAsync already stored the login data on siteContext
+    }
+    // When the server asks for two-step verification there is no resultText.
+    final message = loginResult.tfaRequired == true
+        ? 'TFA required (use Sign in with passkey or complete TFA in app)'
+        : (loginResult.resultText?.trim().isNotEmpty == true ? loginResult.resultText! : 'Unknown error');
+    throw Exception('Relogin failed: $message');
   }
 }

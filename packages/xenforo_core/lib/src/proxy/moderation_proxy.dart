@@ -2,6 +2,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_moderation_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_moderation_result.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCModerationProxy
 /// Handles moderation operations for XenForo forums
@@ -10,7 +11,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCLoginModResult> doLoginModAsync(String username, String password) async {
-    print('⚠️ [XENFORO_MODERATION] doLoginModAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] doLoginModAsync not fully implemented, returning stub result.');
     return FCLoginModResult(
       result: false,
       resultText: 'Moderator login not implemented',
@@ -19,7 +20,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCStickTopicResult> stickTopicAsync(String topicId) async {
-    print('⚠️ [XENFORO_MODERATION] stickTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] stickTopicAsync not fully implemented, returning stub result.');
     return FCStickTopicResult(
       result: false,
       resultText: 'Stick topic not implemented',
@@ -28,7 +29,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCStickTopicResult> unstickTopicAsync(String topicId) async {
-    print('⚠️ [XENFORO_MODERATION] unstickTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] unstickTopicAsync not fully implemented, returning stub result.');
     return FCStickTopicResult(
       result: false,
       resultText: 'Unstick topic not implemented',
@@ -37,15 +38,15 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCCloseTopicResult> closeTopicAsync(String topicId) async {
-    print('✅ [XENFORO_MODERATION] closeTopicAsync called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId');
+    xfDebug('✅ [XENFORO_MODERATION] closeTopicAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId');
     
     try {
       final params = <String, dynamic>{
         'topicId': topicId,
       };
       
-      print('🔍 [XENFORO_MODERATION] Calling closeTopic API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling closeTopic API with params: $params');
       final response = await callPluginApi('closeTopic', params);
       
       return FCCloseTopicResult(
@@ -54,7 +55,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] closeTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] closeTopicAsync error: $e');
       return FCCloseTopicResult(
         result: false,
         resultText: 'Error closing topic: $e',
@@ -65,15 +66,15 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCCloseTopicResult> uncloseTopicAsync(String topicId) async {
-    print('✅ [XENFORO_MODERATION] uncloseTopicAsync called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId');
+    xfDebug('✅ [XENFORO_MODERATION] uncloseTopicAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId');
     
     try {
       final params = <String, dynamic>{
         'topicId': topicId,
       };
       
-      print('🔍 [XENFORO_MODERATION] Calling uncloseTopic API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling uncloseTopic API with params: $params');
       final response = await callPluginApi('uncloseTopic', params);
       
       return FCCloseTopicResult(
@@ -82,7 +83,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] uncloseTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] uncloseTopicAsync error: $e');
       return FCCloseTopicResult(
         result: false,
         resultText: 'Error opening topic: $e',
@@ -93,8 +94,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCDeleteTopicResult> deleteTopicAsync(String topicId, int mode, String reason) async {
-    print('✅ [XENFORO_MODERATION] deleteTopicAsync called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId, mode=$mode, reason=$reason');
+    xfDebug('✅ [XENFORO_MODERATION] deleteTopicAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId, mode=$mode, reason=$reason');
     
     // Map mode to hardDelete: mode 0 = soft delete (false), mode 1 = hard delete (true)
     // Note: This follows the API documentation where mode 0 = soft, mode 1 = hard
@@ -109,7 +110,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         'starterAlertReason': '',
       };
       
-      print('🔍 [XENFORO_MODERATION] Calling deleteTopic API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling deleteTopic API with params: $params');
       final response = await callPluginApi('deleteTopic', params);
       
       return FCDeleteTopicResult(
@@ -118,7 +119,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] deleteTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] deleteTopicAsync error: $e');
       return FCDeleteTopicResult(
         result: false,
         resultText: 'Error deleting topic: $e',
@@ -142,8 +143,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
     bool starterAlert = false,
     String? starterAlertReason,
   }) async {
-    print('✅ [XENFORO_MODERATION] deleteTopicExtendedAsync called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId, hardDelete=$hardDelete, reason=$reason, starterAlert=$starterAlert, starterAlertReason=$starterAlertReason');
+    xfDebug('✅ [XENFORO_MODERATION] deleteTopicExtendedAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId, hardDelete=$hardDelete, reason=$reason, starterAlert=$starterAlert, starterAlertReason=$starterAlertReason');
     
     try {
       final params = <String, dynamic>{
@@ -154,7 +155,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         'starterAlertReason': starterAlertReason ?? '',
       };
       
-      print('🔍 [XENFORO_MODERATION] Calling deleteTopic API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling deleteTopic API with params: $params');
       final response = await callPluginApi('deleteTopic', params);
       
       return FCDeleteTopicResult(
@@ -163,7 +164,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] deleteTopicExtendedAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] deleteTopicExtendedAsync error: $e');
       return FCDeleteTopicResult(
         result: false,
         resultText: 'Error deleting topic: $e',
@@ -174,8 +175,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCDeletePostResult> deletePostAsync(String postId, int mode, String reason) async {
-    print('✅ [XENFORO_MODERATION] deletePostAsync called - IMPLEMENTED');
-    print('   📋 Parameters: postId=$postId, mode=$mode, reason=$reason');
+    xfDebug('✅ [XENFORO_MODERATION] deletePostAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: postId=$postId, mode=$mode, reason=$reason');
     
     // Map FC delete mode to XenForo hardDelete:
     // FC: mode 1 = soft delete, mode 2 = hard delete
@@ -189,7 +190,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         'reason': reason,
       };
       
-      print('🔍 [XENFORO_MODERATION] Calling deletePost API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling deletePost API with params: $params');
       final response = await callPluginApi('deletePost', params);
       
       return FCDeletePostResult(
@@ -198,7 +199,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] deletePostAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] deletePostAsync error: $e');
       return FCDeletePostResult(
         result: false,
         resultText: 'Error deleting post: $e',
@@ -209,7 +210,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCUndeleteTopicResult> undeleteTopicAsync(String topicId, String reason) async {
-    print('⚠️ [XENFORO_MODERATION] undeleteTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] undeleteTopicAsync not fully implemented, returning stub result.');
     return FCUndeleteTopicResult(
       result: false,
       resultText: 'Undelete topic not implemented',
@@ -218,7 +219,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCUndeletePostResult> undeletePostAsync(String postId, String reason) async {
-    print('⚠️ [XENFORO_MODERATION] undeletePostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] undeletePostAsync not fully implemented, returning stub result.');
     return FCUndeletePostResult(
       result: false,
       resultText: 'Undelete post not implemented',
@@ -227,7 +228,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCMoveTopicResult> moveTopicAsync(String topicId, String forumId, bool redirect) async {
-    print('⚠️ [XENFORO_MODERATION] moveTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] moveTopicAsync not fully implemented, returning stub result.');
     return FCMoveTopicResult(
       result: false,
       resultText: 'Move topic not implemented',
@@ -236,7 +237,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCRenameTopicResult> renameTopicAsync(String topicId, String title) async {
-    print('⚠️ [XENFORO_MODERATION] renameTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] renameTopicAsync not fully implemented, returning stub result.');
     return FCRenameTopicResult(
       result: false,
       resultText: 'Rename topic not implemented',
@@ -245,7 +246,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCMovePostResult> movePostAsync(String postId, String? topicId, String? topicTitle, String? forumId) async {
-    print('⚠️ [XENFORO_MODERATION] movePostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] movePostAsync not fully implemented, returning stub result.');
     return FCMovePostResult(
       result: false,
       resultText: 'Move post not implemented',
@@ -254,7 +255,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCMergeTopicResult> mergeTopicAsync(String topicId1, String topicId2, bool redirect) async {
-    print('⚠️ [XENFORO_MODERATION] mergeTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] mergeTopicAsync not fully implemented, returning stub result.');
     return FCMergeTopicResult(
       result: false,
       resultText: 'Merge topic not implemented',
@@ -263,7 +264,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCModerateTopicResult> getModerateTopicAsync(int startNum, int lastNum) async {
-    print('⚠️ [XENFORO_MODERATION] getModerateTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] getModerateTopicAsync not fully implemented, returning stub result.');
     return FCModerateTopicResult(
       result: false,
       resultText: 'Get moderate topics not implemented',
@@ -274,7 +275,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCModeratePostResult> getModeratePostAsync(int startNum, int lastNum) async {
-    print('⚠️ [XENFORO_MODERATION] getModeratePostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] getModeratePostAsync not fully implemented, returning stub result.');
     return FCModeratePostResult(
       result: false,
       resultText: 'Get moderate posts not implemented',
@@ -285,7 +286,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCDeletedTopicResult> getDeletedTopicAsync(int startNum, int lastNum) async {
-    print('⚠️ [XENFORO_MODERATION] getDeletedTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] getDeletedTopicAsync not fully implemented, returning stub result.');
     return FCDeletedTopicResult(
       result: false,
       resultText: 'Get deleted topics not implemented',
@@ -296,7 +297,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCDeletedPostResult> getDeletedPostAsync(int startNum, int lastNum) async {
-    print('⚠️ [XENFORO_MODERATION] getDeletedPostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] getDeletedPostAsync not fully implemented, returning stub result.');
     return FCDeletedPostResult(
       result: false,
       resultText: 'Get deleted posts not implemented',
@@ -307,7 +308,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCReportedPostResult> getReportedPostAsync(int startNum, int lastNum) async {
-    print('⚠️ [XENFORO_MODERATION] getReportedPostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] getReportedPostAsync not fully implemented, returning stub result.');
     return FCReportedPostResult(
       result: false,
       resultText: 'Get reported posts not implemented',
@@ -318,7 +319,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCApproveTopicResult> approveTopicAsync(String topicId) async {
-    print('⚠️ [XENFORO_MODERATION] approveTopicAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] approveTopicAsync not fully implemented, returning stub result.');
     return FCApproveTopicResult(
       result: false,
       resultText: 'Approve topic not implemented',
@@ -327,7 +328,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCApprovePostResult> approvePostAsync(String postId) async {
-    print('⚠️ [XENFORO_MODERATION] approvePostAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] approvePostAsync not fully implemented, returning stub result.');
     return FCApprovePostResult(
       result: false,
       resultText: 'Approve post not implemented',
@@ -336,8 +337,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCBanUserResult> banUserAsync(String userName, String reason, int banExpires, int deletePostMode, int deletePostValue) async {
-    print('✅ [XENFORO_MODERATION] banUserAsync called - IMPLEMENTED');
-    print('   📋 Parameters: userName=$userName, reason=$reason, banExpires=$banExpires, deletePostMode=$deletePostMode, deletePostValue=$deletePostValue');
+    xfDebug('✅ [XENFORO_MODERATION] banUserAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: userName=$userName, reason=$reason, banExpires=$banExpires, deletePostMode=$deletePostMode, deletePostValue=$deletePostValue');
 
     try {
       // Convert banExpires to banLength and endDate format expected by API
@@ -366,7 +367,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         params['endDate'] = endDate;
       }
 
-      print('🔍 [XENFORO_MODERATION] Calling banUser API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling banUser API with params: $params');
       final response = await callPluginApi('banUser', params);
 
       return FCBanUserResult(
@@ -375,7 +376,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] banUserAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] banUserAsync error: $e');
       return FCBanUserResult(
         result: false,
         resultText: 'Error banning user: $e',
@@ -386,15 +387,15 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCUnbanUserResult> unbanUserAsync(String userId) async {
-    print('✅ [XENFORO_MODERATION] unbanUserAsync called - IMPLEMENTED');
-    print('   📋 Parameters: userId=$userId');
+    xfDebug('✅ [XENFORO_MODERATION] unbanUserAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: userId=$userId');
 
     try {
       final params = {
         'userId': userId,
       };
 
-      print('🔍 [XENFORO_MODERATION] Calling unbanUser API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling unbanUser API with params: $params');
       final response = await callPluginApi('unbanUser', params);
 
       return FCUnbanUserResult(
@@ -403,7 +404,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         isLoginMod: response['isLoginMod'] ?? true,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] unbanUserAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] unbanUserAsync error: $e');
       return FCUnbanUserResult(
         result: false,
         resultText: 'Error unbanning user: $e',
@@ -414,7 +415,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCMarkAsSpamResult> markAsSpamAsync(String userId) async {
-    print('⚠️ [XENFORO_MODERATION] markAsSpamAsync not fully implemented, returning stub result.');
+    xfDebug('⚠️ [XENFORO_MODERATION] markAsSpamAsync not fully implemented, returning stub result.');
     return FCMarkAsSpamResult(
       result: false,
       resultText: 'Mark as spam not implemented',
@@ -430,8 +431,8 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
     bool deleteConversations = false,
     bool banUser = false,
   }) async {
-    print('✅ [XENFORO_MODERATION] spamCleanUserAsync called - IMPLEMENTED');
-    print('   📋 Parameters: userId=$userId, username=$username, actionThreads=$actionThreads, deleteMessages=$deleteMessages, deleteConversations=$deleteConversations, banUser=$banUser');
+    xfDebug('✅ [XENFORO_MODERATION] spamCleanUserAsync called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: userId=$userId, username=$username, actionThreads=$actionThreads, deleteMessages=$deleteMessages, deleteConversations=$deleteConversations, banUser=$banUser');
 
     // Validate that either userId OR username is provided
     if ((userId == null || userId.isEmpty) && (username == null || username.isEmpty)) {
@@ -456,7 +457,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
       params['deleteConversations'] = deleteConversations;
       params['banUser'] = banUser;
 
-      print('🔍 [XENFORO_MODERATION] Calling spamCleanUser API with params: $params');
+      xfDebug('🔍 [XENFORO_MODERATION] Calling spamCleanUser API with params: $params');
       final response = await callPluginApi('spamCleanUser', params);
 
       // Parse actions from response if available
@@ -479,7 +480,7 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
         actions: actions,
       );
     } catch (e) {
-      print('❌ [XENFORO_MODERATION] spamCleanUserAsync error: $e');
+      xfDebug('❌ [XENFORO_MODERATION] spamCleanUserAsync error: $e');
       return FCSpamCleanUserResult(
         result: false,
         resultText: 'Error cleaning spam: $e',

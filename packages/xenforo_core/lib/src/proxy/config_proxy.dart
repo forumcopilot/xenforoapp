@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_config_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCConfigProxy
 /// Handles forum configuration retrieval for XenForo forums
@@ -12,8 +14,8 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
 
   @override
   Future<FCConfigResult> getConfig(String url, {bool forceRefresh = false}) async {
-    print('✅ [XENFORO_CONFIG] getConfig called via plugin API');
-    print('   📋 Parameters: url=$url, forceRefresh=$forceRefresh');
+    xfDebug('✅ [XENFORO_CONFIG] getConfig called via plugin API');
+    xfDebug('   📋 Parameters: url=$url, forceRefresh=$forceRefresh');
 
     try {
       siteContext.lastGetConfigFcIsLogin = null;
@@ -27,15 +29,11 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
           response.remove('_fc_plugin_internal_fc_is_login') as bool? ?? false;
       siteContext.lastGetConfigFcIsLogin = fcIsLoginFromThisGetConfig;
 
-      // Log the full JSON response for debugging
-      print('✅ [XENFORO_CONFIG] getConfig response:');
-      print('   📋 Full JSON response (formatted):');
-      // Pretty print the JSON response
-      try {
-        final encoder = JsonEncoder.withIndent('  ');
-        print(encoder.convert(response));
-      } catch (e) {
-        print('   ${response.toString()}');
+      // Log the full JSON response, in debug builds only (it is large and
+      // can carry account data).
+      if (kDebugMode) {
+        xfDebug('✅ [XENFORO_CONFIG] getConfig response:');
+        xfDebug(const JsonEncoder.withIndent('  ').convert(response));
       }
 
       // Populate the reaction registry from the forum's configured reactions
@@ -153,7 +151,7 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
         forumType: response['forumType'] ?? 'xenforo',
       );
     } catch (e) {
-      print('❌ [XENFORO_CONFIG] Error getting config: $e');
+      xfDebug('❌ [XENFORO_CONFIG] Error getting config: $e');
 
       // The app carries on with the minimal config below, so make sure the
       // previously opened forum's reactions don't carry over to this one.

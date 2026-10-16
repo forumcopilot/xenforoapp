@@ -625,7 +625,8 @@ class TopicController extends AbstractController
                 true,
                 null,
                 (string)$thread->thread_id,
-                $thread->canView() ? 0 : 1
+                // 1 = held for moderator approval (see actionReplyPost).
+                $thread->discussion_state === 'moderated' ? 1 : 0
             );
 
             return $this->apiSuccess($result);

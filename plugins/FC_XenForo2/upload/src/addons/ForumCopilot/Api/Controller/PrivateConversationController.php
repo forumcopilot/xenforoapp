@@ -467,6 +467,9 @@ class PrivateConversationController extends AbstractController
             // Get messages
             $messageRepo = $this->repository('XF:ConversationMessage');
             $finder = $messageRepo->findMessagesForConversationView($conversation);
+            // Then by ID: messages posted in the same second keep one order
+            // from page to page, the order getMessagePosition() numbers.
+            $finder->order('message_id');
             // Note: findMessagesForConversationView already includes 'full' which has User
             // Attachments relation is already configured with 'with' => 'Data' in the entity structure
             // So we don't need to explicitly add it here
@@ -697,11 +700,8 @@ class PrivateConversationController extends AbstractController
             // Get lastRead timestamp
             $lastRead = $userConv->Recipient ? $userConv->Recipient->last_read_date : 0;
 
-            // Calculate message position by counting messages before this one
             $messageRepo = $this->repository('XF:ConversationMessage');
-            $positionFinder = $messageRepo->findMessagesForConversationView($conversation);
-            $positionFinder->where('message_date', '<=', $message->message_date);
-            $position = $positionFinder->total();
+            $position = $this->getMessagePosition($message, $conversation);
 
             // Calculate pagination to center around the target message
             $startNum = max(1, $position - floor($messagesPerRequest / 2));
@@ -734,6 +734,7 @@ class PrivateConversationController extends AbstractController
 
             // Get messages using same logic as actionGetConversation
             $messageFinder = $messageRepo->findMessagesForConversationView($conversation);
+            $messageFinder->order('message_id');
             
             // Calculate pagination - ensure valid values
             $perPage = max(1, $lastNum - $startNum + 1);

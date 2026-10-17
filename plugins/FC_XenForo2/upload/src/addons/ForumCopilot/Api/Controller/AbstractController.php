@@ -809,10 +809,18 @@ abstract class AbstractController extends Controller
     protected function getMessagePosition($message, $conversation)
     {
         try {
-            // Count all visible messages that come before or at the same time as this message
+            // Count the visible messages up to this one. Messages posted in the
+            // same second are told apart by ID, as they are ordered; counting
+            // by date alone gave them all the last one's number.
             $messageRepo = $this->repository('XF:ConversationMessage');
             $positionFinder = $messageRepo->findMessagesForConversationView($conversation);
-            $positionFinder->where('message_date', '<=', $message->message_date);
+            $positionFinder->whereOr(
+                ['message_date', '<', $message->message_date],
+                [
+                    ['message_date', '=', $message->message_date],
+                    ['message_id', '<=', $message->message_id],
+                ]
+            );
             
             // The total() method returns the count, which is already 1-based (first message = 1)
             return $positionFinder->total();

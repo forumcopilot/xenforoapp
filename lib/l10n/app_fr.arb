@@ -1298,5 +1298,8 @@
   "deleteAccountConfirmMessage": "Votre compte sur {forumName} sera supprimé, avec votre profil et vos réglages. Vos messages restent, sous votre nom. Cette action est irréversible.",
   "deleteAccountNoPassword": "Pas de mot de passe ? Confirmez avec votre nom d’utilisateur",
   "deleteAccountUsePassword": "Confirmer avec votre mot de passe",
-  "accountDeleted": "Votre compte a été supprimé."
+  "accountDeleted": "Votre compte a été supprimé.",
+  "signInOnWebsite": "Se connecter sur le site du forum",
+  "signInOnWebsiteHint": "Pour Google, Facebook et les autres façons de vous y connecter",
+  "browserLoginFailed": "La connexion via le site n’a pas abouti. Veuillez réessayer."
 }

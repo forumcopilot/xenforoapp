@@ -66,7 +66,7 @@ class ForumLinks {
   static ForumLinkTarget? parse(String url, Site site) {
     final uri = Uri.tryParse(url.trim());
     if (uri == null || !(uri.scheme == 'http' || uri.scheme == 'https')) return null;
-    final base = _root(site);
+    final base = rootOf(site);
     if (base == null) return null;
     if (_host(uri.host) != _host(base.host)) return null;
 
@@ -125,7 +125,7 @@ class ForumLinks {
 
   /// The forum's root, where the add-on's forumcopilot.php sits (XenForo's
   /// own root), or the forum's address when there is no endpoint.
-  static Uri? _root(Site site) {
+  static Uri? rootOf(Site site) {
     final plugin = Uri.tryParse(site.pluginUrl);
     if (plugin != null && plugin.host.isNotEmpty && plugin.path.toLowerCase().endsWith('.php')) {
       final path = plugin.path;
@@ -140,7 +140,7 @@ class ForumLinks {
   /// A link to post [postId] of [site] that works with or without friendly
   /// URLs (XenForo sends it on to the thread, at the post).
   static String? postUrl(Site site, String postId) {
-    final root = _root(site);
+    final root = rootOf(site);
     if (root == null) return null;
     return '${root.scheme}://${root.authority}${root.path}index.php?posts/$postId/';
   }

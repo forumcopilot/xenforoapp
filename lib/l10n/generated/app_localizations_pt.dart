@@ -2940,4 +2940,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Sua conta foi excluída.';
+
+  @override
+  String get signInOnWebsite => 'Entrar pelo site do fórum';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Para Google, Facebook e as outras formas de entrar lá';
+
+  @override
+  String get browserLoginFailed =>
+      'Não foi possível entrar pelo site. Tente novamente.';
 }

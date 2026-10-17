@@ -2919,4 +2919,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Your account has been deleted.';
+
+  @override
+  String get signInOnWebsite => 'Sign in on the forum\'s website';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'For Google, Facebook and the other ways you sign in there';
+
+  @override
+  String get browserLoginFailed =>
+      'Signing in on the website didn\'t work. Please try again.';
 }

@@ -2763,4 +2763,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accountDeleted => '你的账户已删除。';
+
+  @override
+  String get signInOnWebsite => '在论坛网站上登录';
+
+  @override
+  String get signInOnWebsiteHint => '适用于 Google、Facebook 及你在网站上使用的其他登录方式';
+
+  @override
+  String get browserLoginFailed => '网站登录未成功，请重试。';
 }

@@ -2807,4 +2807,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get accountDeleted => 'アカウントを削除しました。';
+
+  @override
+  String get signInOnWebsite => 'フォーラムのウェブサイトでログイン';
+
+  @override
+  String get signInOnWebsiteHint => 'Google、Facebook など、サイトで使っている方法でログインできます';
+
+  @override
+  String get browserLoginFailed => 'ウェブサイトでのログインに失敗しました。もう一度お試しください。';
 }

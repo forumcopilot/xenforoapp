@@ -2799,4 +2799,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get accountDeleted => '계정이 삭제되었습니다.';
+
+  @override
+  String get signInOnWebsite => '포럼 웹사이트에서 로그인';
+
+  @override
+  String get signInOnWebsiteHint => 'Google, Facebook 등 사이트에서 쓰는 방법으로 로그인';
+
+  @override
+  String get browserLoginFailed => '웹사이트 로그인에 실패했습니다. 다시 시도하세요.';
 }

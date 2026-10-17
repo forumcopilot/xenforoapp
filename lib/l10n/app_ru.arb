@@ -1322,5 +1322,8 @@
   "deleteAccountConfirmMessage": "Ваш аккаунт на {forumName} будет удалён вместе с профилем и настройками. Ваши сообщения останутся под вашим именем. Это действие нельзя отменить.",
   "deleteAccountNoPassword": "Нет пароля? Подтвердите именем пользователя",
   "deleteAccountUsePassword": "Подтвердить паролем",
-  "accountDeleted": "Ваш аккаунт удалён."
+  "accountDeleted": "Ваш аккаунт удалён.",
+  "signInOnWebsite": "Войти на сайте форума",
+  "signInOnWebsiteHint": "Для Google, Facebook и других способов входа на сайте",
+  "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз."
 }

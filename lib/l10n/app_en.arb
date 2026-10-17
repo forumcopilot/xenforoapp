@@ -1924,5 +1924,8 @@
   "deleteAccountNoPassword": "No password? Confirm with your user name",
   "@deleteAccountNoPassword": {"description": "For members who signed up with Google or Facebook"},
   "deleteAccountUsePassword": "Confirm with your password",
-  "accountDeleted": "Your account has been deleted."
+  "accountDeleted": "Your account has been deleted.",
+  "signInOnWebsite": "Sign in on the forum's website",
+  "signInOnWebsiteHint": "For Google, Facebook and the other ways you sign in there",
+  "browserLoginFailed": "Signing in on the website didn't work. Please try again."
 }

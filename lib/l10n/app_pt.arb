@@ -1322,5 +1322,8 @@
   "deleteAccountConfirmMessage": "Sua conta em {forumName} será excluída, com seu perfil e suas configurações. Suas mensagens permanecem, com seu nome. Isso não pode ser desfeito.",
   "deleteAccountNoPassword": "Sem senha? Confirme com seu nome de usuário",
   "deleteAccountUsePassword": "Confirmar com sua senha",
-  "accountDeleted": "Sua conta foi excluída."
+  "accountDeleted": "Sua conta foi excluída.",
+  "signInOnWebsite": "Entrar pelo site do fórum",
+  "signInOnWebsiteHint": "Para Google, Facebook e as outras formas de entrar lá",
+  "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente."
 }

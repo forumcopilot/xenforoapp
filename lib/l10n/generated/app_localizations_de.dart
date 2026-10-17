@@ -2973,4 +2973,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Dein Konto wurde gelöscht.';
+
+  @override
+  String get signInOnWebsite => 'Auf der Website des Forums anmelden';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Für Google, Facebook und andere Anmeldearten dort';
+
+  @override
+  String get browserLoginFailed =>
+      'Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.';
 }

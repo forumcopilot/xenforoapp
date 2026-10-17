@@ -1298,5 +1298,8 @@
   "deleteAccountConfirmMessage": "{forumName} のアカウントが、プロフィールと設定とともに削除されます。投稿はあなたの名前のまま残ります。元に戻すことはできません。",
   "deleteAccountNoPassword": "パスワードがない場合はユーザー名で確認",
   "deleteAccountUsePassword": "パスワードで確認",
-  "accountDeleted": "アカウントを削除しました。"
+  "accountDeleted": "アカウントを削除しました。",
+  "signInOnWebsite": "フォーラムのウェブサイトでログイン",
+  "signInOnWebsiteHint": "Google、Facebook など、サイトで使っている方法でログインできます",
+  "browserLoginFailed": "ウェブサイトでのログインに失敗しました。もう一度お試しください。"
 }

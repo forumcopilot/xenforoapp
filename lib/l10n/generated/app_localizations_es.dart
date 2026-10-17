@@ -2955,4 +2955,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Tu cuenta se ha eliminado.';
+
+  @override
+  String get signInOnWebsite => 'Iniciar sesión en el sitio web del foro';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Para Google, Facebook y las demás formas de entrar allí';
+
+  @override
+  String get browserLoginFailed =>
+      'No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo.';
 }

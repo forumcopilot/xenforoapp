@@ -4987,6 +4987,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account has been deleted.'**
   String get accountDeleted;
+
+  /// No description provided for @signInOnWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in on the forum\'s website'**
+  String get signInOnWebsite;
+
+  /// No description provided for @signInOnWebsiteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For Google, Facebook and the other ways you sign in there'**
+  String get signInOnWebsiteHint;
+
+  /// No description provided for @browserLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in on the website didn\'t work. Please try again.'**
+  String get browserLoginFailed;
 }
 
 class _AppLocalizationsDelegate

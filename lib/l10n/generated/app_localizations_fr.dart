@@ -2971,4 +2971,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Votre compte a été supprimé.';
+
+  @override
+  String get signInOnWebsite => 'Se connecter sur le site du forum';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Pour Google, Facebook et les autres façons de vous y connecter';
+
+  @override
+  String get browserLoginFailed =>
+      'La connexion via le site n’a pas abouti. Veuillez réessayer.';
 }

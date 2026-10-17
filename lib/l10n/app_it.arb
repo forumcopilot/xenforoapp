@@ -1322,5 +1322,8 @@
   "deleteAccountConfirmMessage": "Il tuo account su {forumName} verrà eliminato, con profilo e impostazioni. I tuoi messaggi restano, con il tuo nome. Non si può annullare.",
   "deleteAccountNoPassword": "Nessuna password? Conferma con il nome utente",
   "deleteAccountUsePassword": "Conferma con la password",
-  "accountDeleted": "Il tuo account è stato eliminato."
+  "accountDeleted": "Il tuo account è stato eliminato.",
+  "signInOnWebsite": "Accedi dal sito del forum",
+  "signInOnWebsiteHint": "Per Google, Facebook e gli altri modi in cui accedi lì",
+  "browserLoginFailed": "L’accesso dal sito non è riuscito. Riprova."
 }

@@ -2963,4 +2963,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Ваш аккаунт удалён.';
+
+  @override
+  String get signInOnWebsite => 'Войти на сайте форума';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Для Google, Facebook и других способов входа на сайте';
+
+  @override
+  String get browserLoginFailed =>
+      'Не удалось войти через сайт. Попробуйте ещё раз.';
 }

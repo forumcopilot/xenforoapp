@@ -2931,4 +2931,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get accountDeleted => 'Je account is verwijderd.';
+
+  @override
+  String get signInOnWebsite => 'Inloggen op de website van het forum';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Voor Google, Facebook en de andere manieren waarop je daar inlogt';
+
+  @override
+  String get browserLoginFailed =>
+      'Inloggen via de website is niet gelukt. Probeer het opnieuw.';
 }

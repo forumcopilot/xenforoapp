@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../../config/app_forum_config.dart';
+import 'discard_changes_scope.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
@@ -59,6 +60,10 @@ class MessageComposePage extends StatefulWidget {
   // Show signature toggle for new topic editor
   final bool showSignatureToggle;
 
+  /// An edit of an existing post or message: closing with unsaved changes
+  /// asks "discard your changes?" rather than "discard your post?".
+  final bool isEditing;
+
   const MessageComposePage({
     super.key,
     required this.siteContext,
@@ -89,6 +94,7 @@ class MessageComposePage extends StatefulWidget {
     this.onRemoveAttachment,
     this.submitIcon,
     this.showSignatureToggle = false,
+    this.isEditing = false,
   });
 
   @override
@@ -105,6 +111,11 @@ class _MessageComposePageState extends State<MessageComposePage> {
   final Map<String, String> _fileToAttachmentId = {}; // Map file path to attachment ID
   final Map<String, bool> _uploadingFiles = {}; // Track which files are currently uploading (key: file path)
   final Set<String> _removedExistingAttachmentIds = {}; // Track removed existing attachments
+
+  // What the form opened with (a quote, the post being edited), so closing
+  // asks only when something was actually typed or attached since.
+  String _baselineTitle = '';
+  String _baselineContent = '';
   bool _isRemovingAttachment = false;
   bool _ownsTitleController = false;
   bool _ownsContentController = false;
@@ -162,6 +173,16 @@ class _MessageComposePageState extends State<MessageComposePage> {
         _isContentFieldFocused = _contentFocusNode.hasFocus;
       });
     });
+
+    _baselineTitle = _titleController.text;
+    _baselineContent = _contentController.text;
+  }
+
+  /// Whether closing now would lose something the writer added.
+  bool _hasUnsavedChanges() {
+    if (_titleController.text.trim() != _baselineTitle.trim()) return true;
+    if (_contentController.text.trim() != _baselineContent.trim()) return true;
+    return _attachments.isNotEmpty;
   }
 
   @override
@@ -176,6 +197,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
         _contentController.selection = TextSelection.fromPosition(
           TextPosition(offset: _contentController.text.length),
         );
+        // A quote that arrived late is what the form opened with.
+        _baselineContent = _contentController.text;
       }
     }
   }
@@ -1728,7 +1751,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
     _titleFocusNode.unfocus();
     _contentFocusNode.unfocus();
     FocusScope.of(context).unfocus();
-    Navigator.of(context).pop();
+    // maybePop, not pop: it lets DiscardChangesScope ask first.
+    Navigator.of(context).maybePop();
   }
 
   @override
@@ -1736,9 +1760,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return PopScope(
+    return DiscardChangesScope(
+      listenable: Listenable.merge([_titleController, _contentController]),
+      hasChanges: _hasUnsavedChanges,
+      isEdit: widget.isEditing,
+      busy: _isSubmitting,
+      child: PopScope(
       canPop: true,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         // Dismiss keyboard when back gesture/button is triggered
         // This handles iOS swipe-back and Android back button
         _titleFocusNode.unfocus();
@@ -1960,6 +1989,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

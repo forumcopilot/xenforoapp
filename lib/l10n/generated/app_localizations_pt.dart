@@ -1652,4 +1652,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Arquivo salvo em Documentos: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Você deseja excluir sua postagem?';
+
+  @override
+  String get discardChangesQuestion => 'Você deseja descartar suas alterações?';
+
+  @override
+  String get discard => 'Descartar';
+
+  @override
+  String get discardChanges => 'Descartar alterações';
 }

@@ -1570,4 +1570,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return '文件已保存到文档：$filename';
   }
+
+  @override
+  String get discardPostQuestion => '是否要放弃您的帖子？';
+
+  @override
+  String get discardChangesQuestion => '您确定要放弃所做的更改吗？';
+
+  @override
+  String get discard => '放弃';
+
+  @override
+  String get discardChanges => '舍弃更改';
 }

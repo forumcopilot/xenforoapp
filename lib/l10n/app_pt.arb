@@ -988,5 +988,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Você deseja excluir sua postagem?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Você deseja descartar suas alterações?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Descartar",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Descartar alterações",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

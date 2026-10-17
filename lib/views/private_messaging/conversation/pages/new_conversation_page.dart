@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
 import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
 import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
+import 'package:forumcopilot_flutter/views/widgets/discard_changes_scope.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import 'conversation_page.dart';
 import '../../../../theme/design_tokens.dart';
@@ -331,7 +332,11 @@ class _NewConversationPageState extends State<NewConversationPage> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
+    return DiscardChangesScope(
+      listenable: Listenable.merge([_titleController, _messageController]),
+      hasChanges: _hasUnsavedChanges,
+      busy: _isSubmitting,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(
           'New Conversation',
@@ -768,7 +773,17 @@ class _NewConversationPageState extends State<NewConversationPage> {
           _buildBottomToolbar(),
         ],
       ),
+      ),
     );
+  }
+
+  /// Whether closing now would lose something: text, an attachment, or a
+  /// recipient beyond the one the page was opened for.
+  bool _hasUnsavedChanges() {
+    return _titleController.text.trim().isNotEmpty ||
+        _messageController.text.trim().isNotEmpty ||
+        _attachments.isNotEmpty ||
+        _toRecipients.any((r) => r != widget.initialRecipient);
   }
 
   Future<String?> _handleFileUpload(XFile file) async {

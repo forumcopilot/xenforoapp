@@ -964,5 +964,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "投稿を破棄しますか？",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "変更を破棄しますか？",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "破棄",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "変更を破棄",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

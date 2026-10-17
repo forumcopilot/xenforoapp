@@ -988,5 +988,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Отказаться от сообщения?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Отменить изменения?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Отменить",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Отменить изменения",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

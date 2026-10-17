@@ -1659,4 +1659,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Datei in Dokumente gespeichert: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Willst du deinen Beitrag verwerfen?';
+
+  @override
+  String get discardChangesQuestion =>
+      'Möchtest du deine Änderungen verwerfen?';
+
+  @override
+  String get discard => 'Verwerfen';
+
+  @override
+  String get discardChanges => 'Änderungen verwerfen';
 }

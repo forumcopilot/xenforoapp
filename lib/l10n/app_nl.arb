@@ -1459,5 +1459,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Wil je je bericht weggooien?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Wil je je wijzigingen negeren?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Verwerpen",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Wijzigingen negeren",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

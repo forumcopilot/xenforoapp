@@ -1640,4 +1640,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'File saved to Documents: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Do you want to discard your post?';
+
+  @override
+  String get discardChangesQuestion => 'Do you want to discard your changes?';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get discardChanges => 'Discard changes';
 }

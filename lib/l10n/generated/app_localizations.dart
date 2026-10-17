@@ -2953,6 +2953,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'File saved to Documents: {filename}'**
   String fileSavedToDocuments(String filename);
+
+  /// Asked when a composer with unsent text is closed
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to discard your post?'**
+  String get discardPostQuestion;
+
+  /// Asked when an edit form with unsaved changes is closed
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to discard your changes?'**
+  String get discardChangesQuestion;
+
+  /// Button that closes a composer and throws away what was typed
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// Button that closes an edit form and throws away the changes
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes'**
+  String get discardChanges;
 }
 
 class _AppLocalizationsDelegate

@@ -446,6 +446,7 @@ class _EditPostPageState extends State<EditPostPage> {
         // Only create compose page when data is ready
         // Use a stable key to preserve MessageComposePage state across rebuilds
         Widget compose = MessageComposePage(
+          isEditing: true,
           key: const ValueKey('edit_post_compose'),
           siteContext: widget.siteContext,
           title: 'Edit Post',

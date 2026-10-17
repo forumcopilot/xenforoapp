@@ -988,5 +988,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "是否要放弃您的帖子？",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "您确定要放弃所做的更改吗？",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "放弃",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "舍弃更改",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

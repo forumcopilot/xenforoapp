@@ -1537,5 +1537,13 @@
     "placeholders": {
       "filename": {"type": "String"}
     }
-  }
+  },
+  "discardPostQuestion": "Do you want to discard your post?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Do you want to discard your changes?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Discard",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Discard changes",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

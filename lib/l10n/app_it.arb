@@ -989,5 +989,13 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Vuoi eliminare il tuo messaggio?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Vuoi annullare le modifiche?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Scarta",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Annulla modifiche",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
 }

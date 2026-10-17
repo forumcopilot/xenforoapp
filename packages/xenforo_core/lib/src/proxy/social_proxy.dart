@@ -3,11 +3,12 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_social_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_social_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCSocialProxy
 /// Handles social operations for XenForo forums
 class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
-  XenForoSocialProxy(SiteContext context) : super(context);
+  XenForoSocialProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCThankPostResult> thankPostAsync(String postId) async {

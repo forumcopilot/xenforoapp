@@ -4,11 +4,12 @@ import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCForumProxy
 /// Handles forum structure and navigation for XenForo forums
 class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
-  XenForoForumProxy(SiteContext context) : super(context);
+  XenForoForumProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCForumDataResult> getForumAsync(

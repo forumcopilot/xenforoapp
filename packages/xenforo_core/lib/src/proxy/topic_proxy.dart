@@ -4,11 +4,12 @@ import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCTopicProxy
 /// Handles thread/topic operations for XenForo forums
 class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
-  XenForoTopicProxy(SiteContext context) : super(context);
+  XenForoTopicProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCTopicDataResult> getAnnTopicAsync(String forumId, int startNum, int lastNum) async {

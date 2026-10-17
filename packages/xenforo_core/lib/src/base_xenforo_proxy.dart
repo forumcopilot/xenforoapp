@@ -326,7 +326,7 @@ abstract class BaseXenForoProxy {
     }
 
     xfDebug('🔄 [BASE_PROXY] Attempting relogin with saved credentials');
-    final loginResult = await XenForoUserProxy(siteContext).loginAsync(
+    final loginResult = await XenForoUserProxy(siteContext, client: _client).loginAsync(
       siteContext.username!,
       siteContext.password!,
       false, // not anonymous

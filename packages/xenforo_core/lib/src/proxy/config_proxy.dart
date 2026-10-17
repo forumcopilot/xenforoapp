@@ -6,11 +6,12 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_config_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCConfigProxy
 /// Handles forum configuration retrieval for XenForo forums
 class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
-  XenForoConfigProxy(SiteContext context) : super(context);
+  XenForoConfigProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCConfigResult> getConfig(String url, {bool forceRefresh = false}) async {

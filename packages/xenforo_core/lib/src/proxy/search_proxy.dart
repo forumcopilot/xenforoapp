@@ -5,11 +5,12 @@ import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCSearchProxy
 /// Handles search operations for XenForo forums
 class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
-  XenForoSearchProxy(SiteContext context) : super(context);
+  XenForoSearchProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCSearchTopicResult> searchTopicAsync(String searchString, int startNum, int lastNum, String? searchId) async {

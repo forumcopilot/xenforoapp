@@ -10,11 +10,12 @@ import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post_vote.dart';
 import 'package:forumcopilot_sdk/models/results/fc_reaction_result.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCPostProxy
 /// Handles post operations for XenForo forums
 class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
-  XenForoPostProxy(SiteContext context) : super(context);
+  XenForoPostProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCQuotePostResult> getQuotePostAsync(String postId) async {

@@ -9,11 +9,12 @@ import 'package:forumcopilot_sdk/services/fc_http_overrides.dart';
 import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_directory_result.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCUserProxy
 /// Handles user operations and profile management for XenForo forums
 class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
-  XenForoUserProxy(SiteContext context) : super(context);
+  XenForoUserProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<String> getAvatarAsync(String userId, String username) {

@@ -5,11 +5,12 @@ import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCPrivateConversationProxy
 /// Handles private conversation operations for XenForo forums
 class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPrivateConversationProxy {
-  XenForoPrivateConversationProxy(SiteContext context) : super(context);
+  XenForoPrivateConversationProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCNewConversationResult> newConversationAsync(

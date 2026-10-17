@@ -3,11 +3,12 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_moderation_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_moderation_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCModerationProxy
 /// Handles moderation operations for XenForo forums
 class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationProxy {
-  XenForoModerationProxy(SiteContext context) : super(context);
+  XenForoModerationProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCLoginModResult> doLoginModAsync(String username, String password) async {

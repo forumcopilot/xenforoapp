@@ -35,6 +35,7 @@ class _ExpiredSessionClient extends XenForoClient {
     return XenForoCallResult(
       statusCode: 200,
       body: '{"result":true}',
+      headers: {'fc_is_login': signedIn ? '1' : '0'},
       fcIsLogin: signedIn,
       decoded: {'result': true, 'method': method},
     );

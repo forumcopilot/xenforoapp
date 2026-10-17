@@ -11,11 +11,12 @@ import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_notification_prefs.dart';
 import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCAccountProxy
 /// Handles user registration and authentication for XenForo forums
 class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
-  XenForoAccountProxy(SiteContext context) : super(context);
+  XenForoAccountProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCForgetPasswordResult> forgetPassword(String username, String token, String code) async {

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
-import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../services/attachment_uploader.dart';
 
 class EditConversationMessagePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -26,9 +23,13 @@ class EditConversationMessagePage extends StatefulWidget {
 }
 
 class _EditConversationMessagePageState extends State<EditConversationMessagePage> {
+  // The message's own attachments that stay; new ones are the uploader's.
   final List<String> _attachmentIds = [];
   String? _groupId;
   List<FCAttachment>? _existingAttachments;
+  // Bound to this conversation of this forum once the message has loaded.
+  AttachmentUploader? _uploader;
+  bool _sent = false;
 
   // Controllers created once and reused
   late final TextEditingController _contentController;
@@ -48,6 +49,8 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
 
   @override
   void dispose() {
+    // Closed without saving: new uploads are removed from the forum.
+    _uploader?.close(sent: _sent);
     _contentController.dispose();
     super.dispose();
   }
@@ -57,8 +60,8 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       final result = await SiteProxyFactory.getPrivateConversationProxy().saveRawMessageAsync(
         widget.messageId,
         content,
-        attachmentIds: _attachmentIds.isNotEmpty ? _attachmentIds : null,
-        groupId: _groupId,
+        attachmentIds: [..._attachmentIds, ...?_uploader?.attachmentIds],
+        groupId: _uploader?.groupId ?? _groupId,
       );
 
       if (!result.result) {
@@ -69,6 +72,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
         return false;
       }
 
+      _sent = true;
       if (mounted) {
         SnackbarHelper.showSuccess(context, AppLocalizations.of(context).messageUpdatedSuccessfully);
         // Dismiss keyboard before navigating back
@@ -86,131 +90,29 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
   }
 
   Future<bool> _handleRemoveExistingAttachment(String attachmentId) async {
+    final uploader = _uploader;
+    if (uploader == null) return false;
     try {
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-
-      // For conversation messages, we need to call the API to remove the attachment
-      // For existing attachments (already attached to message), omit groupId
-      // Use messageId as postId to identify which message the attachment belongs to
-      var removeResult = await attachmentProxy.removeAttachmentAsync(
-        attachmentId,
-        "", // forumId not needed for conversation messages
-        "", // groupId should be omitted for existing/associated attachments
-        widget.messageId, // Use messageId as postId to identify the message
-      );
-
-      if (removeResult.result) {
+      await uploader.removeExisting(attachmentId, contentId: widget.messageId);
+      if (mounted) {
         setState(() {
           _attachmentIds.remove(attachmentId);
           // Also remove from existing attachments list so UI updates immediately
-          if (_existingAttachments != null) {
-            _existingAttachments = _existingAttachments!.where((a) => a.id != attachmentId).toList();
-          }
+          _existingAttachments = _existingAttachments?.where((a) => a.id != attachmentId).toList();
         });
-        return true;
-      } else {
-        // Provide a more descriptive error message
-        final errorMessage = removeResult.resultText?.trim();
-        if (mounted) {
-          SnackbarHelper.showError(context, errorMessage ?? 'Failed to remove attachment. Please check your permissions.');
-        }
-        return false;
       }
+      return true;
     } catch (e) {
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToRemoveAttachment(e.toString()));
-      }
+      if (mounted) SnackbarHelper.showError(context, e.toString());
       return false;
     }
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    try {
-      // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
-      final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-      // Check attachment count limit
-      if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
-        if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-        }
-        return null;
-      }
-
-      // Validate file
-      XFile fileToUpload = file;
-      if (constraints != null) {
-        final isImage = isImageFile(file.name);
-        final validation = await validateFile(
-          file,
-          constraints,
-          isImage,
-          currentAttachmentCount: _attachmentIds.length,
-        );
-
-        if (!validation.isValid) {
-          if (mounted) {
-            SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
-          }
-          return null;
-        }
-
-        // For images that need optimization
-        if (isImage && validation.needsOptimization) {
-          // Optimize image
-          try {
-            final optimizedFile = await optimizeImage(file, constraints);
-            fileToUpload = optimizedFile;
-          } catch (e) {
-            String errorMessage = e.toString();
-            if (errorMessage.startsWith('Exception: ')) {
-              errorMessage = errorMessage.substring(11);
-            }
-            if (mounted) {
-              SnackbarHelper.showError(context, errorMessage);
-            }
-            return null;
-          }
-        }
-      }
-
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      final fileBytes = await fileToUpload.readAsBytes();
-
-      // For conversation messages, use "pm" type and conversationId
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync(
-        "pm",
-        widget.conversationId,
-        groupId,
-        fileToUpload.name,
-        fileBytes,
-      );
-
-      if (uploadAttachmentResult.result) {
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            _attachmentIds.add(uploadAttachmentResult.attachmentId!);
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-          });
-        } else {
-          return null;
-        }
-
-        return uploadAttachmentResult.attachmentId;
-      } else {
-        throw Exception(uploadAttachmentResult.resultText ?? 'Failed to upload file');
-      }
-    } catch (e) {
-      throw Exception('Failed to upload file: ${e.toString()}');
-    }
+  /// The composer has checked and shrunk the file.
+  Future<String?> _handleFileUpload(XFile file) {
+    final uploader = _uploader;
+    if (uploader == null) throw AttachmentUploadException(AppLocalizations.of(context).failedToUploadFileTryAgain);
+    return uploader.upload(file);
   }
 
   @override
@@ -252,6 +154,12 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
               _attachmentIds.addAll(data.attachments!.map((a) => a.id).where((id) => id.isNotEmpty));
             }
           }
+          _uploader ??= AttachmentUploader(
+            siteContext: widget.siteContext,
+            kind: AttachmentKind.message,
+            targetId: widget.conversationId,
+            groupId: _groupId,
+          );
         }
 
         // Show loading indicator first, then compose page once data is ready
@@ -308,15 +216,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
           existingAttachments: snapshot.data?.attachments ?? _existingAttachments,
           onRemoveExistingAttachment: _handleRemoveExistingAttachment,
           submitIcon: Icons.save_rounded,
-          onRemoveAttachment: (attachmentId) {
-            // For newly uploaded attachments, remove from list
-            if (_attachmentIds.contains(attachmentId)) {
-              setState(() {
-                _attachmentIds.remove(attachmentId);
-              });
-            }
-            return Future.value(true);
-          },
+          onRemoveAttachment: (attachmentId) async => _uploader?.remove(attachmentId),
         );
       },
     );

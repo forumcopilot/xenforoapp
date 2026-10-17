@@ -2702,4 +2702,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get linkCopied => '链接已复制';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已附加 $count 个共享文件。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已附加 $count 个文件。未能附加：$names',
+    );
+    return '$_temp0';
+  }
 }

@@ -1307,5 +1307,7 @@
   "statsPosts": "{count, plural, =1{{count} mensaje} other{{count} mensajes}}",
   "searchForumName": "Buscar en {forumName}",
   "copyLink": "Copiar enlace",
-  "linkCopied": "Enlace copiado"
+  "linkCopied": "Enlace copiado",
+  "sharedFilesAttached": "{count, plural, =1{Se adjuntó 1 archivo compartido.} other{Se adjuntaron {count} archivos compartidos.}}",
+  "sharedFilesPartlyAttached": "{count, plural, =1{Se adjuntó 1 archivo. Sin adjuntar: {names}} other{Se adjuntaron {count} archivos. Sin adjuntar: {names}}}"
 }

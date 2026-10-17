@@ -415,7 +415,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (widget.onFileUpload == null) return;
     try {
       // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
+      // This composer's forum, not whichever is current.
+      final siteContext = widget.siteContext;
       final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
 
       // Check attachment count limit before file selection
@@ -531,7 +532,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (widget.onFileUpload == null) return;
     try {
       // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
+      // This composer's forum, not whichever is current.
+      final siteContext = widget.siteContext;
       final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
 
       // Check attachment count limit before file selection

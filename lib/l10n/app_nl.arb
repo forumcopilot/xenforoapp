@@ -1756,5 +1756,7 @@
   "statsPosts": "{count, plural, =1{{count} bericht} other{{count} berichten}}",
   "searchForumName": "Zoeken in {forumName}",
   "copyLink": "Link kopiëren",
-  "linkCopied": "Link gekopieerd"
+  "linkCopied": "Link gekopieerd",
+  "sharedFilesAttached": "{count, plural, =1{1 gedeeld bestand bijgevoegd.} other{{count} gedeelde bestanden bijgevoegd.}}",
+  "sharedFilesPartlyAttached": "{count, plural, =1{1 bestand bijgevoegd. Niet bijgevoegd: {names}} other{{count} bestanden bijgevoegd. Niet bijgevoegd: {names}}}"
 }

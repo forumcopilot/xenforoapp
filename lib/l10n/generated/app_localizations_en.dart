@@ -2851,4 +2851,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get linkCopied => 'Link copied';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Attached $count shared files.',
+      one: 'Attached 1 shared file.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Attached $count files. Not attached: $names',
+      one: 'Attached 1 file. Not attached: $names',
+    );
+    return '$_temp0';
+  }
 }

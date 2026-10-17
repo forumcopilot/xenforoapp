@@ -1283,5 +1283,7 @@
   "statsPosts": "{count, plural, =1{{count} Beitrag} other{{count} Beiträge}}",
   "searchForumName": "{forumName} durchsuchen",
   "copyLink": "Link kopieren",
-  "linkCopied": "Link kopiert"
+  "linkCopied": "Link kopiert",
+  "sharedFilesAttached": "{count, plural, =1{1 geteilte Datei angehängt.} other{{count} geteilte Dateien angehängt.}}",
+  "sharedFilesPartlyAttached": "{count, plural, =1{1 Datei angehängt. Nicht angehängt: {names}} other{{count} Dateien angehängt. Nicht angehängt: {names}}}"
 }

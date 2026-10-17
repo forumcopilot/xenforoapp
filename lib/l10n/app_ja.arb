@@ -1283,5 +1283,7 @@
   "statsPosts": "{count, plural, other{投稿 {count} 件}}",
   "searchForumName": "{forumName} を検索",
   "copyLink": "リンクをコピー",
-  "linkCopied": "リンクをコピーしました"
+  "linkCopied": "リンクをコピーしました",
+  "sharedFilesAttached": "{count, plural, other{共有ファイルを {count} 件添付しました。}}",
+  "sharedFilesPartlyAttached": "{count, plural, other{{count} 件を添付しました。添付できなかったファイル: {names}}}"
 }

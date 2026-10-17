@@ -4897,6 +4897,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Link copied'**
   String get linkCopied;
+
+  /// After files shared into the app were attached to a new topic
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Attached 1 shared file.} other{Attached {count} shared files.}}'**
+  String sharedFilesAttached(int count);
+
+  /// After files shared into the app were attached to a new topic, some failed; names lists them
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Attached 1 file. Not attached: {names}} other{Attached {count} files. Not attached: {names}}}'**
+  String sharedFilesPartlyAttached(int count, String names);
 }
 
 class _AppLocalizationsDelegate

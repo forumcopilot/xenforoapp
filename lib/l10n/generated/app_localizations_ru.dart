@@ -2891,4 +2891,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get linkCopied => 'Ссылка скопирована';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Прикреплено $count общих файла.',
+      many: 'Прикреплено $count общих файлов.',
+      few: 'Прикреплено $count общих файла.',
+      one: 'Прикреплён $count общий файл.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Прикреплено $count файла. Не прикреплены: $names',
+      many: 'Прикреплено $count файлов. Не прикреплены: $names',
+      few: 'Прикреплено $count файла. Не прикреплены: $names',
+      one: 'Прикреплён $count файл. Не прикреплены: $names',
+    );
+    return '$_temp0';
+  }
 }

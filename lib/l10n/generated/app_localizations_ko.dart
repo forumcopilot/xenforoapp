@@ -2737,4 +2737,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get linkCopied => '링크를 복사했습니다';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '공유 파일 $count개를 첨부했습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개를 첨부했습니다. 첨부하지 못한 파일: $names',
+    );
+    return '$_temp0';
+  }
 }

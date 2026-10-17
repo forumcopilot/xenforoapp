@@ -1307,5 +1307,7 @@
   "statsPosts": "{count, plural, other{게시물 {count}개}}",
   "searchForumName": "{forumName} 검색",
   "copyLink": "링크 복사",
-  "linkCopied": "링크를 복사했습니다"
+  "linkCopied": "링크를 복사했습니다",
+  "sharedFilesAttached": "{count, plural, other{공유 파일 {count}개를 첨부했습니다.}}",
+  "sharedFilesPartlyAttached": "{count, plural, other{{count}개를 첨부했습니다. 첨부하지 못한 파일: {names}}}"
 }

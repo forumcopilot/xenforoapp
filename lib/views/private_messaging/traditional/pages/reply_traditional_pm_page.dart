@@ -4,9 +4,7 @@ import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_message_result.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:forumcopilot_flutter/utils/file_picker_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
 import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
@@ -14,6 +12,7 @@ import '../../../../theme/design_tokens.dart';
 import 'dart:io';
 import '../../../../utils/file_utils.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../services/attachment_uploader.dart';
 
 class ReplyTraditionalPMPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -47,11 +46,18 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
   final TextEditingController _titleController = TextEditingController();
   final List<String> _toRecipients = [];
   final Map<String, String?> _recipientIcons = {}; // Store icon URLs for recipients
-  String? _groupId;
   final TextEditingController _messageController = TextEditingController();
   final List<XFile> _attachments = [];
-  final List<String> _attachmentIds = []; // Track uploaded attachment IDs
   final Map<String, bool> _uploadingFiles = {}; // Track which files are currently uploading (key: file path)
+  // Attachment ids by the picked file's path.
+  final Map<String, String> _attachmentIdByPath = {};
+  // The attachments, sent to this forum whatever forum is opened meanwhile.
+  late final AttachmentUploader _uploader = AttachmentUploader(
+    siteContext: widget.siteContext,
+    kind: AttachmentKind.message,
+    targetId: widget.conversationId,
+  );
+  bool _sent = false;
   bool _isSubmitting = false;
   final FocusNode _messageFocusNode = FocusNode();
 
@@ -104,10 +110,11 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
         content,
         widget.isForward ? 2 : 1, // action=2 for forward, action=1 for reply
         widget.conversationId, // pmId
-        _attachmentIds.isNotEmpty ? _attachmentIds : null, // attachment IDs
-        _groupId, // group ID
+        _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null, // attachment IDs
+        _uploader.groupId, // group ID
       );
       if (result.result) {
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -132,86 +139,42 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
     }
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    // Check if this specific file is already uploading
-    if (_uploadingFiles[file.path] == true) {
-      return null;
-    }
-
-    // Get constraints from SiteContext
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-    // Check attachment count limit
-    if (!canAddMoreAttachments(_attachments.length, constraints)) {
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-      }
-      return null;
-    }
-
-    // Validate file
-    XFile fileToUpload = file;
-    if (constraints != null) {
-      final isImage = isImageFile(file.name);
-      final validation = await validateFile(
-        file,
-        constraints,
-        isImage,
-        currentAttachmentCount: _attachments.length,
-      );
-
-      if (!validation.isValid) {
-        if (mounted) {
-          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
-        }
-        return null;
-      }
-
-      // For images that need optimization
-      if (isImage && validation.needsOptimization) {
-        // Optimize image
-        try {
-          final optimizedFile = await optimizeImage(file, constraints);
-
-          fileToUpload = optimizedFile;
-        } catch (e) {
-          String errorMessage = e.toString();
-          if (errorMessage.startsWith('Exception: ')) {
-            errorMessage = errorMessage.substring(11);
-          }
-          if (mounted) {
-            SnackbarHelper.showError(context, errorMessage);
-          }
-          return null;
-        }
-      }
-    }
-
+  /// Checks, shrinks and uploads [file], already in the list; it leaves the
+  /// list again (with the reason) when it cannot be sent.
+  Future<void> _handleFileUpload(XFile file) async {
+    if (_uploadingFiles[file.path] == true) return;
+    setState(() => _uploadingFiles[file.path] = true);
     try {
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      var groupId = _groupId ?? "";
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync(
-        "pm", // type
-        widget.conversationId, // message_id for PM replies
-        groupId,
-        fileToUpload.name,
-        await fileToUpload.readAsBytes(),
-      );
-
-      if (uploadAttachmentResult.result) {
-        // Update groupId
-        if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-          _groupId = uploadAttachmentResult.groupId;
-        }
-        return uploadAttachmentResult.attachmentId;
-      } else {
-        throw Exception(uploadAttachmentResult.resultText);
-      }
+      final prepared = await _uploader.prepare(file, currentCount: _attachments.length - 1);
+      final id = await _uploader.upload(prepared);
+      if (!mounted) return;
+      setState(() {
+        _uploadingFiles.remove(file.path);
+        _attachmentIdByPath[file.path] = id;
+      });
+    } on AttachmentUploadCancelled {
+      return;
     } catch (e) {
-      throw Exception('Failed to upload file: ${e.toString()}');
+      if (!mounted) return;
+      setState(() {
+        _uploadingFiles.remove(file.path);
+        _attachments.removeWhere((f) => f.path == file.path);
+      });
+      SnackbarHelper.showError(
+        context,
+        e is AttachmentUploadException ? e.message : AppLocalizations.of(context).failedToUploadFile(e.toString()),
+      );
     }
+  }
+
+  /// Takes [file] off the list, and off the forum when it was uploaded.
+  void _removeAttachmentFile(XFile file) {
+    setState(() {
+      _attachments.removeWhere((f) => f.path == file.path);
+      _uploadingFiles.remove(file.path);
+    });
+    final id = _attachmentIdByPath.remove(file.path);
+    if (id != null) _uploader.remove(id);
   }
 
   Widget _buildRecipientChip(String username, List<String> recipients, Function(String) onRemove) {
@@ -537,9 +500,8 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ..._attachments.asMap().entries.map((entry) {
-                            final index = entry.key;
                             final attachment = entry.value;
-                            final attachmentId = index < _attachmentIds.length ? _attachmentIds[index] : null;
+                            final attachmentId = _attachmentIdByPath[attachment.path];
                             final isUploading = _uploadingFiles[attachment.path] ?? false;
                             final isImage = isImageFile(attachment.name);
                             return Column(
@@ -635,13 +597,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                                     icon: Icon(Icons.close),
                                     onPressed: isUploading
                                         ? null
-                                        : () => setState(() {
-                                              _attachments.removeAt(index);
-                                              _uploadingFiles.remove(attachment.path);
-                                              if (index < _attachmentIds.length) {
-                                                _attachmentIds.removeAt(index);
-                                              }
-                                            }),
+                                        : () => _removeAttachmentFile(attachment),
                                   ),
                                 ),
                                 if (isUploading)
@@ -671,104 +627,34 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
 
   Future<void> _handleFileAttachment() async {
     final XFile? file = await FilePickerUtils.pickFile();
-    if (file != null) {
-      // Hide keyboard when file is selected to focus on upload progress
-      FocusScope.of(context).unfocus();
-      
-      // Add file to list immediately so user can see it
-      setState(() {
-        _attachments.add(file);
-        _uploadingFiles[file.path] = true;
-      });
-      // Start upload in background
-      try {
-        final attachmentId = await _handleFileUpload(file);
-        if (attachmentId != null && attachmentId.isNotEmpty) {
-          setState(() {
-            final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-            if (fileIndex != -1) {
-              while (_attachmentIds.length <= fileIndex) {
-                _attachmentIds.add('');
-              }
-              _attachmentIds[fileIndex] = attachmentId;
-            }
-            _uploadingFiles.remove(file.path);
-          });
-        } else {
-          // Remove file on failure
-          setState(() {
-            _attachments.removeWhere((f) => f.path == file.path);
-            _uploadingFiles.remove(file.path);
-          });
-        }
-      } catch (e) {
-        // Remove file on error
-        setState(() {
-          _attachments.removeWhere((f) => f.path == file.path);
-          _uploadingFiles.remove(file.path);
-        });
-        // Show error to user
-        if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
-        }
-      }
-    }
+    if (file == null || !mounted) return;
+    // Hide keyboard when file is selected to focus on upload progress
+    FocusScope.of(context).unfocus();
+    // In the list at once, uploading
+    setState(() => _attachments.add(file));
+    await _handleFileUpload(file);
   }
 
   Future<void> _handleImageAttachment() async {
-    // Get constraints and check count limit before showing picker
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
+    // Check the count limit before showing the picker
+    final constraints = _uploader.constraints;
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-      }
+      SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints?.count ?? 0));
       return;
     }
-
     final XFile? image = await FilePickerUtils.pickImage(imageQuality: ImageQuality.medium);
-    if (image != null) {
-      // Hide keyboard when image is selected to focus on upload progress
-      FocusScope.of(context).unfocus();
-      
-      // Add file to list immediately so user can see it
-      setState(() {
-        _attachments.add(image);
-        _uploadingFiles[image.path] = true;
-      });
-      // Start upload in background
-      try {
-        final attachmentId = await _handleFileUpload(image);
-        if (attachmentId != null && attachmentId.isNotEmpty) {
-          setState(() {
-            final fileIndex = _attachments.indexWhere((f) => f.path == image.path);
-            if (fileIndex != -1) {
-              while (_attachmentIds.length <= fileIndex) {
-                _attachmentIds.add('');
-              }
-              _attachmentIds[fileIndex] = attachmentId;
-            }
-            _uploadingFiles.remove(image.path);
-          });
-        } else {
-          // Remove file on failure
-          setState(() {
-            _attachments.removeWhere((f) => f.path == image.path);
-            _uploadingFiles.remove(image.path);
-          });
-        }
-      } catch (e) {
-        // Remove file on error
-        setState(() {
-          _attachments.removeWhere((f) => f.path == image.path);
-          _uploadingFiles.remove(image.path);
-        });
-        // Show error to user
-        if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadImage(e.toString()));
-        }
-      }
-    }
+    if (image == null || !mounted) return;
+    // Hide keyboard when image is selected to focus on upload progress
+    FocusScope.of(context).unfocus();
+    // In the list at once, uploading
+    setState(() => _attachments.add(image));
+    await _handleFileUpload(image);
+  }
+
+  @override
+  void dispose() {
+    // Closed without sending: the uploads are removed from the forum.
+    _uploader.close(sent: _sent);
+    super.dispose();
   }
 }

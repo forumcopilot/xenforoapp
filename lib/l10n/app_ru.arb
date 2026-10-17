@@ -1307,5 +1307,7 @@
   "statsPosts": "{count, plural, one{{count} сообщение} few{{count} сообщения} many{{count} сообщений} other{{count} сообщения}}",
   "searchForumName": "Поиск по {forumName}",
   "copyLink": "Копировать ссылку",
-  "linkCopied": "Ссылка скопирована"
+  "linkCopied": "Ссылка скопирована",
+  "sharedFilesAttached": "{count, plural, one{Прикреплён {count} общий файл.} few{Прикреплено {count} общих файла.} many{Прикреплено {count} общих файлов.} other{Прикреплено {count} общих файла.}}",
+  "sharedFilesPartlyAttached": "{count, plural, one{Прикреплён {count} файл. Не прикреплены: {names}} few{Прикреплено {count} файла. Не прикреплены: {names}} many{Прикреплено {count} файлов. Не прикреплены: {names}} other{Прикреплено {count} файла. Не прикреплены: {names}}}"
 }

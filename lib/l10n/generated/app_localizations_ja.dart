@@ -2745,4 +2745,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get linkCopied => 'リンクをコピーしました';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共有ファイルを $count 件添付しました。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件を添付しました。添付できなかったファイル: $names',
+    );
+    return '$_temp0';
+  }
 }

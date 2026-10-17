@@ -1901,5 +1901,9 @@
   "@searchForumName": {"description": "The search field in the forum home header", "placeholders": {"forumName": {"type": "String"}}},
   "copyLink": "Copy link",
   "@copyLink": {"description": "Post menu: copies a link to the post"},
-  "linkCopied": "Link copied"
+  "linkCopied": "Link copied",
+  "sharedFilesAttached": "{count, plural, =1{Attached 1 shared file.} other{Attached {count} shared files.}}",
+  "@sharedFilesAttached": {"description": "After files shared into the app were attached to a new topic", "placeholders": {"count": {"type": "int"}}},
+  "sharedFilesPartlyAttached": "{count, plural, =1{Attached 1 file. Not attached: {names}} other{Attached {count} files. Not attached: {names}}}",
+  "@sharedFilesPartlyAttached": {"description": "After files shared into the app were attached to a new topic, some failed; names lists them", "placeholders": {"count": {"type": "int"}, "names": {"type": "String"}}}
 }

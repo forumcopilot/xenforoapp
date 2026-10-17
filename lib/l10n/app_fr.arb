@@ -1283,5 +1283,7 @@
   "statsPosts": "{count, plural, one{{count} message} other{{count} messages}}",
   "searchForumName": "Rechercher dans {forumName}",
   "copyLink": "Copier le lien",
-  "linkCopied": "Lien copié"
+  "linkCopied": "Lien copié",
+  "sharedFilesAttached": "{count, plural, one{{count} fichier partagé joint.} other{{count} fichiers partagés joints.}}",
+  "sharedFilesPartlyAttached": "{count, plural, one{{count} fichier joint. Non joints : {names}} other{{count} fichiers joints. Non joints : {names}}}"
 }

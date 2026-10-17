@@ -15,7 +15,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/style_builders.dart';
 import '../../utils/error_dialog.dart';
 
 class PostsList extends StatefulWidget {
@@ -1293,9 +1292,6 @@ class _PostsState extends State<PostsList> {
                     },
                     icon: const Icon(Icons.reply),
                     label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
-                    style: StyleBuilders.extendedFilledButtonStyle(
-                      colorScheme: Theme.of(context).colorScheme,
-                    ),
                   ),
               ],
             ),

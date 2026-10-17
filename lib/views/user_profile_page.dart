@@ -210,7 +210,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         overflow: TextOverflow.ellipsis,
                       )
                 : Text(AppLocalizations.of(context)?.userProfile ?? 'User Profile'),
-        centerTitle: true,
         actions: [
           if (_userInfo != null && widget.siteContext.loginDataOutput != null && widget.siteContext.loginDataOutput?.user?.id != _userInfo!.id)
             PopupMenuButton<String>(
@@ -511,9 +510,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                           color: colorScheme.onPrimary,
                                           fontWeight: DesignTokens.fontWeightBold,
                                         ),
-                                      ),
-                                      style: StyleBuilders.extendedFilledButtonStyle(
-                                        colorScheme: colorScheme,
                                       ),
                                     ),
                                   ],

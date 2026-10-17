@@ -169,7 +169,6 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

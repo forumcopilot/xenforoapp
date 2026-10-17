@@ -293,11 +293,6 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
               style: FilledButton.styleFrom(
                 backgroundColor: colorScheme.error,
                 foregroundColor: colorScheme.onError,
-                padding: DesignTokens.paddingExtendedButton,
-                elevation: DesignTokens.elevationMedium,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusExtendedButton),
-                ),
               ),
               child: const Text('Delete Account'),
             ),

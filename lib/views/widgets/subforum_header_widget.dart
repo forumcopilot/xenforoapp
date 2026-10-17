@@ -228,9 +228,6 @@ class SubforumHeaderWidget extends StatelessWidget {
                       onPressed: onNewTopic,
                       icon: const Icon(Icons.post_add_rounded),
                       label: Text(AppLocalizations.of(context)?.newTopic ?? 'New Topic'),
-                      style: StyleBuilders.extendedFilledButtonStyle(
-                        colorScheme: colorScheme,
-                      ),
                     ),
                   ],
                 ],

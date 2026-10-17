@@ -397,7 +397,6 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
         shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: _isSubmitting

@@ -145,7 +145,6 @@ class _EditConversationPageState extends State<EditConversationPage> {
         iconTheme: IconThemeData(
           color: colorScheme.onSurface,
         ),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: _isSubmitting

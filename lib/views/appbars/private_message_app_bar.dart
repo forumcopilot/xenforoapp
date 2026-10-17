@@ -52,7 +52,6 @@ class PrivateMessageAppBar extends BaseForumAppBar {
         ),
       ),
       actions: buildActions(context),
-      centerTitle: true,
     );
   }
 

@@ -335,7 +335,6 @@ class _SearchPageState extends State<SearchPage> {
         shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [

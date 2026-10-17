@@ -486,7 +486,6 @@ class _MembersPageState extends State<MembersPage> {
         shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [

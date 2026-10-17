@@ -25,7 +25,6 @@ class DesignTokens {
   static const double radiusM = 12.0;
   static const double radiusL = 16.0;
   static const double radiusXL = 20.0;
-  static const double radiusExtendedButton = 28.0; // For extended-style buttons (matches FAB.extended)
 
   // ============================================================================
   // TYPOGRAPHY SCALE
@@ -87,9 +86,10 @@ class DesignTokens {
   // Specific combinations
   static const EdgeInsets paddingCard = EdgeInsets.all(spacingL);
   static const EdgeInsets paddingScreen = EdgeInsets.all(spacingXL);
-  static const EdgeInsets paddingScreenHorizontal = EdgeInsets.symmetric(horizontal: spacingXL);
-  static const EdgeInsets paddingInput = EdgeInsets.symmetric(horizontal: spacingL, vertical: spacingM);
-  static const EdgeInsets paddingExtendedButton = EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0); // For extended-style buttons (matches FAB.extended)
+  /// The screen margin: 16dp, Material's compact-width margin (it was 24).
+  static const EdgeInsets paddingScreenHorizontal = EdgeInsets.symmetric(horizontal: spacingL);
+  // Material 3 text field: 16 + a 24dp bodyLarge line + 16 = 56dp high.
+  static const EdgeInsets paddingInput = EdgeInsets.symmetric(horizontal: spacingL, vertical: spacingL);
 
   // ============================================================================
   // COMMON SIZES

@@ -638,14 +638,6 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             onPressed: () {
               Get.off(() => LoginPage(siteContext: widget.siteContext));
             },
-            style: StyleBuilders.textButtonStyle(
-              colorScheme: colorScheme,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingS,
-                vertical: DesignTokens.spacingXS,
-              ),
-              borderRadius: DesignTokens.radiusS,
-            ),
             child: Text(
               AppLocalizations.of(context)!.logIn,
               style: textTheme.bodyLarge?.copyWith(

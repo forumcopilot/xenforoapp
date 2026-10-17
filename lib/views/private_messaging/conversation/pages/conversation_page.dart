@@ -15,7 +15,6 @@ import '../widgets/conversation_item.dart';
 import '../widgets/conversation_header_widget.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../../../theme/design_tokens.dart';
-import '../../../../theme/style_builders.dart';
 import '../../../../utils/accessibility_helpers.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
@@ -1462,9 +1461,6 @@ class _ConversationPageState extends State<ConversationPage> {
                       onPressed: _onReplyPressed,
                       icon: const Icon(Icons.reply),
                       label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
-                      style: StyleBuilders.extendedFilledButtonStyle(
-                        colorScheme: Theme.of(context).colorScheme,
-                      ),
                     ),
                   ),
               ],

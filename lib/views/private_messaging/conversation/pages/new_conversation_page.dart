@@ -352,7 +352,6 @@ class _NewConversationPageState extends State<NewConversationPage> {
         iconTheme: IconThemeData(
           color: colorScheme.onSurface,
         ),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: _isSubmitting

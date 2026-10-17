@@ -6,7 +6,6 @@ import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import 'dart:async';
 import 'package:forumcopilot_flutter/utils/error_dialog.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/style_builders.dart';
 
 // Import the new component widgets
 import '../widgets/profile_picture_section.dart';
@@ -300,9 +299,6 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
                               color: colorScheme.onPrimary,
                               fontWeight: DesignTokens.fontWeightBold,
                             ),
-                          ),
-                          style: StyleBuilders.extendedFilledButtonStyle(
-                            colorScheme: colorScheme,
                           ),
                         ),
                       ),

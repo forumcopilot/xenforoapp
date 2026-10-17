@@ -52,7 +52,6 @@ class TraditionalPMAppBar extends BaseForumAppBar {
         ),
       ),
       actions: buildActions(context),
-      centerTitle: true,
     );
   }
 

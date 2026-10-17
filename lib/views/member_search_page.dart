@@ -143,7 +143,6 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
         shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [

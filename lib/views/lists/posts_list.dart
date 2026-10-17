@@ -515,13 +515,10 @@ class _PostsState extends State<PostsList> {
               vertical: DesignTokens.spacingL - DesignTokens.spacingXS,
             ),
             duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: onErrorContainerColor,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
+            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+            // with an action stays until tapped and queues later messages behind it.
+            showCloseIcon: true,
+            closeIconColor: onErrorContainerColor,
           ),
         );
       }

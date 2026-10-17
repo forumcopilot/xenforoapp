@@ -459,13 +459,10 @@ class _ReplyPageState extends State<ReplyPage> {
                 margin: DesignTokens.paddingS,
                 padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
                 duration: const Duration(seconds: 4),
-                action: SnackBarAction(
-                  label: 'Dismiss',
-                  textColor: colorScheme.onErrorContainer,
-                  onPressed: () {
-                    scaffoldMessenger.hideCurrentSnackBar();
-                  },
-                ),
+                // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+                // with an action stays until tapped and queues later messages behind it.
+                showCloseIcon: true,
+                closeIconColor: colorScheme.onErrorContainer,
               ),
             );
           }

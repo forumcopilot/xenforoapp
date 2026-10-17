@@ -396,13 +396,10 @@ class _NewTopicPageState extends State<NewTopicPage> {
               margin: DesignTokens.paddingS,
               padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
               duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                textColor: Theme.of(context).colorScheme.onErrorContainer,
-                onPressed: () {
-                  scaffoldMessenger.hideCurrentSnackBar();
-                },
-              ),
+              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+              // with an action stays until tapped and queues later messages behind it.
+              showCloseIcon: true,
+              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
             ),
           );
         }

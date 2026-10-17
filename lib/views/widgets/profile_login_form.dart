@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../theme/design_tokens.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
@@ -39,6 +40,8 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
       final success = await loginController.handleLogin(siteContext: widget.siteContext, username: _usernameController.text, password: _passwordController.text, showSuccessMessage: true);
 
       if (success) {
+        // Signed in: now the password manager may offer to save the password.
+        TextInput.finishAutofillContext();
         // Clear form
         _usernameController.clear();
         _passwordController.clear();
@@ -95,6 +98,10 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
             padding: DesignTokens.paddingXL,
             child: Form(
               key: _formKey,
+              // Password managers fill these and offer to save them; a failed
+              // sign-in isn't offered (see _handleLogin).
+              child: AutofillGroup(
+              onDisposeAction: AutofillContextAction.cancel,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -109,6 +116,9 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                   TextFormField(
                     controller: _usernameController,
                     focusNode: _usernameFocusNode,
+                    autofillHints: const [AutofillHints.username],
+                    autocorrect: false,
+                    enableSuggestions: false,
                     decoration: InputDecoration(
                       labelText: 'Username',
                       hintText: AppLocalizations.of(context)?.enterYourUsername ?? 'Enter your username',
@@ -135,6 +145,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                   TextFormField(
                     controller: _passwordController,
                     focusNode: _passwordFocusNode,
+                    autofillHints: const [AutofillHints.password],
                     obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
                       labelText: 'Password',
@@ -249,6 +260,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     ],
                   ),
                 ],
+              ),
               ),
             ),
           ),

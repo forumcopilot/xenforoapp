@@ -54,14 +54,17 @@ class BasicRegistrationFields extends StatelessWidget {
         ],
 
         // Fields with padding
+        // Password managers fill these and offer to save the new account.
         Padding(
           padding: DesignTokens.paddingScreenHorizontal,
+          child: AutofillGroup(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Username field
               _buildTextField(
                 controller: usernameController,
+                autofillHints: const [AutofillHints.newUsername],
                 labelText: 'Username',
                 icon: Icons.person_rounded,
                 textInputAction: TextInputAction.next,
@@ -83,6 +86,7 @@ class BasicRegistrationFields extends StatelessWidget {
               _buildTextField(
                 controller: emailController,
                 focusNode: emailFocusNode,
+                autofillHints: const [AutofillHints.email],
                 labelText: 'Email',
                 icon: Icons.email_rounded,
                 keyboardType: TextInputType.emailAddress,
@@ -105,6 +109,7 @@ class BasicRegistrationFields extends StatelessWidget {
               _buildPasswordField(
                 controller: passwordController,
                 focusNode: passwordFocusNode,
+                autofillHints: const [AutofillHints.newPassword],
                 labelText: 'Password',
                 isVisible: isPasswordVisible,
                 onVisibilityToggle: onPasswordVisibilityToggle,
@@ -127,6 +132,7 @@ class BasicRegistrationFields extends StatelessWidget {
               _buildPasswordField(
                 controller: confirmPasswordController,
                 focusNode: confirmPasswordFocusNode,
+                autofillHints: const [AutofillHints.newPassword],
                 labelText: 'Confirm Password',
                 isVisible: isConfirmPasswordVisible,
                 onVisibilityToggle: onConfirmPasswordVisibilityToggle,
@@ -145,6 +151,7 @@ class BasicRegistrationFields extends StatelessWidget {
               ),
             ],
           ),
+          ),
         ),
       ],
     );
@@ -153,6 +160,7 @@ class BasicRegistrationFields extends StatelessWidget {
   Widget _buildTextField({
     required TextEditingController controller,
     FocusNode? focusNode,
+    required Iterable<String> autofillHints,
     required String labelText,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
@@ -164,6 +172,10 @@ class BasicRegistrationFields extends StatelessWidget {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
+      autofillHints: autofillHints,
+      // A username or an email address: no autocorrect.
+      autocorrect: false,
+      enableSuggestions: false,
       keyboardType: keyboardType,
       decoration: StyleBuilders.inputDecoration(
         colorScheme: colorScheme,
@@ -179,6 +191,7 @@ class BasicRegistrationFields extends StatelessWidget {
   Widget _buildPasswordField({
     required TextEditingController controller,
     required FocusNode focusNode,
+    required Iterable<String> autofillHints,
     required String labelText,
     required bool isVisible,
     required VoidCallback onVisibilityToggle,
@@ -190,6 +203,7 @@ class BasicRegistrationFields extends StatelessWidget {
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
+      autofillHints: autofillHints,
       obscureText: !isVisible,
       decoration: StyleBuilders.inputDecoration(
         colorScheme: colorScheme,

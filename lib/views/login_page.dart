@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
@@ -66,6 +67,8 @@ class _LoginPageState extends State<LoginPage>
       );
 
       if (success && mounted) {
+        // Signed in: now the password manager may offer to save the password.
+        TextInput.finishAutofillContext();
         // Ensure loader is hidden so it does not block the next screen
         if (Get.isRegistered<GlobalLoaderController>()) {
           GlobalLoaderController.to.forceHide();
@@ -286,12 +289,17 @@ class _LoginPageState extends State<LoginPage>
                 padding: DesignTokens.paddingScreen,
                 child: Form(
                   key: _formKey,
+                  // Password managers fill these and offer to save them; a
+                  // failed sign-in isn't offered (see _handleLogin).
+                  child: AutofillGroup(
+                  onDisposeAction: AutofillContextAction.cancel,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Username field
                       TextFormField(
                         controller: _usernameController,
+                        autofillHints: const [AutofillHints.username],
                         keyboardType: TextInputType.text,
                         autocorrect: false,
                         enableSuggestions: false,
@@ -317,6 +325,7 @@ class _LoginPageState extends State<LoginPage>
                       TextFormField(
                         controller: _passwordController,
                         focusNode: _passwordFocusNode,
+                        autofillHints: const [AutofillHints.password],
                         obscureText: !_isPasswordVisible,
                         decoration: StyleBuilders.inputDecoration(
                           colorScheme: colorScheme,
@@ -441,6 +450,7 @@ class _LoginPageState extends State<LoginPage>
                       }),
                       const SizedBox(height: DesignTokens.spacingL),
                     ],
+                  ),
                   ),
                 ),
               ),

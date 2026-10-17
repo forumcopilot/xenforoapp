@@ -1653,4 +1653,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get discardChanges => 'Wijzigingen negeren';
+
+  @override
+  String get notificationsTab => 'Meldingen';
 }

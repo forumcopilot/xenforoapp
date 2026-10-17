@@ -1675,4 +1675,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get discardChanges => 'Annuler les modifications';
+
+  @override
+  String get notificationsTab => 'Alertes';
 }

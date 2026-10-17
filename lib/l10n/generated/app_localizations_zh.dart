@@ -1582,4 +1582,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get discardChanges => '舍弃更改';
+
+  @override
+  String get notificationsTab => '通知';
 }

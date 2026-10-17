@@ -1606,4 +1606,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get discardChanges => '変更を破棄';
+
+  @override
+  String get notificationsTab => '通知';
 }

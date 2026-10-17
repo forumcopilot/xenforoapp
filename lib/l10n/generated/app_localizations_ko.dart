@@ -1599,4 +1599,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get discardChanges => '변경 사항 버리기';
+
+  @override
+  String get notificationsTab => '알림';
 }

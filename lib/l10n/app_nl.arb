@@ -1467,5 +1467,7 @@
   "discard": "Verwerpen",
   "@discard": {"description": "Button that closes a composer and throws away what was typed"},
   "discardChanges": "Wijzigingen negeren",
-  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"}
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "Meldingen",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."}
 }

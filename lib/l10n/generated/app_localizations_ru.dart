@@ -1665,4 +1665,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get discardChanges => 'Отменить изменения';
+
+  @override
+  String get notificationsTab => 'Оповещения';
 }

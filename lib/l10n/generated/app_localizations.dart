@@ -2977,6 +2977,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard changes'**
   String get discardChanges;
+
+  /// Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get notificationsTab;
 }
 
 class _AppLocalizationsDelegate

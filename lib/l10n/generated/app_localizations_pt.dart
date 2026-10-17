@@ -1664,4 +1664,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get discardChanges => 'Descartar alterações';
+
+  @override
+  String get notificationsTab => 'Avisos';
 }

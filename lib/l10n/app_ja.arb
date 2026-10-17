@@ -971,5 +971,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "設定で通知を許可するまで、この端末には通知が表示されません。",
   "openSettings": "設定を開く",
   "notificationsPitchForum": "返信、メンション、ダイレクトメッセージをロック画面ですぐにお知らせします。",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "プロフィールを見る",
+  "settings": "設定",
+  "signOut": "サインアウト",
+  "changeEmail": "メールアドレスを変更",
+  "changePassword": "パスワードを変更",
+  "save": "保存",
+  "currentPassword": "現在のパスワード",
+  "newPassword": "新しいパスワード",
+  "confirmNewPassword": "新しいパスワード（確認）",
+  "newEmailAddress": "新しいメールアドレス",
+  "emailChanged": "メールアドレスを変更しました",
+  "emailChangeConfirm": "受信トレイを確認してください。確認すると新しいアドレスが有効になります。",
+  "passwordChanged": "パスワードを変更しました",
+  "account": "アカウント",
+  "pleaseEnterEmail": "メールアドレスを入力してください",
+  "pleaseEnterValidEmail": "有効なメールアドレスを入力してください",
+  "passwordsDoNotMatch": "パスワードが一致しません"
 }

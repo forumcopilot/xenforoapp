@@ -1702,4 +1702,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationsPitchForum =>
       'Replies, mentions and direct messages, on your lock screen as they happen.';
+
+  @override
+  String get viewProfile => 'View profile';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get changeEmail => 'Change email';
+
+  @override
+  String get changePassword => 'Change password';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get currentPassword => 'Current password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get confirmNewPassword => 'Confirm new password';
+
+  @override
+  String get newEmailAddress => 'New email address';
+
+  @override
+  String get emailChanged => 'Email address changed';
+
+  @override
+  String get emailChangeConfirm =>
+      'Check your inbox: the new address takes effect once you confirm it.';
+
+  @override
+  String get passwordChanged => 'Password changed';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
 }

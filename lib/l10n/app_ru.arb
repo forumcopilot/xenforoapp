@@ -995,5 +995,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "Устройство не будет показывать уведомления, пока вы не разрешите их в настройках.",
   "openSettings": "Открыть настройки",
   "notificationsPitchForum": "Ответы, упоминания и личные сообщения на экране блокировки, как только они приходят.",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "Открыть профиль",
+  "settings": "Настройки",
+  "signOut": "Выйти",
+  "changeEmail": "Изменить адрес электронной почты",
+  "changePassword": "Изменить пароль",
+  "save": "Сохранить",
+  "currentPassword": "Текущий пароль",
+  "newPassword": "Новый пароль",
+  "confirmNewPassword": "Повторите новый пароль",
+  "newEmailAddress": "Новый адрес эл. почты",
+  "emailChanged": "Адрес эл. почты изменён",
+  "emailChangeConfirm": "Проверьте почту: новый адрес начнёт действовать после подтверждения.",
+  "passwordChanged": "Пароль изменён",
+  "account": "Аккаунт",
+  "pleaseEnterEmail": "Пожалуйста, введите ваш адрес электронной почты",
+  "pleaseEnterValidEmail": "Пожалуйста, введите корректный адрес электронной почты",
+  "passwordsDoNotMatch": "Пароли не совпадают"
 }

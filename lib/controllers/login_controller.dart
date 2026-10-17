@@ -1161,6 +1161,18 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   }
 
   /// Records visit with credentials to SiteVisitTracker for automatic login
+  /// After the password was changed in the app: the saved sign-in (used by
+  /// automatic sign-in and relogin) gets the new one, or the next automatic
+  /// sign-in would fail with the old password. Only when a password was
+  /// saved: a passkey-only sign-in stays that way.
+  Future<void> rememberNewPassword(SiteContext siteContext, String newPassword) async {
+    final username = siteContext.username ?? siteContext.loginDataOutput?.user?.username;
+    if (username == null || username.isEmpty) return;
+    if (siteContext.password == null || siteContext.password!.isEmpty) return;
+    await _recordVisitWithCredentials(username, newPassword, siteContext);
+    await siteContext.saveToDevice();
+  }
+
   Future<void> _recordVisitWithCredentials(
       String username, String password, SiteContext siteContext) async {
     try {

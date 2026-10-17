@@ -971,5 +971,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "Dein Gerät zeigt keine Hinweise an, bis du Benachrichtigungen in den Einstellungen erlaubst.",
   "openSettings": "Einstellungen öffnen",
   "notificationsPitchForum": "Antworten, Erwähnungen und Direktnachrichten auf dem Sperrbildschirm, sobald sie eintreffen.",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "Profil ansehen",
+  "settings": "Einstellungen",
+  "signOut": "Abmelden",
+  "changeEmail": "E-Mail ändern",
+  "changePassword": "Passwort ändern",
+  "save": "Speichern",
+  "currentPassword": "Aktuelles Passwort",
+  "newPassword": "Neues Passwort",
+  "confirmNewPassword": "Neues Passwort bestätigen",
+  "newEmailAddress": "Neue E-Mail-Adresse",
+  "emailChanged": "E-Mail-Adresse geändert",
+  "emailChangeConfirm": "Sieh in deinem Posteingang nach: Die neue Adresse gilt, sobald du sie bestätigst.",
+  "passwordChanged": "Passwort geändert",
+  "account": "Konto",
+  "pleaseEnterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+  "pleaseEnterValidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein"
 }

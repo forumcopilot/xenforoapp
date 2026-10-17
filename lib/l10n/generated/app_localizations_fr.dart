@@ -1725,4 +1725,57 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get notificationsPitchForum =>
       'Les réponses, mentions et messages privés sur votre écran de verrouillage, dès qu’ils arrivent.';
+
+  @override
+  String get viewProfile => 'Voir le profil';
+
+  @override
+  String get settings => 'Paramètres';
+
+  @override
+  String get signOut => 'Se déconnecter';
+
+  @override
+  String get changeEmail => 'Changer l’adresse e-mail';
+
+  @override
+  String get changePassword => 'Changer le mot de passe';
+
+  @override
+  String get save => 'Enregistrer';
+
+  @override
+  String get currentPassword => 'Mot de passe actuel';
+
+  @override
+  String get newPassword => 'Nouveau mot de passe';
+
+  @override
+  String get confirmNewPassword => 'Confirmez le nouveau mot de passe';
+
+  @override
+  String get newEmailAddress => 'Nouvelle adresse e-mail';
+
+  @override
+  String get emailChanged => 'Adresse e-mail modifiée';
+
+  @override
+  String get emailChangeConfirm =>
+      'Consultez votre boîte de réception : la nouvelle adresse prend effet dès que vous la confirmez.';
+
+  @override
+  String get passwordChanged => 'Mot de passe modifié';
+
+  @override
+  String get account => 'Compte';
+
+  @override
+  String get pleaseEnterEmail => 'Veuillez saisir votre e-mail';
+
+  @override
+  String get pleaseEnterValidEmail =>
+      'Veuillez saisir une adresse e-mail valide';
+
+  @override
+  String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';
 }

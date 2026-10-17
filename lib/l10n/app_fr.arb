@@ -971,5 +971,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "Votre appareil n'affichera aucune alerte tant que vous n'autorisez pas les notifications dans les Réglages.",
   "openSettings": "Ouvrir les réglages",
   "notificationsPitchForum": "Les réponses, mentions et messages privés sur votre écran de verrouillage, dès qu’ils arrivent.",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "Voir le profil",
+  "settings": "Paramètres",
+  "signOut": "Se déconnecter",
+  "changeEmail": "Changer l’adresse e-mail",
+  "changePassword": "Changer le mot de passe",
+  "save": "Enregistrer",
+  "currentPassword": "Mot de passe actuel",
+  "newPassword": "Nouveau mot de passe",
+  "confirmNewPassword": "Confirmez le nouveau mot de passe",
+  "newEmailAddress": "Nouvelle adresse e-mail",
+  "emailChanged": "Adresse e-mail modifiée",
+  "emailChangeConfirm": "Consultez votre boîte de réception : la nouvelle adresse prend effet dès que vous la confirmez.",
+  "passwordChanged": "Mot de passe modifié",
+  "account": "Compte",
+  "pleaseEnterEmail": "Veuillez saisir votre e-mail",
+  "pleaseEnterValidEmail": "Veuillez saisir une adresse e-mail valide",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas"
 }

@@ -1645,4 +1645,55 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get notificationsPitchForum => '답글, 멘션, 쪽지를 잠금 화면에서 바로 알려 드립니다.';
+
+  @override
+  String get viewProfile => '프로필 보기';
+
+  @override
+  String get settings => '설정';
+
+  @override
+  String get signOut => '로그아웃';
+
+  @override
+  String get changeEmail => '이메일 변경';
+
+  @override
+  String get changePassword => '비밀번호 변경';
+
+  @override
+  String get save => '저장';
+
+  @override
+  String get currentPassword => '현재 비밀번호';
+
+  @override
+  String get newPassword => '새 비밀번호';
+
+  @override
+  String get confirmNewPassword => '새 비밀번호 확인';
+
+  @override
+  String get newEmailAddress => '새 이메일 주소';
+
+  @override
+  String get emailChanged => '이메일 주소를 변경했습니다';
+
+  @override
+  String get emailChangeConfirm => '받은편지함을 확인하세요. 확인하면 새 주소가 적용됩니다.';
+
+  @override
+  String get passwordChanged => '비밀번호를 변경했습니다';
+
+  @override
+  String get account => '계정';
+
+  @override
+  String get pleaseEnterEmail => '이메일을 입력해 주세요';
+
+  @override
+  String get pleaseEnterValidEmail => '유효한 이메일을 입력해 주세요';
+
+  @override
+  String get passwordsDoNotMatch => '비밀번호가 일치하지 않습니다';
 }

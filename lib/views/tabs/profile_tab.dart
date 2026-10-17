@@ -17,6 +17,12 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../login_page.dart';
+import '../../utils/app_navigation.dart';
+import '../user_profile_page.dart';
+import '../account/change_email_page.dart';
+import '../account/change_password_page.dart';
+import '../app_settings_page.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ProfileTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -252,8 +258,6 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
 
     return Builder(
       builder: (context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        final textTheme = Theme.of(context).textTheme;
 
         return ListView(
           controller: _scrollController,
@@ -279,31 +283,38 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
                   if (_userInfo != null)
                     ProfileInfoSection(
                       userInfo: _userInfo!,
+                      // View profile (tonal) and Settings (outlined), as the
+                      // Discourse app's account hub; it was one English
+                      // "Settings" pill.
                       settingsButton: Padding(
                         padding: DesignTokens.paddingScreenHorizontal,
-                        child: FilledButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ForumSettingsPage(
-                                  siteContext: widget.siteContext,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: FilledButton.tonal(
+                                onPressed: () => AppNavigation.push<void>(
+                                  context,
+                                  UserProfilePage(siteContext: widget.siteContext, userName: username),
                                 ),
+                                child: Text(AppLocalizations.of(context)?.viewProfile ?? 'View profile'),
                               ),
-                            );
-                          },
-                          icon: Icon(Icons.settings, size: DesignTokens.iconSizeM),
-                          label: Text(
-                            'Settings',
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onPrimary,
-                              fontWeight: DesignTokens.fontWeightBold,
                             ),
-                          ),
+                            const SizedBox(width: DesignTokens.spacingS),
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => AppNavigation.push<void>(
+                                  context,
+                                  ForumSettingsPage(siteContext: widget.siteContext),
+                                ),
+                                child: Text(AppLocalizations.of(context)?.settings ?? 'Settings'),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-
+                  SizedBox(height: DesignTokens.spacingL),
+                  _AccountSection(siteContext: widget.siteContext),
                   SizedBox(height: DesignTokens.spacingL),
 
                   // Recent Posts Section
@@ -358,5 +369,74 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
         return _buildLoggedInContent();
       },
     );
+  }
+}
+
+/// The account's own destinations: change email and password (the SDK and
+/// add-on supported both; nothing used them), app settings, and Sign out as
+/// a confirmed, error-coloured row (it was a bare icon in the app bar).
+class _AccountSection extends StatelessWidget {
+  const _AccountSection({required this.siteContext});
+
+  final SiteContext siteContext;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    Widget row(IconData icon, String label, VoidCallback onTap, {Color? color}) => ListTile(
+          leading: Icon(icon, color: color ?? colorScheme.onSurfaceVariant),
+          title: Text(label, style: textTheme.bodyLarge?.copyWith(color: color ?? colorScheme.onSurface)),
+          onTap: onTap,
+        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(DesignTokens.spacingL, DesignTokens.spacingS, DesignTokens.spacingL, DesignTokens.spacingXS),
+          child: Semantics(
+            header: true,
+            child: Text(
+              l10n?.account ?? 'Account',
+              style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
+          ),
+        ),
+        row(Icons.alternate_email_rounded, l10n?.changeEmail ?? 'Change email',
+            () => AppNavigation.pushForm<void>(context, ChangeEmailPage(siteContext: siteContext))),
+        row(Icons.password_rounded, l10n?.changePassword ?? 'Change password',
+            () => AppNavigation.pushForm<void>(context, ChangePasswordPage(siteContext: siteContext))),
+        row(Icons.tune_rounded, l10n?.appSettings ?? 'App Settings',
+            () => AppNavigation.push<void>(context, const AppSettingsPage())),
+        row(Icons.logout_rounded, l10n?.signOut ?? 'Sign out', () => _confirmSignOut(context), color: colorScheme.error),
+      ],
+    );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(l10n?.signOut ?? 'Sign out'),
+        content: Text(l10n?.areYouSureYouWantToLogout ?? 'Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(false),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(true),
+            style: TextButton.styleFrom(foregroundColor: colorScheme.error),
+            child: Text(l10n?.signOut ?? 'Sign out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    final loginController = Get.isRegistered<LoginController>() ? Get.find<LoginController>() : Get.put(LoginController());
+    await loginController.handleLogout(siteContext);
   }
 }

@@ -995,5 +995,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "Il dispositivo non mostrerà avvisi finché non consenti le notifiche nelle Impostazioni.",
   "openSettings": "Apri impostazioni",
   "notificationsPitchForum": "Risposte, menzioni e messaggi diretti sulla schermata di blocco, appena arrivano.",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "Vedi profilo",
+  "settings": "Impostazioni",
+  "signOut": "Esci",
+  "changeEmail": "Cambia e-mail",
+  "changePassword": "Cambia password",
+  "save": "Salva",
+  "currentPassword": "Password attuale",
+  "newPassword": "Nuova password",
+  "confirmNewPassword": "Conferma la nuova password",
+  "newEmailAddress": "Nuovo indirizzo email",
+  "emailChanged": "Indirizzo email modificato",
+  "emailChangeConfirm": "Controlla la posta: il nuovo indirizzo sarà attivo quando lo confermerai.",
+  "passwordChanged": "Password modificata",
+  "account": "Account",
+  "pleaseEnterEmail": "Inserisci la tua email",
+  "pleaseEnterValidEmail": "Inserisci un'email valida",
+  "passwordsDoNotMatch": "Le password non corrispondono"
 }

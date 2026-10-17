@@ -1651,4 +1651,55 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notificationsPitchForum => '返信、メンション、ダイレクトメッセージをロック画面ですぐにお知らせします。';
+
+  @override
+  String get viewProfile => 'プロフィールを見る';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get signOut => 'サインアウト';
+
+  @override
+  String get changeEmail => 'メールアドレスを変更';
+
+  @override
+  String get changePassword => 'パスワードを変更';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get currentPassword => '現在のパスワード';
+
+  @override
+  String get newPassword => '新しいパスワード';
+
+  @override
+  String get confirmNewPassword => '新しいパスワード（確認）';
+
+  @override
+  String get newEmailAddress => '新しいメールアドレス';
+
+  @override
+  String get emailChanged => 'メールアドレスを変更しました';
+
+  @override
+  String get emailChangeConfirm => '受信トレイを確認してください。確認すると新しいアドレスが有効になります。';
+
+  @override
+  String get passwordChanged => 'パスワードを変更しました';
+
+  @override
+  String get account => 'アカウント';
+
+  @override
+  String get pleaseEnterEmail => 'メールアドレスを入力してください';
+
+  @override
+  String get pleaseEnterValidEmail => '有効なメールアドレスを入力してください';
+
+  @override
+  String get passwordsDoNotMatch => 'パスワードが一致しません';
 }

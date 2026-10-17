@@ -1627,4 +1627,55 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notificationsPitchForum => '回复、提及和私信会第一时间显示在锁屏上。';
+
+  @override
+  String get viewProfile => '查看个人资料';
+
+  @override
+  String get settings => '设置';
+
+  @override
+  String get signOut => '退出登录';
+
+  @override
+  String get changeEmail => '更改邮箱';
+
+  @override
+  String get changePassword => '更改密码';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get currentPassword => '当前密码';
+
+  @override
+  String get newPassword => '新密码';
+
+  @override
+  String get confirmNewPassword => '确认新密码';
+
+  @override
+  String get newEmailAddress => '新邮箱地址';
+
+  @override
+  String get emailChanged => '邮箱地址已更改';
+
+  @override
+  String get emailChangeConfirm => '请查看收件箱：确认后新地址才会生效。';
+
+  @override
+  String get passwordChanged => '密码已更改';
+
+  @override
+  String get account => '账户';
+
+  @override
+  String get pleaseEnterEmail => '请输入您的电子邮箱';
+
+  @override
+  String get pleaseEnterValidEmail => '请输入有效的电子邮箱';
+
+  @override
+  String get passwordsDoNotMatch => '两次输入的密码不一致';
 }

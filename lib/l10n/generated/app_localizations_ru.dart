@@ -1715,4 +1715,58 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notificationsPitchForum =>
       'Ответы, упоминания и личные сообщения на экране блокировки, как только они приходят.';
+
+  @override
+  String get viewProfile => 'Открыть профиль';
+
+  @override
+  String get settings => 'Настройки';
+
+  @override
+  String get signOut => 'Выйти';
+
+  @override
+  String get changeEmail => 'Изменить адрес электронной почты';
+
+  @override
+  String get changePassword => 'Изменить пароль';
+
+  @override
+  String get save => 'Сохранить';
+
+  @override
+  String get currentPassword => 'Текущий пароль';
+
+  @override
+  String get newPassword => 'Новый пароль';
+
+  @override
+  String get confirmNewPassword => 'Повторите новый пароль';
+
+  @override
+  String get newEmailAddress => 'Новый адрес эл. почты';
+
+  @override
+  String get emailChanged => 'Адрес эл. почты изменён';
+
+  @override
+  String get emailChangeConfirm =>
+      'Проверьте почту: новый адрес начнёт действовать после подтверждения.';
+
+  @override
+  String get passwordChanged => 'Пароль изменён';
+
+  @override
+  String get account => 'Аккаунт';
+
+  @override
+  String get pleaseEnterEmail =>
+      'Пожалуйста, введите ваш адрес электронной почты';
+
+  @override
+  String get pleaseEnterValidEmail =>
+      'Пожалуйста, введите корректный адрес электронной почты';
+
+  @override
+  String get passwordsDoNotMatch => 'Пароли не совпадают';
 }

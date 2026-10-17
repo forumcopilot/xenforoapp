@@ -995,5 +995,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "在“设置”中允许通知之前，设备不会显示提醒。",
   "openSettings": "打开设置",
   "notificationsPitchForum": "回复、提及和私信会第一时间显示在锁屏上。",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "查看个人资料",
+  "settings": "设置",
+  "signOut": "退出登录",
+  "changeEmail": "更改邮箱",
+  "changePassword": "更改密码",
+  "save": "保存",
+  "currentPassword": "当前密码",
+  "newPassword": "新密码",
+  "confirmNewPassword": "确认新密码",
+  "newEmailAddress": "新邮箱地址",
+  "emailChanged": "邮箱地址已更改",
+  "emailChangeConfirm": "请查看收件箱：确认后新地址才会生效。",
+  "passwordChanged": "密码已更改",
+  "account": "账户",
+  "pleaseEnterEmail": "请输入您的电子邮箱",
+  "pleaseEnterValidEmail": "请输入有效的电子邮箱",
+  "passwordsDoNotMatch": "两次输入的密码不一致"
 }

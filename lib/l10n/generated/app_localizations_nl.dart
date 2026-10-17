@@ -1703,4 +1703,56 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get notificationsPitchForum =>
       'Reacties, vermeldingen en privéberichten op je vergrendelscherm, zodra ze binnenkomen.';
+
+  @override
+  String get viewProfile => 'Profiel bekijken';
+
+  @override
+  String get settings => 'Instellingen';
+
+  @override
+  String get signOut => 'Afmelden';
+
+  @override
+  String get changeEmail => 'E-mailadres wijzigen';
+
+  @override
+  String get changePassword => 'Wachtwoord wijzigen';
+
+  @override
+  String get save => 'Opslaan';
+
+  @override
+  String get currentPassword => 'Huidig wachtwoord';
+
+  @override
+  String get newPassword => 'Nieuw wachtwoord';
+
+  @override
+  String get confirmNewPassword => 'Bevestig nieuw wachtwoord';
+
+  @override
+  String get newEmailAddress => 'Nieuw e-mailadres';
+
+  @override
+  String get emailChanged => 'E-mailadres gewijzigd';
+
+  @override
+  String get emailChangeConfirm =>
+      'Kijk in je inbox: het nieuwe adres geldt zodra je het bevestigt.';
+
+  @override
+  String get passwordChanged => 'Wachtwoord gewijzigd';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get pleaseEnterEmail => 'Voer uw e-mailadres in';
+
+  @override
+  String get pleaseEnterValidEmail => 'Voer een geldig e-mailadres in';
+
+  @override
+  String get passwordsDoNotMatch => 'Wachtwoorden komen niet overeen';
 }

@@ -1444,5 +1444,22 @@
   "deviceWillNotShowAlertsUntilAllowedInSettings": "Je apparaat toont geen meldingen totdat je notificaties toestaat in Instellingen.",
   "openSettings": "Instellingen openen",
   "notificationsPitchForum": "Reacties, vermeldingen en privéberichten op je vergrendelscherm, zodra ze binnenkomen.",
-  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
+  "viewProfile": "Profiel bekijken",
+  "settings": "Instellingen",
+  "signOut": "Afmelden",
+  "changeEmail": "E-mailadres wijzigen",
+  "changePassword": "Wachtwoord wijzigen",
+  "save": "Opslaan",
+  "currentPassword": "Huidig wachtwoord",
+  "newPassword": "Nieuw wachtwoord",
+  "confirmNewPassword": "Bevestig nieuw wachtwoord",
+  "newEmailAddress": "Nieuw e-mailadres",
+  "emailChanged": "E-mailadres gewijzigd",
+  "emailChangeConfirm": "Kijk in je inbox: het nieuwe adres geldt zodra je het bevestigt.",
+  "passwordChanged": "Wachtwoord gewijzigd",
+  "account": "Account",
+  "pleaseEnterEmail": "Voer uw e-mailadres in",
+  "pleaseEnterValidEmail": "Voer een geldig e-mailadres in",
+  "passwordsDoNotMatch": "Wachtwoorden komen niet overeen"
 }

@@ -1718,4 +1718,57 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get notificationsPitchForum =>
       'Respuestas, menciones y mensajes directos en tu pantalla de bloqueo en cuanto llegan.';
+
+  @override
+  String get viewProfile => 'Ver perfil';
+
+  @override
+  String get settings => 'Ajustes';
+
+  @override
+  String get signOut => 'Cerrar sesión';
+
+  @override
+  String get changeEmail => 'Cambiar correo electrónico';
+
+  @override
+  String get changePassword => 'Cambiar contraseña';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get currentPassword => 'Contraseña actual';
+
+  @override
+  String get newPassword => 'Nueva contraseña';
+
+  @override
+  String get confirmNewPassword => 'Confirma la nueva contraseña';
+
+  @override
+  String get newEmailAddress => 'Nueva dirección de correo';
+
+  @override
+  String get emailChanged => 'Dirección de correo cambiada';
+
+  @override
+  String get emailChangeConfirm =>
+      'Revisa tu correo: la nueva dirección se aplica cuando la confirmes.';
+
+  @override
+  String get passwordChanged => 'Contraseña cambiada';
+
+  @override
+  String get account => 'Cuenta';
+
+  @override
+  String get pleaseEnterEmail => 'Por favor ingresa tu correo electrónico';
+
+  @override
+  String get pleaseEnterValidEmail =>
+      'Por favor ingresa un correo electrónico válido';
+
+  @override
+  String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
 }

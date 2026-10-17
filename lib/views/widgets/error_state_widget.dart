@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/design_tokens.dart';
+import 'empty_state_view.dart';
 
 /// A reusable error state widget with icon, title, and formatted message.
 class ErrorStateWidget extends StatelessWidget {
@@ -17,40 +18,14 @@ class ErrorStateWidget extends StatelessWidget {
     this.iconSize = DesignTokens.iconSizeXL,
   }) : super(key: key);
 
+  // The shared EmptyStateView's error form, so errors look the same on
+  // every screen. [iconSize] is kept for callers and unused.
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: iconSize,
-            color: colorScheme.error,
-          ),
-          SizedBox(height: DesignTokens.spacingL),
-          Text(
-            title ?? (AppLocalizations.of(context)?.errorTitle ?? 'Error'),
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.error,
-            ),
-          ),
-          SizedBox(height: DesignTokens.spacingS),
-          Padding(
-            padding: DesignTokens.paddingHorizontalXL,
-            child: Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
+    return EmptyStateView.error(
+      icon: icon,
+      message: title ?? (AppLocalizations.of(context)?.errorTitle ?? 'Error'),
+      hint: message,
     );
   }
 }

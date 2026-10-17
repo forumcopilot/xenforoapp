@@ -4,7 +4,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/register_page.dart';
-import '../../theme/design_tokens.dart';
+import 'empty_state_view.dart';
 
 class NotSignedInView extends StatelessWidget {
   final SiteContext siteContext;
@@ -24,9 +24,6 @@ class NotSignedInView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
     if (autoShowLogin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.currentRoute != '/LoginPage') {
@@ -35,101 +32,22 @@ class NotSignedInView extends StatelessWidget {
       });
     }
 
-    return Center(
-      child: SingleChildScrollView(
-        padding: DesignTokens.paddingXXL,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: DesignTokens.avatarSizeXL, // 64px
-              color: colorScheme.primary,
-            ),
-            SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px
-            Text(
-              title,
-              style: textTheme.titleLarge?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: DesignTokens.fontWeightBold,
-                fontSize: DesignTokens.fontSizeL, // Match forum header title size
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: DesignTokens.spacingS),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: DesignTokens.fontSizeS, // Match forum header description size
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: DesignTokens.spacingXL),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      Get.to(() => LoginPage(siteContext: siteContext));
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: DesignTokens.spacingXL,
-                        vertical: DesignTokens.spacingM,
-                      ),
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-                      ),
-                    ),
-                    child: Text(
-                      'Login',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onPrimary,
-                        fontWeight: DesignTokens.fontWeightBold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Get.to(() => RegisterPage(siteContext: siteContext));
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: DesignTokens.spacingXL,
-                        vertical: DesignTokens.spacingM,
-                      ),
-                      foregroundColor: colorScheme.primary,
-                      side: BorderSide(
-                        color: colorScheme.primary,
-                        width: DesignTokens.borderWidthMedium,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(DesignTokens.radiusM),
-                      ),
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)?.register ?? 'Register',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: DesignTokens.fontWeightBold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+    // The shared EmptyStateView with Sign in (filled) and Register
+    // (outlined) as its actions.
+    return EmptyStateView(
+      icon: icon,
+      message: title,
+      hint: message,
+      actions: [
+        FilledButton(
+          onPressed: () => Get.to(() => LoginPage(siteContext: siteContext)),
+          child: Text(AppLocalizations.of(context)?.loginButton ?? 'Login'),
         ),
-      ),
+        OutlinedButton(
+          onPressed: () => Get.to(() => RegisterPage(siteContext: siteContext)),
+          child: Text(AppLocalizations.of(context)?.register ?? 'Register'),
+        ),
+      ],
     );
   }
 }

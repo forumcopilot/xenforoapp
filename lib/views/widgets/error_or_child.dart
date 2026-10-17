@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../theme/design_tokens.dart';
-import '../../l10n/generated/app_localizations.dart';
+import 'empty_state_view.dart';
 
 class ErrorOrChild extends StatelessWidget {
   final RxBool isError;
@@ -31,31 +30,8 @@ class ErrorOrChild extends StatelessWidget {
           }
         }
         
-        // Default error handling
-        return Center(
-          child: Padding(
-            padding: DesignTokens.paddingXL,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  errorMessage.value,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: DesignTokens.fontSizeM,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.refresh),
-                  label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
-                  onPressed: onRetry,
-                ),
-              ],
-            ),
-          ),
-        );
+        // Default: the shared error view with Try again.
+        return EmptyStateView.error(message: errorMessage.value, onRetry: onRetry);
       }
       return builder(context);
     });

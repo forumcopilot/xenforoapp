@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:get/get.dart';
-import '../../theme/design_tokens.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../views/widgets/empty_state_view.dart';
 
 /// Reusable error widgets for consistent error display throughout the app
 class ErrorWidgets {
@@ -16,58 +16,29 @@ class ErrorWidgets {
     String? helpText,
     VoidCallback? onHelp,
   }) {
+    // The shared EmptyStateView's error form; Get help, when offered, is
+    // its second action.
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: DesignTokens.paddingXL,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 80,
-                color: Get.theme.colorScheme.error,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: Get.theme.textTheme.headlineSmall?.copyWith(
-                  color: Get.theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                style: Get.theme.textTheme.bodyLarge?.copyWith(
-                  color: Get.theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              if (onRetry != null)
-                ElevatedButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(retryText ?? (AppLocalizations.of(context)?.tryAgain ?? 'Try Again')),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+        child: onHelp == null
+            ? EmptyStateView.error(message: title, hint: message, onRetry: onRetry)
+            : EmptyStateView(
+                icon: Icons.error_outline,
+                message: title,
+                hint: message,
+                actions: [
+                  if (onRetry != null)
+                    OutlinedButton.icon(
+                      onPressed: onRetry,
+                      icon: const Icon(Icons.refresh),
+                      label: Text(retryText ?? (AppLocalizations.of(context)?.tryAgain ?? 'Try again')),
                     ),
+                  TextButton(
+                    onPressed: onHelp,
+                    child: Text(helpText ?? (AppLocalizations.of(context)?.getHelp ?? 'Get Help')),
                   ),
-                ),
-              if (onHelp != null) ...[
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: onHelp,
-                  child: Text(helpText ?? (AppLocalizations.of(context)?.getHelp ?? 'Get Help')),
-                ),
-              ],
-            ],
-          ),
-        ),
+                ],
+              ),
       ),
     );
   }

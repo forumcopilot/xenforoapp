@@ -134,6 +134,12 @@ class ForumCopilotPubApp extends PubApp
             'updatePassword' => 'AccountController@actionUpdatePassword',
             'updateEmail' => 'AccountController@actionUpdateEmail',
             'deleteAccount' => 'AccountController@actionDeleteAccount',
+
+            // Drafts (XenForo's own, shared with the web editor)
+            'getDraft' => 'DraftController@actionGetDraft',
+            'saveDraft' => 'DraftController@actionSaveDraft',
+            'deleteDraft' => 'DraftController@actionDeleteDraft',
+            'getDrafts' => 'DraftController@actionGetDrafts',
             'updateProfile' => 'AccountController@actionUpdateProfile',
             'getUserSettings' => 'AccountController@actionGetUserSettings',
             'updateUserSettings' => 'AccountController@actionUpdateUserSettings',

@@ -729,7 +729,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                         _openInvite = value;
                                       });
                                     },
-                                    activeColor: colorScheme.primary,
+                                    activeThumbColor: colorScheme.primary,
                                   ),
                                   Divider(
                                     height: 1,
@@ -756,7 +756,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                         _conversationLocked = value;
                                       });
                                     },
-                                    activeColor: colorScheme.primary,
+                                    activeThumbColor: colorScheme.primary,
                                   ),
                                 ],
                               ),

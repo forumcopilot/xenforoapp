@@ -877,24 +877,29 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
-                      ...reportReasons.map((reason) {
-                        return RadioListTile<String>(
-                          title: Text(
-                            reason,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          value: reason,
-                          groupValue: selectedReason,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedReason = value;
-                            });
-                          },
-                          contentPadding: EdgeInsets.zero,
-                        );
-                      }).toList(),
+                      RadioGroup<String>(
+                        groupValue: selectedReason,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedReason = value;
+                          });
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: reportReasons.map((reason) {
+                            return RadioListTile<String>(
+                              title: Text(
+                                reason,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              value: reason,
+                              contentPadding: EdgeInsets.zero,
+                            );
+                          }).toList(),
+                        ),
+                      ),
                       if (selectedReason == l10n.otherPleaseSpecify) ...[
                         const SizedBox(height: DesignTokens.spacingM),
                         TextFormField(
@@ -1173,24 +1178,29 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ),
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
-                        ...banReasons.map((reason) {
-                          return RadioListTile<String>(
-                            title: Text(
-                              reason,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                            value: reason,
-                            groupValue: selectedReason,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedReason = value;
-                              });
-                            },
-                            contentPadding: EdgeInsets.zero,
-                          );
-                        }).toList(),
+                        RadioGroup<String>(
+                          groupValue: selectedReason,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedReason = value;
+                            });
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: banReasons.map((reason) {
+                              return RadioListTile<String>(
+                                title: Text(
+                                  reason,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                value: reason,
+                                contentPadding: EdgeInsets.zero,
+                              );
+                            }).toList(),
+                          ),
+                        ),
                         if (selectedReason == l10n.otherPleaseSpecify) ...[
                           const SizedBox(height: DesignTokens.spacingM),
                           TextFormField(
@@ -1279,42 +1289,44 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
-                      RadioListTile<String>(
-                        title: Text(
-                          AppLocalizations.of(context)?.permanent ?? 'Permanent',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        value: 'permanent',
+                      RadioGroup<String>(
                         groupValue: banLength,
                         onChanged: (value) {
                           setState(() {
                             banLength = value;
-                            selectedEndDate = null;
-                          });
-                        },
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      RadioListTile<String>(
-                        title: Text(
-                          AppLocalizations.of(context)?.temporary ?? 'Temporary',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        value: 'temporary',
-                        groupValue: banLength,
-                        onChanged: (value) {
-                          setState(() {
-                            banLength = value;
-                            // Default to 7 days from now if no date selected
-                            if (selectedEndDate == null) {
-                              selectedEndDate = DateTime.now().add(const Duration(days: 7));
+                            if (value == 'permanent') {
+                              selectedEndDate = null;
+                            } else {
+                              // Default to 7 days from now if no date selected
+                              selectedEndDate ??= DateTime.now().add(const Duration(days: 7));
                             }
                           });
                         },
-                        contentPadding: EdgeInsets.zero,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                          RadioListTile<String>(
+                            title: Text(
+                              AppLocalizations.of(context)?.permanent ?? 'Permanent',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            value: 'permanent',
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          RadioListTile<String>(
+                            title: Text(
+                              AppLocalizations.of(context)?.temporary ?? 'Temporary',
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            value: 'temporary',
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          ],
+                        ),
                       ),
                       // Date picker for temporary ban
                       if (banLength == 'temporary') ...[

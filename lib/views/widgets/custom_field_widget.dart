@@ -117,7 +117,7 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
           ),
         // Dropdown field
         DropdownButtonFormField<String>(
-          value: options.containsKey(selectedValue) ? selectedValue : null,
+          initialValue: options.containsKey(selectedValue) ? selectedValue : null,
           decoration: StyleBuilders.inputDecoration(
             colorScheme: colorScheme,
             labelText: null, // Remove floating label since we have explicit label above
@@ -235,31 +235,33 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
             borderRadius: BorderRadius.circular(DesignTokens.radiusL),
           ),
           padding: const EdgeInsets.symmetric(vertical: DesignTokens.spacingXS),
-          child: Column(
-            children: options.entries.map((entry) {
-              return RadioListTile<String>(
-                title: Text(
-                  entry.value,
-                  style: TextStyle(color: colorScheme.onSurface),
-                ),
-                value: entry.key,
-                groupValue: selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    controller.text = value ?? '';
-                  });
-                  if (onFieldSubmitted != null) {
-                    onFieldSubmitted!();
-                  }
-                },
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingM,
-                  vertical: DesignTokens.spacingXS,
-                ),
-                dense: false, // Better touch targets for mobile
-                visualDensity: VisualDensity.comfortable,
-              );
-            }).toList(),
+          child: RadioGroup<String>(
+            groupValue: selectedValue,
+            onChanged: (value) {
+              setState(() {
+                controller.text = value ?? '';
+              });
+              if (onFieldSubmitted != null) {
+                onFieldSubmitted!();
+              }
+            },
+            child: Column(
+              children: options.entries.map((entry) {
+                return RadioListTile<String>(
+                  title: Text(
+                    entry.value,
+                    style: TextStyle(color: colorScheme.onSurface),
+                  ),
+                  value: entry.key,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: DesignTokens.spacingM,
+                    vertical: DesignTokens.spacingXS,
+                  ),
+                  dense: false, // Better touch targets for mobile
+                  visualDensity: VisualDensity.comfortable,
+                );
+              }).toList(),
+            ),
           ),
         ),
         // Field description

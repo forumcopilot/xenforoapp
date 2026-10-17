@@ -351,7 +351,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                                 _hasChanges = true;
                               });
                             },
-                            activeColor: colorScheme.primary,
+                            activeThumbColor: colorScheme.primary,
                           ),
                           Divider(
                             height: 1,
@@ -380,7 +380,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                                 _hasChanges = true;
                               });
                             },
-                            activeColor: colorScheme.primary,
+                            activeThumbColor: colorScheme.primary,
                           ),
                         ],
                       ),

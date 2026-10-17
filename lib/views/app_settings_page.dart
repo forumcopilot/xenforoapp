@@ -86,7 +86,15 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           ),
           Obx(() {
             final currentLocale = SettingsContext.instance.locale.value;
-            return Column(
+            return RadioGroup<Locale?>(
+              groupValue: currentLocale,
+              onChanged: (value) {
+                SettingsContext.instance.locale.value = value;
+                SettingsContext.instance.saveToDevice();
+                // Apply at once; System Default (null) follows the device.
+                Get.updateLocale(value ?? Get.deviceLocale ?? const Locale('en'));
+              },
+              child: Column(
               children: [
                 RadioListTile<Locale?>(
                   title: Text(
@@ -102,13 +110,6 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     ),
                   ),
                   value: null,
-                  groupValue: currentLocale,
-                  onChanged: (value) {
-                    SettingsContext.instance.locale.value = value;
-                    SettingsContext.instance.saveToDevice();
-                    // Update GetX locale to use device locale when "System Default" is selected
-                    Get.updateLocale(Get.deviceLocale ?? const Locale('en'));
-                  },
                 ),
                 ...languageNames.entries.map((entry) {
                   final locale = Locale(entry.key);
@@ -120,18 +121,10 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                       ),
                     ),
                     value: locale,
-                    groupValue: currentLocale,
-                    onChanged: (value) {
-                      SettingsContext.instance.locale.value = value;
-                      SettingsContext.instance.saveToDevice();
-                      // Update GetX locale to apply the language change immediately
-                      if (value != null) {
-                        Get.updateLocale(value);
-                      }
-                    },
                   );
                 }),
               ],
+              ),
             );
           }),
         ],
@@ -167,7 +160,16 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           ),
           Obx(() {
             final currentTheme = SettingsContext.instance.themeMode.value;
-            return Column(
+            return RadioGroup<ThemeMode>(
+              groupValue: currentTheme,
+              onChanged: (value) {
+                if (value != null) {
+                  SettingsContext.instance.themeMode.value = value;
+                  AppTheme.themeMode.value = value;
+                  SettingsContext.instance.saveToDevice();
+                }
+              },
+              child: Column(
               children: [
                 RadioListTile<ThemeMode>(
                   title: Text(
@@ -183,14 +185,6 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     ),
                   ),
                   value: ThemeMode.system,
-                  groupValue: currentTheme,
-                  onChanged: (value) {
-                    if (value != null) {
-                      SettingsContext.instance.themeMode.value = value;
-                      AppTheme.themeMode.value = value;
-                      SettingsContext.instance.saveToDevice();
-                    }
-                  },
                 ),
                 RadioListTile<ThemeMode>(
                   title: Text(
@@ -200,14 +194,6 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     ),
                   ),
                   value: ThemeMode.light,
-                  groupValue: currentTheme,
-                  onChanged: (value) {
-                    if (value != null) {
-                      SettingsContext.instance.themeMode.value = value;
-                      AppTheme.themeMode.value = value;
-                      SettingsContext.instance.saveToDevice();
-                    }
-                  },
                 ),
                 RadioListTile<ThemeMode>(
                   title: Text(
@@ -217,16 +203,9 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     ),
                   ),
                   value: ThemeMode.dark,
-                  groupValue: currentTheme,
-                  onChanged: (value) {
-                    if (value != null) {
-                      SettingsContext.instance.themeMode.value = value;
-                      AppTheme.themeMode.value = value;
-                      SettingsContext.instance.saveToDevice();
-                    }
-                  },
                 ),
               ],
+              ),
             );
           }),
         ],

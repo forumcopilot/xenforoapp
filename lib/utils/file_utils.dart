@@ -453,10 +453,7 @@ Future<String> _downloadFileIOS(String url, String filename) async {
     await file.writeAsBytes(bytes);
 
     // Use Share Sheet to let user save to Files app
-    await Share.shareXFiles(
-      [XFile(filePath)],
-      subject: filename,
-    );
+    await SharePlus.instance.share(ShareParams(files: [XFile(filePath)], subject: filename));
 
     // Return empty string since file location is determined by user's choice
     // The file in temp directory will be cleaned up by the system

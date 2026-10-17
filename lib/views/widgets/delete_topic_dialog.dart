@@ -68,27 +68,29 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            RadioListTile<bool>(
-              title: Text(AppLocalizations.of(context)?.softDelete ?? 'Soft Delete'),
-              subtitle: Text(AppLocalizations.of(context)?.topicCanBeRestoredLater ?? 'Topic can be restored later'),
-              value: false,
+            RadioGroup<bool>(
               groupValue: _hardDelete,
               onChanged: (value) {
+                if (value == null) return;
                 setState(() {
-                  _hardDelete = value ?? false;
+                  _hardDelete = value;
                 });
               },
-            ),
-            RadioListTile<bool>(
-              title: Text(AppLocalizations.of(context)?.hardDelete ?? 'Hard Delete'),
-              subtitle: Text(AppLocalizations.of(context)?.topicWillBePermanentlyDeleted ?? 'Topic will be permanently deleted'),
-              value: true,
-              groupValue: _hardDelete,
-              onChanged: (value) {
-                setState(() {
-                  _hardDelete = value ?? true;
-                });
-              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                RadioListTile<bool>(
+                  title: Text(AppLocalizations.of(context)?.softDelete ?? 'Soft Delete'),
+                  subtitle: Text(AppLocalizations.of(context)?.topicCanBeRestoredLater ?? 'Topic can be restored later'),
+                  value: false,
+                ),
+                RadioListTile<bool>(
+                  title: Text(AppLocalizations.of(context)?.hardDelete ?? 'Hard Delete'),
+                  subtitle: Text(AppLocalizations.of(context)?.topicWillBePermanentlyDeleted ?? 'Topic will be permanently deleted'),
+                  value: true,
+                ),
+                ],
+              ),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             TextFormField(

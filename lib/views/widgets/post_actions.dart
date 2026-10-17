@@ -510,27 +510,29 @@ class PostActionsHandler {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RadioListTile<int>(
-                      title: Text(AppLocalizations.of(context)!.softDelete),
-                      subtitle: Text(AppLocalizations.of(context)!.postCanBeRestoredLater),
-                      value: 1,
+                    RadioGroup<int>(
                       groupValue: deleteMode,
                       onChanged: (value) {
+                        if (value == null) return;
                         setState(() {
-                          deleteMode = value!;
+                          deleteMode = value;
                         });
                       },
-                    ),
-                    RadioListTile<int>(
-                      title: Text(AppLocalizations.of(context)!.hardDelete),
-                      subtitle: Text(AppLocalizations.of(context)!.postWillBePermanentlyDeleted),
-                      value: 2,
-                      groupValue: deleteMode,
-                      onChanged: (value) {
-                        setState(() {
-                          deleteMode = value!;
-                        });
-                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                        RadioListTile<int>(
+                          title: Text(AppLocalizations.of(context)!.softDelete),
+                          subtitle: Text(AppLocalizations.of(context)!.postCanBeRestoredLater),
+                          value: 1,
+                        ),
+                        RadioListTile<int>(
+                          title: Text(AppLocalizations.of(context)!.hardDelete),
+                          subtitle: Text(AppLocalizations.of(context)!.postWillBePermanentlyDeleted),
+                          value: 2,
+                        ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: DesignTokens.spacingL),
                     TextFormField(

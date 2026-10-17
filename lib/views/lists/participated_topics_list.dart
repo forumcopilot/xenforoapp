@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
+import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import 'package:forumcopilot_flutter/views/listitems/topic_list_item.dart';
 import 'package:forumcopilot_flutter/views/widgets/resettable_widget.dart';
 import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
@@ -235,7 +236,8 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
                 await Get.to(() => LoginPage(siteContext: widget.siteContext));
               }
             }
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId));
+            // At the first unread post, as the Latest list opens topics (signed in only).
+            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
           },
         ),
       );

@@ -1585,4 +1585,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notificationsTab => '通知';
+
+  @override
+  String get postAwaitingApproval => '您的帖子将在版主批准后显示。';
 }

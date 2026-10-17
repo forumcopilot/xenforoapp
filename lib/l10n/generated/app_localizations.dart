@@ -2983,6 +2983,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Alerts'**
   String get notificationsTab;
+
+  /// Shown after posting a reply or a new topic that the forum holds for moderator approval
+  ///
+  /// In en, this message translates to:
+  /// **'Your post will appear once a moderator approves it.'**
+  String get postAwaitingApproval;
 }
 
 class _AppLocalizationsDelegate

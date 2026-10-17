@@ -1668,4 +1668,8 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Оповещения';
+
+  @override
+  String get postAwaitingApproval =>
+      'Сообщение появится после одобрения модератором.';
 }

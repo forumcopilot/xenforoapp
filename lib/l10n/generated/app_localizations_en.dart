@@ -1655,4 +1655,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Alerts';
+
+  @override
+  String get postAwaitingApproval =>
+      'Your post will appear once a moderator approves it.';
 }

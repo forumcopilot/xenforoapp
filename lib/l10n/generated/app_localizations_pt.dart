@@ -1667,4 +1667,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Avisos';
+
+  @override
+  String get postAwaitingApproval =>
+      'Sua postagem aparecerá quando um moderador aprová-la.';
 }

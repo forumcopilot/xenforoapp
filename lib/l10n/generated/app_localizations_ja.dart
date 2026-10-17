@@ -1609,4 +1609,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notificationsTab => '通知';
+
+  @override
+  String get postAwaitingApproval => 'モデレーターが承認すると、投稿が表示されます。';
 }

@@ -1671,4 +1671,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Avisos';
+
+  @override
+  String get postAwaitingApproval =>
+      'Tu publicación aparecerá cuando un moderador la apruebe.';
 }

@@ -1656,4 +1656,8 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Meldingen';
+
+  @override
+  String get postAwaitingApproval =>
+      'Je bericht verschijnt zodra een moderator het heeft goedgekeurd.';
 }

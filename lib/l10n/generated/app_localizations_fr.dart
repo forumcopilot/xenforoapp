@@ -1678,4 +1678,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Alertes';
+
+  @override
+  String get postAwaitingApproval =>
+      'Votre message apparaîtra dès qu’un modérateur l’aura approuvé.';
 }

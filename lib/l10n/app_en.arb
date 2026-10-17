@@ -1547,5 +1547,7 @@
   "discardChanges": "Discard changes",
   "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
   "notificationsTab": "Alerts",
-  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."}
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "Your post will appear once a moderator approves it.",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

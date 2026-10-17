@@ -1675,4 +1675,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notificationsTab => 'Mitteilungen';
+
+  @override
+  String get postAwaitingApproval =>
+      'Dein Beitrag erscheint, sobald ein Moderator ihn freigegeben hat.';
 }

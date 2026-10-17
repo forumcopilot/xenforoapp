@@ -1040,17 +1040,27 @@ class FCUpdateEmailResultMapper extends ClassMapperBase<FCUpdateEmailResult> {
     _$resultText,
     opt: true,
   );
+  static bool _$confirmationRequired(FCUpdateEmailResult v) =>
+      v.confirmationRequired;
+  static const Field<FCUpdateEmailResult, bool> _f$confirmationRequired = Field(
+    'confirmationRequired',
+    _$confirmationRequired,
+    opt: true,
+    def: false,
+  );
 
   @override
   final MappableFields<FCUpdateEmailResult> fields = const {
     #result: _f$result,
     #resultText: _f$resultText,
+    #confirmationRequired: _f$confirmationRequired,
   };
 
   static FCUpdateEmailResult _instantiate(DecodingData data) {
     return FCUpdateEmailResult(
       result: data.dec(_f$result),
       resultText: data.dec(_f$resultText),
+      confirmationRequired: data.dec(_f$confirmationRequired),
     );
   }
 
@@ -1125,7 +1135,7 @@ abstract class FCUpdateEmailResultCopyWith<
 >
     implements FCBaseResultCopyWith<$R, $In, $Out> {
   @override
-  $R call({bool? result, String? resultText});
+  $R call({bool? result, String? resultText, bool? confirmationRequired});
   FCUpdateEmailResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   );
@@ -1140,16 +1150,26 @@ class _FCUpdateEmailResultCopyWithImpl<$R, $Out>
   late final ClassMapperBase<FCUpdateEmailResult> $mapper =
       FCUpdateEmailResultMapper.ensureInitialized();
   @override
-  $R call({bool? result, Object? resultText = $none}) => $apply(
+  $R call({
+    bool? result,
+    Object? resultText = $none,
+    bool? confirmationRequired,
+  }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
+      if (confirmationRequired != null)
+        #confirmationRequired: confirmationRequired,
     }),
   );
   @override
   FCUpdateEmailResult $make(CopyWithData data) => FCUpdateEmailResult(
     result: data.get(#result, or: $value.result),
     resultText: data.get(#resultText, or: $value.resultText),
+    confirmationRequired: data.get(
+      #confirmationRequired,
+      or: $value.confirmationRequired,
+    ),
   );
 
   @override

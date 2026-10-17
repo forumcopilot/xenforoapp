@@ -274,15 +274,38 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
   }
 
   @override
-  Future<FCUpdateEmailResult> updateEmail(String password, String newEmail) {
-    // TODO: implement updateEmail
-    throw UnimplementedError();
+  Future<FCUpdateEmailResult> updateEmail(String password, String newEmail) async {
+    try {
+      final response = await callPluginApi('updateEmail', {
+        'password': password,
+        'newEmail': newEmail,
+      });
+      return FCUpdateEmailResult(
+        result: response['result'] == true,
+        resultText: response['resultText']?.toString(),
+        confirmationRequired: response['confirmationRequired'] == true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_ACCOUNT] updateEmail error: $e');
+      return FCUpdateEmailResult(result: false, resultText: e.toString());
+    }
   }
 
   @override
-  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword) {
-    // TODO: implement updatePassword
-    throw UnimplementedError();
+  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword) async {
+    try {
+      final response = await callPluginApi('updatePassword', {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+      });
+      return FCUpdatePasswordResult(
+        result: response['result'] == true,
+        resultText: response['resultText']?.toString(),
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_ACCOUNT] updatePassword error: $e');
+      return FCUpdatePasswordResult(result: false, resultText: e.toString());
+    }
   }
 
   @override

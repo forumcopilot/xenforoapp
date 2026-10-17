@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class NotificationListItem extends StatelessWidget {
   final FCTopic topic;
@@ -12,12 +13,17 @@ class NotificationListItem extends StatelessWidget {
   final IconData? topicIcon;
   final String? contentType;
 
+  /// Unread alerts get a heavier headline and an unread dot, as on the
+  /// website's alert list.
+  final bool isUnread;
+
   const NotificationListItem({
     Key? key,
     required this.topic,
     required this.onTap,
     this.topicIcon,
     this.contentType,
+    this.isUnread = false,
   }) : super(key: key);
 
   Widget _buildBottomDivider(ColorScheme colorScheme) {
@@ -64,7 +70,9 @@ class NotificationListItem extends StatelessWidget {
                             colorScheme: colorScheme,
                             textTheme: textTheme,
                             fontSize: DesignTokens.fontSizeS,
-                            fontWeight: DesignTokens.fontWeightMedium,
+                            fontWeight: isUnread
+                                ? FontWeight.w600
+                                : DesignTokens.fontWeightMedium,
                           ),
                           // No maxLines restriction for flexible wrapping
                         ),
@@ -141,6 +149,19 @@ class NotificationListItem extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (isUnread) ...[
+                    SizedBox(width: DesignTokens.spacingS),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Semantics(
+                        label: AppLocalizations.of(context)?.unread ?? 'Unread',
+                        child: Badge(
+                          smallSize: 8,
+                          backgroundColor: colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

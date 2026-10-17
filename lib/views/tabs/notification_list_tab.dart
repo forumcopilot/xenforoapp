@@ -573,6 +573,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
               topic: topic,
               onTap: () => _onAlertTap(topic, originalAlert),
               contentType: originalAlert.content_type,
+              isUnread: !originalAlert.isRead,
             );
           } else {
             // Loading indicator for load more

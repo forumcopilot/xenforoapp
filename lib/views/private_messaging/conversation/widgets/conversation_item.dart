@@ -209,6 +209,8 @@ class ConversationHeaderItem extends StatelessWidget {
           ),
         );
       },
+      // An inline [IMG] picture (tapping it used to do nothing).
+      onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
       inlineAttachments: message.attachments,
       attachments: message.attachments,
     );
@@ -232,53 +234,34 @@ class ConversationHeaderItem extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Avatar with Online Status Dot
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserProfilePage(
-                                siteContext: siteContext,
-                                userId: message.userId,
-                                userName: message.username,
-                                profilePictureUrl: message.iconUrl,
-                              ),
-                            ),
-                          );
-                        },
-                        child: UserAvatar(
-                          username: message.username,
-                          iconUrl: message.iconUrl,
-                          radius: DesignTokens.avatarRadiusM,
-                          cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
-                              ? AvatarCacheUtils.generateAvatarCacheKey(
-                                  userId: message.userId,
-                                  username: message.username,
-                                  avatarUrl: message.iconUrl!,
-                                )
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: DesignTokens.statusDotSize,
-                          height: DesignTokens.statusDotSize,
-                          decoration: BoxDecoration(
-                            color: message.isFromCurrentUser == true ? Colors.green : Colors.grey,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colorScheme.surface,
-                              width: DesignTokens.borderWidthThinMedium,
-                            ),
+                  // Avatar. No online dot: the dot was green for your own messages and
+                  // grey for everyone else's, whoever was online.
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserProfilePage(
+                            siteContext: siteContext,
+                            userId: message.userId,
+                            userName: message.username,
+                            profilePictureUrl: message.iconUrl,
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
+                    child: UserAvatar(
+                      username: message.username,
+                      iconUrl: message.iconUrl,
+                      radius: DesignTokens.avatarRadiusM,
+                      cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
+                          ? AvatarCacheUtils.generateAvatarCacheKey(
+                              userId: message.userId,
+                              username: message.username,
+                              avatarUrl: message.iconUrl!,
+                            )
+                          : null,
+                    ),
                   ),
                   SizedBox(width: DesignTokens.spacingL),
                   // Author Info and Post Date
@@ -345,9 +328,6 @@ class ConversationHeaderItem extends StatelessWidget {
                         switch (value) {
                           case 'edit':
                             if (onEdit != null) onEdit!();
-                            break;
-                          case 'report':
-                            // TODO: Implement report functionality if needed
                             break;
                         }
                       },
@@ -444,25 +424,8 @@ class ConversationHeaderItem extends StatelessWidget {
       );
     }
     
-    // Report button (if canReport is true)
-    if (message.canReport == true) {
-      items.add(
-        PopupMenuItem<String>(
-          value: 'report',
-          child: Row(
-            children: [
-              Icon(
-                Icons.flag_outlined,
-                size: DesignTokens.iconSizeM,
-                color: colorScheme.secondary,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.report ?? 'Report'),
-            ],
-          ),
-        ),
-      );
-    }
+    // No Report: reporting a conversation message isn't implemented (the
+    // menu item did nothing).
     
     return items;
   }
@@ -567,6 +530,7 @@ class _ConversationAttachmentActions {
     final List<String> allImageUrls = [];
     int tappedIndex = 0;
     int currentIndex = 0;
+    bool found = false;
 
     for (var att in message.attachments) {
       final isImage = att.isImage || (att.contentType?.startsWith('image/') ?? false);
@@ -577,9 +541,19 @@ class _ConversationAttachmentActions {
         allImageUrls.add(urlToUse);
         if (urlToUse == imageUrl || att.url == imageUrl || att.thumbnailUrl == imageUrl) {
           tappedIndex = currentIndex;
+          found = true;
         }
         currentIndex++;
       }
+    }
+
+    // A picture that isn't one of the attachments (an inline [IMG]) is shown
+    // on its own, not the first attachment in its place.
+    if (!found && imageUrl.isNotEmpty) {
+      allImageUrls
+        ..clear()
+        ..add(imageUrl);
+      tappedIndex = 0;
     }
 
     if (allImageUrls.isEmpty) {
@@ -781,6 +755,8 @@ class ConversationItem extends StatelessWidget {
           ),
         );
       },
+      // An inline [IMG] picture (tapping it used to do nothing).
+      onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
       inlineAttachments: message.attachments,
       attachments: message.attachments,
     );
@@ -805,53 +781,34 @@ class ConversationItem extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Avatar with Online Status Dot
-                  Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserProfilePage(
-                                siteContext: siteContext,
-                                userId: message.userId,
-                                userName: message.username,
-                                profilePictureUrl: message.iconUrl,
-                              ),
-                            ),
-                          );
-                        },
-                        child: UserAvatar(
-                          username: message.username,
-                          iconUrl: message.iconUrl,
-                          radius: DesignTokens.avatarRadiusM,
-                          cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
-                              ? AvatarCacheUtils.generateAvatarCacheKey(
-                                  userId: message.userId,
-                                  username: message.username,
-                                  avatarUrl: message.iconUrl!,
-                                )
-                              : null,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          width: DesignTokens.statusDotSize,
-                          height: DesignTokens.statusDotSize,
-                          decoration: BoxDecoration(
-                            color: message.isFromCurrentUser == true ? Colors.green : Colors.grey,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colorScheme.surface,
-                              width: DesignTokens.borderWidthThinMedium,
-                            ),
+                  // Avatar. No online dot: the dot was green for your own messages and
+                  // grey for everyone else's, whoever was online.
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserProfilePage(
+                            siteContext: siteContext,
+                            userId: message.userId,
+                            userName: message.username,
+                            profilePictureUrl: message.iconUrl,
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
+                    child: UserAvatar(
+                      username: message.username,
+                      iconUrl: message.iconUrl,
+                      radius: DesignTokens.avatarRadiusM,
+                      cacheKey: message.iconUrl != null && message.iconUrl!.isNotEmpty
+                          ? AvatarCacheUtils.generateAvatarCacheKey(
+                              userId: message.userId,
+                              username: message.username,
+                              avatarUrl: message.iconUrl!,
+                            )
+                          : null,
+                    ),
                   ),
                   SizedBox(width: DesignTokens.spacingL),
                   // Author Info and Post Date
@@ -918,9 +875,6 @@ class ConversationItem extends StatelessWidget {
                         switch (value) {
                           case 'edit':
                             if (onEdit != null) onEdit!();
-                            break;
-                          case 'report':
-                            // TODO: Implement report functionality if needed
                             break;
                         }
                       },
@@ -1026,25 +980,8 @@ class ConversationItem extends StatelessWidget {
       );
     }
     
-    // Report button (if canReport is true)
-    if (message.canReport == true) {
-      items.add(
-        PopupMenuItem<String>(
-          value: 'report',
-          child: Row(
-            children: [
-              Icon(
-                Icons.flag_outlined,
-                size: DesignTokens.iconSizeM,
-                color: colorScheme.secondary,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.report ?? 'Report'),
-            ],
-          ),
-        ),
-      );
-    }
+    // No Report: reporting a conversation message isn't implemented (the
+    // menu item did nothing).
     
     return items;
   }

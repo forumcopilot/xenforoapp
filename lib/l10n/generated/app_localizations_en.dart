@@ -2845,4 +2845,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String searchForumName(String forumName) {
     return 'Search $forumName';
   }
+
+  @override
+  String get copyLink => 'Copy link';
+
+  @override
+  String get linkCopied => 'Link copied';
 }

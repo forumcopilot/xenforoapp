@@ -1305,5 +1305,7 @@
   "statsMembers": "{count, plural, =1{{count} membro} other{{count} membri}}",
   "statsTopics": "{count, plural, =1{{count} discussione} other{{count} discussioni}}",
   "statsPosts": "{count, plural, =1{{count} messaggio} other{{count} messaggi}}",
-  "searchForumName": "Cerca in {forumName}"
+  "searchForumName": "Cerca in {forumName}",
+  "copyLink": "Copia link",
+  "linkCopied": "Link copiato"
 }

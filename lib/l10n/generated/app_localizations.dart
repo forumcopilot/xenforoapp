@@ -4885,6 +4885,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search {forumName}'**
   String searchForumName(String forumName);
+
+  /// Post menu: copies a link to the post
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get linkCopied;
 }
 
 class _AppLocalizationsDelegate

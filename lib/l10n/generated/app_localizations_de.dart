@@ -2899,4 +2899,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String searchForumName(String forumName) {
     return '$forumName durchsuchen';
   }
+
+  @override
+  String get copyLink => 'Link kopieren';
+
+  @override
+  String get linkCopied => 'Link kopiert';
 }

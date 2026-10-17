@@ -28,6 +28,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../utils/l10n_now.dart';
 import '../utils/app_navigation.dart';
+import '../utils/forum_links.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -518,7 +519,11 @@ class NotificationService with ServiceErrorHandlingMixin {
             ),
           );
         case LinkDestination(:final url):
-          await _openInForum(siteId, afterOpen: () => UrlUtils.openUrl(url));
+          // A page of the forum on its screen, anything else in the browser.
+          await _openInForum(siteId, afterOpen: (siteContext) {
+            final context = Get.context;
+            return context != null ? ForumLinks.open(context, url, siteContext) : UrlUtils.openUrl(url);
+          });
         case AlertsDestination():
           if (!(sameSiteAlreadyInitialized && SiteHomePage.showTab(SiteHomePage.alertsTab))) {
             SiteHomePage.requestedTab.value = SiteHomePage.alertsTab;
@@ -873,7 +878,7 @@ class NotificationService with ServiceErrorHandlingMixin {
   Future<void> _openInForum(
     int siteId, {
     Widget Function(SiteContext siteContext)? page,
-    FutureOr<void> Function()? afterOpen,
+    FutureOr<void> Function(SiteContext siteContext)? afterOpen,
   }) async {
     try {
       final Site? targetForum = await _findForumBySiteId(siteId);
@@ -890,7 +895,7 @@ class NotificationService with ServiceErrorHandlingMixin {
         return;
       }
       if (page != null) Get.to(() => page(siteContext), preventDuplicates: false);
-      if (afterOpen != null) await afterOpen();
+      if (afterOpen != null) await afterOpen(siteContext);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error opening notification: $e');
       _showNotificationError(l10nNow().unableToOpenNotification, e.toString());

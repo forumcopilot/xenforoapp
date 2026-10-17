@@ -1898,5 +1898,8 @@
   "statsPosts": "{count, plural, =1{{count} post} other{{count} posts}}",
   "@statsPosts": {"description": "Forum home header stats, joined with \" · \"; the number is compact (1.2M)", "placeholders": {"count": {"type": "int", "format": "compact"}}},
   "searchForumName": "Search {forumName}",
-  "@searchForumName": {"description": "The search field in the forum home header", "placeholders": {"forumName": {"type": "String"}}}
+  "@searchForumName": {"description": "The search field in the forum home header", "placeholders": {"forumName": {"type": "String"}}},
+  "copyLink": "Copy link",
+  "@copyLink": {"description": "Post menu: copies a link to the post"},
+  "linkCopied": "Link copied"
 }

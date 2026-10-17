@@ -1281,5 +1281,7 @@
   "statsMembers": "{count, plural, other{メンバー {count} 人}}",
   "statsTopics": "{count, plural, other{トピック {count} 件}}",
   "statsPosts": "{count, plural, other{投稿 {count} 件}}",
-  "searchForumName": "{forumName} を検索"
+  "searchForumName": "{forumName} を検索",
+  "copyLink": "リンクをコピー",
+  "linkCopied": "リンクをコピーしました"
 }

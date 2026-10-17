@@ -2696,4 +2696,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String searchForumName(String forumName) {
     return '搜索 $forumName';
   }
+
+  @override
+  String get copyLink => '复制链接';
+
+  @override
+  String get linkCopied => '链接已复制';
 }

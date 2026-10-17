@@ -1305,5 +1305,7 @@
   "statsMembers": "{count, plural, one{{count} участник} few{{count} участника} many{{count} участников} other{{count} участника}}",
   "statsTopics": "{count, plural, one{{count} тема} few{{count} темы} many{{count} тем} other{{count} темы}}",
   "statsPosts": "{count, plural, one{{count} сообщение} few{{count} сообщения} many{{count} сообщений} other{{count} сообщения}}",
-  "searchForumName": "Поиск по {forumName}"
+  "searchForumName": "Поиск по {forumName}",
+  "copyLink": "Копировать ссылку",
+  "linkCopied": "Ссылка скопирована"
 }

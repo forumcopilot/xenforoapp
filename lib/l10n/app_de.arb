@@ -1281,5 +1281,7 @@
   "statsMembers": "{count, plural, =1{{count} Mitglied} other{{count} Mitglieder}}",
   "statsTopics": "{count, plural, =1{{count} Thema} other{{count} Themen}}",
   "statsPosts": "{count, plural, =1{{count} Beitrag} other{{count} Beiträge}}",
-  "searchForumName": "{forumName} durchsuchen"
+  "searchForumName": "{forumName} durchsuchen",
+  "copyLink": "Link kopieren",
+  "linkCopied": "Link kopiert"
 }

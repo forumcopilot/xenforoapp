@@ -2731,4 +2731,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String searchForumName(String forumName) {
     return '$forumName 검색';
   }
+
+  @override
+  String get copyLink => '링크 복사';
+
+  @override
+  String get linkCopied => '링크를 복사했습니다';
 }

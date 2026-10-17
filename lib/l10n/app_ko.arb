@@ -1305,5 +1305,7 @@
   "statsMembers": "{count, plural, other{회원 {count}명}}",
   "statsTopics": "{count, plural, other{주제 {count}개}}",
   "statsPosts": "{count, plural, other{게시물 {count}개}}",
-  "searchForumName": "{forumName} 검색"
+  "searchForumName": "{forumName} 검색",
+  "copyLink": "링크 복사",
+  "linkCopied": "링크를 복사했습니다"
 }

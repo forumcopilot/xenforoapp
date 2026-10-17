@@ -2739,4 +2739,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String searchForumName(String forumName) {
     return '$forumName を検索';
   }
+
+  @override
+  String get copyLink => 'リンクをコピー';
+
+  @override
+  String get linkCopied => 'リンクをコピーしました';
 }

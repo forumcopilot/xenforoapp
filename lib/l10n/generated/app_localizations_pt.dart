@@ -2866,4 +2866,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String searchForumName(String forumName) {
     return 'Pesquisar em $forumName';
   }
+
+  @override
+  String get copyLink => 'Copiar link';
+
+  @override
+  String get linkCopied => 'Link copiado';
 }

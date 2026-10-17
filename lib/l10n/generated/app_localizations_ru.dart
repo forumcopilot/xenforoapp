@@ -2885,4 +2885,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String searchForumName(String forumName) {
     return 'Поиск по $forumName';
   }
+
+  @override
+  String get copyLink => 'Копировать ссылку';
+
+  @override
+  String get linkCopied => 'Ссылка скопирована';
 }

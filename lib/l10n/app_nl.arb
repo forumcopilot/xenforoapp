@@ -1754,5 +1754,7 @@
   "statsMembers": "{count, plural, =1{{count} lid} other{{count} leden}}",
   "statsTopics": "{count, plural, =1{{count} onderwerp} other{{count} onderwerpen}}",
   "statsPosts": "{count, plural, =1{{count} bericht} other{{count} berichten}}",
-  "searchForumName": "Zoeken in {forumName}"
+  "searchForumName": "Zoeken in {forumName}",
+  "copyLink": "Link kopiëren",
+  "linkCopied": "Link gekopieerd"
 }

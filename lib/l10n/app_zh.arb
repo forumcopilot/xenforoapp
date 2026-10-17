@@ -1305,5 +1305,7 @@
   "statsMembers": "{count, plural, other{{count} 位成员}}",
   "statsTopics": "{count, plural, other{{count} 个主题}}",
   "statsPosts": "{count, plural, other{{count} 个帖子}}",
-  "searchForumName": "搜索 {forumName}"
+  "searchForumName": "搜索 {forumName}",
+  "copyLink": "复制链接",
+  "linkCopied": "链接已复制"
 }

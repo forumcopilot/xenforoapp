@@ -6,9 +6,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
-import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:get/get.dart';
-import 'package:xenforo_core/xenforo_core.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'appbars/forum_app_bar.dart';
@@ -969,40 +967,22 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       AppLogger.debug('📬 [SITE_HOME] Fetching inbox stat...');
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
 
-      // Check if this is a XenForo proxy that supports getInboxStatWithAlertsAsync
-      if (conversationProxy is XenForoPrivateConversationProxy) {
-        final result = await conversationProxy.getInboxStatWithAlertsAsync();
-        final inboxStat = result['inboxStat'] as FCInboxStatResult;
-        final unreadAlerts = result['unreadAlerts'] as int;
-
-        if (inboxStat.result) {
-          AppLogger.debug(
-              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, $unreadAlerts unread alerts');
-          if (stillCurrent()) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              _unreadAlertsCount = unreadAlerts;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
+      // Unread alerts come with the inbox counts where the backend reports
+      // them (FCInboxStatResult.unreadAlerts); this used to cast to the
+      // XenForo proxy to get them.
+      final inboxStat = await conversationProxy.getInboxStatAsync();
+      if (inboxStat.result) {
+        AppLogger.debug(
+            '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, ${inboxStat.unreadAlerts} unread alerts');
+        if (stillCurrent()) {
+          setState(() {
+            _unreadConversationsCount = inboxStat.unreadConversations;
+            _unreadAlertsCount = inboxStat.unreadAlerts ?? 0;
+          });
         }
       } else {
-        // Fallback for proxies that don't support unread alert counts
-        final inboxStat = await conversationProxy.getInboxStatAsync();
-        if (inboxStat.result) {
-          AppLogger.debug(
-              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations');
-          if (stillCurrent()) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              // unreadAlerts not available for this proxy type
-              _unreadAlertsCount = 0;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
-        }
+        AppLogger.debug(
+            '📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
       }
     } catch (e) {
       AppLogger.debug('📬 [SITE_HOME] Error fetching inbox stat: $e');

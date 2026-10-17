@@ -230,7 +230,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           _isLoading = false;
           _isLoadingMore = false;
           _error = null;
-          _hasMore = topics.length >= _perPage;
+          // Rows without text are dropped above, so count what the server sent.
+          _hasMore = alertData.hasMore ?? alertData.items.length >= _perPage;
           if (_hasMore) _page += 1;
         });
         _hasLoaded = true; // Mark as loaded after successful load

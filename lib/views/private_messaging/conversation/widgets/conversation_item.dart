@@ -107,24 +107,9 @@ class ConversationHeaderItem extends StatelessWidget {
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) async {
         AppLogger.debug('ConversationHeaderItem: BBCode URL tapped: $url');
-        // Check if URL might be a mention link (contains @username pattern)
-        final mentionMatch = RegExp(r'@(\w+)').firstMatch(url);
-        if (mentionMatch != null) {
-          final username = mentionMatch.group(1);
-          AppLogger.debug('ConversationHeaderItem: URL contains mention pattern, username: $username');
-          if (username != null && username.isNotEmpty) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfilePage(
-                  siteContext: siteContext,
-                  userName: username,
-                ),
-              ),
-            );
-            return;
-          }
-        }
+        // Links go where they point. An "@word" anywhere in a URL (an email
+        // address, a social media handle) used to open a forum profile instead;
+        // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
         final site = siteContext.site;
         final forumUrl = site.pluginUrl;
@@ -654,24 +639,9 @@ class ConversationItem extends StatelessWidget {
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) async {
         AppLogger.debug('ConversationItem: BBCode URL tapped: $url');
-        // Check if URL might be a mention link (contains @username pattern)
-        final mentionMatch = RegExp(r'@(\w+)').firstMatch(url);
-        if (mentionMatch != null) {
-          final username = mentionMatch.group(1);
-          AppLogger.debug('ConversationItem: URL contains mention pattern, username: $username');
-          if (username != null && username.isNotEmpty) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfilePage(
-                  siteContext: siteContext,
-                  userName: username,
-                ),
-              ),
-            );
-            return;
-          }
-        }
+        // Links go where they point. An "@word" anywhere in a URL (an email
+        // address, a social media handle) used to open a forum profile instead;
+        // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
         final site = siteContext.site;
         final forumUrl = site.pluginUrl;

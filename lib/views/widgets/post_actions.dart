@@ -228,12 +228,6 @@ class PostActionsHandler {
           if (context.mounted) onRefresh();
         });
       }
-    } else if (result == null && context.mounted) {
-      // If result is null, refresh to show the new post.
-      // Defer to next frame to avoid setState/markNeedsBuild while widget tree is locked after pop.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) onRefresh();
-      });
     } else if (result == false && context.mounted) {
       // Show error message
       // Capture ScaffoldMessengerState to ensure dismiss button works correctly
@@ -398,11 +392,10 @@ class PostActionsHandler {
           if (context.mounted) onRefresh();
         });
       }
-    } else if (result == null && context.mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) onRefresh();
-      });
     }
+    // null = the composer was closed without posting (Back, or Discard):
+    // nothing changed, so the thread keeps its place. Reloading here made
+    // Reply with Quote followed by Back jump the thread.
   }
 
   Future<void> handleEdit(BuildContext context, String postId, String currentText, String topicTitle, String topicId, String? forumId, VoidCallback onRefresh) async {

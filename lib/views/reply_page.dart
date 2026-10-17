@@ -355,7 +355,8 @@ class _ReplyPageState extends State<ReplyPage> {
               }
             },
             onSuccess: (success) {
-              return _createdPostId;
+              // Never null on success: the caller reads null as "closed without posting".
+              return _createdPostId ?? true;
             },
           );
           if (isLoading) {
@@ -414,7 +415,8 @@ class _ReplyPageState extends State<ReplyPage> {
           }
         },
         onSuccess: (success) {
-          return _createdPostId;
+          // Never null on success: the caller reads null as "closed without posting".
+          return _createdPostId ?? true;
         },
         onError: (error) {
           if (context.mounted) {

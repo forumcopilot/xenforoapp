@@ -1317,5 +1317,10 @@
   "notificationChannelReactions": "Curtidas e reações",
   "notificationChannelReactionsDescription": "Curtidas e reações às suas mensagens",
   "notificationChannelOther": "Outras notificações",
-  "notificationChannelOtherDescription": "Seguidores, troféus e outros alertas do fórum"
+  "notificationChannelOtherDescription": "Seguidores, troféus e outros alertas do fórum",
+  "deleteAccountConfirmTitle": "Excluir sua conta?",
+  "deleteAccountConfirmMessage": "Sua conta em {forumName} será excluída, com seu perfil e suas configurações. Suas mensagens permanecem, com seu nome. Isso não pode ser desfeito.",
+  "deleteAccountNoPassword": "Sem senha? Confirme com seu nome de usuário",
+  "deleteAccountUsePassword": "Confirmar com sua senha",
+  "accountDeleted": "Sua conta foi excluída."
 }

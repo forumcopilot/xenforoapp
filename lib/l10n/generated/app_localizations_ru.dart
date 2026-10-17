@@ -2945,4 +2945,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notificationChannelOtherDescription =>
       'Подписки, награды и другие оповещения форума';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Удалить аккаунт?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Ваш аккаунт на $forumName будет удалён вместе с профилем и настройками. Ваши сообщения останутся под вашим именем. Это действие нельзя отменить.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Нет пароля? Подтвердите именем пользователя';
+
+  @override
+  String get deleteAccountUsePassword => 'Подтвердить паролем';
+
+  @override
+  String get accountDeleted => 'Ваш аккаунт удалён.';
 }

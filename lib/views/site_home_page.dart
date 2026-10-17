@@ -45,6 +45,7 @@ class SiteHomePage extends StatefulWidget {
 
   /// The Alerts tab's id, for [requestedTab].
   static const String alertsTab = 'notifications';
+  static const String homeTab = 'topics';
 
   /// A tab another part of the app wants shown: a push with nothing more
   /// specific opens the forum on its Alerts tab. The forum home switches to

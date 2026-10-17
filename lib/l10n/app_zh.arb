@@ -1317,5 +1317,10 @@
   "notificationChannelReactions": "点赞和回应",
   "notificationChannelReactionsDescription": "对你的帖子和消息的点赞与回应",
   "notificationChannelOther": "其他通知",
-  "notificationChannelOtherDescription": "关注、奖杯和其他论坛提醒"
+  "notificationChannelOtherDescription": "关注、奖杯和其他论坛提醒",
+  "deleteAccountConfirmTitle": "删除你的账户？",
+  "deleteAccountConfirmMessage": "你在 {forumName} 的账户将被删除，包括个人资料和设置。你的帖子会以你的名字保留。此操作无法撤销。",
+  "deleteAccountNoPassword": "没有密码？用用户名确认",
+  "deleteAccountUsePassword": "用密码确认",
+  "accountDeleted": "你的账户已删除。"
 }

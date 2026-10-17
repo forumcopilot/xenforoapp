@@ -9,6 +9,11 @@ import 'settings_category_page.dart' show ForumSettingsCategoryPage;
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/app_navigation.dart';
+import 'package:forumcopilot_sdk/interfaces/interfaces.dart';
+import 'package:get/get.dart';
+import '../controllers/login_controller.dart';
+import 'dialogs/delete_account_dialog.dart';
+import 'site_home_page.dart';
 
 class ForumSettingsPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -299,7 +304,25 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  /// Deletes the account in the app where the forum lets members (add-on
+  /// getConfig accountDeletion), then signs out; otherwise sends them to the
+  /// forum's staff, as before.
+  Future<void> _showDeleteAccountDialog(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) async {
+    final siteContext = widget.siteContext;
+    final proxy = SiteProxyFactory.getAccountProxy();
+    if (siteContext.isLoggedIn && siteContext.configDataOutput?.accountDeletion == true && proxy is IFCAccountDeletion) {
+      final deleted = await showDeleteAccountDialog(context, siteContext: siteContext, proxy: proxy as IFCAccountDeletion);
+      if (!deleted || !context.mounted) return;
+      final l10n = AppLocalizations.of(context);
+      // Saved password, push registration and the app's session go too.
+      if (!Get.isRegistered<LoginController>()) Get.put(LoginController());
+      await Get.find<LoginController>().handleLogout(siteContext);
+      if (!context.mounted) return;
+      SnackbarHelper.showSuccess(context, l10n.accountDeleted);
+      if (!SiteHomePage.showTab(SiteHomePage.homeTab)) Navigator.of(context).maybePop();
+      return;
+    }
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (dialogContext) {

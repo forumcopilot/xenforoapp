@@ -2937,4 +2937,22 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get notificationChannelOtherDescription =>
       'Seguidores, trofeos y otras alertas del foro';
+
+  @override
+  String get deleteAccountConfirmTitle => '¿Eliminar tu cuenta?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Tu cuenta en $forumName se eliminará, junto con tu perfil y tus ajustes. Tus mensajes se mantienen, con tu nombre. No se puede deshacer.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      '¿Sin contraseña? Confirma con tu nombre de usuario';
+
+  @override
+  String get deleteAccountUsePassword => 'Confirmar con tu contraseña';
+
+  @override
+  String get accountDeleted => 'Tu cuenta se ha eliminado.';
 }

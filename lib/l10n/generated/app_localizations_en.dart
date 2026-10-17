@@ -2901,4 +2901,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationChannelOtherDescription =>
       'Follows, trophies and other forum alerts';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Delete your account?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Your account on $forumName will be deleted, with your profile and settings. Your posts stay, under your name. This cannot be undone.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'No password? Confirm with your user name';
+
+  @override
+  String get deleteAccountUsePassword => 'Confirm with your password';
+
+  @override
+  String get accountDeleted => 'Your account has been deleted.';
 }

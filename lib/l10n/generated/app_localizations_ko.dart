@@ -2782,4 +2782,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get notificationChannelOtherDescription => '팔로우, 트로피 및 기타 포럼 알림';
+
+  @override
+  String get deleteAccountConfirmTitle => '계정을 삭제할까요?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '$forumName의 계정이 프로필 및 설정과 함께 삭제됩니다. 게시물은 내 이름으로 남습니다. 되돌릴 수 없습니다.';
+  }
+
+  @override
+  String get deleteAccountNoPassword => '비밀번호가 없나요? 사용자 이름으로 확인';
+
+  @override
+  String get deleteAccountUsePassword => '비밀번호로 확인';
+
+  @override
+  String get accountDeleted => '계정이 삭제되었습니다.';
 }

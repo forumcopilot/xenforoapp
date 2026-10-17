@@ -2955,4 +2955,22 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get notificationChannelOtherDescription =>
       'Folgen, Trophäen und andere Forenbenachrichtigungen';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Konto löschen?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Dein Konto bei $forumName wird mit Profil und Einstellungen gelöscht. Deine Beiträge bleiben unter deinem Namen erhalten. Das lässt sich nicht rückgängig machen.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Kein Passwort? Mit Benutzernamen bestätigen';
+
+  @override
+  String get deleteAccountUsePassword => 'Mit Passwort bestätigen';
+
+  @override
+  String get accountDeleted => 'Dein Konto wurde gelöscht.';
 }

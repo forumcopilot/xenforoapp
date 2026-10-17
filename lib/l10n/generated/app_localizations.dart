@@ -4957,6 +4957,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Follows, trophies and other forum alerts'**
   String get notificationChannelOtherDescription;
+
+  /// No description provided for @deleteAccountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountConfirmTitle;
+
+  /// No description provided for @deleteAccountConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account on {forumName} will be deleted, with your profile and settings. Your posts stay, under your name. This cannot be undone.'**
+  String deleteAccountConfirmMessage(String forumName);
+
+  /// For members who signed up with Google or Facebook
+  ///
+  /// In en, this message translates to:
+  /// **'No password? Confirm with your user name'**
+  String get deleteAccountNoPassword;
+
+  /// No description provided for @deleteAccountUsePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm with your password'**
+  String get deleteAccountUsePassword;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get accountDeleted;
 }
 
 class _AppLocalizationsDelegate

@@ -2913,4 +2913,22 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get notificationChannelOtherDescription =>
       'Volgers, trofeeën en andere forummeldingen';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Je account verwijderen?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Je account op $forumName wordt verwijderd, met je profiel en instellingen. Je berichten blijven staan, onder je naam. Dit kan niet ongedaan worden gemaakt.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Geen wachtwoord? Bevestig met je gebruikersnaam';
+
+  @override
+  String get deleteAccountUsePassword => 'Bevestig met je wachtwoord';
+
+  @override
+  String get accountDeleted => 'Je account is verwijderd.';
 }

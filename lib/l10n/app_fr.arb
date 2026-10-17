@@ -1293,5 +1293,10 @@
   "notificationChannelReactions": "J’aime et réactions",
   "notificationChannelReactionsDescription": "J’aime et réactions à vos messages",
   "notificationChannelOther": "Autres notifications",
-  "notificationChannelOtherDescription": "Abonnements, trophées et autres alertes du forum"
+  "notificationChannelOtherDescription": "Abonnements, trophées et autres alertes du forum",
+  "deleteAccountConfirmTitle": "Supprimer votre compte ?",
+  "deleteAccountConfirmMessage": "Votre compte sur {forumName} sera supprimé, avec votre profil et vos réglages. Vos messages restent, sous votre nom. Cette action est irréversible.",
+  "deleteAccountNoPassword": "Pas de mot de passe ? Confirmez avec votre nom d’utilisateur",
+  "deleteAccountUsePassword": "Confirmer avec votre mot de passe",
+  "accountDeleted": "Votre compte a été supprimé."
 }

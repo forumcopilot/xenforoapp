@@ -1317,5 +1317,10 @@
   "notificationChannelReactions": "Лайки и реакции",
   "notificationChannelReactionsDescription": "Лайки и реакции на ваши сообщения",
   "notificationChannelOther": "Другие уведомления",
-  "notificationChannelOtherDescription": "Подписки, награды и другие оповещения форума"
+  "notificationChannelOtherDescription": "Подписки, награды и другие оповещения форума",
+  "deleteAccountConfirmTitle": "Удалить аккаунт?",
+  "deleteAccountConfirmMessage": "Ваш аккаунт на {forumName} будет удалён вместе с профилем и настройками. Ваши сообщения останутся под вашим именем. Это действие нельзя отменить.",
+  "deleteAccountNoPassword": "Нет пароля? Подтвердите именем пользователя",
+  "deleteAccountUsePassword": "Подтвердить паролем",
+  "accountDeleted": "Ваш аккаунт удалён."
 }

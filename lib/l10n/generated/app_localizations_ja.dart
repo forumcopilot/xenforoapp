@@ -2790,4 +2790,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notificationChannelOtherDescription => 'フォロー、トロフィー、その他のフォーラム通知';
+
+  @override
+  String get deleteAccountConfirmTitle => 'アカウントを削除しますか？';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '$forumName のアカウントが、プロフィールと設定とともに削除されます。投稿はあなたの名前のまま残ります。元に戻すことはできません。';
+  }
+
+  @override
+  String get deleteAccountNoPassword => 'パスワードがない場合はユーザー名で確認';
+
+  @override
+  String get deleteAccountUsePassword => 'パスワードで確認';
+
+  @override
+  String get accountDeleted => 'アカウントを削除しました。';
 }

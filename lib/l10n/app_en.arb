@@ -1917,5 +1917,12 @@
   "notificationChannelReactionsDescription": "Likes and reactions to your posts and messages",
   "notificationChannelOther": "Other notifications",
   "@notificationChannelOther": {"description": "Android notification channel name"},
-  "notificationChannelOtherDescription": "Follows, trophies and other forum alerts"
+  "notificationChannelOtherDescription": "Follows, trophies and other forum alerts",
+  "deleteAccountConfirmTitle": "Delete your account?",
+  "deleteAccountConfirmMessage": "Your account on {forumName} will be deleted, with your profile and settings. Your posts stay, under your name. This cannot be undone.",
+  "@deleteAccountConfirmMessage": {"placeholders": {"forumName": {"type": "String"}}},
+  "deleteAccountNoPassword": "No password? Confirm with your user name",
+  "@deleteAccountNoPassword": {"description": "For members who signed up with Google or Facebook"},
+  "deleteAccountUsePassword": "Confirm with your password",
+  "accountDeleted": "Your account has been deleted."
 }

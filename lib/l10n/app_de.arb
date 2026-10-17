@@ -1293,5 +1293,10 @@
   "notificationChannelReactions": "Likes und Reaktionen",
   "notificationChannelReactionsDescription": "Likes und Reaktionen auf deine Beiträge und Nachrichten",
   "notificationChannelOther": "Weitere Benachrichtigungen",
-  "notificationChannelOtherDescription": "Folgen, Trophäen und andere Forenbenachrichtigungen"
+  "notificationChannelOtherDescription": "Folgen, Trophäen und andere Forenbenachrichtigungen",
+  "deleteAccountConfirmTitle": "Konto löschen?",
+  "deleteAccountConfirmMessage": "Dein Konto bei {forumName} wird mit Profil und Einstellungen gelöscht. Deine Beiträge bleiben unter deinem Namen erhalten. Das lässt sich nicht rückgängig machen.",
+  "deleteAccountNoPassword": "Kein Passwort? Mit Benutzernamen bestätigen",
+  "deleteAccountUsePassword": "Mit Passwort bestätigen",
+  "accountDeleted": "Dein Konto wurde gelöscht."
 }

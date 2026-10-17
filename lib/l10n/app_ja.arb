@@ -1293,5 +1293,10 @@
   "notificationChannelReactions": "いいねとリアクション",
   "notificationChannelReactionsDescription": "あなたの投稿やメッセージへのいいねとリアクション",
   "notificationChannelOther": "その他の通知",
-  "notificationChannelOtherDescription": "フォロー、トロフィー、その他のフォーラム通知"
+  "notificationChannelOtherDescription": "フォロー、トロフィー、その他のフォーラム通知",
+  "deleteAccountConfirmTitle": "アカウントを削除しますか？",
+  "deleteAccountConfirmMessage": "{forumName} のアカウントが、プロフィールと設定とともに削除されます。投稿はあなたの名前のまま残ります。元に戻すことはできません。",
+  "deleteAccountNoPassword": "パスワードがない場合はユーザー名で確認",
+  "deleteAccountUsePassword": "パスワードで確認",
+  "accountDeleted": "アカウントを削除しました。"
 }

@@ -1317,5 +1317,10 @@
   "notificationChannelReactions": "Mi piace e reazioni",
   "notificationChannelReactionsDescription": "Mi piace e reazioni ai tuoi messaggi",
   "notificationChannelOther": "Altre notifiche",
-  "notificationChannelOtherDescription": "Follower, trofei e altri avvisi del forum"
+  "notificationChannelOtherDescription": "Follower, trofei e altri avvisi del forum",
+  "deleteAccountConfirmTitle": "Eliminare il tuo account?",
+  "deleteAccountConfirmMessage": "Il tuo account su {forumName} verrà eliminato, con profilo e impostazioni. I tuoi messaggi restano, con il tuo nome. Non si può annullare.",
+  "deleteAccountNoPassword": "Nessuna password? Conferma con il nome utente",
+  "deleteAccountUsePassword": "Conferma con la password",
+  "accountDeleted": "Il tuo account è stato eliminato."
 }

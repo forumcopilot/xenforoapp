@@ -1317,5 +1317,10 @@
   "notificationChannelReactions": "좋아요 및 반응",
   "notificationChannelReactionsDescription": "내 게시물과 메시지에 대한 좋아요 및 반응",
   "notificationChannelOther": "기타 알림",
-  "notificationChannelOtherDescription": "팔로우, 트로피 및 기타 포럼 알림"
+  "notificationChannelOtherDescription": "팔로우, 트로피 및 기타 포럼 알림",
+  "deleteAccountConfirmTitle": "계정을 삭제할까요?",
+  "deleteAccountConfirmMessage": "{forumName}의 계정이 프로필 및 설정과 함께 삭제됩니다. 게시물은 내 이름으로 남습니다. 되돌릴 수 없습니다.",
+  "deleteAccountNoPassword": "비밀번호가 없나요? 사용자 이름으로 확인",
+  "deleteAccountUsePassword": "비밀번호로 확인",
+  "accountDeleted": "계정이 삭제되었습니다."
 }

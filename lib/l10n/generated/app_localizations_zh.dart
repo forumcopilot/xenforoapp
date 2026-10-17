@@ -2746,4 +2746,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notificationChannelOtherDescription => '关注、奖杯和其他论坛提醒';
+
+  @override
+  String get deleteAccountConfirmTitle => '删除你的账户？';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '你在 $forumName 的账户将被删除，包括个人资料和设置。你的帖子会以你的名字保留。此操作无法撤销。';
+  }
+
+  @override
+  String get deleteAccountNoPassword => '没有密码？用用户名确认';
+
+  @override
+  String get deleteAccountUsePassword => '用密码确认';
+
+  @override
+  String get accountDeleted => '你的账户已删除。';
 }

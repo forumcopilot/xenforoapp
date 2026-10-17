@@ -1766,5 +1766,10 @@
   "notificationChannelReactions": "Likes en reacties",
   "notificationChannelReactionsDescription": "Likes en reacties op je berichten",
   "notificationChannelOther": "Overige meldingen",
-  "notificationChannelOtherDescription": "Volgers, trofeeën en andere forummeldingen"
+  "notificationChannelOtherDescription": "Volgers, trofeeën en andere forummeldingen",
+  "deleteAccountConfirmTitle": "Je account verwijderen?",
+  "deleteAccountConfirmMessage": "Je account op {forumName} wordt verwijderd, met je profiel en instellingen. Je berichten blijven staan, onder je naam. Dit kan niet ongedaan worden gemaakt.",
+  "deleteAccountNoPassword": "Geen wachtwoord? Bevestig met je gebruikersnaam",
+  "deleteAccountUsePassword": "Bevestig met je wachtwoord",
+  "accountDeleted": "Je account is verwijderd."
 }

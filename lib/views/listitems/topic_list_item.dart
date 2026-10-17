@@ -37,7 +37,7 @@ class TopicListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(0.3),
+      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
     );
   }
 
@@ -123,7 +123,7 @@ class TopicListItem extends StatelessWidget {
                       ),
                       decoration: StyleBuilders.badgeDecoration(
                         colorScheme: colorScheme,
-                        backgroundColor: colorScheme.outline.withOpacity(DesignTokens.opacityLow),
+                        backgroundColor: colorScheme.outline.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: DesignTokens.radiusS,
                       ),
                       child: Row(
@@ -191,7 +191,7 @@ class TopicListItem extends StatelessWidget {
                   if (topic.hasPoll) 1,
                 ].length;
                 final showLabels = statusIconCount == 1;
-                final metaColor = colorScheme.onSurfaceVariant.withOpacity(0.72);
+                final metaColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.72);
                 
                 return Padding(
                   padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),

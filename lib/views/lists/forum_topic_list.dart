@@ -374,7 +374,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               child: Container(
                 padding: DesignTokens.paddingM,
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                 ),
                 child: Row(
@@ -425,7 +425,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                 ),
               ),
           ],

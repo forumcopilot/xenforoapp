@@ -115,7 +115,7 @@ class _ForumCopilotAppState extends State<ForumCopilotApp> {
                     Obx(() {
                       return GlobalLoaderController.to.isLoading
                           ? Container(
-                              color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
                               child: Center(
                                 child: CircularProgressIndicator(
                                   color: Theme.of(context).colorScheme.primary,

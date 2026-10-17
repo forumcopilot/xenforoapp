@@ -387,7 +387,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
                     ),
               ),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               margin: const EdgeInsets.all(8),
             ),
           );
@@ -424,7 +424,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
                       ),
                 ),
                 behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 margin: const EdgeInsets.all(8),
               ),
             );

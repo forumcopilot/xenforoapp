@@ -188,7 +188,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -264,7 +264,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),

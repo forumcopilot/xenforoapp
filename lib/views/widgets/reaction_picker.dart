@@ -56,7 +56,7 @@ Future<FCReaction?> showReactionPicker(
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -111,11 +111,11 @@ class _ReactionChoice extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         decoration: BoxDecoration(
           color: selected
-              ? colorScheme.primary.withOpacity(0.12)
+              ? colorScheme.primary.withValues(alpha: 0.12)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: selected
-              ? Border.all(color: colorScheme.primary.withOpacity(0.5))
+              ? Border.all(color: colorScheme.primary.withValues(alpha: 0.5))
               : null,
         ),
         child: Column(

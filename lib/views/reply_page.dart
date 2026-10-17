@@ -376,7 +376,7 @@ class _ReplyPageState extends State<ReplyPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 const Center(child: CircularProgressIndicator()),
               ],
             );
@@ -384,7 +384,7 @@ class _ReplyPageState extends State<ReplyPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 Center(child: Text(AppLocalizations.of(context)?.failedToLoadQuote(snapshot.error.toString()) ?? 'Failed to load quote: \n${snapshot.error}')),
               ],
             );

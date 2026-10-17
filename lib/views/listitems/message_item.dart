@@ -96,12 +96,12 @@ class MessageItem extends StatelessWidget {
             vertical: DesignTokens.spacingM - DesignTokens.spacingXS,
           ),
           elevation: DesignTokens.elevationMedium,
-          shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+          shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
           color: colorScheme.surfaceContainerLowest,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusL),
             side: BorderSide(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -207,7 +207,7 @@ class MessageItem extends StatelessWidget {
                               ),
                               decoration: StyleBuilders.badgeDecoration(
                                 colorScheme: colorScheme,
-                                backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                                backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                                 borderRadius: DesignTokens.radiusL,
                               ),
                               child: Row(

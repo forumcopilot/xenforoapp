@@ -226,7 +226,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: colorScheme.surface.withOpacity(0.35),
+                      color: colorScheme.surface.withValues(alpha: 0.35),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,

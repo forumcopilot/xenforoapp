@@ -82,12 +82,12 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       elevation: 2,
-      shadowColor: colorScheme.shadow.withOpacity(0.1),
+      shadowColor: colorScheme.shadow.withValues(alpha: 0.1),
       color: colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusL),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),

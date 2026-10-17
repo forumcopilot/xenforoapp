@@ -140,7 +140,7 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: DesignTokens.elevationMedium,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         centerTitle: true,
@@ -153,7 +153,7 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
               color: colorScheme.surface,
               border: Border(
                 bottom: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                  color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                   width: DesignTokens.borderWidthThin,
                 ),
               ),

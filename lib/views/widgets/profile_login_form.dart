@@ -124,7 +124,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       hintText: AppLocalizations.of(context)?.enterYourUsername ?? 'Enter your username',
                       prefixIcon: Icon(Icons.person_outline_rounded, color: colorScheme.onSurfaceVariant),
                       filled: true,
-                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide(color: colorScheme.primary, width: DesignTokens.borderWidthMedium)),
@@ -160,7 +160,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                         },
                       ),
                       filled: true,
-                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide(color: colorScheme.primary, width: DesignTokens.borderWidthMedium)),

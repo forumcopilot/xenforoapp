@@ -34,7 +34,7 @@ class AttachmentWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -170,7 +170,7 @@ class AttachmentWidget extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: isImage 
-            ? colorScheme.surfaceVariant.withOpacity(0.3)
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
             : fileTypeColor,
         borderRadius: BorderRadius.circular(8),
       ),

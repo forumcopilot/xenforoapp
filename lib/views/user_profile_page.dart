@@ -416,7 +416,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       vertical: DesignTokens.spacingXS / 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityHigh),
+                                      color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityHigh),
                                       borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                                     ),
                                     child: Row(
@@ -532,7 +532,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                 side: BorderSide(
-                                  color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                                  color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                                   width: DesignTokens.borderWidthThin,
                                 ),
                               ),

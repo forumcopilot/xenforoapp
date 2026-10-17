@@ -33,7 +33,7 @@ class ForumListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(0.3),
+      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
     );
   }
 
@@ -111,7 +111,7 @@ class ForumListItem extends StatelessWidget {
                                   ),
                                   decoration: StyleBuilders.badgeDecoration(
                                     colorScheme: colorScheme,
-                                    backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                                    backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                                     borderRadius: DesignTokens.radiusM,
                                   ),
                                   child: Row(
@@ -144,7 +144,7 @@ class ForumListItem extends StatelessWidget {
                                   ),
                                   decoration: StyleBuilders.badgeDecoration(
                                     colorScheme: colorScheme,
-                                    backgroundColor: colorScheme.errorContainer.withOpacity(0.5),
+                                    backgroundColor: colorScheme.errorContainer.withValues(alpha: 0.5),
                                     borderRadius: DesignTokens.radiusM,
                                   ),
                                   child: Row(

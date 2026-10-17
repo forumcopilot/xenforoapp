@@ -88,7 +88,7 @@ class PostListItemSocial extends StatelessWidget {
                   final isDarkMode = Theme.of(context).brightness == Brightness.dark;
                   final iconColor = isLiked
                       ? colorScheme.error
-                      : colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+                      : colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
                   // When the viewer has a specific reaction, render it (native
                   // emoji or the reaction's image for custom reactions);
                   // otherwise fall back to the heart icon (liked = filled).

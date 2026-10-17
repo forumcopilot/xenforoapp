@@ -104,7 +104,7 @@ class AttachmentItemWidget extends StatelessWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     color: isImage
-                        ? colorScheme.surfaceVariant.withOpacity(0.3)
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
                         : getFileTypeColor(attachment.filename),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -151,7 +151,7 @@ class AttachmentItemWidget extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
-                              color: colorScheme.error.withOpacity(0.9),
+                              color: colorScheme.error.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Icon(

@@ -98,7 +98,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
       ),
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       iconTheme: IconThemeData(
         color: colorScheme.onSurface,

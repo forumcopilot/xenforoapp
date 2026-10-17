@@ -42,7 +42,7 @@ class ForumBreadcrumb extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
@@ -246,7 +246,7 @@ class _ForumBreadcrumbLoaderState extends State<ForumBreadcrumbLoader> {
           color: Theme.of(context).colorScheme.surface,
           border: Border(
             bottom: BorderSide(
-              color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
               width: 1,
             ),
           ),

@@ -80,10 +80,10 @@ class ErrorWidgets {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.errorContainer.withOpacity(0.1),
+        color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Get.theme.colorScheme.error.withOpacity(0.3),
+          color: Get.theme.colorScheme.error.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -124,7 +124,7 @@ class ErrorWidgets {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.errorContainer.withOpacity(0.1),
+        color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(

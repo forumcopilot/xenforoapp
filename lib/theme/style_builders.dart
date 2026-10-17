@@ -243,13 +243,13 @@ class StyleBuilders {
     double? borderOpacity,
   }) {
     return BoxDecoration(
-      color: color ?? colorScheme.surfaceVariant,
+      color: color ?? colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(
         borderRadius ?? DesignTokens.radiusXS,
       ),
       border: showBorder
           ? Border.all(
-              color: colorScheme.outlineVariant.withOpacity(
+              color: colorScheme.outlineVariant.withValues(alpha: 
                 borderOpacity ?? DesignTokens.opacityLow,
               ),
               width: DesignTokens.borderWidthThin,
@@ -353,14 +353,14 @@ class StyleBuilders {
     final effectiveColor = color ?? colorScheme.surfaceContainerLowest;
     final effectiveBorderSide = borderSide ??
         BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         );
 
     Widget cardContent = Card(
       margin: effectiveMargin,
       elevation: effectiveElevation,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
       color: effectiveColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(effectiveBorderRadius),
@@ -393,12 +393,12 @@ class StyleBuilders {
     double? borderWidth,
   }) {
     return BoxDecoration(
-      color: color ?? colorScheme.surfaceVariant,
+      color: color ?? colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(
         borderRadius ?? DesignTokens.radiusS,
       ),
       border: Border.all(
-        color: colorScheme.outlineVariant.withOpacity(
+        color: colorScheme.outlineVariant.withValues(alpha: 
           borderOpacity ?? DesignTokens.opacityLow,
         ),
         width: borderWidth ?? DesignTokens.borderWidthThin,
@@ -422,7 +422,7 @@ class StyleBuilders {
     return Divider(
       height: height ?? DesignTokens.borderWidthThin,
       thickness: thickness ?? DesignTokens.borderWidthThin,
-      color: colorScheme.outlineVariant.withOpacity(
+      color: colorScheme.outlineVariant.withValues(alpha: 
         opacity ?? DesignTokens.opacityLow,
       ),
       indent: indent,

@@ -132,7 +132,7 @@ class ConversationHeaderWidget extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -151,7 +151,7 @@ class ConversationHeaderWidget extends StatelessWidget {
                       children: [
                         // Base background color
                         Container(
-                          color: colorScheme.surfaceVariant,
+                          color: colorScheme.surfaceContainerHighest,
                         ),
                         // Pattern image with theme color tint
                         ColorFiltered(
@@ -159,7 +159,7 @@ class ConversationHeaderWidget extends StatelessWidget {
                             (isDarkMode 
                               ? _getDarkModePatternColor(_getBackgroundThemeColor(context))
                               : _getBackgroundThemeColor(context)
-                            ).withOpacity(
+                            ).withValues(alpha: 
                               isDarkMode ? DesignTokens.opacityHigh : DesignTokens.opacityMediumLow,
                             ),
                             isDarkMode 
@@ -176,8 +176,8 @@ class ConversationHeaderWidget extends StatelessWidget {
                         // Text readability overlay
                         Container(
                           color: isDarkMode 
-                            ? Colors.black.withOpacity(DesignTokens.opacityMediumLow)
-                            : Colors.white.withOpacity(DesignTokens.opacityMedium),
+                            ? Colors.black.withValues(alpha: DesignTokens.opacityMediumLow)
+                            : Colors.white.withValues(alpha: DesignTokens.opacityMedium),
                         ),
                       ],
                     ),

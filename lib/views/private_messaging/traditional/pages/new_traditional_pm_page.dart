@@ -257,7 +257,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
           size: 18,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
@@ -272,7 +272,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -305,7 +305,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                       color: colorScheme.primary,
                     ),
                   ),
-                  backgroundColor: colorScheme.primaryContainer.withOpacity(0.3),
+                  backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
                   onPressed: () async {
                     final result = await Navigator.push(
                       context,
@@ -349,7 +349,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
         title: Text(AppLocalizations.of(context)?.newMessage ?? 'New Message', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(0.3),
+        shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         centerTitle: true,
@@ -442,7 +442,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
-                  fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -478,7 +478,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
-                  fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -529,7 +529,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                     Container(
                       padding: DesignTokens.paddingS,
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       ),
                       child: Column(
@@ -551,7 +551,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                                               width: 48,
                                               height: 48,
                                               decoration: BoxDecoration(
-                                                color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                                color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                               ),
                                               child: ClipRRect(
@@ -648,7 +648,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                                     padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingM),
                                     child: LinearProgressIndicator(
                                       minHeight: 2,
-                                      backgroundColor: colorScheme.surfaceVariant,
+                                      backgroundColor: colorScheme.surfaceContainerHighest,
                                       valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
                                     ),
                                   ),

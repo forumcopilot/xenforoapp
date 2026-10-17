@@ -144,7 +144,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: DesignTokens.elevationMedium,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         centerTitle: true,
@@ -157,7 +157,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
               color: colorScheme.surface,
               border: Border(
                 bottom: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                  color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                   width: DesignTokens.borderWidthThin,
                 ),
               ),
@@ -240,7 +240,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
           title: Text(
             user.username,
             style: textTheme.titleMedium?.copyWith(
-              color: isSelected ? colorScheme.onSurface.withOpacity(DesignTokens.opacityDisabled) : colorScheme.onSurface,
+              color: isSelected ? colorScheme.onSurface.withValues(alpha: DesignTokens.opacityDisabled) : colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightMedium,
             ),
           ),

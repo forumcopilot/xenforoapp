@@ -137,7 +137,7 @@ class PostListItemHeader extends StatelessWidget {
                           vertical: DesignTokens.spacingXS / 2,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityHigh),
+                          color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityHigh),
                           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                         ),
                         child: Row(
@@ -169,7 +169,7 @@ class PostListItemHeader extends StatelessWidget {
                           vertical: DesignTokens.spacingXS / 2,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.outline.withOpacity(DesignTokens.opacityLow),
+                          color: colorScheme.outline.withValues(alpha: DesignTokens.opacityLow),
                           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                         ),
                         child: Row(

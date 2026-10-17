@@ -292,7 +292,7 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
                 color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
               ),
-              backgroundColor: colorScheme.surfaceVariant,
+              backgroundColor: colorScheme.surfaceContainerHighest,
               padding: EdgeInsets.symmetric(
                 horizontal: DesignTokens.spacingM,
                 vertical: DesignTokens.spacingS,

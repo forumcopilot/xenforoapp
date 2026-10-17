@@ -505,9 +505,9 @@ class ImgTag extends AdvancedTag {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           LinearProgressIndicator(
-                            backgroundColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                             ),
                             borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
                             minHeight: DesignTokens.spacingXS,
@@ -983,7 +983,7 @@ class CustomQuoteTag extends AdvancedTag {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                   side: BorderSide(
-                    color: colorScheme.outlineVariant.withOpacity(
+                    color: colorScheme.outlineVariant.withValues(alpha: 
                       DesignTokens.opacityLow,
                     ),
                     width: DesignTokens.borderWidthThin,
@@ -1021,13 +1021,13 @@ class CustomQuoteTag extends AdvancedTag {
                       DefaultTextStyle(
                         style: textTheme.bodyMedium?.copyWith(
                               fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withOpacity(0.75),
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
                               letterSpacing: 0.15,
                               height: 1.5,
                             ) ??
                             TextStyle(
                               fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withOpacity(0.75),
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
                             ),
                         child: Builder(
                           builder: (context) {
@@ -1117,7 +1117,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
           color: _isRevealed ? colorScheme.surfaceContainerHighest : colorScheme.surface,
           borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
           border: Border.all(
-            color: _isRevealed ? colorScheme.outline.withOpacity(0.2) : colorScheme.outline.withOpacity(0.3),
+            color: _isRevealed ? colorScheme.outline.withValues(alpha: 0.2) : colorScheme.outline.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -1135,13 +1135,13 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                   Icon(
                     Icons.visibility_off,
                     size: 16,
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'Spoiler',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -1149,7 +1149,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                   Text(
                     '(tap to reveal)',
                     style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -1681,9 +1681,9 @@ class InlineAttachmentTag extends AdvancedTag {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   LinearProgressIndicator(
-                                    backgroundColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                                    backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      colorScheme.onSurfaceVariant.withOpacity(0.6),
+                                      colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                                     ),
                                     borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
                                     minHeight: DesignTokens.spacingXS,
@@ -1722,15 +1722,15 @@ class InlineAttachmentTag extends AdvancedTag {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   // Use a semi-transparent dark background that works in both light and dark themes
-                                  color: colorScheme.surface.withOpacity(0.85),
+                                  color: colorScheme.surface.withValues(alpha: 0.85),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: colorScheme.outline.withOpacity(0.3),
+                                    color: colorScheme.outline.withValues(alpha: 0.3),
                                     width: 1,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
+                                      color: Colors.black.withValues(alpha: 0.1),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -1739,7 +1739,7 @@ class InlineAttachmentTag extends AdvancedTag {
                                 child: Icon(
                                   Icons.lock_outline,
                                   size: 14,
-                                  color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                                 ),
                               ),
                             ),
@@ -2072,11 +2072,11 @@ class TableTag extends AdvancedTag {
                   child: Table(
                     border: TableBorder(
                       horizontalInside: BorderSide(
-                        color: colorScheme.outlineVariant.withOpacity(0.5),
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                       verticalInside: BorderSide(
-                        color: colorScheme.outlineVariant.withOpacity(0.5),
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                     ),
@@ -2092,7 +2092,7 @@ class TableTag extends AdvancedTag {
                       return TableRow(
                         decoration: isHeaderRow
                             ? BoxDecoration(
-                                color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                               )
                             : null,
                         children: List.generate(maxColumns, (colIndex) {

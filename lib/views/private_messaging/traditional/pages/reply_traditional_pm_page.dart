@@ -264,7 +264,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
           size: 18,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
@@ -279,7 +279,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -312,7 +312,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                       color: colorScheme.primary,
                     ),
                   ),
-                  backgroundColor: colorScheme.primaryContainer.withOpacity(0.3),
+                  backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
                   onPressed: () async {
                     final result = await Navigator.push(
                       context,
@@ -361,7 +361,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 const Center(child: CircularProgressIndicator()),
               ],
             );
@@ -369,7 +369,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 Center(child: Text(AppLocalizations.of(context)?.failedToLoadQuote(snapshot.error.toString()) ?? "Failed to load quote: \n${snapshot.error.toString()}")),
               ],
             );
@@ -394,7 +394,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
         title: Text(widget.isForward ? 'Forward' : 'Reply', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(0.3),
+        shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         centerTitle: true,
@@ -485,7 +485,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
-                  fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -521,7 +521,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
-                  fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                  fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -572,7 +572,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                     Container(
                       padding: DesignTokens.paddingS,
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       ),
                       child: Column(
@@ -594,7 +594,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                                               width: 48,
                                               height: 48,
                                               decoration: BoxDecoration(
-                                                color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                                color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                               ),
                                               child: ClipRRect(
@@ -691,7 +691,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                                     padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingM),
                                     child: LinearProgressIndicator(
                                       minHeight: 2,
-                                      backgroundColor: colorScheme.surfaceVariant,
+                                      backgroundColor: colorScheme.surfaceContainerHighest,
                                       valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
                                     ),
                                   ),

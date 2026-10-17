@@ -149,7 +149,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 const Center(child: CircularProgressIndicator()),
               ],
             );
@@ -157,7 +157,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
             return Stack(
               children: [
                 compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withOpacity(0.2)),
+                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),

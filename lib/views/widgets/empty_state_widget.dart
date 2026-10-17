@@ -28,7 +28,7 @@ class EmptyStateWidget extends StatelessWidget {
           Icon(
             icon,
             size: iconSize,
-            color: colorScheme.onSurfaceVariant.withOpacity(DesignTokens.opacityMediumLow),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: DesignTokens.opacityMediumLow),
           ),
           SizedBox(height: DesignTokens.spacingL),
           Text(
@@ -44,7 +44,7 @@ class EmptyStateWidget extends StatelessWidget {
               child: Text(
                 description!,
                 style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant.withOpacity(DesignTokens.opacityHigh),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: DesignTokens.opacityHigh),
                 ),
                 textAlign: TextAlign.center,
               ),

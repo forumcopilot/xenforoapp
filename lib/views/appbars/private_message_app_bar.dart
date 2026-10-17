@@ -38,7 +38,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(0.3),
+      shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
       surfaceTintColor: colorScheme.surfaceTint,
       iconTheme: IconThemeData(
         color: colorScheme.onSurface,

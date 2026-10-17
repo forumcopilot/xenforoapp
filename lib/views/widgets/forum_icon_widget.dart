@@ -30,7 +30,7 @@ class ForumIconWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final effectiveBackgroundColor = backgroundColor ?? colorScheme.surfaceVariant;
+    final effectiveBackgroundColor = backgroundColor ?? colorScheme.surfaceContainerHighest;
     final effectiveIconColor = iconColor ?? colorScheme.onSurfaceVariant;
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(size * 0.2);
 

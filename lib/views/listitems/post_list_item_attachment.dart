@@ -46,11 +46,11 @@ class PostListItemAttachment extends StatelessWidget {
         padding: DesignTokens.paddingS,
         decoration: BoxDecoration(
           color:
-              colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+              colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
           border: Border.all(
             color:
-                colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
             width: DesignTokens.borderWidthThin,
           ),
         ),

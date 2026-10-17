@@ -122,10 +122,10 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
         vertical: DesignTokens.spacingS,
       ),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(DesignTokens.opacityLow),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -214,11 +214,11 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(DesignTokens.radiusS),
               color: isSelected
-                  ? colorScheme.primaryContainer.withOpacity(DesignTokens.opacityMediumLow)
+                  ? colorScheme.primaryContainer.withValues(alpha: DesignTokens.opacityMediumLow)
                   : null,
               border: isSelected
                   ? Border.all(
-                      color: colorScheme.primary.withOpacity(DesignTokens.opacityMediumLow),
+                      color: colorScheme.primary.withValues(alpha: DesignTokens.opacityMediumLow),
                       width: DesignTokens.borderWidthThin,
                     )
                   : null,

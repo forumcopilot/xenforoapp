@@ -240,7 +240,7 @@ class _MembersPageState extends State<MembersPage> {
                 color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
               ),
-              backgroundColor: colorScheme.surfaceVariant,
+              backgroundColor: colorScheme.surfaceContainerHighest,
               padding: EdgeInsets.symmetric(
                 horizontal: DesignTokens.spacingM,
                 vertical: DesignTokens.spacingS,
@@ -483,7 +483,7 @@ class _MembersPageState extends State<MembersPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: DesignTokens.elevationMedium,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
         centerTitle: true,
@@ -500,7 +500,7 @@ class _MembersPageState extends State<MembersPage> {
                 color: colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                    color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                     width: DesignTokens.borderWidthThin,
                   ),
                 ),

@@ -575,7 +575,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                     ),
               ),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               margin: const EdgeInsets.all(8),
             ),
           );
@@ -601,7 +601,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                         ),
                   ),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   margin: const EdgeInsets.all(8),
                 ),
               );
@@ -895,10 +895,10 @@ class _MessageComposePageState extends State<MessageComposePage> {
         Container(
           padding: DesignTokens.paddingS,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
             borderRadius: BorderRadius.circular(DesignTokens.radiusS),
             border: Border.all(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -951,7 +951,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                             width: 48,
                                             height: 48,
                                             decoration: BoxDecoration(
-                                              color: isImage ? Theme.of(context).colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow) : getFileTypeColor(attachment.name),
+                                              color: isImage ? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow) : getFileTypeColor(attachment.name),
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: isImage
@@ -1026,7 +1026,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingM),
                                   child: LinearProgressIndicator(
                                     minHeight: 2,
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                                     valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                                   ),
                                 ),
@@ -1101,7 +1101,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   height: 48,
                   decoration: BoxDecoration(
                     color: isImage && attachment.thumbnailUrl != null && attachment.thumbnailUrl!.isNotEmpty
-                        ? colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow)
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow)
                         : getFileTypeColor(attachment.filename),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1259,7 +1259,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
           Container(
             padding: DesignTokens.paddingM,
             decoration: BoxDecoration(
-              color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityLow),
               borderRadius: BorderRadius.circular(DesignTokens.radiusM),
             ),
             child: Row(
@@ -1304,7 +1304,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   labelStyle: textTheme.bodyMedium?.copyWith(
                     color: widget.selectedPrefixId == null ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
                   ),
-                  backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                  backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                   side: BorderSide(
                     color: widget.selectedPrefixId == null ? colorScheme.primary : colorScheme.outlineVariant,
                     width: widget.selectedPrefixId == null ? DesignTokens.borderWidthThinMedium : DesignTokens.borderWidthThin,
@@ -1342,7 +1342,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   labelStyle: textTheme.bodyMedium?.copyWith(
                     color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
                   ),
-                  backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                  backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                   side: BorderSide(
                     color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
                     width: isSelected ? DesignTokens.borderWidthThinMedium : DesignTokens.borderWidthThin,
@@ -1507,7 +1507,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+            color: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
             offset: const Offset(0, -1),
             blurRadius: 4,
           ),
@@ -1557,7 +1557,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 enabled: _isContentFieldFocused,
                 child: PopupMenuButton<String>(
                   enabled: _isContentFieldFocused,
-                  icon: Icon(Icons.format_bold, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
+                  icon: Icon(Icons.format_bold, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
                   tooltip: AppLocalizations.of(context)?.formatting ?? 'Formatting',
                   onSelected: _insertBBCode,
                 itemBuilder: (context) => [
@@ -1735,7 +1735,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               ),
               // Mention button
               IconButton(
-                icon: Icon(Icons.alternate_email, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
+                icon: Icon(Icons.alternate_email, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
                 tooltip: AppLocalizations.of(context)?.mentionUser ?? 'Mention User',
                 onPressed: _isContentFieldFocused ? _handleMention : null,
               ),
@@ -1786,7 +1786,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 ),
                 backgroundColor: colorScheme.surface,
                 elevation: 3,
-                shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+                shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
                 surfaceTintColor: colorScheme.surfaceTint,
                 iconTheme: IconThemeData(
                   color: colorScheme.onSurface,
@@ -1857,7 +1857,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                           ),
                                         ),
                                         label: Text(widget.forumName!),
-                                        backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                        backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                         labelStyle: textTheme.bodyMedium?.copyWith(
                                           color: colorScheme.onSurface,
                                         ),
@@ -1909,7 +1909,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                         ),
                                       ),
                                       filled: true,
-                                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                       contentPadding: DesignTokens.paddingInput,
                                     ),
                                     style: textTheme.titleMedium?.copyWith(
@@ -1958,7 +1958,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                       ),
                                     ),
                                     filled: true,
-                                    fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                     contentPadding: DesignTokens.paddingL,
                                   ),
                                   style: textTheme.bodyLarge?.copyWith(

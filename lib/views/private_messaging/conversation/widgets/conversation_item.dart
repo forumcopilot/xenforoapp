@@ -207,7 +207,7 @@ class ConversationHeaderItem extends StatelessWidget {
     );
 
     return Material(
-      color: isHighlighted ? colorScheme.primaryContainer.withOpacity(0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withOpacity(0.1) : colorScheme.surface),
+      color: isHighlighted ? colorScheme.primaryContainer.withValues(alpha: 0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface),
       child: InkWell(
         onTap: () {},
         child: Column(
@@ -433,7 +433,7 @@ class ConversationHeaderItem extends StatelessWidget {
     final bool canLike = message.canLike;
     final bool isLiked = message.isLiked;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
     final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 
@@ -739,7 +739,7 @@ class ConversationItem extends StatelessWidget {
     );
 
     return Material(
-      color: isHighlighted ? colorScheme.primaryContainer.withOpacity(0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withOpacity(0.1) : colorScheme.surface),
+      color: isHighlighted ? colorScheme.primaryContainer.withValues(alpha: 0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface),
       child: InkWell(
         onTap: () {},
         child: Column(
@@ -974,7 +974,7 @@ class ConversationItem extends StatelessWidget {
     final bool canLike = message.canLike;
     final bool isLiked = message.isLiked;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
     final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 

@@ -144,7 +144,7 @@ extension SafeImageNetwork on Image {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -175,7 +175,7 @@ extension SafeImageNetwork on Image {
             width: width,
             height: height,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(

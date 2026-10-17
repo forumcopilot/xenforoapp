@@ -1245,10 +1245,10 @@ class _PostsState extends State<PostsList> {
       bottom: 0,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, -2),
             ),

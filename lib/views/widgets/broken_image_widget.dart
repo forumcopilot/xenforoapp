@@ -95,7 +95,7 @@ class BrokenImageWidget extends StatelessWidget {
         borderRadius: DesignTokens.radiusS,
         borderOpacity: 0.2,
       ).copyWith(
-        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -109,7 +109,7 @@ class BrokenImageWidget extends StatelessWidget {
                 Icon(
                   Icons.broken_image_rounded,
                   size: iconSize,
-                  color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                 ),
                 const SizedBox(height: 8),
                 if (imageUrl != null) ...[
@@ -135,10 +135,10 @@ class BrokenImageWidget extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withOpacity(0.3),
+                        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(
-                          color: colorScheme.primary.withOpacity(0.3),
+                          color: colorScheme.primary.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -171,7 +171,7 @@ class BrokenImageWidget extends StatelessWidget {
                   Text(
                     'Tap to open',
                     style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: fontSize - 1,
                     ),
                     textAlign: TextAlign.center,
@@ -180,7 +180,7 @@ class BrokenImageWidget extends StatelessWidget {
                   Text(
                     'Image not available',
                     style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                       fontSize: fontSize,
                     ),
                     textAlign: TextAlign.center,

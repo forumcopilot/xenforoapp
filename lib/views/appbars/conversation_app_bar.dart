@@ -150,7 +150,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         builder: (context) => Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -169,7 +169,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+                color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
                 width: DesignTokens.borderWidthThin,
               ),
             ),
@@ -188,7 +188,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                         children: [
                           // Base background color
                           Container(
-                            color: colorScheme.surfaceVariant,
+                            color: colorScheme.surfaceContainerHighest,
                           ),
                           // Pattern image with theme color tint
                           ColorFiltered(
@@ -196,7 +196,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                               (isDarkMode 
                                 ? _getDarkModePatternColor(_getBackgroundThemeColor(context))
                                 : _getBackgroundThemeColor(context)
-                              ).withOpacity(
+                              ).withValues(alpha: 
                                 isDarkMode ? DesignTokens.opacityHigh : DesignTokens.opacityMediumLow,
                               ),
                               isDarkMode 
@@ -213,8 +213,8 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                           // Text readability overlay
                           Container(
                             color: isDarkMode 
-                              ? Colors.black.withOpacity(DesignTokens.opacityMediumLow)
-                              : Colors.white.withOpacity(DesignTokens.opacityMedium),
+                              ? Colors.black.withValues(alpha: DesignTokens.opacityMediumLow)
+                              : Colors.white.withValues(alpha: DesignTokens.opacityMedium),
                           ),
                         ],
                       ),
@@ -289,7 +289,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -315,7 +315,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -331,7 +331,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
       Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: colorScheme.surface.withOpacity(0.9),
+          color: colorScheme.surface.withValues(alpha: 0.9),
           shape: BoxShape.circle,
         ),
         child: PopupMenuButton<String>(

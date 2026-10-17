@@ -20,7 +20,7 @@ class NotificationsTabAppBar extends StatelessWidget implements PreferredSizeWid
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(

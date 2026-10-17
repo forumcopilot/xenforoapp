@@ -124,7 +124,7 @@ class ProfileInfoSection extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusM),
             side: BorderSide(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),

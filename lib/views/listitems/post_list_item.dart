@@ -775,8 +775,8 @@ class _PostListItemState extends State<PostListItem> {
               margin: EdgeInsets.only(bottom: DesignTokens.spacingS),
               decoration: BoxDecoration(
                 color: widget.isTranslating && widget.translatedContent == null
-                    ? colorScheme.secondaryContainer.withOpacity(0.5)
-                    : colorScheme.primaryContainer.withOpacity(0.5),
+                    ? colorScheme.secondaryContainer.withValues(alpha: 0.5)
+                    : colorScheme.primaryContainer.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
               ),
               child: Row(
@@ -916,7 +916,7 @@ class _PostListItemState extends State<PostListItem> {
     // Determine background color based on highlight state
     // Use a more visible highlight color
     final backgroundColor = widget.isHighlighted
-        ? colorScheme.primaryContainer.withOpacity(0.4)
+        ? colorScheme.primaryContainer.withValues(alpha: 0.4)
         : colorScheme.surface;
 
     final body = Material(
@@ -953,7 +953,7 @@ class _PostListItemState extends State<PostListItem> {
       BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final iconColor =
-        colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+        colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
 
     return GestureDetector(
       onTap: () {

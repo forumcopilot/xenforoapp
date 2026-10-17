@@ -140,7 +140,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(
           color: colorScheme.onSurface,
@@ -289,7 +289,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     hintText: AppLocalizations.of(context)?.enterConversationTitle ?? 'Enter conversation title',
                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                     filled: true,
-                    fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       borderSide: BorderSide.none,
@@ -324,7 +324,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     SizedBox(height: DesignTokens.spacingS),
                     Container(
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       ),
                       child: Column(
@@ -356,7 +356,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                           Divider(
                             height: 1,
                             thickness: 1,
-                            color: colorScheme.outlineVariant.withOpacity(0.3),
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                           ),
                           // Conversation Open toggle
                           SwitchListTile(

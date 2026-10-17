@@ -55,6 +55,19 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
   - Follow and Unfollow are back on member profiles.
   - A forum's topic list, Unread and Participated open topics at the first unread post.
   - A reply or topic held for moderator approval says so ("Your post will appear once a moderator approves it.", 11 locales; needs add-on 1.8.12).
+- App changes ported from the official app's 0.11 (its phase 2, "Material 3 foundation"):
+  - Material 3 defaults instead of forced shapes and sizes: fully rounded buttons, start-aligned titles, 56dp outlined fields, sheets with a drag handle, floating snackbars, a 16dp screen margin. The deprecated colour APIs (`withOpacity`, `surfaceVariant`) are gone, and CI keeps them out.
+  - Shared components from the Discourse app: every snackbar goes through `SnackbarHelper`, empty / error / signed-out screens through `EmptyStateView`, plus `FilterChipBar`, `UnreadBadge`, `SheetTitle` and `AppNavigation` (writing forms open as full-screen dialogs with ✕).
+  - One tap on Like likes; a long press opens the reaction picker. Post actions are 48dp, with Reply last.
+  - Opening the forum makes one `getConfig` call instead of three.
+  - Pushes and the Alerts tab open the same places (`NotificationRouter`); a thread alert no longer says "Unsupported notification type".
+  - Notification permission is asked after sign-in, on a page that shows what arrives, instead of at first launch.
+  - The Profile tab is an account hub: View profile, forum Settings, Change email, Change password, App Settings, Sign out.
+  - Direct messages open at the newest message, bring new ones in on resume or on a push for the open conversation, stay at the bottom, and keep a local draft of a reply.
+  - `AppLocalizations.of(context)` is non-nullable, and 230 more strings are translated in all 11 languages (screens, dialogs, snackbars, the error dialog, and messages from controllers and services through `l10nNow()`). Some screens this repo has but the official app had translated earlier are still English.
+  - Saved passwords survive a locked iOS Keychain (a push tapped on the lock screen), an update and a restore: encrypted Android storage with `resetOnError`, iOS `first_unlock` (existing entries are moved once), a refused read is retried and never read as signed out, and the secure-storage file is excluded from Android backup and device transfer.
+  - `packages/` re-synced: a reply to a request from before a sign-in or sign-out, or one that never reached the forum (offline), no longer changes the login state; `XenForoProxyFactory(client:)` takes a scripted client, with offline tests for the main paths; XenForo `updateEmail` / `updatePassword`.
+  - 1,322 dead `?? 'English'` fallbacks and 267 duplicate ARB keys removed.
 
 ### Fixed
 - Reactions, from the canonical SDK (`packages/` re-synced, which also brings canonical's SDK changes since 2026-09-22: the WebView's real User-Agent instead of a hard-coded Chrome/131, poll and author fields on `FCPost` and `FCConversationMessage`, `FCSearchPersonal.messages`, no request headers in Cloudflare-challenge logs):

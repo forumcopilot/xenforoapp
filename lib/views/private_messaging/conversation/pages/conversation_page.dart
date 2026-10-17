@@ -722,7 +722,7 @@ class _ConversationPageState extends State<ConversationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Leave Conversation',
+          AppLocalizations.of(context)?.leaveConversation ?? 'Leave conversation',
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -755,9 +755,18 @@ class _ConversationPageState extends State<ConversationPage> {
 
     try {
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
-      await conversationProxy.leaveConversationAsync(widget.conversationId, 1); // 1 = soft leave
-      if (mounted) {
+      final result = await conversationProxy.leaveConversationAsync(widget.conversationId, 1); // 1 = soft leave
+      if (!mounted) return;
+      if (result.result) {
         Navigator.of(context).pop(true);
+      } else {
+        // The page used to close as if the conversation had been left.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

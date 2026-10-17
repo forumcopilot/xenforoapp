@@ -116,11 +116,145 @@ class ConfigController extends AbstractController
             'forumType' => 'xenforo',
             'canViewChat' => $canViewChat,
             'availableReactions' => $this->getAvailableReactions(),
+            'style' => $this->getStyleInfo(),
         ];
 
         // Create FCConfigResult object and return it
         $configResult = new FCConfigResult($config);
         return $this->apiSuccess($configResult->toArray());
+    }
+
+    /**
+     * The forum's look, so the app can draw it in the forum's colours instead
+     * of the same blue for every forum: the board's default style, as a
+     * light scheme and a dark one where the style has them (XenForo 2.3
+     * variations; on 2.2 the one scheme goes under its own style type).
+     *
+     * Each scheme: colours as #rrggbb, resolved the way XenForo resolves the
+     * browser's theme-color, and the header logo as an absolute URL with its
+     * size. A colour that cannot be resolved is left out. Null when the style
+     * cannot be read (the rest of getConfig is unaffected).
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function getStyleInfo(): ?array
+    {
+        try
+        {
+            $app = \XF::app();
+            $styleId = (int)$app->options()->defaultStyleId;
+            $style = $app->style($styleId);
+            if (!$style)
+            {
+                return null;
+            }
+
+            $info = ['styleId' => $styleId, 'light' => null, 'dark' => null];
+            if (method_exists($style, 'getStyleTypeVariation') && $style->isVariationsEnabled())
+            {
+                foreach (['light', 'dark'] AS $type)
+                {
+                    $variation = $style->getStyleTypeVariation($type);
+                    if ($variation !== null)
+                    {
+                        $info[$type] = $this->getStyleScheme($style, $variation);
+                    }
+                }
+            }
+            else
+            {
+                $type = $style->getProperty('styleType') === 'dark' ? 'dark' : 'light';
+                $info[$type] = $this->getStyleScheme($style, null);
+            }
+
+            return $info;
+        }
+        catch (\Throwable $e)
+        {
+            \XF::logException($e, false, 'ForumCopilot: reading the style for getConfig: ');
+            return null;
+        }
+    }
+
+    /**
+     * One scheme of [$style]: [$variation] on XenForo 2.3, the style's only
+     * values on 2.2 (null).
+     *
+     * @return array<string, mixed>
+     */
+    protected function getStyleScheme(\XF\Style $style, ?string $variation): array
+    {
+        $app = \XF::app();
+        $property = function (string $name) use ($style, $variation)
+        {
+            return $variation !== null
+                ? $style->getPropertyVariation($name, $variation)
+                : $style->getProperty($name);
+        };
+
+        // The LESS parser on a copy set to this variation: in the style's
+        // usual CSS-variable mode, darken() and contrast() give CSS
+        // expressions rather than colours.
+        $lessStyle = $style;
+        if ($variation !== null && method_exists($style, 'setVariation'))
+        {
+            $lessStyle = clone $style;
+            $lessStyle->setVariation($variation);
+        }
+        $rendererClass = $app->extendClass('XF\CssRenderer');
+        /** @var \XF\CssRenderer $renderer */
+        $renderer = new $rendererClass($app, $app->templater());
+        $renderer->setStyle($lessStyle);
+
+        $color = function (string $name) use ($property, $renderer): ?string
+        {
+            $raw = $property($name);
+            if (!is_string($raw) || trim($raw) === '')
+            {
+                return null;
+            }
+            // A plain colour as it is; an expression (darken(...),
+            // contrast(...)) through XenForo's LESS parser.
+            $rgb = \XF\Util\Color::colorToRgb($raw);
+            if (!$rgb)
+            {
+                $parsed = $renderer->parseLessColorValue($raw);
+                $rgb = $parsed ? \XF\Util\Color::colorToRgb($parsed) : null;
+            }
+            return $rgb ? '#' . strtolower(\XF\Util\Color::rgbToHex($rgb)) : null;
+        };
+
+        $scheme = array_filter([
+            'headerBackground' => $color('publicHeader--background-color'),
+            'headerText' => $color('publicHeader--color'),
+            'page' => $color('pageBg'),
+            'content' => $color('contentBg'),
+            'text' => $color('textColor'),
+            'link' => $color('linkColor'),
+            'button' => $color('buttonPrimary--background-color'),
+            'buttonText' => $color('buttonPrimary--color'),
+            'accent' => $color('paletteAccent2'),
+            'error' => $color('errorColor'),
+            'success' => $color('successColor'),
+            'themeColor' => $color('metaThemeColor'),
+        ]);
+
+        // The header logo, drawn for headerBackground; the 2x file where
+        // there is one.
+        $logo = $property('publicLogoUrl2x') ?: $property('publicLogoUrl');
+        if (is_string($logo) && trim($logo) !== '' && strpos($logo, '{') === false)
+        {
+            $scheme['logo'] = $this->getAbsoluteUrl(trim($logo));
+            $width = (int)$property('publicLogoWidth');
+            $height = (int)$property('publicLogoHeight');
+            if ($width > 0 && $height > 0)
+            {
+                $scheme['logoWidth'] = $width;
+                $scheme['logoHeight'] = $height;
+            }
+        }
+
+        return $scheme;
     }
 
     /**

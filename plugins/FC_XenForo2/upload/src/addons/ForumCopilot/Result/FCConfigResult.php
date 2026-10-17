@@ -56,6 +56,9 @@ class FCConfigResult
     /** @var array<int, array<string, mixed>> Active reactions the forum has configured */
     public $availableReactions = [];
 
+    /** @var array<string, mixed>|null The default style's colours and logo, light and dark (ConfigController::getStyleInfo) */
+    public $style;
+
     public function __construct($data = [])
     {
         // Set all properties from data array

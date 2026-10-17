@@ -91,7 +91,9 @@ class ForumMasthead extends StatelessWidget {
       scrolledUnderElevation: 0,
       elevation: 0,
       systemOverlayStyle: overlay.copyWith(statusBarColor: Colors.transparent),
-      titleSpacing: 4,
+      // Close to a back button; the usual margin where the bar has none (a
+      // forum app whose Home is its first page).
+      titleSpacing: (ModalRoute.of(context)?.canPop ?? false) ? 4 : NavigationToolbar.kMiddleSpacing,
       centerTitle: false,
       title: _MastheadTitle(identity: identity),
       actions: [

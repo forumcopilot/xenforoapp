@@ -78,9 +78,7 @@
   "copyToClipboard": "Copiar para área de transferência",
   "copied": "Copiado",
   "errorMessageCopiedToClipboard": "Mensagem de erro copiada para área de transferência",
-  "dismiss": "Dispensar",
   "cancel": "Cancelar",
-  "tryAgain": "Tentar novamente",
   "getHelp": "Obter ajuda",
   "somethingWentWrong": "Algo deu errado",
   "unexpectedErrorOccurred": "Ocorreu um erro inesperado. Por favor, tente novamente.",
@@ -147,9 +145,6 @@
   
   "appSettings": "Configurações do aplicativo",
   "searchSites": "Buscar sites",
-  "language": "Idioma",
-  "systemDefault": "Padrão do sistema",
-  "followSystemLanguage": "Seguir o idioma do sistema",
   
   "all": "Todos",
   "topicsOnly": "Apenas tópicos",
@@ -190,20 +185,15 @@
   "youCannotReplyToThisThread": "Você não pode responder a este tópico",
   "pleaseWaitForThreadToLoad": "Por favor, aguarde o carregamento do tópico",
   
-  "softDelete": "Exclusão suave",
   "postCanBeRestoredLater": "A postagem pode ser restaurada mais tarde",
-  "hardDelete": "Exclusão permanente",
   "postWillBePermanentlyDeleted": "A postagem será excluída permanentemente",
-  "reasonForDeletion": "Motivo da exclusão",
   "enterReasonForDeletingPost": "Insira o motivo para excluir esta postagem",
-  "pleaseEnterReasonForDeletion": "Por favor, insira um motivo para exclusão",
   
   "reportPost": "Denunciar postagem",
   "pleaseProvideReasonForReporting": "Por favor, forneça um motivo para denunciar esta postagem.",
   "reason": "Motivo",
   "enterReasonForReportingPost": "Insira o motivo para denunciar esta postagem",
   "pleaseEnterReason": "Por favor, insira um motivo",
-  "submitReport": "Enviar denúncia",
   
   "selectedActions": "Ações selecionadas:",
   "thisActionCannotBeUndone": "Esta ação não pode ser desfeita.",
@@ -230,7 +220,6 @@
   "newTopic": "Novo tópico",
   "markRead": "Marcar como lido",
   
-  "reportUser": "Denunciar usuário",
   "pleaseSelectReasonForReportingUser": "Por favor, selecione um motivo para denunciar este usuário.",
   "spamOrAdvertising": "Spam ou publicidade",
   "harassmentOrBullying": "Assédio ou bullying",
@@ -241,7 +230,6 @@
   "enterReasonForReportingUser": "Insira o motivo para denunciar este usuário",
   "pleaseSelectReason": "Por favor, selecione um motivo",
   
-  "banUser": "Banir usuário",
   "unbanUser": "Desbanir usuário",
   "pleaseSelectReasonForBanningUser": "Por favor, selecione um motivo para banir {username}",
   "@pleaseSelectReasonForBanningUser": {
@@ -260,7 +248,6 @@
   "banUntil": "Banir até",
   "selectDate": "Selecionar data",
   
-  "moreOptions": "Mais opções",
   "leaveConversation": "Deixar conversa",
   "reportConversation": "Denunciar conversa",
   
@@ -306,18 +293,13 @@
   "deletePost": "Excluir Publicação",
   "loginRequired": "Login Necessário",
   
-  "spamCleaner": "Limpeza de Spam",
   "tryAgain": "Tentar Novamente",
-  "sendMessage": "Enviar Mensagem",
   "memberSince": "Membro Desde",
   "lastActivity": "Última Atividade",
   "likesReceived": "Curtidas Recebidas",
   "likesGiven": "Curtidas Dadas",
-  "showMore": "Mostrar Mais",
-  "cleanSpam": "Limpar Spam",
   
   "failedToSaveMessage": "Falha ao salvar mensagem",
-  "failedToSaveConversation": "Falha ao salvar conversa",
   "failedToSaveSetting": "Falha ao salvar configuração",
   "failedToSavePost": "Falha ao salvar publicação",
   "errorLoadingSites": "Erro ao carregar sites: {error}",
@@ -347,7 +329,6 @@
   "searchForMembers": "Buscar membros",
   "enterUsernameToFindMembers": "Digite um nome de usuário para encontrar membros do fórum",
   "noMembersOnline": "Não há membros online no momento",
-  "enterUsernameToSearch": "Digite o nome de usuário para buscar...",
   "lookupMembers": "Buscar Membros",
   "addMembers": "Adicionar Membros",
   "membersAddedSuccessfully": "Membros adicionados com sucesso",
@@ -419,7 +400,6 @@
       }
     }
   },
-  "signInToViewMessages": "Faça login para ver mensagens",
   "youNeedToBeSignedInToViewConversations": "Você precisa estar conectado para ver suas conversas.",
   "errorLoadingConversations": "Erro ao carregar conversas: {error}",
   "@errorLoadingConversations": {

@@ -195,13 +195,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fehlermeldung in Zwischenablage kopiert';
 
   @override
-  String get dismiss => 'Verwerfen';
-
-  @override
   String get cancel => 'Abbrechen';
-
-  @override
-  String get tryAgain => 'Erneut Versuchen';
 
   @override
   String get getHelp => 'Hilfe erhalten';
@@ -281,14 +275,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Es gibt keine neuesten Themen zum Anzeigen. Kommen Sie später für neue Diskussionen zurück.';
 
   @override
-  String get signInToViewLatestTopics =>
-      'Melden Sie sich an, um neueste Themen anzuzeigen';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics =>
-      'Sie müssen angemeldet sein, um neueste Themen anzuzeigen';
-
-  @override
   String get noUnreadTopics => 'Keine ungelesenen Themen';
 
   @override
@@ -299,14 +285,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get youAreAllCaughtUp => 'Sie sind auf dem neuesten Stand!';
 
   @override
-  String get signInToViewUnreadTopics =>
-      'Melden Sie sich an, um ungelesene Themen anzuzeigen';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics =>
-      'Sie müssen angemeldet sein, um Ihre ungelesenen Themen anzuzeigen';
-
-  @override
   String get noSubscribedTopics => 'Keine abonnierten Themen';
 
   @override
@@ -314,27 +292,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Sie haben keine Themen abonniert. Tippen Sie auf die Stern-Schaltfläche bei einem Thema, um es zu abonnieren und Benachrichtigungen für neue Updates zu erhalten.';
 
   @override
-  String get signInToViewSubscribedTopics =>
-      'Melden Sie sich an, um abonnierte Themen anzuzeigen';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Sie müssen angemeldet sein, um Ihre abonnierten Themen anzuzeigen';
-
-  @override
   String get noParticipatedTopics => 'Keine teilgenommenen Themen';
 
   @override
   String get topicsYouParticipatedIn =>
       'Themen, an denen Sie teilgenommen haben, werden hier angezeigt.';
-
-  @override
-  String get signInToViewParticipatedTopics =>
-      'Melden Sie sich an, um teilgenommene Themen anzuzeigen';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'Sie müssen angemeldet sein, um Themen anzuzeigen, an denen Sie teilgenommen haben';
 
   @override
   String get latest => 'Neueste';
@@ -378,15 +340,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get searchSites => 'Websites suchen';
-
-  @override
-  String get language => 'Sprache';
-
-  @override
-  String get systemDefault => 'Systemstandard';
-
-  @override
-  String get followSystemLanguage => 'Systemsprache verwenden';
 
   @override
   String get all => 'Alle';
@@ -433,28 +386,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte warten Sie, bis der Thread geladen ist';
 
   @override
-  String get softDelete => 'Sanftes Löschen';
-
-  @override
   String get postCanBeRestoredLater =>
       'Beitrag kann später wiederhergestellt werden';
-
-  @override
-  String get hardDelete => 'Endgültiges Löschen';
 
   @override
   String get postWillBePermanentlyDeleted => 'Beitrag wird endgültig gelöscht';
 
   @override
-  String get reasonForDeletion => 'Grund für die Löschung';
-
-  @override
   String get enterReasonForDeletingPost =>
       'Geben Sie den Grund für die Löschung dieses Beitrags ein';
-
-  @override
-  String get pleaseEnterReasonForDeletion =>
-      'Bitte geben Sie einen Grund für die Löschung ein';
 
   @override
   String get reportPost => 'Beitrag melden';
@@ -472,9 +412,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => 'Bitte geben Sie einen Grund ein';
-
-  @override
-  String get submitReport => 'Meldung absenden';
 
   @override
   String get selectedActions => 'Ausgewählte Aktionen:';
@@ -501,9 +438,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get markRead => 'Als gelesen markieren';
-
-  @override
-  String get reportUser => 'Benutzer melden';
 
   @override
   String get pleaseSelectReasonForReportingUser =>
@@ -534,12 +468,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pleaseSelectReason => 'Bitte wählen Sie einen Grund';
-
-  @override
-  String get banUser => 'Benutzer sperren';
-
-  @override
-  String get unbanUser => 'Benutzer entsperren';
 
   @override
   String pleaseSelectReasonForBanningUser(String username) {
@@ -573,7 +501,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectDate => 'Datum auswählen';
 
   @override
-  String get moreOptions => 'Weitere Optionen';
+  String get unbanUser => 'Benutzer entsperren';
 
   @override
   String get leaveConversation => 'Unterhaltung verlassen';
@@ -600,15 +528,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get confirmSpamClean => 'Spam-Bereinigung bestätigen';
-
-  @override
-  String get handleThreads => 'Threads verwalten';
-
-  @override
-  String get deleteMessages => 'Nachrichten löschen';
-
-  @override
-  String get deleteConversations => 'Unterhaltungen löschen';
 
   @override
   String get myForums => 'Meine Foren';
@@ -647,10 +566,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginRequired => 'Anmeldung Erforderlich';
 
   @override
-  String get spamCleaner => 'Spam-Bereinigung';
-
-  @override
-  String get sendMessage => 'Nachricht senden';
+  String get tryAgain => 'Erneut Versuchen';
 
   @override
   String get memberSince => 'Mitglied Seit';
@@ -665,17 +581,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get likesGiven => 'Gegebene Likes';
 
   @override
-  String get showMore => 'Mehr anzeigen';
-
-  @override
-  String get cleanSpam => 'Spam bereinigen';
-
-  @override
   String get failedToSaveMessage => 'Fehler beim Speichern der Nachricht';
-
-  @override
-  String get failedToSaveConversation =>
-      'Speichern der Unterhaltung fehlgeschlagen';
 
   @override
   String get failedToSaveSetting => 'Fehler beim Speichern der Einstellung';
@@ -716,9 +622,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noMembersOnline => 'Derzeit sind keine Mitglieder online';
 
   @override
-  String get enterUsernameToSearch => 'Benutzernamen zum Suchen eingeben...';
-
-  @override
   String get lookupMembers => 'Mitglieder Suchen';
 
   @override
@@ -755,6 +658,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get search => 'Suchen';
 
   @override
+  String get moreOptions => 'Weitere Optionen';
+
+  @override
   String get logout => 'Abmelden';
 
   @override
@@ -783,6 +689,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get add => 'Hinzufügen';
+
+  @override
+  String get dismiss => 'Verwerfen';
 
   @override
   String get retry => 'Wiederholen';
@@ -814,10 +723,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String failedToLikePost(String error) {
     return 'Fehler beim Liken des Beitrags: $error';
   }
-
-  @override
-  String get signInToViewMessages =>
-      'Melden Sie sich an, um Nachrichten anzuzeigen';
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
@@ -856,6 +761,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get trySearchingWithDifferentUsername =>
       'Versuchen Sie es mit einem anderen Benutzernamen';
+
+  @override
+  String get enterUsernameToSearch => 'Benutzernamen zum Suchen eingeben...';
 
   @override
   String get noSitesFound => 'Keine Websites gefunden.';
@@ -925,8 +833,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wählen Sie die auszuführenden Aktionen:';
 
   @override
+  String get handleThreads => 'Threads verwalten';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       'Threads basierend auf Admin-Einstellungen verschieben oder löschen';
+
+  @override
+  String get deleteMessages => 'Nachrichten löschen';
+
+  @override
+  String get deleteConversations => 'Unterhaltungen löschen';
 
   @override
   String get messageUpdatedSuccessfully => 'Nachricht erfolgreich aktualisiert';
@@ -958,12 +875,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get none => 'Keine';
-
-  @override
-  String get attachFile => 'Datei Anhängen';
-
-  @override
-  String get uploadImage => 'Bild Hochladen';
 
   @override
   String get formatting => 'Formatierung';
@@ -1013,6 +924,49 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics =>
+      'Geben Sie Schlüsselwörter ein, um Themen zu suchen...';
+
+  @override
+  String get pleaseFillInAllRequiredFields =>
+      'Bitte füllen Sie alle erforderlichen Felder aus';
+
+  @override
+  String get undelete => 'Wiederherstellen';
+
+  @override
+  String get signInToViewUnreadTopics =>
+      'Melden Sie sich an, um ungelesene Themen anzuzeigen';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      'Sie müssen angemeldet sein, um Ihre ungelesenen Themen anzuzeigen';
+
+  @override
+  String get signInToViewSubscribedTopics =>
+      'Melden Sie sich an, um abonnierte Themen anzuzeigen';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      'Sie müssen angemeldet sein, um Ihre abonnierten Themen anzuzeigen';
+
+  @override
+  String get signInToViewParticipatedTopics =>
+      'Melden Sie sich an, um teilgenommene Themen anzuzeigen';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      'Sie müssen angemeldet sein, um Themen anzuzeigen, an denen Sie teilgenommen haben';
+
+  @override
+  String get signInToViewLatestTopics =>
+      'Melden Sie sich an, um neueste Themen anzuzeigen';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics =>
+      'Sie müssen angemeldet sein, um neueste Themen anzuzeigen';
+
+  @override
   String get markAsUnread => 'Als ungelesen markieren';
 
   @override
@@ -1033,17 +987,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => 'Haben Sie kein Konto?';
-
-  @override
-  String get enterKeywordsToSearchTopics =>
-      'Geben Sie Schlüsselwörter ein, um Themen zu suchen...';
-
-  @override
-  String get pleaseFillInAllRequiredFields =>
-      'Bitte füllen Sie alle erforderlichen Felder aus';
-
-  @override
-  String get undelete => 'Wiederherstellen';
 
   @override
   String get refresh => 'Aktualisieren';
@@ -1164,6 +1107,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Geben Sie Schlüsselwörter oder Domänennamen ein, um Foren zu finden';
 
   @override
+  String get language => 'Sprache';
+
+  @override
+  String get systemDefault => 'Systemstandard';
+
+  @override
+  String get followSystemLanguage => 'Systemsprache verwenden';
+
+  @override
   String get appearance => 'Erscheinungsbild';
 
   @override
@@ -1191,10 +1143,25 @@ class AppLocalizationsDe extends AppLocalizations {
       'Einstellungskategorien werden hier angezeigt, wenn sie verfügbar sind.';
 
   @override
+  String get spamCleaner => 'Spam-Bereinigung';
+
+  @override
   String get unableToLoadProfile => 'Profil konnte nicht geladen werden';
 
   @override
   String get banned => 'GESPERRT';
+
+  @override
+  String get sendMessage => 'Nachricht senden';
+
+  @override
+  String get showMore => 'Mehr anzeigen';
+
+  @override
+  String get reportUser => 'Benutzer melden';
+
+  @override
+  String get submitReport => 'Meldung absenden';
 
   @override
   String get reportSubmittedSuccessfully => 'Meldung erfolgreich abgesendet';
@@ -1212,18 +1179,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteTopic => 'Thema löschen';
 
   @override
+  String get softDelete => 'Sanftes Löschen';
+
+  @override
   String get topicCanBeRestoredLater =>
       'Thema kann später wiederhergestellt werden';
 
   @override
+  String get hardDelete => 'Endgültiges Löschen';
+
+  @override
   String get topicWillBePermanentlyDeleted => 'Thema wird endgültig gelöscht';
+
+  @override
+  String get reasonForDeletion => 'Grund für die Löschung';
 
   @override
   String get enterReasonForDeletingTopic =>
       'Geben Sie den Grund für die Löschung dieses Themas ein';
 
   @override
+  String get pleaseEnterReasonForDeletion =>
+      'Bitte geben Sie einen Grund für die Löschung ein';
+
+  @override
   String get pleaseSelectEndDate => 'Bitte wählen Sie ein Enddatum';
+
+  @override
+  String get banUser => 'Benutzer sperren';
 
   @override
   String get userBannedSuccessfully => 'Benutzer erfolgreich gesperrt';
@@ -1245,6 +1228,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get banTheUserAccount => 'Benutzerkonto sperren';
+
+  @override
+  String get cleanSpam => 'Spam bereinigen';
 
   @override
   String get handledThreads => 'Behandelte Themen';
@@ -1512,6 +1498,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get goBack => 'Zurück';
 
   @override
+  String get signInToViewMessages =>
+      'Melden Sie sich an, um Nachrichten anzuzeigen';
+
+  @override
   String get privateMessagesNotAvailable =>
       'Private Nachrichten nicht verfügbar';
 
@@ -1564,6 +1554,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation =>
+      'Speichern der Unterhaltung fehlgeschlagen';
+
+  @override
   String forumNotFound(String forumName) {
     return 'Forum nicht gefunden: $forumName';
   }
@@ -1589,6 +1583,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get quotePost => 'Beitrag zitieren';
+
+  @override
+  String get attachFile => 'Datei Anhängen';
+
+  @override
+  String get uploadImage => 'Bild Hochladen';
 
   @override
   String get translate => 'Übersetzen';

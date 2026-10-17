@@ -184,13 +184,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorMessageCopiedToClipboard => '오류 메시지가 클립보드에 복사되었습니다';
 
   @override
-  String get dismiss => '닫기';
-
-  @override
   String get cancel => '취소';
-
-  @override
-  String get tryAgain => '다시 시도';
 
   @override
   String get getHelp => '도움말 보기';
@@ -265,12 +259,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noRecentTopicsToDisplay => '표시할 최신 주제가 없습니다. 나중에 새로운 토론을 확인하세요.';
 
   @override
-  String get signInToViewLatestTopics => '최신 주제를 보려면 로그인하세요';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics => '최신 주제를 보려면 로그인해야 합니다';
-
-  @override
   String get noUnreadTopics => '읽지 않은 주제 없음';
 
   @override
@@ -280,12 +268,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get youAreAllCaughtUp => '모두 확인하셨습니다!';
 
   @override
-  String get signInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인하세요';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인해야 합니다';
-
-  @override
   String get noSubscribedTopics => '구독한 주제 없음';
 
   @override
@@ -293,24 +275,10 @@ class AppLocalizationsKo extends AppLocalizations {
       '주제를 구독하지 않았습니다. 주제의 별 버튼을 탭하여 구독하고 새 업데이트 알림을 받으세요.';
 
   @override
-  String get signInToViewSubscribedTopics => '구독한 주제를 보려면 로그인하세요';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      '구독한 주제를 보려면 로그인해야 합니다';
-
-  @override
   String get noParticipatedTopics => '참여한 주제 없음';
 
   @override
   String get topicsYouParticipatedIn => '참여한 주제가 여기에 표시됩니다.';
-
-  @override
-  String get signInToViewParticipatedTopics => '참여한 주제를 보려면 로그인하세요';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      '참여한 주제를 보려면 로그인해야 합니다';
 
   @override
   String get latest => '최신';
@@ -355,15 +323,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchSites => '사이트 검색';
 
   @override
-  String get language => '언어';
-
-  @override
-  String get systemDefault => '시스템 기본값';
-
-  @override
-  String get followSystemLanguage => '시스템 언어 따르기';
-
-  @override
   String get all => '전체';
 
   @override
@@ -406,25 +365,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pleaseWaitForThreadToLoad => '스레드가 로드될 때까지 기다려주세요';
 
   @override
-  String get softDelete => '소프트 삭제';
-
-  @override
   String get postCanBeRestoredLater => '게시물은 나중에 복원할 수 있습니다';
-
-  @override
-  String get hardDelete => '완전 삭제';
 
   @override
   String get postWillBePermanentlyDeleted => '게시물이 영구적으로 삭제됩니다';
 
   @override
-  String get reasonForDeletion => '삭제 이유';
-
-  @override
   String get enterReasonForDeletingPost => '이 게시물을 삭제하는 사유를 입력하세요';
-
-  @override
-  String get pleaseEnterReasonForDeletion => '삭제 이유를 입력하세요';
 
   @override
   String get reportPost => '게시물 신고';
@@ -440,9 +387,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => '사유를 입력하세요';
-
-  @override
-  String get submitReport => '신고 제출';
 
   @override
   String get selectedActions => '선택한 작업:';
@@ -468,9 +412,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get markRead => '읽음으로 표시';
-
-  @override
-  String get reportUser => '사용자 신고';
 
   @override
   String get pleaseSelectReasonForReportingUser => '이 사용자를 신고하는 사유를 선택하세요.';
@@ -500,12 +441,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pleaseSelectReason => '사유를 선택하세요';
 
   @override
-  String get banUser => '사용자 차단';
-
-  @override
-  String get unbanUser => '사용자 차단 해제';
-
-  @override
   String pleaseSelectReasonForBanningUser(String username) {
     return '$username님을 차단하는 사유를 선택하세요';
   }
@@ -532,7 +467,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectDate => '날짜 선택';
 
   @override
-  String get moreOptions => '더 많은 옵션';
+  String get unbanUser => '사용자 차단 해제';
 
   @override
   String get leaveConversation => '대화 나가기';
@@ -559,15 +494,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get confirmSpamClean => '스팸 정리 확인';
-
-  @override
-  String get handleThreads => '스레드 관리';
-
-  @override
-  String get deleteMessages => '메시지 삭제';
-
-  @override
-  String get deleteConversations => '대화 삭제';
 
   @override
   String get myForums => '내 포럼';
@@ -605,10 +531,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginRequired => '로그인 필요';
 
   @override
-  String get spamCleaner => '스팸 정리';
-
-  @override
-  String get sendMessage => '메시지 보내기';
+  String get tryAgain => '다시 시도';
 
   @override
   String get memberSince => '회원 가입일';
@@ -623,16 +546,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get likesGiven => '준 좋아요';
 
   @override
-  String get showMore => '더 보기';
-
-  @override
-  String get cleanSpam => '스팸 정리';
-
-  @override
   String get failedToSaveMessage => '메시지 저장 실패';
-
-  @override
-  String get failedToSaveConversation => '대화 저장 실패';
 
   @override
   String get failedToSaveSetting => '설정 저장 실패';
@@ -672,9 +586,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noMembersOnline => '현재 온라인 회원이 없습니다';
 
   @override
-  String get enterUsernameToSearch => '검색할 사용자 이름 입력...';
-
-  @override
   String get lookupMembers => '회원 검색';
 
   @override
@@ -711,6 +622,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get search => '검색';
 
   @override
+  String get moreOptions => '더 많은 옵션';
+
+  @override
   String get logout => '로그아웃';
 
   @override
@@ -741,6 +655,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get add => '추가';
 
   @override
+  String get dismiss => '닫기';
+
+  @override
   String get retry => '다시 시도';
 
   @override
@@ -769,9 +686,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String failedToLikePost(String error) {
     return '게시물 좋아요 실패: $error';
   }
-
-  @override
-  String get signInToViewMessages => '메시지를 보려면 로그인하세요';
 
   @override
   String get youNeedToBeSignedInToViewConversations => '대화를 보려면 로그인해야 합니다.';
@@ -807,6 +721,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get trySearchingWithDifferentUsername => '다른 사용자 이름으로 검색해보세요';
+
+  @override
+  String get enterUsernameToSearch => '검색할 사용자 이름 입력...';
 
   @override
   String get noSitesFound => '사이트를 찾을 수 없습니다.';
@@ -873,8 +790,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectActionsToPerform => '수행할 작업 선택:';
 
   @override
+  String get handleThreads => '스레드 관리';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       '관리자 설정에 따라 스레드를 이동하거나 삭제';
+
+  @override
+  String get deleteMessages => '메시지 삭제';
+
+  @override
+  String get deleteConversations => '대화 삭제';
 
   @override
   String get messageUpdatedSuccessfully => '메시지가 성공적으로 업데이트되었습니다';
@@ -905,12 +831,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get none => '없음';
-
-  @override
-  String get attachFile => '파일 첨부';
-
-  @override
-  String get uploadImage => '이미지 업로드';
 
   @override
   String get formatting => '서식';
@@ -960,6 +880,41 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics => '주제를 검색할 키워드 입력...';
+
+  @override
+  String get pleaseFillInAllRequiredFields => '모든 필수 필드를 입력하세요';
+
+  @override
+  String get undelete => '복원';
+
+  @override
+  String get signInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인해야 합니다';
+
+  @override
+  String get signInToViewSubscribedTopics => '구독한 주제를 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      '구독한 주제를 보려면 로그인해야 합니다';
+
+  @override
+  String get signInToViewParticipatedTopics => '참여한 주제를 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      '참여한 주제를 보려면 로그인해야 합니다';
+
+  @override
+  String get signInToViewLatestTopics => '최신 주제를 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics => '최신 주제를 보려면 로그인해야 합니다';
+
+  @override
   String get markAsUnread => '읽지 않음으로 표시';
 
   @override
@@ -979,15 +934,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => '계정이 없으신가요?';
-
-  @override
-  String get enterKeywordsToSearchTopics => '주제를 검색할 키워드 입력...';
-
-  @override
-  String get pleaseFillInAllRequiredFields => '모든 필수 필드를 입력하세요';
-
-  @override
-  String get undelete => '복원';
 
   @override
   String get refresh => '새로고침';
@@ -1104,6 +1050,15 @@ class AppLocalizationsKo extends AppLocalizations {
       '키워드 또는 도메인 이름을 입력하여 포럼 찾기';
 
   @override
+  String get language => '언어';
+
+  @override
+  String get systemDefault => '시스템 기본값';
+
+  @override
+  String get followSystemLanguage => '시스템 언어 따르기';
+
+  @override
   String get appearance => '모양';
 
   @override
@@ -1130,10 +1085,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsCategoriesWillAppearHere => '설정 카테고리는 사용 가능할 때 여기에 표시됩니다.';
 
   @override
+  String get spamCleaner => '스팸 정리';
+
+  @override
   String get unableToLoadProfile => '프로필을 불러올 수 없습니다';
 
   @override
   String get banned => '차단됨';
+
+  @override
+  String get sendMessage => '메시지 보내기';
+
+  @override
+  String get showMore => '더 보기';
+
+  @override
+  String get reportUser => '사용자 신고';
+
+  @override
+  String get submitReport => '신고 제출';
 
   @override
   String get reportSubmittedSuccessfully => '신고가 성공적으로 제출되었습니다';
@@ -1151,16 +1121,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deleteTopic => '주제 삭제';
 
   @override
+  String get softDelete => '소프트 삭제';
+
+  @override
   String get topicCanBeRestoredLater => '주제는 나중에 복원할 수 있습니다';
+
+  @override
+  String get hardDelete => '완전 삭제';
 
   @override
   String get topicWillBePermanentlyDeleted => '주제가 영구적으로 삭제됩니다';
 
   @override
+  String get reasonForDeletion => '삭제 이유';
+
+  @override
   String get enterReasonForDeletingTopic => '이 주제를 삭제하는 이유를 입력하세요';
 
   @override
+  String get pleaseEnterReasonForDeletion => '삭제 이유를 입력하세요';
+
+  @override
   String get pleaseSelectEndDate => '종료일을 선택하세요';
+
+  @override
+  String get banUser => '사용자 차단';
 
   @override
   String get userBannedSuccessfully => '사용자가 성공적으로 차단되었습니다';
@@ -1182,6 +1167,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get banTheUserAccount => '사용자 계정 차단';
+
+  @override
+  String get cleanSpam => '스팸 정리';
 
   @override
   String get handledThreads => '처리된 스레드';
@@ -1442,6 +1430,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get goBack => '돌아가기';
 
   @override
+  String get signInToViewMessages => '메시지를 보려면 로그인하세요';
+
+  @override
   String get privateMessagesNotAvailable => '비공개 메시지를 사용할 수 없습니다';
 
   @override
@@ -1493,6 +1484,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => '대화 저장 실패';
+
+  @override
   String forumNotFound(String forumName) {
     return '포럼을 찾을 수 없습니다: $forumName';
   }
@@ -1518,6 +1512,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get quotePost => '게시물 인용';
+
+  @override
+  String get attachFile => '파일 첨부';
+
+  @override
+  String get uploadImage => '이미지 업로드';
 
   @override
   String get translate => '번역';

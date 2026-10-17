@@ -190,13 +190,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Foutbericht gekopieerd naar klembord';
 
   @override
-  String get dismiss => 'Sluiten';
-
-  @override
   String get cancel => 'Annuleren';
-
-  @override
-  String get tryAgain => 'Opnieuw proberen';
 
   @override
   String get getHelp => 'Hulp krijgen';
@@ -275,14 +269,6 @@ class AppLocalizationsNl extends AppLocalizations {
       'Er zijn geen recente onderwerpen om weer te geven. Kom later terug voor nieuwe discussies.';
 
   @override
-  String get signInToViewLatestTopics =>
-      'Log in om nieuwste onderwerpen te bekijken';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics =>
-      'U moet ingelogd zijn om nieuwste onderwerpen te bekijken.';
-
-  @override
   String get noUnreadTopics => 'Geen ongelezen onderwerpen';
 
   @override
@@ -293,27 +279,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get youAreAllCaughtUp => 'U bent helemaal bij!';
 
   @override
-  String get signInToViewUnreadTopics =>
-      'Log in om ongelezen onderwerpen te bekijken';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics =>
-      'U moet ingelogd zijn om uw ongelezen onderwerpen te bekijken.';
-
-  @override
   String get noSubscribedTopics => 'Geen geabonneerde onderwerpen';
 
   @override
   String get noSubscribedTopicsMessage =>
       'U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.';
-
-  @override
-  String get signInToViewSubscribedTopics =>
-      'Log in om geabonneerde onderwerpen te bekijken';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken.';
 
   @override
   String get noParticipatedTopics =>
@@ -322,14 +292,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get topicsYouParticipatedIn =>
       'Onderwerpen waaraan u hebt deelgenomen worden hier getoond.';
-
-  @override
-  String get signInToViewParticipatedTopics =>
-      'Log in om onderwerpen waaraan u hebt deelgenomen te bekijken';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'U moet ingelogd zijn om onderwerpen waaraan u hebt deelgenomen te bekijken.';
 
   @override
   String get latest => 'Nieuwste';
@@ -375,15 +337,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get searchSites => 'Sites zoeken';
 
   @override
-  String get language => 'Taal';
-
-  @override
-  String get systemDefault => 'Systeemstandaard';
-
-  @override
-  String get followSystemLanguage => 'Systeemtaal volgen';
-
-  @override
   String get all => 'Alles';
 
   @override
@@ -427,28 +380,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pleaseWaitForThreadToLoad => 'Wacht tot het onderwerp is geladen';
 
   @override
-  String get softDelete => 'Zacht verwijderen';
-
-  @override
   String get postCanBeRestoredLater => 'Bericht kan later worden hersteld';
-
-  @override
-  String get hardDelete => 'Definitief verwijderen';
 
   @override
   String get postWillBePermanentlyDeleted =>
       'Bericht wordt permanent verwijderd';
 
   @override
-  String get reasonForDeletion => 'Reden voor verwijdering';
-
-  @override
   String get enterReasonForDeletingPost =>
       'Voer de reden voor het verwijderen van dit bericht in';
-
-  @override
-  String get pleaseEnterReasonForDeletion =>
-      'Voer een reden voor verwijdering in';
 
   @override
   String get reportPost => 'Bericht melden';
@@ -466,9 +406,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => 'Voer een reden in';
-
-  @override
-  String get submitReport => 'Melding verzenden';
 
   @override
   String get selectedActions => 'Geselecteerde acties:';
@@ -495,9 +432,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get markRead => 'Als gelezen markeren';
-
-  @override
-  String get reportUser => 'Gebruiker melden';
 
   @override
   String get pleaseSelectReasonForReportingUser =>
@@ -529,12 +463,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pleaseSelectReason => 'Selecteer een reden';
 
   @override
-  String get banUser => 'Gebruiker blokkeren';
-
-  @override
-  String get unbanUser => 'Blokkering opheffen';
-
-  @override
   String pleaseSelectReasonForBanningUser(String username) {
     return 'Selecteer een reden voor het blokkeren van $username';
   }
@@ -564,7 +492,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get selectDate => 'Selecteer datum';
 
   @override
-  String get moreOptions => 'Meer opties';
+  String get unbanUser => 'Blokkering opheffen';
 
   @override
   String get leaveConversation => 'Gesprek verlaten';
@@ -591,15 +519,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get confirmSpamClean => 'Spam opruimen bevestigen';
-
-  @override
-  String get handleThreads => 'Onderwerpen afhandelen';
-
-  @override
-  String get deleteMessages => 'Berichten verwijderen';
-
-  @override
-  String get deleteConversations => 'Gesprekken verwijderen';
 
   @override
   String get myForums => 'Mijn forums';
@@ -638,10 +557,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get loginRequired => 'Inloggen vereist';
 
   @override
-  String get spamCleaner => 'Spam opruimer';
-
-  @override
-  String get sendMessage => 'Bericht verzenden';
+  String get tryAgain => 'Opnieuw proberen';
 
   @override
   String get memberSince => 'Lid sinds';
@@ -656,16 +572,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get likesGiven => 'Gegeven likes';
 
   @override
-  String get showMore => 'Meer tonen';
-
-  @override
-  String get cleanSpam => 'Spam opruimen';
-
-  @override
   String get failedToSaveMessage => 'Kon bericht niet opslaan';
-
-  @override
-  String get failedToSaveConversation => 'Kon gesprek niet opslaan';
 
   @override
   String get failedToSaveSetting => 'Kon instelling niet opslaan';
@@ -706,9 +613,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noMembersOnline => 'Er zijn momenteel geen leden online';
 
   @override
-  String get enterUsernameToSearch => 'Voer gebruikersnaam in om te zoeken...';
-
-  @override
   String get lookupMembers => 'Leden opzoeken';
 
   @override
@@ -745,6 +649,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get search => 'Zoeken';
 
   @override
+  String get moreOptions => 'Meer opties';
+
+  @override
   String get logout => 'Uitloggen';
 
   @override
@@ -773,6 +680,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get add => 'Toevoegen';
+
+  @override
+  String get dismiss => 'Sluiten';
 
   @override
   String get retry => 'Opnieuw';
@@ -804,9 +714,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String failedToLikePost(String error) {
     return 'Kon bericht niet liken: $error';
   }
-
-  @override
-  String get signInToViewMessages => 'Log in om berichten te bekijken';
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
@@ -845,6 +752,9 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get trySearchingWithDifferentUsername =>
       'Probeer te zoeken met een andere gebruikersnaam';
+
+  @override
+  String get enterUsernameToSearch => 'Voer gebruikersnaam in om te zoeken...';
 
   @override
   String get noSitesFound => 'Geen sites gevonden.';
@@ -913,8 +823,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get selectActionsToPerform => 'Selecteer de uit te voeren acties:';
 
   @override
+  String get handleThreads => 'Onderwerpen afhandelen';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       'Verplaats of verwijder onderwerpen op basis van beheerderinstellingen';
+
+  @override
+  String get deleteMessages => 'Berichten verwijderen';
+
+  @override
+  String get deleteConversations => 'Gesprekken verwijderen';
 
   @override
   String get messageUpdatedSuccessfully => 'Bericht succesvol bijgewerkt';
@@ -946,12 +865,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get none => 'Geen';
-
-  @override
-  String get attachFile => 'Bestand bijvoegen';
-
-  @override
-  String get uploadImage => 'Afbeelding uploaden';
 
   @override
   String get formatting => 'Opmaak';
@@ -1001,6 +914,48 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics =>
+      'Voer zoekwoorden in om onderwerpen te zoeken...';
+
+  @override
+  String get pleaseFillInAllRequiredFields => 'Vul alle verplichte velden in';
+
+  @override
+  String get undelete => 'Verwijdering ongedaan maken';
+
+  @override
+  String get signInToViewUnreadTopics =>
+      'Log in om ongelezen onderwerpen te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      'U moet ingelogd zijn om uw ongelezen onderwerpen te bekijken.';
+
+  @override
+  String get signInToViewSubscribedTopics =>
+      'Log in om geabonneerde onderwerpen te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      'U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken.';
+
+  @override
+  String get signInToViewParticipatedTopics =>
+      'Log in om onderwerpen waaraan u hebt deelgenomen te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      'U moet ingelogd zijn om onderwerpen waaraan u hebt deelgenomen te bekijken.';
+
+  @override
+  String get signInToViewLatestTopics =>
+      'Log in om nieuwste onderwerpen te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics =>
+      'U moet ingelogd zijn om nieuwste onderwerpen te bekijken.';
+
+  @override
   String get markAsUnread => 'Als ongelezen markeren';
 
   @override
@@ -1021,16 +976,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => 'Heeft u geen account?';
-
-  @override
-  String get enterKeywordsToSearchTopics =>
-      'Voer zoekwoorden in om onderwerpen te zoeken...';
-
-  @override
-  String get pleaseFillInAllRequiredFields => 'Vul alle verplichte velden in';
-
-  @override
-  String get undelete => 'Verwijdering ongedaan maken';
 
   @override
   String get refresh => 'Vernieuwen';
@@ -1152,6 +1097,15 @@ class AppLocalizationsNl extends AppLocalizations {
       'Voer zoekwoorden of domeinnamen in om forums te vinden';
 
   @override
+  String get language => 'Taal';
+
+  @override
+  String get systemDefault => 'Systeemstandaard';
+
+  @override
+  String get followSystemLanguage => 'Systeemtaal volgen';
+
+  @override
   String get appearance => 'Weergave';
 
   @override
@@ -1179,10 +1133,25 @@ class AppLocalizationsNl extends AppLocalizations {
       'Instellingcategorieën verschijnen hier wanneer beschikbaar.';
 
   @override
+  String get spamCleaner => 'Spam opruimer';
+
+  @override
   String get unableToLoadProfile => 'Kon profiel niet laden';
 
   @override
   String get banned => 'GEBLOKKEERD';
+
+  @override
+  String get sendMessage => 'Bericht verzenden';
+
+  @override
+  String get showMore => 'Meer tonen';
+
+  @override
+  String get reportUser => 'Gebruiker melden';
+
+  @override
+  String get submitReport => 'Melding verzenden';
 
   @override
   String get reportSubmittedSuccessfully => 'Melding succesvol verzonden';
@@ -1200,18 +1169,34 @@ class AppLocalizationsNl extends AppLocalizations {
   String get deleteTopic => 'Onderwerp verwijderen';
 
   @override
+  String get softDelete => 'Zacht verwijderen';
+
+  @override
   String get topicCanBeRestoredLater => 'Onderwerp kan later worden hersteld';
+
+  @override
+  String get hardDelete => 'Definitief verwijderen';
 
   @override
   String get topicWillBePermanentlyDeleted =>
       'Onderwerp wordt permanent verwijderd';
 
   @override
+  String get reasonForDeletion => 'Reden voor verwijdering';
+
+  @override
   String get enterReasonForDeletingTopic =>
       'Voer de reden voor het verwijderen van dit onderwerp in';
 
   @override
+  String get pleaseEnterReasonForDeletion =>
+      'Voer een reden voor verwijdering in';
+
+  @override
   String get pleaseSelectEndDate => 'Selecteer een einddatum';
+
+  @override
+  String get banUser => 'Gebruiker blokkeren';
 
   @override
   String get userBannedSuccessfully => 'Gebruiker succesvol geblokkeerd';
@@ -1233,6 +1218,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get banTheUserAccount => 'Gebruikersaccount blokkeren';
+
+  @override
+  String get cleanSpam => 'Spam opruimen';
 
   @override
   String get handledThreads => 'Onderwerpen afgehandeld';
@@ -1495,6 +1483,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get goBack => 'Terug';
 
   @override
+  String get signInToViewMessages => 'Log in om berichten te bekijken';
+
+  @override
   String get privateMessagesNotAvailable => 'Privéberichten niet beschikbaar';
 
   @override
@@ -1546,6 +1537,9 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => 'Kon gesprek niet opslaan';
+
+  @override
   String forumNotFound(String forumName) {
     return 'Forum niet gevonden: $forumName';
   }
@@ -1571,6 +1565,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get quotePost => 'Bericht citeren';
+
+  @override
+  String get attachFile => 'Bestand bijvoegen';
+
+  @override
+  String get uploadImage => 'Afbeelding uploaden';
 
   @override
   String get translate => 'Vertalen';

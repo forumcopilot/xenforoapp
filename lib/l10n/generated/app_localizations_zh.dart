@@ -179,13 +179,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorMessageCopiedToClipboard => '错误消息已复制到剪贴板';
 
   @override
-  String get dismiss => '关闭';
-
-  @override
   String get cancel => '取消';
-
-  @override
-  String get tryAgain => '重试';
 
   @override
   String get getHelp => '获取帮助';
@@ -255,12 +249,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noRecentTopicsToDisplay => '没有要显示的最新主题。稍后再来查看新讨论。';
 
   @override
-  String get signInToViewLatestTopics => '登录以查看最新主题';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics => '您需要登录才能查看最新主题';
-
-  @override
   String get noUnreadTopics => '无未读主题';
 
   @override
@@ -270,34 +258,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get youAreAllCaughtUp => '您已全部查看完毕！';
 
   @override
-  String get signInToViewUnreadTopics => '登录以查看未读主题';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics => '您需要登录才能查看未读主题';
-
-  @override
   String get noSubscribedTopics => '无订阅主题';
 
   @override
   String get noSubscribedTopicsMessage => '您没有订阅任何主题。点击主题上的星形按钮以订阅并接收新更新通知。';
 
   @override
-  String get signInToViewSubscribedTopics => '登录以查看订阅主题';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics => '您需要登录才能查看订阅主题';
-
-  @override
   String get noParticipatedTopics => '无参与主题';
 
   @override
   String get topicsYouParticipatedIn => '您参与的主题将显示在这里。';
-
-  @override
-  String get signInToViewParticipatedTopics => '登录以查看参与的主题';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics => '您需要登录才能查看您参与的主题';
 
   @override
   String get latest => '最新';
@@ -339,15 +309,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get searchSites => '搜索网站';
-
-  @override
-  String get language => '语言';
-
-  @override
-  String get systemDefault => '系统默认';
-
-  @override
-  String get followSystemLanguage => '跟随系统语言';
 
   @override
   String get all => '全部';
@@ -392,25 +353,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pleaseWaitForThreadToLoad => '请等待主题加载';
 
   @override
-  String get softDelete => '软删除';
-
-  @override
   String get postCanBeRestoredLater => '帖子稍后可以恢复';
-
-  @override
-  String get hardDelete => '硬删除';
 
   @override
   String get postWillBePermanentlyDeleted => '帖子将被永久删除';
 
   @override
-  String get reasonForDeletion => '删除原因';
-
-  @override
   String get enterReasonForDeletingPost => '输入删除此帖子的原因';
-
-  @override
-  String get pleaseEnterReasonForDeletion => '请输入删除原因';
 
   @override
   String get reportPost => '举报帖子';
@@ -426,9 +375,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => '请输入原因';
-
-  @override
-  String get submitReport => '提交举报';
 
   @override
   String get selectedActions => '选定的操作:';
@@ -454,9 +400,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get markRead => '标记为已读';
-
-  @override
-  String get reportUser => '举报用户';
 
   @override
   String get pleaseSelectReasonForReportingUser => '请选择举报此用户的原因。';
@@ -486,12 +429,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pleaseSelectReason => '请选择原因';
 
   @override
-  String get banUser => '封禁用户';
-
-  @override
-  String get unbanUser => '解除封禁';
-
-  @override
   String pleaseSelectReasonForBanningUser(String username) {
     return '请选择封禁 $username 的原因';
   }
@@ -518,7 +455,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectDate => '选择日期';
 
   @override
-  String get moreOptions => '更多选项';
+  String get unbanUser => '解除封禁';
 
   @override
   String get leaveConversation => '离开对话';
@@ -545,15 +482,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirmSpamClean => '确认清理垃圾邮件';
-
-  @override
-  String get handleThreads => '处理主题';
-
-  @override
-  String get deleteMessages => '删除消息';
-
-  @override
-  String get deleteConversations => '删除对话';
 
   @override
   String get myForums => '我的论坛';
@@ -591,10 +519,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginRequired => '需要登录';
 
   @override
-  String get spamCleaner => '垃圾清理';
-
-  @override
-  String get sendMessage => '发送消息';
+  String get tryAgain => '重试';
 
   @override
   String get memberSince => '注册日期';
@@ -609,16 +534,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get likesGiven => '给出的赞';
 
   @override
-  String get showMore => '显示更多';
-
-  @override
-  String get cleanSpam => '清理垃圾信息';
-
-  @override
   String get failedToSaveMessage => '保存消息失败';
-
-  @override
-  String get failedToSaveConversation => '保存对话失败';
 
   @override
   String get failedToSaveSetting => '保存设置失败';
@@ -658,9 +574,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noMembersOnline => '当前没有成员在线';
 
   @override
-  String get enterUsernameToSearch => '输入用户名以搜索...';
-
-  @override
   String get lookupMembers => '查找成员';
 
   @override
@@ -697,6 +610,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get search => '搜索';
 
   @override
+  String get moreOptions => '更多选项';
+
+  @override
   String get logout => '退出登录';
 
   @override
@@ -727,6 +643,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get add => '添加';
 
   @override
+  String get dismiss => '关闭';
+
+  @override
   String get retry => '重试';
 
   @override
@@ -755,9 +674,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String failedToLikePost(String error) {
     return '点赞帖子失败: $error';
   }
-
-  @override
-  String get signInToViewMessages => '请登录以查看消息';
 
   @override
   String get youNeedToBeSignedInToViewConversations => '您需要登录才能查看您的对话。';
@@ -793,6 +709,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get trySearchingWithDifferentUsername => '尝试使用不同的用户名搜索';
+
+  @override
+  String get enterUsernameToSearch => '输入用户名以搜索...';
 
   @override
   String get noSitesFound => '未找到网站。';
@@ -859,7 +778,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectActionsToPerform => '选择要执行的操作:';
 
   @override
+  String get handleThreads => '处理主题';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings => '根据管理员设置移动或删除主题';
+
+  @override
+  String get deleteMessages => '删除消息';
+
+  @override
+  String get deleteConversations => '删除对话';
 
   @override
   String get messageUpdatedSuccessfully => '消息更新成功';
@@ -890,12 +818,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get none => '无';
-
-  @override
-  String get attachFile => '附加文件';
-
-  @override
-  String get uploadImage => '上传图片';
 
   @override
   String get formatting => '格式';
@@ -945,6 +867,39 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics => '输入关键词以搜索主题...';
+
+  @override
+  String get pleaseFillInAllRequiredFields => '请填写所有必填字段';
+
+  @override
+  String get undelete => '恢复';
+
+  @override
+  String get signInToViewUnreadTopics => '登录以查看未读主题';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics => '您需要登录才能查看未读主题';
+
+  @override
+  String get signInToViewSubscribedTopics => '登录以查看订阅主题';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics => '您需要登录才能查看订阅主题';
+
+  @override
+  String get signInToViewParticipatedTopics => '登录以查看参与的主题';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics => '您需要登录才能查看您参与的主题';
+
+  @override
+  String get signInToViewLatestTopics => '登录以查看最新主题';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics => '您需要登录才能查看最新主题';
+
+  @override
   String get markAsUnread => '标记为未读';
 
   @override
@@ -964,15 +919,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => '没有账户？';
-
-  @override
-  String get enterKeywordsToSearchTopics => '输入关键词以搜索主题...';
-
-  @override
-  String get pleaseFillInAllRequiredFields => '请填写所有必填字段';
-
-  @override
-  String get undelete => '恢复';
 
   @override
   String get refresh => '刷新';
@@ -1088,6 +1034,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enterKeywordsOrDomainNamesToFindForums => '输入关键词或域名以查找论坛';
 
   @override
+  String get language => '语言';
+
+  @override
+  String get systemDefault => '系统默认';
+
+  @override
+  String get followSystemLanguage => '跟随系统语言';
+
+  @override
   String get appearance => '外观';
 
   @override
@@ -1114,10 +1069,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsCategoriesWillAppearHere => '设置类别在可用时将显示在此处。';
 
   @override
+  String get spamCleaner => '垃圾清理';
+
+  @override
   String get unableToLoadProfile => '无法加载个人资料';
 
   @override
   String get banned => '已封禁';
+
+  @override
+  String get sendMessage => '发送消息';
+
+  @override
+  String get showMore => '显示更多';
+
+  @override
+  String get reportUser => '举报用户';
+
+  @override
+  String get submitReport => '提交举报';
 
   @override
   String get reportSubmittedSuccessfully => '举报提交成功';
@@ -1135,16 +1105,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteTopic => '删除主题';
 
   @override
+  String get softDelete => '软删除';
+
+  @override
   String get topicCanBeRestoredLater => '主题可以稍后恢复';
+
+  @override
+  String get hardDelete => '硬删除';
 
   @override
   String get topicWillBePermanentlyDeleted => '主题将被永久删除';
 
   @override
+  String get reasonForDeletion => '删除原因';
+
+  @override
   String get enterReasonForDeletingTopic => '输入删除此主题的原因';
 
   @override
+  String get pleaseEnterReasonForDeletion => '请输入删除原因';
+
+  @override
   String get pleaseSelectEndDate => '请选择结束日期';
+
+  @override
+  String get banUser => '封禁用户';
 
   @override
   String get userBannedSuccessfully => '用户封禁成功';
@@ -1166,6 +1151,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get banTheUserAccount => '封禁用户账户';
+
+  @override
+  String get cleanSpam => '清理垃圾信息';
 
   @override
   String get handledThreads => '已处理的线程';
@@ -1425,6 +1413,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get goBack => '返回';
 
   @override
+  String get signInToViewMessages => '请登录以查看消息';
+
+  @override
   String get privateMessagesNotAvailable => '私信不可用';
 
   @override
@@ -1476,6 +1467,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => '保存对话失败';
+
+  @override
   String forumNotFound(String forumName) {
     return '未找到论坛: $forumName';
   }
@@ -1501,6 +1495,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get quotePost => '引用帖子';
+
+  @override
+  String get attachFile => '附加文件';
+
+  @override
+  String get uploadImage => '上传图片';
 
   @override
   String get translate => '翻译';

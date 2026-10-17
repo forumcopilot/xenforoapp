@@ -78,9 +78,7 @@
   "copyToClipboard": "Kopiëren naar klembord",
   "copied": "Gekopieerd",
   "errorMessageCopiedToClipboard": "Foutbericht gekopieerd naar klembord",
-  "dismiss": "Sluiten",
   "cancel": "Annuleren",
-  "tryAgain": "Opnieuw proberen",
   "getHelp": "Hulp krijgen",
   "somethingWentWrong": "Er is iets misgegaan",
   "unexpectedErrorOccurred": "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
@@ -105,24 +103,16 @@
   
   "noLatestTopics": "Geen nieuwste onderwerpen",
   "noRecentTopicsToDisplay": "Er zijn geen recente onderwerpen om weer te geven. Kom later terug voor nieuwe discussies.",
-  "signInToViewLatestTopics": "Log in om nieuwste onderwerpen te bekijken",
-  "youNeedToBeSignedInToViewLatestTopics": "U moet ingelogd zijn om nieuwste onderwerpen te bekijken",
   
   "noUnreadTopics": "Geen ongelezen onderwerpen",
   "thereAreNoUnreadTopics": "Er zijn geen ongelezen onderwerpen. Kom later terug voor nieuwe discussies.",
   "youAreAllCaughtUp": "U bent helemaal bij!",
-  "signInToViewUnreadTopics": "Log in om ongelezen onderwerpen te bekijken",
-  "youNeedToBeSignedInToViewUnreadTopics": "U moet ingelogd zijn om uw ongelezen onderwerpen te bekijken",
   
   "noSubscribedTopics": "Geen geabonneerde onderwerpen",
   "noSubscribedTopicsMessage": "U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.",
-  "signInToViewSubscribedTopics": "Log in om geabonneerde onderwerpen te bekijken",
-  "youNeedToBeSignedInToViewSubscribedTopics": "U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken",
   
   "noParticipatedTopics": "Geen onderwerpen waaraan u hebt deelgenomen",
   "topicsYouParticipatedIn": "Onderwerpen waaraan u hebt deelgenomen worden hier getoond.",
-  "signInToViewParticipatedTopics": "Log in om onderwerpen waaraan u hebt deelgenomen te bekijken",
-  "youNeedToBeSignedInToViewParticipatedTopics": "U moet ingelogd zijn om onderwerpen waaraan u hebt deelgenomen te bekijken",
   
   "latest": "Nieuwste",
   "unread": "Ongelezen",
@@ -147,9 +137,6 @@
   
   "appSettings": "App-instellingen",
   "searchSites": "Sites zoeken",
-  "language": "Taal",
-  "systemDefault": "Systeemstandaard",
-  "followSystemLanguage": "Systeemtaal volgen",
   
   "all": "Alles",
   "topicsOnly": "Alleen onderwerpen",
@@ -190,20 +177,15 @@
   "youCannotReplyToThisThread": "U kunt niet op dit onderwerp reageren",
   "pleaseWaitForThreadToLoad": "Wacht tot het onderwerp is geladen",
   
-  "softDelete": "Zacht verwijderen",
   "postCanBeRestoredLater": "Bericht kan later worden hersteld",
-  "hardDelete": "Definitief verwijderen",
   "postWillBePermanentlyDeleted": "Bericht wordt permanent verwijderd",
-  "reasonForDeletion": "Reden voor verwijdering",
   "enterReasonForDeletingPost": "Voer de reden voor het verwijderen van dit bericht in",
-  "pleaseEnterReasonForDeletion": "Voer een reden voor verwijdering in",
   
   "reportPost": "Bericht melden",
   "pleaseProvideReasonForReporting": "Geef een reden op voor het melden van dit bericht.",
   "reason": "Reden",
   "enterReasonForReportingPost": "Voer de reden voor het melden van dit bericht in",
   "pleaseEnterReason": "Voer een reden in",
-  "submitReport": "Melding verzenden",
   
   "selectedActions": "Geselecteerde acties:",
   "thisActionCannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
@@ -233,7 +215,6 @@
   "newTopic": "Nieuw onderwerp",
   "markRead": "Als gelezen markeren",
   
-  "reportUser": "Gebruiker melden",
   "pleaseSelectReasonForReportingUser": "Selecteer een reden voor het melden van deze gebruiker.",
   "spamOrAdvertising": "Spam of reclame",
   "harassmentOrBullying": "Intimidatie of pesten",
@@ -243,10 +224,7 @@
   "pleaseSpecifyReason": "Geef de reden op",
   "enterReasonForReportingUser": "Voer de reden voor het melden van deze gebruiker in",
   "pleaseSelectReason": "Selecteer een reden",
-  "submitReport": "Melding verzenden",
   
-  "banUser": "Gebruiker blokkeren",
-  "unbanUser": "Blokkering opheffen",
   "pleaseSelectReasonForBanningUser": "Selecteer een reden voor het blokkeren van {username}",
   "@pleaseSelectReasonForBanningUser": {
     "description": "Message asking to select reason for banning user",
@@ -265,7 +243,6 @@
   "selectDate": "Selecteer datum",
   "unbanUser": "Blokkering opheffen",
   
-  "moreOptions": "Meer opties",
   "leaveConversation": "Gesprek verlaten",
   "reportConversation": "Gesprek melden",
   
@@ -284,9 +261,6 @@
     }
   },
   "confirmSpamClean": "Spam opruimen bevestigen",
-  "handleThreads": "Onderwerpen afhandelen",
-  "deleteMessages": "Berichten verwijderen",
-  "deleteConversations": "Gesprekken verwijderen",
   
   "myForums": "Mijn forums",
   "recentlyVisited": "Recent bezocht",
@@ -311,18 +285,13 @@
   "deletePost": "Bericht verwijderen",
   "loginRequired": "Inloggen vereist",
   
-  "spamCleaner": "Spam opruimer",
   "tryAgain": "Opnieuw proberen",
-  "sendMessage": "Bericht verzenden",
   "memberSince": "Lid sinds",
   "lastActivity": "Laatste activiteit",
   "likesReceived": "Ontvangen likes",
   "likesGiven": "Gegeven likes",
-  "showMore": "Meer tonen",
-  "cleanSpam": "Spam opruimen",
   
   "failedToSaveMessage": "Kon bericht niet opslaan",
-  "failedToSaveConversation": "Kon gesprek niet opslaan",
   "failedToSaveSetting": "Kon instelling niet opslaan",
   "failedToSavePost": "Kon bericht niet opslaan",
   "errorLoadingSites": "Fout bij laden van sites: {error}",
@@ -352,7 +321,6 @@
   "searchForMembers": "Leden zoeken",
   "enterUsernameToFindMembers": "Voer een gebruikersnaam in om forumleden te vinden",
   "noMembersOnline": "Er zijn momenteel geen leden online",
-  "enterUsernameToSearch": "Voer gebruikersnaam in om te zoeken...",
   "lookupMembers": "Leden opzoeken",
   "addMembers": "Leden toevoegen",
   "membersAddedSuccessfully": "Leden succesvol toegevoegd",
@@ -424,7 +392,6 @@
       }
     }
   },
-  "signInToViewMessages": "Log in om berichten te bekijken",
   "youNeedToBeSignedInToViewConversations": "U moet ingelogd zijn om uw gesprekken te bekijken.",
   "errorLoadingConversations": "Fout bij laden van gesprekken: {error}",
   "@errorLoadingConversations": {
@@ -539,8 +506,6 @@
   "removeAttachment": "Bijlage verwijderen",
   "areYouSureYouWantToRemoveThisAttachment": "Weet u zeker dat u deze bijlage wilt verwijderen?",
   "none": "Geen",
-  "attachFile": "Bestand bijvoegen",
-  "uploadImage": "Afbeelding uploaden",
   "formatting": "Opmaak",
   "bold": "Vet",
   "italic": "Cursief",
@@ -564,13 +529,6 @@
       }
     }
   },
-  "markAsUnread": "Als ongelezen markeren",
-  "invite": "Uitnodigen",
-  "welcomeBack": "Welkom terug",
-  "signInToAccessYourProfile": "Log in om uw profiel te openen en uw account te beheren",
-  "enterYourUsername": "Voer uw gebruikersnaam in",
-  "enterYourPassword": "Voer uw wachtwoord in",
-  "dontHaveAnAccount": "Heeft u geen account?",
   "enterKeywordsToSearchTopics": "Voer zoekwoorden in om onderwerpen te zoeken...",
   "pleaseFillInAllRequiredFields": "Vul alle verplichte velden in",
   "undelete": "Verwijdering ongedaan maken",

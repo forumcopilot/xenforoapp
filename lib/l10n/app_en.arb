@@ -78,9 +78,7 @@
   "copyToClipboard": "Copy to Clipboard",
   "copied": "Copied",
   "errorMessageCopiedToClipboard": "Error message copied to clipboard",
-  "dismiss": "Dismiss",
   "cancel": "Cancel",
-  "tryAgain": "Try Again",
   "getHelp": "Get Help",
   "somethingWentWrong": "Something went wrong",
   "unexpectedErrorOccurred": "An unexpected error occurred. Please try again.",
@@ -105,24 +103,16 @@
   
   "noLatestTopics": "No Latest Topics",
   "noRecentTopicsToDisplay": "There are no recent topics to display. Check back later for new discussions.",
-  "signInToViewLatestTopics": "Sign in to view latest topics",
-  "youNeedToBeSignedInToViewLatestTopics": "You need to be signed in to view latest topics",
   
   "noUnreadTopics": "No Unread Topics",
   "thereAreNoUnreadTopics": "There are no unread topics. Check back later for new discussions.",
   "youAreAllCaughtUp": "You're all caught up!",
-  "signInToViewUnreadTopics": "Sign in to view unread topics",
-  "youNeedToBeSignedInToViewUnreadTopics": "You need to be signed in to view your unread topics",
   
   "noSubscribedTopics": "No Subscribed Topics",
   "noSubscribedTopicsMessage": "You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.",
-  "signInToViewSubscribedTopics": "Sign in to view subscribed topics",
-  "youNeedToBeSignedInToViewSubscribedTopics": "You need to be signed in to view your subscribed topics",
   
   "noParticipatedTopics": "No Participated Topics",
   "topicsYouParticipatedIn": "Topics that you have participated in will be shown here.",
-  "signInToViewParticipatedTopics": "Sign in to view participated topics",
-  "youNeedToBeSignedInToViewParticipatedTopics": "You need to be signed in to view topics you have participated in",
   
   "latest": "Latest",
   "unread": "Unread",
@@ -147,9 +137,6 @@
   
   "appSettings": "App Settings",
   "searchSites": "Search Sites",
-  "language": "Language",
-  "systemDefault": "System Default",
-  "followSystemLanguage": "Follow system language",
   
   "all": "All",
   "topicsOnly": "Topics Only",
@@ -190,20 +177,15 @@
   "youCannotReplyToThisThread": "You cannot reply to this thread",
   "pleaseWaitForThreadToLoad": "Please wait for the thread to load",
   
-  "softDelete": "Soft Delete",
   "postCanBeRestoredLater": "Post can be restored later",
-  "hardDelete": "Hard Delete",
   "postWillBePermanentlyDeleted": "Post will be permanently deleted",
-  "reasonForDeletion": "Reason for deletion",
   "enterReasonForDeletingPost": "Enter the reason for deleting this post",
-  "pleaseEnterReasonForDeletion": "Please enter a reason for deletion",
   
   "reportPost": "Report Post",
   "pleaseProvideReasonForReporting": "Please provide a reason for reporting this post.",
   "reason": "Reason",
   "enterReasonForReportingPost": "Enter the reason for reporting this post",
   "pleaseEnterReason": "Please enter a reason",
-  "submitReport": "Submit Report",
   
   "selectedActions": "Selected actions:",
   "thisActionCannotBeUndone": "This action cannot be undone.",
@@ -233,7 +215,6 @@
   "newTopic": "New Topic",
   "markRead": "Mark Read",
   
-  "reportUser": "Report User",
   "pleaseSelectReasonForReportingUser": "Please select a reason for reporting this user.",
   "spamOrAdvertising": "Spam or advertising",
   "harassmentOrBullying": "Harassment or bullying",
@@ -243,10 +224,7 @@
   "pleaseSpecifyReason": "Please specify the reason",
   "enterReasonForReportingUser": "Enter the reason for reporting this user",
   "pleaseSelectReason": "Please select a reason",
-  "submitReport": "Submit Report",
   
-  "banUser": "Ban User",
-  "unbanUser": "Unban User",
   "pleaseSelectReasonForBanningUser": "Please select a reason for banning {username}",
   "@pleaseSelectReasonForBanningUser": {
     "description": "Message asking to select reason for banning user",
@@ -265,7 +243,6 @@
   "selectDate": "Select date",
   "unbanUser": "Unban User",
   
-  "moreOptions": "More options",
   "leaveConversation": "Leave conversation",
   "reportConversation": "Report conversation",
   
@@ -284,9 +261,6 @@
     }
   },
   "confirmSpamClean": "Confirm Spam Clean",
-  "handleThreads": "Handle Threads",
-  "deleteMessages": "Delete Messages",
-  "deleteConversations": "Delete Conversations",
   
   "myForums": "My Forums",
   "recentlyVisited": "Recently Visited",
@@ -311,18 +285,13 @@
   "deletePost": "Delete Post",
   "loginRequired": "Login Required",
   
-  "spamCleaner": "Spam Cleaner",
   "tryAgain": "Try Again",
-  "sendMessage": "Send Message",
   "memberSince": "Member Since",
   "lastActivity": "Last Activity",
   "likesReceived": "Likes Received",
   "likesGiven": "Likes Given",
-  "showMore": "Show More",
-  "cleanSpam": "Clean Spam",
   
   "failedToSaveMessage": "Failed to save message",
-  "failedToSaveConversation": "Failed to save conversation",
   "failedToSaveSetting": "Failed to save setting",
   "failedToSavePost": "Failed to save post",
   "errorLoadingSites": "Error loading sites: {error}",
@@ -352,7 +321,6 @@
   "searchForMembers": "Search for members",
   "enterUsernameToFindMembers": "Enter a username to find forum members",
   "noMembersOnline": "No members are currently online",
-  "enterUsernameToSearch": "Enter username to search...",
   "lookupMembers": "Lookup Members",
   "addMembers": "Add Members",
   "membersAddedSuccessfully": "Members added successfully",
@@ -424,7 +392,6 @@
       }
     }
   },
-  "signInToViewMessages": "Sign in to view messages",
   "youNeedToBeSignedInToViewConversations": "You need to be signed in to view your conversations.",
   "errorLoadingConversations": "Error loading conversations: {error}",
   "@errorLoadingConversations": {
@@ -539,8 +506,6 @@
   "removeAttachment": "Remove Attachment",
   "areYouSureYouWantToRemoveThisAttachment": "Are you sure you want to remove this attachment?",
   "none": "None",
-  "attachFile": "Attach File",
-  "uploadImage": "Upload Image",
   "formatting": "Formatting",
   "bold": "Bold",
   "italic": "Italic",
@@ -564,13 +529,6 @@
       }
     }
   },
-  "markAsUnread": "Mark as unread",
-  "invite": "Invite",
-  "welcomeBack": "Welcome Back",
-  "signInToAccessYourProfile": "Sign in to access your profile and manage your account",
-  "enterYourUsername": "Enter your username",
-  "enterYourPassword": "Enter your password",
-  "dontHaveAnAccount": "Don't have an account?",
   "enterKeywordsToSearchTopics": "Enter keywords to search topics...",
   "pleaseFillInAllRequiredFields": "Please fill in all required fields",
   "undelete": "Undelete",

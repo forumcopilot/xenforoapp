@@ -184,13 +184,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorMessageCopiedToClipboard => 'エラーメッセージをクリップボードにコピーしました';
 
   @override
-  String get dismiss => '閉じる';
-
-  @override
   String get cancel => 'キャンセル';
-
-  @override
-  String get tryAgain => '再試行';
 
   @override
   String get getHelp => 'ヘルプを取得';
@@ -266,13 +260,6 @@ class AppLocalizationsJa extends AppLocalizations {
       '表示する最新トピックがありません。後で新しいディスカッションを確認してください。';
 
   @override
-  String get signInToViewLatestTopics => '最新トピックを表示するにはログインしてください';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics =>
-      '最新トピックを表示するにはログインする必要があります';
-
-  @override
   String get noUnreadTopics => '未読トピックなし';
 
   @override
@@ -282,13 +269,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get youAreAllCaughtUp => 'すべて確認済みです！';
 
   @override
-  String get signInToViewUnreadTopics => '未読トピックを表示するにはログインしてください';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics =>
-      '未読トピックを表示するにはログインする必要があります';
-
-  @override
   String get noSubscribedTopics => '購読トピックなし';
 
   @override
@@ -296,24 +276,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'トピックを購読していません。トピックの星ボタンをタップして購読し、新しい更新の通知を受け取ります。';
 
   @override
-  String get signInToViewSubscribedTopics => '購読トピックを表示するにはログインしてください';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      '購読トピックを表示するにはログインする必要があります';
-
-  @override
   String get noParticipatedTopics => '参加トピックなし';
 
   @override
   String get topicsYouParticipatedIn => '参加したトピックがここに表示されます。';
-
-  @override
-  String get signInToViewParticipatedTopics => '参加トピックを表示するにはログインしてください';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      '参加したトピックを表示するにはログインする必要があります';
 
   @override
   String get latest => '最新';
@@ -359,15 +325,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchSites => 'サイトを検索';
 
   @override
-  String get language => '言語';
-
-  @override
-  String get systemDefault => 'システムデフォルト';
-
-  @override
-  String get followSystemLanguage => 'システムの言語に従う';
-
-  @override
   String get all => 'すべて';
 
   @override
@@ -410,25 +367,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseWaitForThreadToLoad => 'スレッドの読み込みを待ってください';
 
   @override
-  String get softDelete => 'ソフト削除';
-
-  @override
   String get postCanBeRestoredLater => '投稿は後で復元できます';
-
-  @override
-  String get hardDelete => '完全削除';
 
   @override
   String get postWillBePermanentlyDeleted => '投稿は完全に削除されます';
 
   @override
-  String get reasonForDeletion => '削除理由';
-
-  @override
   String get enterReasonForDeletingPost => 'この投稿を削除する理由を入力してください';
-
-  @override
-  String get pleaseEnterReasonForDeletion => '削除理由を入力してください';
 
   @override
   String get reportPost => '投稿を報告';
@@ -444,9 +389,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => '理由を入力してください';
-
-  @override
-  String get submitReport => '報告を送信';
 
   @override
   String get selectedActions => '選択されたアクション:';
@@ -472,9 +414,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get markRead => '既読にする';
-
-  @override
-  String get reportUser => 'ユーザーを報告';
 
   @override
   String get pleaseSelectReasonForReportingUser => 'このユーザーを報告する理由を選択してください。';
@@ -504,12 +443,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseSelectReason => '理由を選択してください';
 
   @override
-  String get banUser => 'ユーザーを禁止';
-
-  @override
-  String get unbanUser => 'ユーザーの禁止を解除';
-
-  @override
   String pleaseSelectReasonForBanningUser(String username) {
     return '$username を禁止する理由を選択してください';
   }
@@ -536,7 +469,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectDate => '日付を選択';
 
   @override
-  String get moreOptions => 'その他のオプション';
+  String get unbanUser => 'ユーザーの禁止を解除';
 
   @override
   String get leaveConversation => '会話を退出';
@@ -563,15 +496,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get confirmSpamClean => 'スパムクリーンを確認';
-
-  @override
-  String get handleThreads => 'スレッドを処理';
-
-  @override
-  String get deleteMessages => 'メッセージを削除';
-
-  @override
-  String get deleteConversations => '会話を削除';
 
   @override
   String get myForums => 'マイフォーラム';
@@ -609,10 +533,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loginRequired => 'ログインが必要です';
 
   @override
-  String get spamCleaner => 'スパムクリーナー';
-
-  @override
-  String get sendMessage => 'メッセージを送信';
+  String get tryAgain => '再試行';
 
   @override
   String get memberSince => 'メンバー登録日';
@@ -627,16 +548,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get likesGiven => '与えたいいね';
 
   @override
-  String get showMore => 'もっと見る';
-
-  @override
-  String get cleanSpam => 'スパムをクリーンアップ';
-
-  @override
   String get failedToSaveMessage => 'メッセージの保存に失敗しました';
-
-  @override
-  String get failedToSaveConversation => '会話の保存に失敗しました';
 
   @override
   String get failedToSaveSetting => '設定の保存に失敗しました';
@@ -676,9 +588,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noMembersOnline => '現在オンラインのメンバーはいません';
 
   @override
-  String get enterUsernameToSearch => '検索するユーザー名を入力...';
-
-  @override
   String get lookupMembers => 'メンバーを検索';
 
   @override
@@ -715,6 +624,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get search => '検索';
 
   @override
+  String get moreOptions => 'その他のオプション';
+
+  @override
   String get logout => 'ログアウト';
 
   @override
@@ -745,6 +657,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get add => '追加';
 
   @override
+  String get dismiss => '閉じる';
+
+  @override
   String get retry => '再試行';
 
   @override
@@ -773,9 +688,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String failedToLikePost(String error) {
     return '投稿にいいねできませんでした: $error';
   }
-
-  @override
-  String get signInToViewMessages => 'メッセージを表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
@@ -812,6 +724,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get trySearchingWithDifferentUsername => '別のユーザー名で検索してみてください';
+
+  @override
+  String get enterUsernameToSearch => '検索するユーザー名を入力...';
 
   @override
   String get noSitesFound => 'サイトが見つかりませんでした。';
@@ -878,8 +793,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectActionsToPerform => '実行するアクションを選択:';
 
   @override
+  String get handleThreads => 'スレッドを処理';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       '管理者設定に基づいてスレッドを移動または削除';
+
+  @override
+  String get deleteMessages => 'メッセージを削除';
+
+  @override
+  String get deleteConversations => '会話を削除';
 
   @override
   String get messageUpdatedSuccessfully => 'メッセージが正常に更新されました';
@@ -911,12 +835,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get none => 'なし';
-
-  @override
-  String get attachFile => 'ファイルを添付';
-
-  @override
-  String get uploadImage => '画像をアップロード';
 
   @override
   String get formatting => '書式設定';
@@ -966,6 +884,43 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics => 'トピックを検索するキーワードを入力...';
+
+  @override
+  String get pleaseFillInAllRequiredFields => 'すべての必須フィールドに入力してください';
+
+  @override
+  String get undelete => '復元';
+
+  @override
+  String get signInToViewUnreadTopics => '未読トピックを表示するにはログインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      '未読トピックを表示するにはログインする必要があります';
+
+  @override
+  String get signInToViewSubscribedTopics => '購読トピックを表示するにはログインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      '購読トピックを表示するにはログインする必要があります';
+
+  @override
+  String get signInToViewParticipatedTopics => '参加トピックを表示するにはログインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      '参加したトピックを表示するにはログインする必要があります';
+
+  @override
+  String get signInToViewLatestTopics => '最新トピックを表示するにはログインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics =>
+      '最新トピックを表示するにはログインする必要があります';
+
+  @override
   String get markAsUnread => '未読としてマーク';
 
   @override
@@ -985,15 +940,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => 'アカウントをお持ちでないですか？';
-
-  @override
-  String get enterKeywordsToSearchTopics => 'トピックを検索するキーワードを入力...';
-
-  @override
-  String get pleaseFillInAllRequiredFields => 'すべての必須フィールドに入力してください';
-
-  @override
-  String get undelete => '復元';
 
   @override
   String get refresh => '更新';
@@ -1110,6 +1056,15 @@ class AppLocalizationsJa extends AppLocalizations {
       'キーワードまたはドメイン名を入力してフォーラムを検索';
 
   @override
+  String get language => '言語';
+
+  @override
+  String get systemDefault => 'システムデフォルト';
+
+  @override
+  String get followSystemLanguage => 'システムの言語に従う';
+
+  @override
   String get appearance => '外観';
 
   @override
@@ -1136,10 +1091,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsCategoriesWillAppearHere => '設定カテゴリは利用可能になるとここに表示されます。';
 
   @override
+  String get spamCleaner => 'スパムクリーナー';
+
+  @override
   String get unableToLoadProfile => 'プロフィールを読み込めません';
 
   @override
   String get banned => '禁止';
+
+  @override
+  String get sendMessage => 'メッセージを送信';
+
+  @override
+  String get showMore => 'もっと見る';
+
+  @override
+  String get reportUser => 'ユーザーを報告';
+
+  @override
+  String get submitReport => '報告を送信';
 
   @override
   String get reportSubmittedSuccessfully => '報告が正常に送信されました';
@@ -1157,16 +1127,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteTopic => 'トピックを削除';
 
   @override
+  String get softDelete => 'ソフト削除';
+
+  @override
   String get topicCanBeRestoredLater => 'トピックは後で復元できます';
+
+  @override
+  String get hardDelete => '完全削除';
 
   @override
   String get topicWillBePermanentlyDeleted => 'トピックは完全に削除されます';
 
   @override
+  String get reasonForDeletion => '削除理由';
+
+  @override
   String get enterReasonForDeletingTopic => 'このトピックを削除する理由を入力してください';
 
   @override
+  String get pleaseEnterReasonForDeletion => '削除理由を入力してください';
+
+  @override
   String get pleaseSelectEndDate => '終了日を選択してください';
+
+  @override
+  String get banUser => 'ユーザーを禁止';
 
   @override
   String get userBannedSuccessfully => 'ユーザーが正常に禁止されました';
@@ -1188,6 +1173,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get banTheUserAccount => 'ユーザーアカウントを禁止';
+
+  @override
+  String get cleanSpam => 'スパムをクリーンアップ';
 
   @override
   String get handledThreads => '処理されたスレッド';
@@ -1449,6 +1437,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get goBack => '戻る';
 
   @override
+  String get signInToViewMessages => 'メッセージを表示するにはログインしてください';
+
+  @override
   String get privateMessagesNotAvailable => 'プライベートメッセージは利用できません';
 
   @override
@@ -1500,6 +1491,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => '会話の保存に失敗しました';
+
+  @override
   String forumNotFound(String forumName) {
     return 'フォーラムが見つかりません: $forumName';
   }
@@ -1525,6 +1519,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get quotePost => '投稿を引用';
+
+  @override
+  String get attachFile => 'ファイルを添付';
+
+  @override
+  String get uploadImage => '画像をアップロード';
 
   @override
   String get translate => '翻訳';

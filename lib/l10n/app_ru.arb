@@ -78,9 +78,7 @@
   "copyToClipboard": "Копировать в буфер обмена",
   "copied": "Скопировано",
   "errorMessageCopiedToClipboard": "Сообщение об ошибке скопировано в буфер обмена",
-  "dismiss": "Закрыть",
   "cancel": "Отмена",
-  "tryAgain": "Попробовать снова",
   "getHelp": "Получить помощь",
   "somethingWentWrong": "Что-то пошло не так",
   "unexpectedErrorOccurred": "Произошла неожиданная ошибка. Пожалуйста, попробуйте снова.",
@@ -147,9 +145,6 @@
   
   "appSettings": "Настройки приложения",
   "searchSites": "Поиск сайтов",
-  "language": "Язык",
-  "systemDefault": "Системный по умолчанию",
-  "followSystemLanguage": "Следовать языку системы",
   
   "all": "Все",
   "topicsOnly": "Только темы",
@@ -190,20 +185,15 @@
   "youCannotReplyToThisThread": "Вы не можете ответить на эту тему",
   "pleaseWaitForThreadToLoad": "Пожалуйста, подождите, пока тема загрузится",
   
-  "softDelete": "Мягкое удаление",
   "postCanBeRestoredLater": "Сообщение можно восстановить позже",
-  "hardDelete": "Жесткое удаление",
   "postWillBePermanentlyDeleted": "Сообщение будет удалено навсегда",
-  "reasonForDeletion": "Причина удаления",
   "enterReasonForDeletingPost": "Введите причину удаления этого сообщения",
-  "pleaseEnterReasonForDeletion": "Пожалуйста, введите причину удаления",
   
   "reportPost": "Пожаловаться на сообщение",
   "pleaseProvideReasonForReporting": "Пожалуйста, укажите причину жалобы на это сообщение.",
   "reason": "Причина",
   "enterReasonForReportingPost": "Введите причину жалобы на это сообщение",
   "pleaseEnterReason": "Пожалуйста, введите причину",
-  "submitReport": "Отправить жалобу",
   
   "selectedActions": "Выбранные действия:",
   "thisActionCannotBeUndone": "Это действие нельзя отменить.",
@@ -230,7 +220,6 @@
   "newTopic": "Новая тема",
   "markRead": "Отметить как прочитанное",
   
-  "reportUser": "Пожаловаться на пользователя",
   "pleaseSelectReasonForReportingUser": "Пожалуйста, выберите причину жалобы на этого пользователя.",
   "spamOrAdvertising": "Спам или реклама",
   "harassmentOrBullying": "Преследование или издевательство",
@@ -241,7 +230,6 @@
   "enterReasonForReportingUser": "Введите причину жалобы на этого пользователя",
   "pleaseSelectReason": "Пожалуйста, выберите причину",
   
-  "banUser": "Заблокировать пользователя",
   "unbanUser": "Разблокировать пользователя",
   "pleaseSelectReasonForBanningUser": "Пожалуйста, выберите причину блокировки {username}",
   "@pleaseSelectReasonForBanningUser": {
@@ -260,7 +248,6 @@
   "banUntil": "Заблокировать до",
   "selectDate": "Выбрать дату",
   
-  "moreOptions": "Дополнительные опции",
   "leaveConversation": "Покинуть разговор",
   "reportConversation": "Пожаловаться на разговор",
   
@@ -306,18 +293,13 @@
   "deletePost": "Удалить Сообщение",
   "loginRequired": "Требуется Вход",
   
-  "spamCleaner": "Очиститель Спама",
   "tryAgain": "Попробовать Снова",
-  "sendMessage": "Отправить Сообщение",
   "memberSince": "Участник С",
   "lastActivity": "Последняя Активность",
   "likesReceived": "Полученные Лайки",
   "likesGiven": "Данные Лайки",
-  "showMore": "Показать Больше",
-  "cleanSpam": "Очистить Спам",
   
   "failedToSaveMessage": "Ошибка при сохранении сообщения",
-  "failedToSaveConversation": "Ошибка при сохранении разговора",
   "failedToSaveSetting": "Ошибка при сохранении настройки",
   "failedToSavePost": "Ошибка при сохранении сообщения",
   "errorLoadingSites": "Ошибка при загрузке сайтов: {error}",
@@ -347,7 +329,6 @@
   "searchForMembers": "Поиск участников",
   "enterUsernameToFindMembers": "Введите имя пользователя, чтобы найти участников форума",
   "noMembersOnline": "В настоящее время нет участников в сети",
-  "enterUsernameToSearch": "Введите имя пользователя для поиска...",
   "lookupMembers": "Поиск Участников",
   "addMembers": "Добавить Участников",
   "membersAddedSuccessfully": "Участники успешно добавлены",
@@ -419,7 +400,6 @@
       }
     }
   },
-  "signInToViewMessages": "Войдите, чтобы просмотреть сообщения",
   "youNeedToBeSignedInToViewConversations": "Вам нужно войти, чтобы просмотреть ваши разговоры.",
   "errorLoadingConversations": "Ошибка при загрузке разговоров: {error}",
   "@errorLoadingConversations": {

@@ -446,23 +446,11 @@ abstract class AppLocalizations {
   /// **'Error message copied to clipboard'**
   String get errorMessageCopiedToClipboard;
 
-  /// No description provided for @dismiss.
-  ///
-  /// In en, this message translates to:
-  /// **'Dismiss'**
-  String get dismiss;
-
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
-
-  /// No description provided for @tryAgain.
-  ///
-  /// In en, this message translates to:
-  /// **'Try Again'**
-  String get tryAgain;
 
   /// No description provided for @getHelp.
   ///
@@ -596,18 +584,6 @@ abstract class AppLocalizations {
   /// **'There are no recent topics to display. Check back later for new discussions.'**
   String get noRecentTopicsToDisplay;
 
-  /// No description provided for @signInToViewLatestTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to view latest topics'**
-  String get signInToViewLatestTopics;
-
-  /// No description provided for @youNeedToBeSignedInToViewLatestTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'You need to be signed in to view latest topics.'**
-  String get youNeedToBeSignedInToViewLatestTopics;
-
   /// No description provided for @noUnreadTopics.
   ///
   /// In en, this message translates to:
@@ -626,18 +602,6 @@ abstract class AppLocalizations {
   /// **'You\'re all caught up!'**
   String get youAreAllCaughtUp;
 
-  /// No description provided for @signInToViewUnreadTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to view unread topics'**
-  String get signInToViewUnreadTopics;
-
-  /// No description provided for @youNeedToBeSignedInToViewUnreadTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'You need to be signed in to view your unread topics.'**
-  String get youNeedToBeSignedInToViewUnreadTopics;
-
   /// No description provided for @noSubscribedTopics.
   ///
   /// In en, this message translates to:
@@ -650,18 +614,6 @@ abstract class AppLocalizations {
   /// **'You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.'**
   String get noSubscribedTopicsMessage;
 
-  /// No description provided for @signInToViewSubscribedTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to view subscribed topics'**
-  String get signInToViewSubscribedTopics;
-
-  /// No description provided for @youNeedToBeSignedInToViewSubscribedTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'You need to be signed in to view your subscribed topics.'**
-  String get youNeedToBeSignedInToViewSubscribedTopics;
-
   /// No description provided for @noParticipatedTopics.
   ///
   /// In en, this message translates to:
@@ -673,18 +625,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Topics that you have participated in will be shown here.'**
   String get topicsYouParticipatedIn;
-
-  /// No description provided for @signInToViewParticipatedTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to view participated topics'**
-  String get signInToViewParticipatedTopics;
-
-  /// No description provided for @youNeedToBeSignedInToViewParticipatedTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'You need to be signed in to view topics you have participated in.'**
-  String get youNeedToBeSignedInToViewParticipatedTopics;
 
   /// No description provided for @latest.
   ///
@@ -764,24 +704,6 @@ abstract class AppLocalizations {
   /// **'Search Sites'**
   String get searchSites;
 
-  /// Settings section title for language selection
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get language;
-
-  /// Option to use system default settings
-  ///
-  /// In en, this message translates to:
-  /// **'System Default'**
-  String get systemDefault;
-
-  /// Description for system default language option
-  ///
-  /// In en, this message translates to:
-  /// **'Follow system language'**
-  String get followSystemLanguage;
-
   /// No description provided for @all.
   ///
   /// In en, this message translates to:
@@ -854,23 +776,11 @@ abstract class AppLocalizations {
   /// **'Please wait for the thread to load'**
   String get pleaseWaitForThreadToLoad;
 
-  /// Option for soft delete (can be restored)
-  ///
-  /// In en, this message translates to:
-  /// **'Soft Delete'**
-  String get softDelete;
-
   /// No description provided for @postCanBeRestoredLater.
   ///
   /// In en, this message translates to:
   /// **'Post can be restored later'**
   String get postCanBeRestoredLater;
-
-  /// Option for hard delete (permanent)
-  ///
-  /// In en, this message translates to:
-  /// **'Hard Delete'**
-  String get hardDelete;
 
   /// No description provided for @postWillBePermanentlyDeleted.
   ///
@@ -878,23 +788,11 @@ abstract class AppLocalizations {
   /// **'Post will be permanently deleted'**
   String get postWillBePermanentlyDeleted;
 
-  /// Label for deletion reason field
-  ///
-  /// In en, this message translates to:
-  /// **'Reason for deletion'**
-  String get reasonForDeletion;
-
   /// No description provided for @enterReasonForDeletingPost.
   ///
   /// In en, this message translates to:
   /// **'Enter the reason for deleting this post'**
   String get enterReasonForDeletingPost;
-
-  /// Validation message for deletion reason
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a reason for deletion'**
-  String get pleaseEnterReasonForDeletion;
 
   /// No description provided for @reportPost.
   ///
@@ -925,12 +823,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a reason'**
   String get pleaseEnterReason;
-
-  /// Button to submit a report
-  ///
-  /// In en, this message translates to:
-  /// **'Submit Report'**
-  String get submitReport;
 
   /// No description provided for @selectedActions.
   ///
@@ -973,12 +865,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark Read'**
   String get markRead;
-
-  /// Title for report user dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Report User'**
-  String get reportUser;
 
   /// No description provided for @pleaseSelectReasonForReportingUser.
   ///
@@ -1034,18 +920,6 @@ abstract class AppLocalizations {
   /// **'Please select a reason'**
   String get pleaseSelectReason;
 
-  /// Button to ban a user
-  ///
-  /// In en, this message translates to:
-  /// **'Ban User'**
-  String get banUser;
-
-  /// No description provided for @unbanUser.
-  ///
-  /// In en, this message translates to:
-  /// **'Unban User'**
-  String get unbanUser;
-
   /// Message asking to select reason for banning user
   ///
   /// In en, this message translates to:
@@ -1094,11 +968,11 @@ abstract class AppLocalizations {
   /// **'Select date'**
   String get selectDate;
 
-  /// No description provided for @moreOptions.
+  /// No description provided for @unbanUser.
   ///
   /// In en, this message translates to:
-  /// **'More options'**
-  String get moreOptions;
+  /// **'Unban User'**
+  String get unbanUser;
 
   /// No description provided for @leaveConversation.
   ///
@@ -1147,24 +1021,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm Spam Clean'**
   String get confirmSpamClean;
-
-  /// No description provided for @handleThreads.
-  ///
-  /// In en, this message translates to:
-  /// **'Handle Threads'**
-  String get handleThreads;
-
-  /// No description provided for @deleteMessages.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete Messages'**
-  String get deleteMessages;
-
-  /// No description provided for @deleteConversations.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete Conversations'**
-  String get deleteConversations;
 
   /// No description provided for @myForums.
   ///
@@ -1232,17 +1088,11 @@ abstract class AppLocalizations {
   /// **'Login Required'**
   String get loginRequired;
 
-  /// Menu item for spam cleaner tool
+  /// No description provided for @tryAgain.
   ///
   /// In en, this message translates to:
-  /// **'Spam Cleaner'**
-  String get spamCleaner;
-
-  /// Button to send a message to a user
-  ///
-  /// In en, this message translates to:
-  /// **'Send Message'**
-  String get sendMessage;
+  /// **'Try Again'**
+  String get tryAgain;
 
   /// No description provided for @memberSince.
   ///
@@ -1268,29 +1118,11 @@ abstract class AppLocalizations {
   /// **'Likes Given'**
   String get likesGiven;
 
-  /// Button to show more content
-  ///
-  /// In en, this message translates to:
-  /// **'Show More'**
-  String get showMore;
-
-  /// Button to execute spam clean
-  ///
-  /// In en, this message translates to:
-  /// **'Clean Spam'**
-  String get cleanSpam;
-
   /// No description provided for @failedToSaveMessage.
   ///
   /// In en, this message translates to:
   /// **'Failed to save message'**
   String get failedToSaveMessage;
-
-  /// Error message when saving conversation fails
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to save conversation'**
-  String get failedToSaveConversation;
 
   /// No description provided for @failedToSaveSetting.
   ///
@@ -1358,12 +1190,6 @@ abstract class AppLocalizations {
   /// **'No members are currently online'**
   String get noMembersOnline;
 
-  /// No description provided for @enterUsernameToSearch.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter username to search...'**
-  String get enterUsernameToSearch;
-
   /// No description provided for @lookupMembers.
   ///
   /// In en, this message translates to:
@@ -1417,6 +1243,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search'**
   String get search;
+
+  /// No description provided for @moreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get moreOptions;
 
   /// No description provided for @logout.
   ///
@@ -1478,6 +1310,12 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get add;
 
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
@@ -1525,12 +1363,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to like post: {error}'**
   String failedToLikePost(String error);
-
-  /// Message asking user to sign in to view messages
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in to view messages'**
-  String get signInToViewMessages;
 
   /// No description provided for @youNeedToBeSignedInToViewConversations.
   ///
@@ -1585,6 +1417,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try searching with a different username'**
   String get trySearchingWithDifferentUsername;
+
+  /// No description provided for @enterUsernameToSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter username to search...'**
+  String get enterUsernameToSearch;
 
   /// No description provided for @noSitesFound.
   ///
@@ -1706,11 +1544,29 @@ abstract class AppLocalizations {
   /// **'Select the actions to perform:'**
   String get selectActionsToPerform;
 
+  /// No description provided for @handleThreads.
+  ///
+  /// In en, this message translates to:
+  /// **'Handle Threads'**
+  String get handleThreads;
+
   /// No description provided for @moveOrDeleteThreadsBasedOnAdminSettings.
   ///
   /// In en, this message translates to:
   /// **'Move or delete threads based on admin settings'**
   String get moveOrDeleteThreadsBasedOnAdminSettings;
+
+  /// No description provided for @deleteMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Messages'**
+  String get deleteMessages;
+
+  /// No description provided for @deleteConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Conversations'**
+  String get deleteConversations;
 
   /// No description provided for @messageUpdatedSuccessfully.
   ///
@@ -1759,18 +1615,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get none;
-
-  /// Accessibility label for attach file button
-  ///
-  /// In en, this message translates to:
-  /// **'Attach file'**
-  String get attachFile;
-
-  /// Accessibility label for upload image button
-  ///
-  /// In en, this message translates to:
-  /// **'Upload image'**
-  String get uploadImage;
 
   /// No description provided for @formatting.
   ///
@@ -1862,6 +1706,72 @@ abstract class AppLocalizations {
   /// **'Participants ({count})'**
   String participants(int count);
 
+  /// No description provided for @enterKeywordsToSearchTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter keywords to search topics...'**
+  String get enterKeywordsToSearchTopics;
+
+  /// No description provided for @pleaseFillInAllRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required fields'**
+  String get pleaseFillInAllRequiredFields;
+
+  /// No description provided for @undelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Undelete'**
+  String get undelete;
+
+  /// No description provided for @signInToViewUnreadTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view unread topics'**
+  String get signInToViewUnreadTopics;
+
+  /// No description provided for @youNeedToBeSignedInToViewUnreadTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view your unread topics.'**
+  String get youNeedToBeSignedInToViewUnreadTopics;
+
+  /// No description provided for @signInToViewSubscribedTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view subscribed topics'**
+  String get signInToViewSubscribedTopics;
+
+  /// No description provided for @youNeedToBeSignedInToViewSubscribedTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view your subscribed topics.'**
+  String get youNeedToBeSignedInToViewSubscribedTopics;
+
+  /// No description provided for @signInToViewParticipatedTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view participated topics'**
+  String get signInToViewParticipatedTopics;
+
+  /// No description provided for @youNeedToBeSignedInToViewParticipatedTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view topics you have participated in.'**
+  String get youNeedToBeSignedInToViewParticipatedTopics;
+
+  /// No description provided for @signInToViewLatestTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view latest topics'**
+  String get signInToViewLatestTopics;
+
+  /// No description provided for @youNeedToBeSignedInToViewLatestTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view latest topics.'**
+  String get youNeedToBeSignedInToViewLatestTopics;
+
   /// No description provided for @markAsUnread.
   ///
   /// In en, this message translates to:
@@ -1903,24 +1813,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t have an account?'**
   String get dontHaveAnAccount;
-
-  /// No description provided for @enterKeywordsToSearchTopics.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter keywords to search topics...'**
-  String get enterKeywordsToSearchTopics;
-
-  /// No description provided for @pleaseFillInAllRequiredFields.
-  ///
-  /// In en, this message translates to:
-  /// **'Please fill in all required fields'**
-  String get pleaseFillInAllRequiredFields;
-
-  /// No description provided for @undelete.
-  ///
-  /// In en, this message translates to:
-  /// **'Undelete'**
-  String get undelete;
 
   /// Menu item to refresh content
   ///
@@ -2090,6 +1982,24 @@ abstract class AppLocalizations {
   /// **'Enter keywords or domain names to find forums'**
   String get enterKeywordsOrDomainNamesToFindForums;
 
+  /// Settings section title for language selection
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Option to use system default settings
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get systemDefault;
+
+  /// Description for system default language option
+  ///
+  /// In en, this message translates to:
+  /// **'Follow system language'**
+  String get followSystemLanguage;
+
   /// Settings section title for appearance/theme
   ///
   /// In en, this message translates to:
@@ -2138,6 +2048,12 @@ abstract class AppLocalizations {
   /// **'Settings categories will appear here when available.'**
   String get settingsCategoriesWillAppearHere;
 
+  /// Menu item for spam cleaner tool
+  ///
+  /// In en, this message translates to:
+  /// **'Spam Cleaner'**
+  String get spamCleaner;
+
   /// Error message when profile cannot be loaded
   ///
   /// In en, this message translates to:
@@ -2149,6 +2065,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'BANNED'**
   String get banned;
+
+  /// Button to send a message to a user
+  ///
+  /// In en, this message translates to:
+  /// **'Send Message'**
+  String get sendMessage;
+
+  /// Button to show more content
+  ///
+  /// In en, this message translates to:
+  /// **'Show More'**
+  String get showMore;
+
+  /// Title for report user dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Report User'**
+  String get reportUser;
+
+  /// Button to submit a report
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
 
   /// Success message after submitting a report
   ///
@@ -2180,11 +2120,23 @@ abstract class AppLocalizations {
   /// **'Delete Topic'**
   String get deleteTopic;
 
+  /// Option for soft delete (can be restored)
+  ///
+  /// In en, this message translates to:
+  /// **'Soft Delete'**
+  String get softDelete;
+
   /// Description for soft delete option
   ///
   /// In en, this message translates to:
   /// **'Topic can be restored later'**
   String get topicCanBeRestoredLater;
+
+  /// Option for hard delete (permanent)
+  ///
+  /// In en, this message translates to:
+  /// **'Hard Delete'**
+  String get hardDelete;
 
   /// Description for hard delete option
   ///
@@ -2192,17 +2144,35 @@ abstract class AppLocalizations {
   /// **'Topic will be permanently deleted'**
   String get topicWillBePermanentlyDeleted;
 
+  /// Label for deletion reason field
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for deletion'**
+  String get reasonForDeletion;
+
   /// Hint text for deletion reason field
   ///
   /// In en, this message translates to:
   /// **'Enter the reason for deleting this topic'**
   String get enterReasonForDeletingTopic;
 
+  /// Validation message for deletion reason
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a reason for deletion'**
+  String get pleaseEnterReasonForDeletion;
+
   /// Error message when end date is not selected
   ///
   /// In en, this message translates to:
   /// **'Please select an end date'**
   String get pleaseSelectEndDate;
+
+  /// Button to ban a user
+  ///
+  /// In en, this message translates to:
+  /// **'Ban User'**
+  String get banUser;
 
   /// Success message after banning a user
   ///
@@ -2245,6 +2215,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ban the user account'**
   String get banTheUserAccount;
+
+  /// Button to execute spam clean
+  ///
+  /// In en, this message translates to:
+  /// **'Clean Spam'**
+  String get cleanSpam;
 
   /// Action performed: handled threads
   ///
@@ -2708,6 +2684,12 @@ abstract class AppLocalizations {
   /// **'Go Back'**
   String get goBack;
 
+  /// Message asking user to sign in to view messages
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view messages'**
+  String get signInToViewMessages;
+
   /// Message when private messages are not available
   ///
   /// In en, this message translates to:
@@ -2786,6 +2768,12 @@ abstract class AppLocalizations {
   /// **'Failed to navigate to {forumName}'**
   String failedToNavigateToForumName(String forumName);
 
+  /// Error message when saving conversation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save conversation'**
+  String get failedToSaveConversation;
+
   /// Error message when forum is not found
   ///
   /// In en, this message translates to:
@@ -2827,6 +2815,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quote post'**
   String get quotePost;
+
+  /// Accessibility label for attach file button
+  ///
+  /// In en, this message translates to:
+  /// **'Attach file'**
+  String get attachFile;
+
+  /// Accessibility label for upload image button
+  ///
+  /// In en, this message translates to:
+  /// **'Upload image'**
+  String get uploadImage;
 
   /// Menu item to translate thread content
   ///

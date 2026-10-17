@@ -196,13 +196,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сообщение об ошибке скопировано в буфер обмена';
 
   @override
-  String get dismiss => 'Закрыть';
-
-  @override
   String get cancel => 'Отмена';
-
-  @override
-  String get tryAgain => 'Попробовать Снова';
 
   @override
   String get getHelp => 'Получить помощь';
@@ -281,14 +275,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Нет последних тем для отображения. Вернитесь позже для новых обсуждений.';
 
   @override
-  String get signInToViewLatestTopics =>
-      'Войдите, чтобы просмотреть последние темы';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics =>
-      'Вам нужно войти, чтобы просмотреть последние темы';
-
-  @override
   String get noUnreadTopics => 'Нет непрочитанных тем';
 
   @override
@@ -299,14 +285,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get youAreAllCaughtUp => 'Вы все просмотрели!';
 
   @override
-  String get signInToViewUnreadTopics =>
-      'Войдите, чтобы просмотреть непрочитанные темы';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics =>
-      'Вам нужно войти, чтобы просмотреть ваши непрочитанные темы';
-
-  @override
   String get noSubscribedTopics => 'Нет подписанных тем';
 
   @override
@@ -314,27 +292,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Вы не подписались ни на одну тему. Нажмите кнопку звездочки на теме, чтобы подписаться и получать уведомления о новых обновлениях.';
 
   @override
-  String get signInToViewSubscribedTopics =>
-      'Войдите, чтобы просмотреть подписанные темы';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Вам нужно войти, чтобы просмотреть ваши подписанные темы';
-
-  @override
   String get noParticipatedTopics => 'Нет тем с участием';
 
   @override
   String get topicsYouParticipatedIn =>
       'Темы, в которых вы участвовали, будут показаны здесь.';
-
-  @override
-  String get signInToViewParticipatedTopics =>
-      'Войдите, чтобы просмотреть темы с участием';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'Вам нужно войти, чтобы просмотреть темы, в которых вы участвовали';
 
   @override
   String get latest => 'Последние';
@@ -380,15 +342,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get searchSites => 'Поиск сайтов';
 
   @override
-  String get language => 'Язык';
-
-  @override
-  String get systemDefault => 'По умолчанию системы';
-
-  @override
-  String get followSystemLanguage => 'Следовать языку системы';
-
-  @override
   String get all => 'Все';
 
   @override
@@ -432,27 +385,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Пожалуйста, подождите, пока тема загрузится';
 
   @override
-  String get softDelete => 'Мягкое удаление';
-
-  @override
   String get postCanBeRestoredLater => 'Сообщение можно восстановить позже';
-
-  @override
-  String get hardDelete => 'Жёсткое удаление';
 
   @override
   String get postWillBePermanentlyDeleted => 'Сообщение будет удалено навсегда';
 
   @override
-  String get reasonForDeletion => 'Причина удаления';
-
-  @override
   String get enterReasonForDeletingPost =>
       'Введите причину удаления этого сообщения';
-
-  @override
-  String get pleaseEnterReasonForDeletion =>
-      'Пожалуйста, введите причину удаления';
 
   @override
   String get reportPost => 'Пожаловаться на сообщение';
@@ -470,9 +410,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => 'Пожалуйста, введите причину';
-
-  @override
-  String get submitReport => 'Отправить жалобу';
 
   @override
   String get selectedActions => 'Выбранные действия:';
@@ -498,9 +435,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get markRead => 'Отметить как прочитанное';
-
-  @override
-  String get reportUser => 'Пожаловаться на пользователя';
 
   @override
   String get pleaseSelectReasonForReportingUser =>
@@ -533,12 +467,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pleaseSelectReason => 'Пожалуйста, выберите причину';
 
   @override
-  String get banUser => 'Заблокировать пользователя';
-
-  @override
-  String get unbanUser => 'Разблокировать пользователя';
-
-  @override
   String pleaseSelectReasonForBanningUser(String username) {
     return 'Пожалуйста, выберите причину блокировки $username';
   }
@@ -568,7 +496,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectDate => 'Выбрать дату';
 
   @override
-  String get moreOptions => 'Дополнительные опции';
+  String get unbanUser => 'Разблокировать пользователя';
 
   @override
   String get leaveConversation => 'Покинуть разговор';
@@ -595,15 +523,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get confirmSpamClean => 'Подтвердить очистку спама';
-
-  @override
-  String get handleThreads => 'Управление темами';
-
-  @override
-  String get deleteMessages => 'Удалить сообщения';
-
-  @override
-  String get deleteConversations => 'Удалить разговоры';
 
   @override
   String get myForums => 'Мои Форумы';
@@ -642,10 +561,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginRequired => 'Требуется Вход';
 
   @override
-  String get spamCleaner => 'Очистка спама';
-
-  @override
-  String get sendMessage => 'Отправить сообщение';
+  String get tryAgain => 'Попробовать Снова';
 
   @override
   String get memberSince => 'Участник С';
@@ -660,16 +576,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get likesGiven => 'Данные Лайки';
 
   @override
-  String get showMore => 'Показать больше';
-
-  @override
-  String get cleanSpam => 'Очистить спам';
-
-  @override
   String get failedToSaveMessage => 'Ошибка при сохранении сообщения';
-
-  @override
-  String get failedToSaveConversation => 'Не удалось сохранить разговор';
 
   @override
   String get failedToSaveSetting => 'Ошибка при сохранении настройки';
@@ -710,9 +617,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noMembersOnline => 'В настоящее время нет участников в сети';
 
   @override
-  String get enterUsernameToSearch => 'Введите имя пользователя для поиска...';
-
-  @override
   String get lookupMembers => 'Поиск Участников';
 
   @override
@@ -750,6 +654,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get search => 'Поиск';
 
   @override
+  String get moreOptions => 'Дополнительные опции';
+
+  @override
   String get logout => 'Выйти';
 
   @override
@@ -778,6 +685,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get add => 'Добавить';
+
+  @override
+  String get dismiss => 'Закрыть';
 
   @override
   String get retry => 'Повторить';
@@ -809,9 +719,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String failedToLikePost(String error) {
     return 'Ошибка при лайке сообщения: $error';
   }
-
-  @override
-  String get signInToViewMessages => 'Войдите, чтобы просмотреть сообщения';
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
@@ -851,6 +758,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get trySearchingWithDifferentUsername =>
       'Попробуйте поискать с другим именем пользователя';
+
+  @override
+  String get enterUsernameToSearch => 'Введите имя пользователя для поиска...';
 
   @override
   String get noSitesFound => 'Сайты не найдены.';
@@ -919,8 +829,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectActionsToPerform => 'Выберите действия для выполнения:';
 
   @override
+  String get handleThreads => 'Управление темами';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       'Переместить или удалить темы на основе настроек администратора';
+
+  @override
+  String get deleteMessages => 'Удалить сообщения';
+
+  @override
+  String get deleteConversations => 'Удалить разговоры';
 
   @override
   String get messageUpdatedSuccessfully => 'Сообщение успешно обновлено';
@@ -952,12 +871,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get none => 'Нет';
-
-  @override
-  String get attachFile => 'Прикрепить Файл';
-
-  @override
-  String get uploadImage => 'Загрузить Изображение';
 
   @override
   String get formatting => 'Форматирование';
@@ -1007,6 +920,49 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics =>
+      'Введите ключевые слова для поиска тем...';
+
+  @override
+  String get pleaseFillInAllRequiredFields =>
+      'Пожалуйста, заполните все обязательные поля';
+
+  @override
+  String get undelete => 'Восстановить';
+
+  @override
+  String get signInToViewUnreadTopics =>
+      'Войдите, чтобы просмотреть непрочитанные темы';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      'Вам нужно войти, чтобы просмотреть ваши непрочитанные темы';
+
+  @override
+  String get signInToViewSubscribedTopics =>
+      'Войдите, чтобы просмотреть подписанные темы';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      'Вам нужно войти, чтобы просмотреть ваши подписанные темы';
+
+  @override
+  String get signInToViewParticipatedTopics =>
+      'Войдите, чтобы просмотреть темы с участием';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      'Вам нужно войти, чтобы просмотреть темы, в которых вы участвовали';
+
+  @override
+  String get signInToViewLatestTopics =>
+      'Войдите, чтобы просмотреть последние темы';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics =>
+      'Вам нужно войти, чтобы просмотреть последние темы';
+
+  @override
   String get markAsUnread => 'Отметить как непрочитанное';
 
   @override
@@ -1027,17 +983,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => 'Нет аккаунта?';
-
-  @override
-  String get enterKeywordsToSearchTopics =>
-      'Введите ключевые слова для поиска тем...';
-
-  @override
-  String get pleaseFillInAllRequiredFields =>
-      'Пожалуйста, заполните все обязательные поля';
-
-  @override
-  String get undelete => 'Восстановить';
 
   @override
   String get refresh => 'Обновить';
@@ -1165,6 +1110,15 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введите ключевые слова или доменные имена для поиска форумов';
 
   @override
+  String get language => 'Язык';
+
+  @override
+  String get systemDefault => 'По умолчанию системы';
+
+  @override
+  String get followSystemLanguage => 'Следовать языку системы';
+
+  @override
   String get appearance => 'Внешний вид';
 
   @override
@@ -1192,10 +1146,25 @@ class AppLocalizationsRu extends AppLocalizations {
       'Категории настроек появятся здесь, когда будут доступны.';
 
   @override
+  String get spamCleaner => 'Очистка спама';
+
+  @override
   String get unableToLoadProfile => 'Не удалось загрузить профиль';
 
   @override
   String get banned => 'ЗАБЛОКИРОВАН';
+
+  @override
+  String get sendMessage => 'Отправить сообщение';
+
+  @override
+  String get showMore => 'Показать больше';
+
+  @override
+  String get reportUser => 'Пожаловаться на пользователя';
+
+  @override
+  String get submitReport => 'Отправить жалобу';
 
   @override
   String get reportSubmittedSuccessfully => 'Жалоба успешно отправлена';
@@ -1213,17 +1182,33 @@ class AppLocalizationsRu extends AppLocalizations {
   String get deleteTopic => 'Удалить тему';
 
   @override
+  String get softDelete => 'Мягкое удаление';
+
+  @override
   String get topicCanBeRestoredLater => 'Тему можно восстановить позже';
 
   @override
+  String get hardDelete => 'Жёсткое удаление';
+
+  @override
   String get topicWillBePermanentlyDeleted => 'Тема будет удалена навсегда';
+
+  @override
+  String get reasonForDeletion => 'Причина удаления';
 
   @override
   String get enterReasonForDeletingTopic =>
       'Введите причину удаления этой темы';
 
   @override
+  String get pleaseEnterReasonForDeletion =>
+      'Пожалуйста, введите причину удаления';
+
+  @override
   String get pleaseSelectEndDate => 'Пожалуйста, выберите дату окончания';
+
+  @override
+  String get banUser => 'Заблокировать пользователя';
 
   @override
   String get userBannedSuccessfully => 'Пользователь успешно заблокирован';
@@ -1245,6 +1230,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get banTheUserAccount => 'Заблокировать учётную запись пользователя';
+
+  @override
+  String get cleanSpam => 'Очистить спам';
 
   @override
   String get handledThreads => 'Обработанные темы';
@@ -1508,6 +1496,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get goBack => 'Назад';
 
   @override
+  String get signInToViewMessages => 'Войдите, чтобы просмотреть сообщения';
+
+  @override
   String get privateMessagesNotAvailable => 'Приватные сообщения недоступны';
 
   @override
@@ -1559,6 +1550,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => 'Не удалось сохранить разговор';
+
+  @override
   String forumNotFound(String forumName) {
     return 'Форум не найден: $forumName';
   }
@@ -1584,6 +1578,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get quotePost => 'Цитировать пост';
+
+  @override
+  String get attachFile => 'Прикрепить Файл';
+
+  @override
+  String get uploadImage => 'Загрузить Изображение';
 
   @override
   String get translate => 'Перевести';

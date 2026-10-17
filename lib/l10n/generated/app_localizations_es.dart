@@ -196,13 +196,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mensaje de error copiado al portapapeles';
 
   @override
-  String get dismiss => 'Descartar';
-
-  @override
   String get cancel => 'Cancelar';
-
-  @override
-  String get tryAgain => 'Intentar de Nuevo';
 
   @override
   String get getHelp => 'Obtener ayuda';
@@ -281,14 +275,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'No hay temas recientes para mostrar. Vuelve más tarde para nuevas discusiones.';
 
   @override
-  String get signInToViewLatestTopics =>
-      'Inicia sesión para ver temas recientes';
-
-  @override
-  String get youNeedToBeSignedInToViewLatestTopics =>
-      'Necesitas iniciar sesión para ver temas recientes';
-
-  @override
   String get noUnreadTopics => 'No hay temas sin leer';
 
   @override
@@ -299,14 +285,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get youAreAllCaughtUp => '¡Estás al día!';
 
   @override
-  String get signInToViewUnreadTopics =>
-      'Inicia sesión para ver temas sin leer';
-
-  @override
-  String get youNeedToBeSignedInToViewUnreadTopics =>
-      'Necesitas iniciar sesión para ver tus temas sin leer';
-
-  @override
   String get noSubscribedTopics => 'No hay temas suscritos';
 
   @override
@@ -314,27 +292,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'No te has suscrito a ningún tema. Toca el botón de estrella en un tema para suscribirte y recibir notificaciones de nuevas actualizaciones.';
 
   @override
-  String get signInToViewSubscribedTopics =>
-      'Inicia sesión para ver temas suscritos';
-
-  @override
-  String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Necesitas iniciar sesión para ver tus temas suscritos';
-
-  @override
   String get noParticipatedTopics => 'No hay temas participados';
 
   @override
   String get topicsYouParticipatedIn =>
       'Los temas en los que has participado se mostrarán aquí.';
-
-  @override
-  String get signInToViewParticipatedTopics =>
-      'Inicia sesión para ver temas participados';
-
-  @override
-  String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'Necesitas iniciar sesión para ver temas en los que has participado';
 
   @override
   String get latest => 'Recientes';
@@ -380,15 +342,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get searchSites => 'Buscar sitios';
 
   @override
-  String get language => 'Idioma';
-
-  @override
-  String get systemDefault => 'Predeterminado del sistema';
-
-  @override
-  String get followSystemLanguage => 'Seguir el idioma del sistema';
-
-  @override
   String get all => 'Todo';
 
   @override
@@ -432,29 +385,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'Por favor espera a que el hilo se cargue';
 
   @override
-  String get softDelete => 'Eliminación suave';
-
-  @override
   String get postCanBeRestoredLater =>
       'La publicación puede ser restaurada más tarde';
-
-  @override
-  String get hardDelete => 'Eliminación permanente';
 
   @override
   String get postWillBePermanentlyDeleted =>
       'La publicación será eliminada permanentemente';
 
   @override
-  String get reasonForDeletion => 'Razón de eliminación';
-
-  @override
   String get enterReasonForDeletingPost =>
       'Ingresa la razón para eliminar esta publicación';
-
-  @override
-  String get pleaseEnterReasonForDeletion =>
-      'Por favor ingresa una razón para la eliminación';
 
   @override
   String get reportPost => 'Reportar publicación';
@@ -472,9 +412,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pleaseEnterReason => 'Por favor ingresa una razón';
-
-  @override
-  String get submitReport => 'Enviar reporte';
 
   @override
   String get selectedActions => 'Acciones seleccionadas:';
@@ -500,9 +437,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get markRead => 'Marcar como leído';
-
-  @override
-  String get reportUser => 'Reportar usuario';
 
   @override
   String get pleaseSelectReasonForReportingUser =>
@@ -532,12 +466,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pleaseSelectReason => 'Por favor selecciona un motivo';
-
-  @override
-  String get banUser => 'Bloquear usuario';
-
-  @override
-  String get unbanUser => 'Desbanear Usuario';
 
   @override
   String pleaseSelectReasonForBanningUser(String username) {
@@ -570,7 +498,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get selectDate => 'Seleccionar fecha';
 
   @override
-  String get moreOptions => 'Más opciones';
+  String get unbanUser => 'Desbanear Usuario';
 
   @override
   String get leaveConversation => 'Dejar conversación';
@@ -597,15 +525,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get confirmSpamClean => 'Confirmar Limpieza de Spam';
-
-  @override
-  String get handleThreads => 'Gestionar Hilos';
-
-  @override
-  String get deleteMessages => 'Eliminar Mensajes';
-
-  @override
-  String get deleteConversations => 'Eliminar Conversaciones';
 
   @override
   String get myForums => 'Mis Foros';
@@ -644,10 +563,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginRequired => 'Inicio de Sesión Requerido';
 
   @override
-  String get spamCleaner => 'Limpiador de Spam';
-
-  @override
-  String get sendMessage => 'Enviar mensaje';
+  String get tryAgain => 'Intentar de Nuevo';
 
   @override
   String get memberSince => 'Miembro Desde';
@@ -662,16 +578,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get likesGiven => 'Me Gusta Dados';
 
   @override
-  String get showMore => 'Mostrar más';
-
-  @override
-  String get cleanSpam => 'Limpiar spam';
-
-  @override
   String get failedToSaveMessage => 'Error al guardar mensaje';
-
-  @override
-  String get failedToSaveConversation => 'Error al guardar conversación';
 
   @override
   String get failedToSaveSetting => 'Error al guardar configuración';
@@ -712,10 +619,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noMembersOnline => 'No hay miembros en línea actualmente';
 
   @override
-  String get enterUsernameToSearch =>
-      'Ingresa nombre de usuario para buscar...';
-
-  @override
   String get lookupMembers => 'Buscar Miembros';
 
   @override
@@ -752,6 +655,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get search => 'Buscar';
 
   @override
+  String get moreOptions => 'Más opciones';
+
+  @override
   String get logout => 'Cerrar sesión';
 
   @override
@@ -783,6 +689,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get add => 'Agregar';
 
   @override
+  String get dismiss => 'Descartar';
+
+  @override
   String get retry => 'Reintentar';
 
   @override
@@ -812,9 +721,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String failedToLikePost(String error) {
     return 'Error al dar me gusta a la publicación: $error';
   }
-
-  @override
-  String get signInToViewMessages => 'Inicia sesión para ver mensajes';
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
@@ -853,6 +759,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get trySearchingWithDifferentUsername =>
       'Intenta buscar con un nombre de usuario diferente';
+
+  @override
+  String get enterUsernameToSearch =>
+      'Ingresa nombre de usuario para buscar...';
 
   @override
   String get noSitesFound => 'No se encontraron sitios.';
@@ -921,8 +831,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get selectActionsToPerform => 'Selecciona las acciones a realizar:';
 
   @override
+  String get handleThreads => 'Gestionar Hilos';
+
+  @override
   String get moveOrDeleteThreadsBasedOnAdminSettings =>
       'Mover o eliminar hilos según la configuración del administrador';
+
+  @override
+  String get deleteMessages => 'Eliminar Mensajes';
+
+  @override
+  String get deleteConversations => 'Eliminar Conversaciones';
 
   @override
   String get messageUpdatedSuccessfully => 'Mensaje actualizado exitosamente';
@@ -954,12 +873,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get none => 'Ninguno';
-
-  @override
-  String get attachFile => 'Adjuntar Archivo';
-
-  @override
-  String get uploadImage => 'Subir Imagen';
 
   @override
   String get formatting => 'Formato';
@@ -1009,6 +922,49 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get enterKeywordsToSearchTopics =>
+      'Ingresa palabras clave para buscar temas...';
+
+  @override
+  String get pleaseFillInAllRequiredFields =>
+      'Por favor completa todos los campos obligatorios';
+
+  @override
+  String get undelete => 'Restaurar';
+
+  @override
+  String get signInToViewUnreadTopics =>
+      'Inicia sesión para ver temas sin leer';
+
+  @override
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      'Necesitas iniciar sesión para ver tus temas sin leer';
+
+  @override
+  String get signInToViewSubscribedTopics =>
+      'Inicia sesión para ver temas suscritos';
+
+  @override
+  String get youNeedToBeSignedInToViewSubscribedTopics =>
+      'Necesitas iniciar sesión para ver tus temas suscritos';
+
+  @override
+  String get signInToViewParticipatedTopics =>
+      'Inicia sesión para ver temas participados';
+
+  @override
+  String get youNeedToBeSignedInToViewParticipatedTopics =>
+      'Necesitas iniciar sesión para ver temas en los que has participado';
+
+  @override
+  String get signInToViewLatestTopics =>
+      'Inicia sesión para ver temas recientes';
+
+  @override
+  String get youNeedToBeSignedInToViewLatestTopics =>
+      'Necesitas iniciar sesión para ver temas recientes';
+
+  @override
   String get markAsUnread => 'Marcar como no leído';
 
   @override
@@ -1029,17 +985,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dontHaveAnAccount => '¿No tienes una cuenta?';
-
-  @override
-  String get enterKeywordsToSearchTopics =>
-      'Ingresa palabras clave para buscar temas...';
-
-  @override
-  String get pleaseFillInAllRequiredFields =>
-      'Por favor completa todos los campos obligatorios';
-
-  @override
-  String get undelete => 'Restaurar';
 
   @override
   String get refresh => 'Actualizar';
@@ -1161,6 +1106,15 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ingresa palabras clave o nombres de dominio para encontrar foros';
 
   @override
+  String get language => 'Idioma';
+
+  @override
+  String get systemDefault => 'Predeterminado del sistema';
+
+  @override
+  String get followSystemLanguage => 'Seguir el idioma del sistema';
+
+  @override
   String get appearance => 'Apariencia';
 
   @override
@@ -1188,10 +1142,25 @@ class AppLocalizationsEs extends AppLocalizations {
       'Las categorías de configuración aparecerán aquí cuando estén disponibles.';
 
   @override
+  String get spamCleaner => 'Limpiador de Spam';
+
+  @override
   String get unableToLoadProfile => 'No se puede cargar el perfil';
 
   @override
   String get banned => 'BLOQUEADO';
+
+  @override
+  String get sendMessage => 'Enviar mensaje';
+
+  @override
+  String get showMore => 'Mostrar más';
+
+  @override
+  String get reportUser => 'Reportar usuario';
+
+  @override
+  String get submitReport => 'Enviar reporte';
 
   @override
   String get reportSubmittedSuccessfully => 'Reporte enviado exitosamente';
@@ -1209,19 +1178,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteTopic => 'Eliminar tema';
 
   @override
+  String get softDelete => 'Eliminación suave';
+
+  @override
   String get topicCanBeRestoredLater => 'El tema puede restaurarse más tarde';
+
+  @override
+  String get hardDelete => 'Eliminación permanente';
 
   @override
   String get topicWillBePermanentlyDeleted =>
       'El tema será eliminado permanentemente';
 
   @override
+  String get reasonForDeletion => 'Razón de eliminación';
+
+  @override
   String get enterReasonForDeletingTopic =>
       'Ingresa la razón para eliminar este tema';
 
   @override
+  String get pleaseEnterReasonForDeletion =>
+      'Por favor ingresa una razón para la eliminación';
+
+  @override
   String get pleaseSelectEndDate =>
       'Por favor selecciona una fecha de finalización';
+
+  @override
+  String get banUser => 'Bloquear usuario';
 
   @override
   String get userBannedSuccessfully => 'Usuario bloqueado exitosamente';
@@ -1243,6 +1228,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get banTheUserAccount => 'Bloquear la cuenta del usuario';
+
+  @override
+  String get cleanSpam => 'Limpiar spam';
 
   @override
   String get handledThreads => 'Temas manejados';
@@ -1508,6 +1496,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get goBack => 'Volver';
 
   @override
+  String get signInToViewMessages => 'Inicia sesión para ver mensajes';
+
+  @override
   String get privateMessagesNotAvailable =>
       'Los mensajes privados no están disponibles';
 
@@ -1560,6 +1551,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get failedToSaveConversation => 'Error al guardar conversación';
+
+  @override
   String forumNotFound(String forumName) {
     return 'Foro no encontrado: $forumName';
   }
@@ -1585,6 +1579,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get quotePost => 'Citar publicación';
+
+  @override
+  String get attachFile => 'Adjuntar Archivo';
+
+  @override
+  String get uploadImage => 'Subir Imagen';
 
   @override
   String get translate => 'Traducir';

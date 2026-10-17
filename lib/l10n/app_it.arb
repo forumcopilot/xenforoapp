@@ -78,9 +78,7 @@
   "copyToClipboard": "Copia negli appunti",
   "copied": "Copiato",
   "errorMessageCopiedToClipboard": "Messaggio di errore copiato negli appunti",
-  "dismiss": "Chiudi",
   "cancel": "Annulla",
-  "tryAgain": "Riprova",
   "getHelp": "Ottieni aiuto",
   "somethingWentWrong": "Qualcosa è andato storto",
   "unexpectedErrorOccurred": "Si è verificato un errore imprevisto. Riprova.",
@@ -147,9 +145,6 @@
   
   "appSettings": "Impostazioni app",
   "searchSites": "Cerca siti",
-  "language": "Lingua",
-  "systemDefault": "Predefinito di sistema",
-  "followSystemLanguage": "Segui la lingua di sistema",
   
   "all": "Tutti",
   "topicsOnly": "Solo argomenti",
@@ -190,20 +185,15 @@
   "youCannotReplyToThisThread": "Non puoi rispondere a questo thread",
   "pleaseWaitForThreadToLoad": "Attendi che il thread si carichi",
   
-  "softDelete": "Eliminazione soft",
   "postCanBeRestoredLater": "Il post può essere ripristinato in seguito",
-  "hardDelete": "Eliminazione permanente",
   "postWillBePermanentlyDeleted": "Il post verrà eliminato permanentemente",
-  "reasonForDeletion": "Motivo dell'eliminazione",
   "enterReasonForDeletingPost": "Inserisci il motivo per eliminare questo post",
-  "pleaseEnterReasonForDeletion": "Inserisci un motivo per l'eliminazione",
   
   "reportPost": "Segnala post",
   "pleaseProvideReasonForReporting": "Fornisci un motivo per segnalare questo post.",
   "reason": "Motivo",
   "enterReasonForReportingPost": "Inserisci il motivo per segnalare questo post",
   "pleaseEnterReason": "Inserisci un motivo",
-  "submitReport": "Invia segnalazione",
   
   "selectedActions": "Azioni selezionate:",
   "thisActionCannotBeUndone": "Questa azione non può essere annullata.",
@@ -230,7 +220,6 @@
   "newTopic": "Nuovo argomento",
   "markRead": "Segna come letto",
   
-  "reportUser": "Segnala Utente",
   "pleaseSelectReasonForReportingUser": "Seleziona un motivo per segnalare questo utente.",
   "spamOrAdvertising": "Spam o pubblicità",
   "harassmentOrBullying": "Molestie o bullismo",
@@ -241,8 +230,6 @@
   "enterReasonForReportingUser": "Inserisci il motivo per segnalare questo utente",
   "pleaseSelectReason": "Seleziona un motivo",
   
-  "banUser": "Banna Utente",
-  "unbanUser": "Sbanna Utente",
   "pleaseSelectReasonForBanningUser": "Seleziona un motivo per bannare {username}",
   "@pleaseSelectReasonForBanningUser": {
     "description": "Messaggio che chiede di selezionare motivo per bannare utente",
@@ -261,7 +248,6 @@
   "selectDate": "Seleziona data",
   "unbanUser": "Sbanna Utente",
   
-  "moreOptions": "Altre opzioni",
   "leaveConversation": "Lascia conversazione",
   "reportConversation": "Segnala conversazione",
   
@@ -307,18 +293,13 @@
   "deletePost": "Elimina Post",
   "loginRequired": "Accesso Richiesto",
   
-  "spamCleaner": "Pulitore Spam",
   "tryAgain": "Riprova",
-  "sendMessage": "Invia Messaggio",
   "memberSince": "Membro Dal",
   "lastActivity": "Ultima Attività",
   "likesReceived": "Mi Piace Ricevuti",
   "likesGiven": "Mi Piace Dati",
-  "showMore": "Mostra di Più",
-  "cleanSpam": "Pulisci Spam",
   
   "failedToSaveMessage": "Impossibile salvare il messaggio",
-  "failedToSaveConversation": "Impossibile salvare la conversazione",
   "failedToSaveSetting": "Impossibile salvare l'impostazione",
   "failedToSavePost": "Impossibile salvare il post",
   "errorLoadingSites": "Errore nel caricamento dei siti: {error}",
@@ -348,7 +329,6 @@
   "searchForMembers": "Cerca membri",
   "enterUsernameToFindMembers": "Inserisci un nome utente per trovare membri del forum",
   "noMembersOnline": "Al momento non ci sono membri online",
-  "enterUsernameToSearch": "Inserisci nome utente per cercare...",
   "lookupMembers": "Cerca Membri",
   "addMembers": "Aggiungi Membri",
   "membersAddedSuccessfully": "Membri aggiunti con successo",
@@ -420,7 +400,6 @@
       }
     }
   },
-  "signInToViewMessages": "Accedi per visualizzare i messaggi",
   "youNeedToBeSignedInToViewConversations": "Devi accedere per visualizzare le tue conversazioni.",
   "errorLoadingConversations": "Errore nel caricamento delle conversazioni: {error}",
   "@errorLoadingConversations": {

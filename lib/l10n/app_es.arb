@@ -78,9 +78,7 @@
   "copyToClipboard": "Copiar al portapapeles",
   "copied": "Copiado",
   "errorMessageCopiedToClipboard": "Mensaje de error copiado al portapapeles",
-  "dismiss": "Descartar",
   "cancel": "Cancelar",
-  "tryAgain": "Intentar de nuevo",
   "getHelp": "Obtener ayuda",
   "somethingWentWrong": "Algo salió mal",
   "unexpectedErrorOccurred": "Ocurrió un error inesperado. Por favor intenta de nuevo.",
@@ -147,9 +145,6 @@
   
   "appSettings": "Configuración de la aplicación",
   "searchSites": "Buscar sitios",
-  "language": "Idioma",
-  "systemDefault": "Predeterminado del sistema",
-  "followSystemLanguage": "Seguir el idioma del sistema",
   
   "all": "Todo",
   "topicsOnly": "Solo temas",
@@ -190,25 +185,19 @@
   "youCannotReplyToThisThread": "No puedes responder a este hilo",
   "pleaseWaitForThreadToLoad": "Por favor espera a que el hilo se cargue",
   
-  "softDelete": "Eliminación suave",
   "postCanBeRestoredLater": "La publicación puede ser restaurada más tarde",
-  "hardDelete": "Eliminación permanente",
   "postWillBePermanentlyDeleted": "La publicación será eliminada permanentemente",
-  "reasonForDeletion": "Razón para la eliminación",
   "enterReasonForDeletingPost": "Ingresa la razón para eliminar esta publicación",
-  "pleaseEnterReasonForDeletion": "Por favor ingresa una razón para la eliminación",
   
   "reportPost": "Reportar publicación",
   "pleaseProvideReasonForReporting": "Por favor proporciona una razón para reportar esta publicación.",
   "reason": "Razón",
   "enterReasonForReportingPost": "Ingresa la razón para reportar esta publicación",
   "pleaseEnterReason": "Por favor ingresa una razón",
-  "submitReport": "Enviar reporte",
   
   "selectedActions": "Acciones seleccionadas:",
   "thisActionCannotBeUndone": "Esta acción no se puede deshacer.",
   
-  "participantsLabel": "Participantes",
   "participantsLabel": "Participantes",
   "usernameHasBeenInvited": "{username} ha sido invitado a la conversación",
   "@usernameHasBeenInvited": {
@@ -231,7 +220,6 @@
   "newTopic": "Nuevo tema",
   "markRead": "Marcar como leído",
   
-  "reportUser": "Reportar Usuario",
   "pleaseSelectReasonForReportingUser": "Por favor selecciona un motivo para reportar a este usuario.",
   "spamOrAdvertising": "Spam o publicidad",
   "harassmentOrBullying": "Acoso o intimidación",
@@ -242,8 +230,6 @@
   "enterReasonForReportingUser": "Ingresa el motivo para reportar a este usuario",
   "pleaseSelectReason": "Por favor selecciona un motivo",
   
-  "banUser": "Banear Usuario",
-  "unbanUser": "Desbanear Usuario",
   "pleaseSelectReasonForBanningUser": "Por favor selecciona un motivo para banear a {username}",
   "@pleaseSelectReasonForBanningUser": {
     "description": "Mensaje pidiendo seleccionar motivo para banear usuario",
@@ -262,7 +248,6 @@
   "selectDate": "Seleccionar fecha",
   "unbanUser": "Desbanear Usuario",
   
-  "moreOptions": "Más opciones",
   "leaveConversation": "Dejar conversación",
   "reportConversation": "Reportar conversación",
   
@@ -308,18 +293,13 @@
   "deletePost": "Eliminar Publicación",
   "loginRequired": "Inicio de Sesión Requerido",
   
-  "spamCleaner": "Limpiador de Spam",
   "tryAgain": "Intentar de Nuevo",
-  "sendMessage": "Enviar Mensaje",
   "memberSince": "Miembro Desde",
   "lastActivity": "Última Actividad",
   "likesReceived": "Me Gusta Recibidos",
   "likesGiven": "Me Gusta Dados",
-  "showMore": "Mostrar Más",
-  "cleanSpam": "Limpiar Spam",
   
   "failedToSaveMessage": "Error al guardar mensaje",
-  "failedToSaveConversation": "Error al guardar conversación",
   "failedToSaveSetting": "Error al guardar configuración",
   "failedToSavePost": "Error al guardar publicación",
   "errorLoadingSites": "Error al cargar sitios: {error}",
@@ -349,7 +329,6 @@
   "searchForMembers": "Buscar miembros",
   "enterUsernameToFindMembers": "Ingresa un nombre de usuario para encontrar miembros del foro",
   "noMembersOnline": "No hay miembros en línea actualmente",
-  "enterUsernameToSearch": "Ingresa nombre de usuario para buscar...",
   "lookupMembers": "Buscar Miembros",
   "addMembers": "Agregar Miembros",
   "membersAddedSuccessfully": "Miembros agregados exitosamente",
@@ -421,7 +400,6 @@
       }
     }
   },
-  "signInToViewMessages": "Inicia sesión para ver mensajes",
   "youNeedToBeSignedInToViewConversations": "Necesitas iniciar sesión para ver tus conversaciones.",
   "errorLoadingConversations": "Error al cargar conversaciones: {error}",
   "@errorLoadingConversations": {

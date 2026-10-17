@@ -10,6 +10,8 @@ export 'i_fc_forum_proxy.dart';
 export 'i_fc_topic_proxy.dart';
 export 'i_fc_post_proxy.dart';
 export 'i_fc_account_proxy.dart';
+export 'i_fc_account_deletion.dart';
+export 'i_fc_browser_login.dart';
 export 'i_fc_subscription_proxy.dart';
 export 'i_fc_user_proxy.dart';
 export 'i_fc_moderation_proxy.dart';

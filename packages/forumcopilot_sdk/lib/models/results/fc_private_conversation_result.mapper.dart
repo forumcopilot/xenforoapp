@@ -732,6 +732,12 @@ class FCInboxStatResultMapper extends ClassMapperBase<FCInboxStatResult> {
     'unreadMessages',
     _$unreadMessages,
   );
+  static int? _$unreadAlerts(FCInboxStatResult v) => v.unreadAlerts;
+  static const Field<FCInboxStatResult, int> _f$unreadAlerts = Field(
+    'unreadAlerts',
+    _$unreadAlerts,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCInboxStatResult> fields = const {
@@ -740,6 +746,7 @@ class FCInboxStatResultMapper extends ClassMapperBase<FCInboxStatResult> {
     #totalConversations: _f$totalConversations,
     #unreadConversations: _f$unreadConversations,
     #unreadMessages: _f$unreadMessages,
+    #unreadAlerts: _f$unreadAlerts,
   };
 
   static FCInboxStatResult _instantiate(DecodingData data) {
@@ -749,6 +756,7 @@ class FCInboxStatResultMapper extends ClassMapperBase<FCInboxStatResult> {
       totalConversations: data.dec(_f$totalConversations),
       unreadConversations: data.dec(_f$unreadConversations),
       unreadMessages: data.dec(_f$unreadMessages),
+      unreadAlerts: data.dec(_f$unreadAlerts),
     );
   }
 
@@ -830,6 +838,7 @@ abstract class FCInboxStatResultCopyWith<
     int? totalConversations,
     int? unreadConversations,
     int? unreadMessages,
+    int? unreadAlerts,
   });
   FCInboxStatResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -851,6 +860,7 @@ class _FCInboxStatResultCopyWithImpl<$R, $Out>
     int? totalConversations,
     int? unreadConversations,
     int? unreadMessages,
+    Object? unreadAlerts = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -859,6 +869,7 @@ class _FCInboxStatResultCopyWithImpl<$R, $Out>
       if (unreadConversations != null)
         #unreadConversations: unreadConversations,
       if (unreadMessages != null) #unreadMessages: unreadMessages,
+      if (unreadAlerts != $none) #unreadAlerts: unreadAlerts,
     }),
   );
   @override
@@ -874,6 +885,7 @@ class _FCInboxStatResultCopyWithImpl<$R, $Out>
       or: $value.unreadConversations,
     ),
     unreadMessages: data.get(#unreadMessages, or: $value.unreadMessages),
+    unreadAlerts: data.get(#unreadAlerts, or: $value.unreadAlerts),
   );
 
   @override
@@ -929,6 +941,12 @@ class FCConversationsResultMapper
   static List<FCConversationSummary> _$list(FCConversationsResult v) => v.list;
   static const Field<FCConversationsResult, List<FCConversationSummary>>
   _f$list = Field('list', _$list);
+  static bool? _$hasMore(FCConversationsResult v) => v.hasMore;
+  static const Field<FCConversationsResult, bool> _f$hasMore = Field(
+    'hasMore',
+    _$hasMore,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCConversationsResult> fields = const {
@@ -938,6 +956,7 @@ class FCConversationsResultMapper
     #unreadCount: _f$unreadCount,
     #canUpload: _f$canUpload,
     #list: _f$list,
+    #hasMore: _f$hasMore,
   };
 
   static FCConversationsResult _instantiate(DecodingData data) {
@@ -948,6 +967,7 @@ class FCConversationsResultMapper
       unreadCount: data.dec(_f$unreadCount),
       canUpload: data.dec(_f$canUpload),
       list: data.dec(_f$list),
+      hasMore: data.dec(_f$hasMore),
     );
   }
 
@@ -1039,6 +1059,7 @@ abstract class FCConversationsResultCopyWith<
     int? unreadCount,
     bool? canUpload,
     List<FCConversationSummary>? list,
+    bool? hasMore,
   });
   FCConversationsResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1076,6 +1097,7 @@ class _FCConversationsResultCopyWithImpl<$R, $Out>
     int? unreadCount,
     bool? canUpload,
     List<FCConversationSummary>? list,
+    Object? hasMore = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -1084,6 +1106,7 @@ class _FCConversationsResultCopyWithImpl<$R, $Out>
       if (unreadCount != null) #unreadCount: unreadCount,
       if (canUpload != null) #canUpload: canUpload,
       if (list != null) #list: list,
+      if (hasMore != $none) #hasMore: hasMore,
     }),
   );
   @override
@@ -1097,6 +1120,7 @@ class _FCConversationsResultCopyWithImpl<$R, $Out>
     unreadCount: data.get(#unreadCount, or: $value.unreadCount),
     canUpload: data.get(#canUpload, or: $value.canUpload),
     list: data.get(#list, or: $value.list),
+    hasMore: data.get(#hasMore, or: $value.hasMore),
   );
 
   @override
@@ -1219,6 +1243,12 @@ class FCConversationSummaryMapper
     _$unreadMessageCount,
     opt: true,
   );
+  static List<String>? _$groups(FCConversationSummary v) => v.groups;
+  static const Field<FCConversationSummary, List<String>> _f$groups = Field(
+    'groups',
+    _$groups,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCConversationSummary> fields = const {
@@ -1239,6 +1269,7 @@ class FCConversationSummaryMapper
     #isClosed: _f$isClosed,
     #messageId: _f$messageId,
     #unreadMessageCount: _f$unreadMessageCount,
+    #groups: _f$groups,
   };
 
   static FCConversationSummary _instantiate(DecodingData data) {
@@ -1260,6 +1291,7 @@ class FCConversationSummaryMapper
       isClosed: data.dec(_f$isClosed),
       messageId: data.dec(_f$messageId),
       unreadMessageCount: data.dec(_f$unreadMessageCount),
+      groups: data.dec(_f$groups),
     );
   }
 
@@ -1339,6 +1371,7 @@ abstract class FCConversationSummaryCopyWith<
     FCParticipantCopyWith<$R, FCParticipant, FCParticipant>
   >?
   get participants;
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>? get groups;
   $R call({
     String? convId,
     String? replyCount,
@@ -1357,6 +1390,7 @@ abstract class FCConversationSummaryCopyWith<
     bool? isClosed,
     String? messageId,
     int? unreadMessageCount,
+    List<String>? groups,
   });
   FCConversationSummaryCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1385,6 +1419,15 @@ class _FCConversationSummaryCopyWithImpl<$R, $Out>
         )
       : null;
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>? get groups =>
+      $value.groups != null
+      ? ListCopyWith(
+          $value.groups!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(groups: v),
+        )
+      : null;
+  @override
   $R call({
     String? convId,
     String? replyCount,
@@ -1403,6 +1446,7 @@ class _FCConversationSummaryCopyWithImpl<$R, $Out>
     Object? isClosed = $none,
     Object? messageId = $none,
     Object? unreadMessageCount = $none,
+    Object? groups = $none,
   }) => $apply(
     FieldCopyWithData({
       if (convId != null) #convId: convId,
@@ -1422,6 +1466,7 @@ class _FCConversationSummaryCopyWithImpl<$R, $Out>
       if (isClosed != $none) #isClosed: isClosed,
       if (messageId != $none) #messageId: messageId,
       if (unreadMessageCount != $none) #unreadMessageCount: unreadMessageCount,
+      if (groups != $none) #groups: groups,
     }),
   );
   @override
@@ -1446,6 +1491,7 @@ class _FCConversationSummaryCopyWithImpl<$R, $Out>
       #unreadMessageCount,
       or: $value.unreadMessageCount,
     ),
+    groups: data.get(#groups, or: $value.groups),
   );
 
   @override

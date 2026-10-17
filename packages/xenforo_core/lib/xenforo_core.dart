@@ -23,6 +23,7 @@ export 'src/proxy/subscription_proxy.dart';
 export 'src/proxy/moderation_proxy.dart';
 export 'src/proxy/private_conversation_proxy.dart';
 export 'src/proxy/private_message_proxy.dart';
+export 'src/proxy/draft_proxy.dart';
 
 // Network layer
 export 'src/network/xenforo_client.dart';

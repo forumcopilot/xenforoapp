@@ -16,6 +16,7 @@ import '../src/proxy/moderation_proxy.dart';
 import '../src/proxy/private_conversation_proxy.dart';
 import '../src/proxy/private_message_proxy.dart';
 import '../src/proxy/device_proxy.dart';
+import '../src/proxy/draft_proxy.dart';
 import '../src/network/xenforo_client.dart';
 
 /// XenForo proxy factory implementation
@@ -81,5 +82,10 @@ class XenForoProxyFactory extends SiteProxyFactory {
 
   IFCDeviceProxy createDeviceProxy(SiteContext context) {
     return XenForoDeviceProxy(context, client: _client);
+  }
+
+  @override
+  IFCDraftProxy createDraftProxy(SiteContext context) {
+    return XenForoDraftProxy(context, client: _client);
   }
 }

@@ -140,6 +140,25 @@ abstract class SiteProxyFactory {
     return factory.createAttachmentProxy(_context!);
   }
 
+  /// The attachment proxy of [context]'s forum, whichever forum is current:
+  /// an upload started in one forum stays with it even if another forum is
+  /// opened before it is sent.
+  static IFCAttachmentProxy attachmentProxyFor(SiteContext context) {
+    final factory = _providers[context.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${context.siteType}');
+
+    return factory.createAttachmentProxy(context);
+  }
+
+  /// The draft proxy of [context]'s forum, whichever forum is current.
+  /// Throws [UnsupportedError] for a forum type without drafts.
+  static IFCDraftProxy draftProxyFor(SiteContext context) {
+    final factory = _providers[context.siteType];
+    if (factory == null) throw Exception('No provider registered for site type: ${context.siteType}');
+
+    return factory.createDraftProxy(context);
+  }
+
   /// Get config proxy
   static IFCConfigProxy getConfigProxy() {
     if (_context == null) throw Exception('SiteProxyFactory not initialized');

@@ -1,5 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
+import '../entities/fc_forum_style.dart';
+
 part 'fc_config_result.mapper.dart';
 
 /// Forum Copilot Configuration Result
@@ -98,6 +100,18 @@ class FCConfigResult with FCConfigResultMappable {
 
   /// Whether guest users can search
   bool guestSearch;
+
+  /// The forum's colours and logo, from its own style; null when the forum
+  /// does not send them (older add-ons).
+  FCForumStyle? style;
+
+  /// Whether members can delete their account from the app; null when the
+  /// forum does not say (older add-ons).
+  bool? accountDeletion;
+
+  /// App schemes the forum's website may hand a browser sign-in to (empty
+  /// when it is off); null when the forum does not say (older add-ons).
+  List<String>? browserLoginSchemes;
 
   /// Whether the plugin supports anonymous login
   bool anonymous;
@@ -426,6 +440,9 @@ class FCConfigResult with FCConfigResultMappable {
     this.apiKey = "",
     this.mbqFrameVersion = "",
     this.forumType = "",
+    this.style,
+    this.accountDeletion,
+    this.browserLoginSchemes,
   });
 
   /// Helper getters for forum type detection

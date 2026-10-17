@@ -31,6 +31,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
           resultText: response['resultText']?.toString() ?? '',
           totalTopicNum: response['totalTopicNum'] ?? fcTopics.length,
           topics: fcTopics,
+          hasMore: response['totalTopicNum'] is int && startNum + fcTopics.length < (response['totalTopicNum'] as int),
         );
       });
     } catch (e) {
@@ -64,6 +65,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
           resultText: response['resultText']?.toString() ?? '',
           totalPostNum: response['totalPostNum'] ?? fcPosts.length,
           posts: fcPosts,
+          hasMore: response['totalPostNum'] is int && startNum + fcPosts.length < (response['totalPostNum'] as int),
         );
       });
     } catch (e) {

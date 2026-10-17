@@ -716,6 +716,151 @@ class _FCUpdatePasswordResultCopyWithImpl<$R, $Out>
       _FCUpdatePasswordResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
+class FCDeleteAccountResultMapper
+    extends ClassMapperBase<FCDeleteAccountResult> {
+  FCDeleteAccountResultMapper._();
+
+  static FCDeleteAccountResultMapper? _instance;
+  static FCDeleteAccountResultMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = FCDeleteAccountResultMapper._());
+      FCBaseResultMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCDeleteAccountResult';
+
+  static bool _$result(FCDeleteAccountResult v) => v.result;
+  static const Field<FCDeleteAccountResult, bool> _f$result = Field(
+    'result',
+    _$result,
+  );
+  static String? _$resultText(FCDeleteAccountResult v) => v.resultText;
+  static const Field<FCDeleteAccountResult, String> _f$resultText = Field(
+    'resultText',
+    _$resultText,
+    opt: true,
+  );
+
+  @override
+  final MappableFields<FCDeleteAccountResult> fields = const {
+    #result: _f$result,
+    #resultText: _f$resultText,
+  };
+
+  static FCDeleteAccountResult _instantiate(DecodingData data) {
+    return FCDeleteAccountResult(
+      result: data.dec(_f$result),
+      resultText: data.dec(_f$resultText),
+    );
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCDeleteAccountResult fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCDeleteAccountResult>(map);
+  }
+
+  static FCDeleteAccountResult fromJson(String json) {
+    return ensureInitialized().decodeJson<FCDeleteAccountResult>(json);
+  }
+}
+
+mixin FCDeleteAccountResultMappable {
+  String toJson() {
+    return FCDeleteAccountResultMapper.ensureInitialized()
+        .encodeJson<FCDeleteAccountResult>(this as FCDeleteAccountResult);
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCDeleteAccountResultMapper.ensureInitialized()
+        .encodeMap<FCDeleteAccountResult>(this as FCDeleteAccountResult);
+  }
+
+  FCDeleteAccountResultCopyWith<
+    FCDeleteAccountResult,
+    FCDeleteAccountResult,
+    FCDeleteAccountResult
+  >
+  get copyWith =>
+      _FCDeleteAccountResultCopyWithImpl<
+        FCDeleteAccountResult,
+        FCDeleteAccountResult
+      >(this as FCDeleteAccountResult, $identity, $identity);
+  @override
+  String toString() {
+    return FCDeleteAccountResultMapper.ensureInitialized().stringifyValue(
+      this as FCDeleteAccountResult,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCDeleteAccountResultMapper.ensureInitialized().equalsValue(
+      this as FCDeleteAccountResult,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCDeleteAccountResultMapper.ensureInitialized().hashValue(
+      this as FCDeleteAccountResult,
+    );
+  }
+}
+
+extension FCDeleteAccountResultValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCDeleteAccountResult, $Out> {
+  FCDeleteAccountResultCopyWith<$R, FCDeleteAccountResult, $Out>
+  get $asFCDeleteAccountResult => $base.as(
+    (v, t, t2) => _FCDeleteAccountResultCopyWithImpl<$R, $Out>(v, t, t2),
+  );
+}
+
+abstract class FCDeleteAccountResultCopyWith<
+  $R,
+  $In extends FCDeleteAccountResult,
+  $Out
+>
+    implements FCBaseResultCopyWith<$R, $In, $Out> {
+  @override
+  $R call({bool? result, String? resultText});
+  FCDeleteAccountResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  );
+}
+
+class _FCDeleteAccountResultCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCDeleteAccountResult, $Out>
+    implements FCDeleteAccountResultCopyWith<$R, FCDeleteAccountResult, $Out> {
+  _FCDeleteAccountResultCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<FCDeleteAccountResult> $mapper =
+      FCDeleteAccountResultMapper.ensureInitialized();
+  @override
+  $R call({bool? result, Object? resultText = $none}) => $apply(
+    FieldCopyWithData({
+      if (result != null) #result: result,
+      if (resultText != $none) #resultText: resultText,
+    }),
+  );
+  @override
+  FCDeleteAccountResult $make(CopyWithData data) => FCDeleteAccountResult(
+    result: data.get(#result, or: $value.result),
+    resultText: data.get(#resultText, or: $value.resultText),
+  );
+
+  @override
+  FCDeleteAccountResultCopyWith<$R2, FCDeleteAccountResult, $Out2>
+  $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _FCDeleteAccountResultCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
 class FCUpdateProfileResultMapper
     extends ClassMapperBase<FCUpdateProfileResult> {
   FCUpdateProfileResultMapper._();

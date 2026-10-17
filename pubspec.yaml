@@ -42,6 +42,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.1
   flutter_svg: ^2.0.10 # forum logos uploaded as SVG
+  material_color_utilities: any # the Flutter SDK pins it; HCT for the forum's colours
   flutter_inappwebview: ^6.1.5
   build_runner: ^2.10.4
   scrollable_positioned_list: ^0.3.8

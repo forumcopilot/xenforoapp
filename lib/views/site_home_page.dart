@@ -28,6 +28,7 @@ import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'dart:async';
 import '../utils/app_navigation.dart';
 import 'enable_notifications_page.dart';
+import '../theme/app_theme.dart';
 
 class SiteHomePage extends StatefulWidget {
   final Site? siteToInitialize;
@@ -694,8 +695,22 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     }
   }
 
+  /// The forum whose colours this Home holds open (AppTheme), once known.
+  String? _forumColoursFor;
+
+  void _holdForumColours() {
+    final pluginUrl = _siteContext?.site.pluginUrl;
+    if (!mounted || _forumColoursFor != null || pluginUrl == null || pluginUrl.isEmpty) return;
+    _forumColoursFor = pluginUrl;
+    AppTheme.forumHomeOpened(pluginUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_forumColoursFor == null && _siteContext != null) {
+      // After the frame: it can change the app's theme.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _holdForumColours());
+    }
     // Don't build the main UI until initialization is complete
     if (_waitingForInitialization) {
       // Show a minimal scaffold with just the app bar while waiting
@@ -997,6 +1012,10 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     SiteHomePage.requestedTab.removeListener(_onTabRequested);
     if (SiteHomePage._homeRoute == _route) SiteHomePage._homeRoute = null;
+    // Leaving the forum: back to the app's own colours (unless another of
+    // its Homes replaces this one, as signing in does).
+    final openedFor = _forumColoursFor;
+    if (openedFor != null) AppTheme.forumHomeClosed(openedFor);
     // Remove tab controller listener
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();

@@ -12,6 +12,7 @@ import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
 import '../utils/l10n_now.dart';
 import '../utils/app_navigation.dart';
+import '../theme/app_theme.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {
@@ -105,6 +106,8 @@ class SiteInitializationService {
         AppLogger.info('Creating new site context');
         siteContext.configDataOutput = configData;
       }
+      // The app in this forum's colours while it is open.
+      AppTheme.showForumStyle(site.pluginUrl, configData.style);
 
       // Verify that the plugin URL is properly set after initialization
       final pluginUrl = siteContext.site.pluginUrl;

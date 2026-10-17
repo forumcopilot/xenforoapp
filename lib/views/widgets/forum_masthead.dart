@@ -60,6 +60,8 @@ class ForumMasthead extends StatelessWidget {
     double line(TextStyle? s) => (scaler.scale(s?.fontSize ?? 14) * (s?.height ?? 1.4) - 1e-6).ceilToDouble();
     final hasDescription = identity.description != null;
     var h = 0.0;
+    // With the logo in the bar, the name is the first line under it.
+    if (identity.wordmark != null) h += line(text.titleLarge) + (hasDescription || hasStats ? 2 : 0);
     if (hasDescription) h += line(text.bodyMedium);
     if (hasStats) h += (hasDescription ? 2 : 0) + line(text.bodySmall);
     if (hasSearch) h += (h > 0 ? 12 : 0) + searchHeight;
@@ -161,14 +163,52 @@ class _MastheadBanner extends StatelessWidget {
   }
 }
 
-/// The forum's logo and name, as the bar's title in both states.
+/// The forum's own logo while the header is open, where it has one drawn for
+/// this header; its icon and name once the header has become the bar.
 class _MastheadTitle extends StatelessWidget {
   const _MastheadTitle({required this.identity});
 
   final ForumIdentity identity;
 
+  static const double _wordmarkHeight = 36;
+
   @override
   Widget build(BuildContext context) {
+    final wordmark = identity.wordmark;
+    final Widget child;
+    if (wordmark != null && _openness(context) > 0.5) {
+      final aspect = identity.wordmarkAspectRatio;
+      child = Semantics(
+        key: const ValueKey('wordmark'),
+        header: true,
+        label: identity.name,
+        child: ExcludeSemantics(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: _wordmarkHeight, maxWidth: 240),
+            child: BrandImage(
+              wordmark,
+              height: _wordmarkHeight,
+              width: aspect != null ? _wordmarkHeight * aspect : null,
+              alignment: Alignment.centerLeft,
+              fallback: _iconAndName,
+            ),
+          ),
+        ),
+      );
+    } else {
+      child = KeyedSubtree(key: const ValueKey('iconAndName'), child: _iconAndName(context));
+    }
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 150),
+      layoutBuilder: (current, previous) => Stack(
+        alignment: AlignmentDirectional.centerStart,
+        children: [...previous, if (current != null) current],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _iconAndName(BuildContext context) {
     return Semantics(
       header: true,
       child: Row(
@@ -250,7 +290,9 @@ class _MastheadIntro extends StatelessWidget {
     final description = identity.description;
     final stats = this.stats;
     final onSearch = this.onSearch;
-    if (description == null && stats == null && onSearch == null) return const SizedBox.shrink();
+    if (identity.wordmark == null && description == null && stats == null && onSearch == null) {
+      return const SizedBox.shrink();
+    }
 
     final content = Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -258,6 +300,18 @@ class _MastheadIntro extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // The bar shows the logo, which may not say the name.
+          if (identity.wordmark != null) ...[
+            ExcludeSemantics(
+              child: Text(
+                identity.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: text.titleLarge?.copyWith(color: fg, fontWeight: FontWeight.w600),
+              ),
+            ),
+            if (description != null || stats != null) const SizedBox(height: 2),
+          ],
           if (description != null)
             Text(
               description,

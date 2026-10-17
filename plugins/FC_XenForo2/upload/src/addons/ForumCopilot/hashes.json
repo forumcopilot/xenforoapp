@@ -13,7 +13,7 @@
   "src/addons/ForumCopilot/Api/Controller/ForumController.php": "362d4b6f173a357da2b8305042206945efddf30d54d2deba16b70c5b98f52b20",
   "src/addons/ForumCopilot/Api/Controller/ModerationController.php": "f6eea669b2043068ff4f6e2dd29939c024887dcae75cbd201c9ae6ec5c25de25",
   "src/addons/ForumCopilot/Api/Controller/PostController.php": "25e6ba2f0212e9c4b13522a0cbdf4b9ec72e7b2435bffcb57859113320007252",
-  "src/addons/ForumCopilot/Api/Controller/PrivateConversationController.php": "33adbf5f3686d39c642b25640cdcc62bccdaf7c0044db5720bbc68f2d5c4f69b",
+  "src/addons/ForumCopilot/Api/Controller/PrivateConversationController.php": "115d7d93b7f3d2a63b060d432048ba9d5a8382a5a284c6cbdf59acd0c580a0a3",
   "src/addons/ForumCopilot/Api/Controller/SearchController.php": "08fede338c0dd42ee1731c6a31828dd0aca7d3e34902ea82eb61f22379b72018",
   "src/addons/ForumCopilot/Api/Controller/SocialController.php": "6851bec561bf857dc83a7914b8da2ff22aad29de380d02a56c57d70d2d1a2029",
   "src/addons/ForumCopilot/Api/Controller/SubscriptionController.php": "0bc284249420e291c93f5cc43e1e793a7a7601bc30a4548827331993adfc5b4b",

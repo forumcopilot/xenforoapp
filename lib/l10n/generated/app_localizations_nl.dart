@@ -2801,4 +2801,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get thisForum => 'dit forum';
+
+  @override
+  String get openFullEditor => 'Volledige editor';
 }

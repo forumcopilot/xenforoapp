@@ -1300,5 +1300,6 @@
   "writeYourTopicContent": "Escribe el contenido del tema...",
   "pushDisabledFor": "Notificaciones push desactivadas para {siteName}",
   "failedToDisablePush": "No se pudieron desactivar las notificaciones push",
-  "thisForum": "este foro"
+  "thisForum": "este foro",
+  "openFullEditor": "Editor completo"
 }

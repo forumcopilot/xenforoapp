@@ -18,6 +18,9 @@ class ReplyConversationPage extends StatefulWidget {
   final String subject;
   final String? quotedMessageId;
   final bool? canUpload; // Whether user can upload attachments
+  /// The conversation's quick-reply text, edited here in place (a plain
+  /// reply only).
+  final TextEditingController? contentController;
 
   const ReplyConversationPage({
     super.key,
@@ -26,6 +29,7 @@ class ReplyConversationPage extends StatefulWidget {
     required this.subject,
     this.quotedMessageId,
     this.canUpload,
+    this.contentController,
   });
 
   @override
@@ -175,6 +179,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
             (widget.canUpload ?? false) ? _handleFileUpload : null,
         onRemoveAttachment: _handleRemoveAttachment,
         showTitleField: false,
+        contentController: widget.contentController,
         contentHint: AppLocalizations.of(context).writeYourReply,
         topicTitle: widget.subject,
         // A plain reply keeps a draft on this device, per forum and

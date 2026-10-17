@@ -1300,5 +1300,6 @@
   "writeYourTopicContent": "输入主题内容...",
   "pushDisabledFor": "已关闭 {siteName} 的推送通知",
   "failedToDisablePush": "关闭推送通知失败",
-  "thisForum": "此论坛"
+  "thisForum": "此论坛",
+  "openFullEditor": "完整编辑器"
 }

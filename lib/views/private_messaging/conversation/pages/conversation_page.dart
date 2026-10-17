@@ -13,14 +13,15 @@ import 'edit_conversation_page.dart';
 import 'edit_conversation_message_page.dart';
 import '../widgets/conversation_item.dart';
 import '../widgets/conversation_header_widget.dart';
+import '../widgets/conversation_quick_reply_bar.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../../../theme/design_tokens.dart';
-import '../../../../utils/accessibility_helpers.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
+import '../../../../utils/network_utils.dart';
 import '../../../../services/notification_service.dart';
 
 class ConversationPage extends StatefulWidget {
@@ -65,8 +66,14 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
   // Whether the reader is at the newest message: content that grows under it
   // (images loading) keeps it there.
   bool _atBottom = true;
-  bool _refreshingNewest = false;
+  Future<void>? _runningRefresh;
+  Future<void>? _queuedRefresh;
+  bool _queuedScrollToEnd = false;
   StreamSubscription<String>? _activitySub;
+  // Light polling while the conversation is on screen with the app in front:
+  // replies arrive without a push (none set up, or one that was missed).
+  static const Duration _pollInterval = Duration(seconds: 30);
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -79,6 +86,15 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     _activitySub = NotificationService.conversationActivity.listen((id) {
       if (id == widget.conversationId || id == _conversation?.convId) _refreshNewest();
     });
+    _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
+  }
+
+  void _poll() {
+    if (!mounted) return;
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
+    // Not under another page (a reply being written, a profile).
+    if (!(ModalRoute.isCurrentOf(context) ?? true)) return;
+    _refreshNewest();
   }
 
   // Back in the app: anything that arrived meanwhile.
@@ -89,12 +105,29 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
   /// Brings in the messages newer than the last one loaded, without the
   /// full-screen spinner: after a reply, when the app comes back, on a push
-  /// for this conversation. A reply used to reload the whole conversation
-  /// behind a spinner.
-  Future<void> _refreshNewest({bool scrollToEnd = false}) async {
+  /// for this conversation, and every [_pollInterval]. A reply used to reload
+  /// the whole conversation behind a spinner.
+  ///
+  /// One runs at a time. A call while one runs makes one more run after it
+  /// (a reply just sent is fetched even when a poll was already under way),
+  /// and the calls in between share that run.
+  Future<void> _refreshNewest({bool scrollToEnd = false}) {
+    final running = _runningRefresh;
+    if (running == null) {
+      return _runningRefresh = _fetchNewest(scrollToEnd: scrollToEnd).whenComplete(() => _runningRefresh = null);
+    }
+    _queuedScrollToEnd |= scrollToEnd;
+    return _queuedRefresh ??= running.then((_) {
+      _queuedRefresh = null;
+      final queuedScrollToEnd = _queuedScrollToEnd;
+      _queuedScrollToEnd = false;
+      return mounted ? _refreshNewest(scrollToEnd: queuedScrollToEnd) : null;
+    });
+  }
+
+  Future<void> _fetchNewest({required bool scrollToEnd}) async {
     final current = _conversation;
-    if (_refreshingNewest || _isLoading || current == null) return;
-    _refreshingNewest = true;
+    if (_isLoading || current == null) return;
     final stayAtEnd = scrollToEnd || _atBottom;
     try {
       final proxy = SiteProxyFactory.getPrivateConversationProxy();
@@ -139,8 +172,6 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       }
     } catch (e) {
       debugPrint('ConversationPage: refreshing the newest messages failed: $e');
-    } finally {
-      _refreshingNewest = false;
     }
   }
 
@@ -187,24 +218,57 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     });
   }
 
-  Future<void> _onReplyPressed() async {
-    if (_conversation != null) {
-      final result = await Navigator.of(context).push(
-        FormPageRoute(
-          builder: (context) => ReplyConversationPage(
-            siteContext: widget.siteContext,
-            conversationId: widget.conversationId,
-            subject: widget.subject,
-            canUpload: _conversation?.canUpload,
-          ),
-        ),
-      );
+  /// Where an unsent reply is kept on this device: the quick-reply bar and
+  /// the full Reply page share it.
+  String get _replyDraftKey => 'dm_reply_draft:${widget.siteContext.site.pluginUrl}:${widget.conversationId}';
 
-      // If reply was successful, refresh conversation and scroll to last message
-      if (result == true) {
-        await _refreshAndScrollToLast();
+  /// The quick-reply bar's send: the reply is added at the end of the list.
+  /// False (the bar keeps the text) when it was not posted.
+  Future<bool> _sendQuickReply(String text) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final result = await SiteProxyFactory.getPrivateConversationProxy()
+          .replyConversationAsync(widget.conversationId, text, null, null);
+      if (!mounted) return false;
+      if (!result.result) {
+        final message = result.resultText?.trim();
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(message)
+              ? l10n.errorNetwork
+              : (message != null && message.isNotEmpty ? message : l10n.failedToSendReply('')),
+        );
+        return false;
       }
+      unawaited(_refreshAndScrollToLast());
+      return true;
+    } catch (e) {
+      if (mounted) {
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(e.toString()) ? l10n.errorNetwork : l10n.failedToSendReply(e.toString()),
+        );
+      }
+      return false;
     }
+  }
+
+  /// The full Reply page (attachments, formatting) on the quick-reply text.
+  Future<bool> _openFullReply(TextEditingController controller) async {
+    final result = await Navigator.of(context).push(
+      FormPageRoute(
+        builder: (context) => ReplyConversationPage(
+          siteContext: widget.siteContext,
+          conversationId: widget.conversationId,
+          subject: widget.subject,
+          canUpload: _conversation?.canUpload,
+          contentController: controller,
+        ),
+      ),
+    );
+    if (result != true) return false;
+    if (mounted) await _refreshAndScrollToLast();
+    return true;
   }
 
   Future<void> _markAsUnread() async {
@@ -867,6 +931,13 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       );
     }
 
+    final canReply = (_conversation!.canReply ?? true) && !(_conversation!.isClosed ?? false);
+    // Without the composer under the list, the navigator sits clear of the
+    // system bar itself.
+    final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
+    // The keyboard is up: the room is for the messages and the composer.
+    final showNavigator = MediaQuery.viewInsetsOf(context).bottom == 0;
+
     return Column(
       children: [
         // Closed banner
@@ -1046,16 +1117,23 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                             return const SizedBox.shrink();
                           },
                         ),
-                      const SizedBox(height: 80), // for bottom bar spacing
+                      // Room for the navigator over the last message.
+                      SizedBox(height: 72 + navigatorBottom),
                     ],
                   ),
                 ),
                 ),
               ),
-              _buildBottomBar(context),
+              if (showNavigator) _buildNavigator(context, bottom: navigatorBottom),
             ],
           ),
         ),
+        if (canReply)
+          ConversationQuickReplyBar(
+            draftKey: _replyDraftKey,
+            onSend: _sendQuickReply,
+            onOpenFullEditor: _openFullReply,
+          ),
       ],
     );
   }
@@ -1414,81 +1492,65 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     }
   }
 
-  Widget _buildBottomBar(BuildContext context) {
-    if (_conversation == null) return const SizedBox.shrink();
+  /// First and newest message, and the position (tap to jump to one),
+  /// floating over the messages at the bottom right.
+  Widget _buildNavigator(BuildContext context, {required double bottom}) {
+    final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final total = _conversation!.totalMessageNum ?? _conversation!.list.length;
+    final position = _currentVisibleMessagePosition;
 
     return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 4,
-              offset: const Offset(0, -2),
+      right: DesignTokens.spacingM,
+      bottom: bottom + DesignTokens.spacingS,
+      child: Material(
+        color: colorScheme.surfaceContainerHigh,
+        elevation: 2,
+        shape: const StadiumBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              label: l10n.goToTop,
+              hint: l10n.jumpToFirstMessage,
+              button: true,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_upward),
+                onPressed: _jumpToFirstMessage,
+                tooltip: l10n.goToTop,
+              ),
+            ),
+            Semantics(
+              label: l10n.messagePositionOf(position, total),
+              hint: l10n.tapToJumpToMessage,
+              button: true,
+              excludeSemantics: true,
+              child: InkWell(
+                onTap: () => _showJumpToMessageDialog(context),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingXS),
+                    child: Center(
+                      widthFactor: 1,
+                      child: Text('$position / $total', style: Theme.of(context).textTheme.bodyMedium),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Semantics(
+              label: l10n.goToBottom,
+              hint: l10n.jumpToLastMessage,
+              button: true,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_downward),
+                onPressed: _jumpToLastMessage,
+                tooltip: l10n.goToBottom,
+              ),
             ),
           ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingS,
-            ),
-            child: Row(
-              children: [
-                Semantics(
-                  label: AppLocalizations.of(context).goToTop,
-                  hint: AppLocalizations.of(context).jumpToFirstMessage,
-                  button: true,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_upward),
-                    onPressed: _jumpToFirstMessage,
-                    tooltip: AppLocalizations.of(context).goToTop,
-                  ),
-                ),
-                Semantics(
-                  label: AppLocalizations.of(context).goToBottom,
-                  hint: AppLocalizations.of(context).jumpToLastMessage,
-                  button: true,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_downward),
-                    onPressed: _jumpToLastMessage,
-                    tooltip: AppLocalizations.of(context).goToBottom,
-                  ),
-                ),
-                SizedBox(width: DesignTokens.spacingS),
-                Semantics(
-                  label: AppLocalizations.of(context).messagePositionOf(_currentVisibleMessagePosition, _conversation!.totalMessageNum ?? _conversation!.list.length),
-                  hint: AppLocalizations.of(context).tapToJumpToMessage,
-                  button: true,
-                  child: GestureDetector(
-                    onTap: () {
-                      _showJumpToMessageDialog(context);
-                    },
-                    child: Text(
-                      '${_currentVisibleMessagePosition} / ${_conversation!.totalMessageNum ?? _conversation!.list.length}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                if ((_conversation!.canReply ?? true) && !(_conversation!.isClosed ?? false))
-                  Semantics(
-                    label: AccessibilityHelpers.getReplyButtonLabel(context),
-                    button: true,
-                    child: FilledButton.icon(
-                      onPressed: _onReplyPressed,
-                      icon: const Icon(Icons.reply),
-                      label: Text(AppLocalizations.of(context).reply),
-                    ),
-                  ),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -1779,6 +1841,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _activitySub?.cancel();
+    _pollTimer?.cancel();
     if (NotificationService.openConversationId == widget.conversationId) {
       NotificationService.openConversationId = null;
     }

@@ -1276,5 +1276,6 @@
   "writeYourTopicContent": "Contenu de votre sujet...",
   "pushDisabledFor": "Notifications push désactivées pour {siteName}",
   "failedToDisablePush": "Impossible de désactiver les notifications push",
-  "thisForum": "ce forum"
+  "thisForum": "ce forum",
+  "openFullEditor": "Éditeur complet"
 }

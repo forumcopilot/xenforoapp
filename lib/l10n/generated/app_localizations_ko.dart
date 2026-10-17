@@ -2678,4 +2678,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get thisForum => '이 포럼';
+
+  @override
+  String get openFullEditor => '전체 편집기';
 }

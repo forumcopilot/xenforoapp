@@ -2841,4 +2841,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get thisForum => 'ce forum';
+
+  @override
+  String get openFullEditor => 'Éditeur complet';
 }

@@ -2686,4 +2686,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get thisForum => 'このフォーラム';
+
+  @override
+  String get openFullEditor => 'フルエディター';
 }

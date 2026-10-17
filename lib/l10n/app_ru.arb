@@ -1300,5 +1300,6 @@
   "writeYourTopicContent": "Текст темы...",
   "pushDisabledFor": "Push-уведомления для {siteName} выключены",
   "failedToDisablePush": "Не удалось выключить push-уведомления",
-  "thisForum": "этот форум"
+  "thisForum": "этот форум",
+  "openFullEditor": "Полный редактор"
 }

@@ -4855,6 +4855,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'this forum'**
   String get thisForum;
+
+  /// Button next to the quick-reply field of a conversation: opens the full Reply page (attachments, formatting) with the text typed so far
+  ///
+  /// In en, this message translates to:
+  /// **'Full editor'**
+  String get openFullEditor;
 }
 
 class _AppLocalizationsDelegate

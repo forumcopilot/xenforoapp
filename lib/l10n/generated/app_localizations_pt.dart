@@ -2810,4 +2810,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get thisForum => 'este fórum';
+
+  @override
+  String get openFullEditor => 'Editor completo';
 }

@@ -2823,4 +2823,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get thisForum => 'этот форум';
+
+  @override
+  String get openFullEditor => 'Полный редактор';
 }

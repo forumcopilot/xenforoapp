@@ -1888,5 +1888,7 @@
   "@pushDisabledFor": {"placeholders": {"siteName": {"type": "String"}}},
   "failedToDisablePush": "Failed to disable push notifications",
   "thisForum": "this forum",
-  "@thisForum": {"description": "Stands in for the forum address in \"Your username and password will be sent to {domain}\""}
+  "@thisForum": {"description": "Stands in for the forum address in \"Your username and password will be sent to {domain}\""},
+  "openFullEditor": "Full editor",
+  "@openFullEditor": {"description": "Button next to the quick-reply field of a conversation: opens the full Reply page (attachments, formatting) with the text typed so far"}
 }

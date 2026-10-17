@@ -1276,5 +1276,6 @@
   "writeYourTopicContent": "Inhalt Ihres Themas...",
   "pushDisabledFor": "Push-Benachrichtigungen für {siteName} deaktiviert",
   "failedToDisablePush": "Push-Benachrichtigungen konnten nicht deaktiviert werden",
-  "thisForum": "dieses Forum"
+  "thisForum": "dieses Forum",
+  "openFullEditor": "Vollständiger Editor"
 }

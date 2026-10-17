@@ -2643,4 +2643,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get thisForum => '此论坛';
+
+  @override
+  String get openFullEditor => '完整编辑器';
 }

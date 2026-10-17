@@ -1749,5 +1749,6 @@
   "writeYourTopicContent": "Inhoud van uw onderwerp...",
   "pushDisabledFor": "Pushmeldingen uitgeschakeld voor {siteName}",
   "failedToDisablePush": "Kan pushmeldingen niet uitschakelen",
-  "thisForum": "dit forum"
+  "thisForum": "dit forum",
+  "openFullEditor": "Volledige editor"
 }

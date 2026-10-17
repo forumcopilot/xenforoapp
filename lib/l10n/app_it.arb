@@ -1300,5 +1300,6 @@
   "writeYourTopicContent": "Scrivi il contenuto dell’argomento...",
   "pushDisabledFor": "Notifiche push disattivate per {siteName}",
   "failedToDisablePush": "Impossibile disattivare le notifiche push",
-  "thisForum": "questo forum"
+  "thisForum": "questo forum",
+  "openFullEditor": "Editor completo"
 }

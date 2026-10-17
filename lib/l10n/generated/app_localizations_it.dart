@@ -2815,4 +2815,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get thisForum => 'questo forum';
+
+  @override
+  String get openFullEditor => 'Editor completo';
 }

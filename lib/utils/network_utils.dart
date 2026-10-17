@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 
 class NetworkUtils {
+  /// Whether [text] (a failed call's result text or exception) says the forum
+  /// was not reached: no connection, refused, timed out. The proxies put the
+  /// transport error itself there, which is no message for a reader.
+  static bool isUnreachable(String? text) {
+    if (text == null || text.isEmpty) return false;
+    return _unreachable.hasMatch(text);
+  }
+
+  static final RegExp _unreachable = RegExp(
+    r'DioException|SocketException|HandshakeException|Connection (refused|reset|closed|errored)|'
+    r'Failed host lookup|Network is unreachable|timed out|status 0\b',
+    caseSensitive: false,
+  );
+
   /// Follows HTTP redirects and returns the final URL
   static Future<String> resolveRedirects(String url, {int maxRedirects = 5}) async {
     if (maxRedirects <= 0) {

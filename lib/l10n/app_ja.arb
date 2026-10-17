@@ -1276,5 +1276,6 @@
   "writeYourTopicContent": "トピックの内容を入力...",
   "pushDisabledFor": "{siteName} のプッシュ通知をオフにしました",
   "failedToDisablePush": "プッシュ通知をオフにできませんでした",
-  "thisForum": "このフォーラム"
+  "thisForum": "このフォーラム",
+  "openFullEditor": "フルエディター"
 }

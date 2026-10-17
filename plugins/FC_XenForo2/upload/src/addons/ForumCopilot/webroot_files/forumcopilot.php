@@ -133,6 +133,7 @@ class ForumCopilotPubApp extends PubApp
             'forgotPassword' => 'AccountController@actionForgotPassword',
             'updatePassword' => 'AccountController@actionUpdatePassword',
             'updateEmail' => 'AccountController@actionUpdateEmail',
+            'deleteAccount' => 'AccountController@actionDeleteAccount',
             'updateProfile' => 'AccountController@actionUpdateProfile',
             'getUserSettings' => 'AccountController@actionGetUserSettings',
             'updateUserSettings' => 'AccountController@actionUpdateUserSettings',

@@ -191,6 +191,7 @@ class App extends \XF\App
             'forgotPassword' => 'AccountController@actionForgotPassword',
             'updatePassword' => 'AccountController@actionUpdatePassword',
             'updateEmail' => 'AccountController@actionUpdateEmail',
+            'deleteAccount' => 'AccountController@actionDeleteAccount',
             'updateProfile' => 'AccountController@actionUpdateProfile',
             'getPasskeyChallenge' => 'AccountController@actionGetPasskeyChallenge',
             

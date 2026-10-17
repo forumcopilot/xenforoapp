@@ -59,6 +59,9 @@ class FCConfigResult
     /** @var array<string, mixed>|null The default style's colours and logo, light and dark (ConfigController::getStyleInfo) */
     public $style;
 
+    /** @var bool Members can delete their account from the app (deleteAccount) */
+    public $accountDeletion = false;
+
     public function __construct($data = [])
     {
         // Set all properties from data array

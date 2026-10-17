@@ -790,6 +790,82 @@ class AccountController extends AbstractController
         }
     }
 
+    /**
+     * Deletes the signed-in member's account. An app that lets people sign
+     * up must let them delete the account in it too (App Store guideline
+     * 5.1.1(v)); until now the app could only send them to the forum's staff.
+     *
+     * Confirmed with the member's password, or, for an account without one
+     * (signed up with Google, Facebook, ...), with their user name typed in.
+     * Staff accounts (administrators, moderators) are refused: those are
+     * removed in the admin control panel. The forum can turn this off
+     * (option fc_account_deletion; getConfig's accountDeletion says which).
+     *
+     * XenForo's own deletion, as when an administrator deletes a member: the
+     * account, profile and settings go; posts stay, under the name, as a
+     * guest's. This device's push registrations go with it.
+     */
+    public function actionDeleteAccount(ParameterBag $params)
+    {
+        if ($error = $this->assertRegisteredUser()) { return $error; }
+
+        if (!\XF::options()->fc_account_deletion) {
+            return $this->apiError('This forum does not delete accounts from the app. Please contact the forum staff.');
+        }
+
+        $visitor = \XF::visitor();
+        if ($visitor->is_admin || $visitor->is_moderator || $visitor->is_super_admin) {
+            return $this->apiError('Staff accounts cannot be deleted from the app. Please ask an administrator.');
+        }
+
+        $password = (string)$params->get('password', '');
+        $username = (string)$params->get('username', '');
+        $handler = $visitor->Auth ? $visitor->Auth->getAuthenticationHandler() : null;
+        if ($handler && $handler->hasPassword()) {
+            if ($password === '' || !$visitor->authenticate($password)) {
+                return $this->apiError('Your password is incorrect.');
+            }
+        } elseif (utf8_strtolower(trim($username)) !== utf8_strtolower($visitor->username)) {
+            return $this->apiError('Type your user name to confirm.');
+        }
+
+        try {
+            $userId = (int)$visitor->user_id;
+            /** @var \XF\Entity\User $user */
+            $user = $this->em()->find('XF:User', $userId);
+            // XenForo refuses to delete the visitor's own account unless told to.
+            $user->setOption('allow_self_delete', true);
+
+            // This device's remember key, while the account still exists.
+            $login = $this->getLoginPlugin();
+            $login->deleteVisitorRememberRecord(false);
+
+            $deleter = $this->service('XF:User\Delete', $user);
+            if (!$deleter->delete($errors)) {
+                $messages = array_map('strval', is_array($errors) ? $errors : [$errors]);
+                return $this->apiError(implode(' ', $messages) ?: 'The account could not be deleted.');
+            }
+
+            // Its push registrations (best effort: the account is gone either
+            // way), then this session.
+            try {
+                \XF::db()->delete('xf_fc_device_token', 'user_id = ?', $userId);
+            } catch (\Exception $e) {
+                \XF::logException($e, false, 'ForumCopilot: deleteAccount device tokens: ');
+            }
+            // Not logoutVisitor(): it saves the visitor's last activity, and
+            // the visitor is the deleted account.
+            \XF::session()->logoutUser();
+            $login->clearCookies();
+            $login->clearSiteData();
+
+            return $this->apiSuccess(new \ForumCopilot\Result\FCResult(true, null));
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot: deleteAccount: ');
+            return $this->apiError('The account could not be deleted: ' . $e->getMessage());
+        }
+    }
+
     public function actionUpdateEmail(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }

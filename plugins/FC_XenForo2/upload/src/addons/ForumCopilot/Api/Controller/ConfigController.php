@@ -117,6 +117,8 @@ class ConfigController extends AbstractController
             'canViewChat' => $canViewChat,
             'availableReactions' => $this->getAvailableReactions(),
             'style' => $this->getStyleInfo(),
+            // Members can delete their account from the app (deleteAccount).
+            'accountDeletion' => (bool)$options->fc_account_deletion,
         ];
 
         // Create FCConfigResult object and return it

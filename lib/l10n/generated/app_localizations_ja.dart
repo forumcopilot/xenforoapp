@@ -1615,4 +1615,40 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get reactionHoldHint => '長押しでほかのリアクション';
+
+  @override
+  String get turnOnNotifications => '通知をオンにする';
+
+  @override
+  String get notNow => 'あとで';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return '$forumName の返信を見逃さない';
+  }
+
+  @override
+  String get notificationPreviewNow => '今';
+
+  @override
+  String get notificationPreviewEarlier => '5分前';
+
+  @override
+  String get notificationPreviewReply => 'Jane があなたに返信しました：ようこそ！見つけてくれてうれしいです。';
+
+  @override
+  String get notificationPreviewMessage => 'Sam からメッセージ：金曜日は来ますか？';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp => 'このアプリの通知はオフになっています';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      '設定で通知を許可するまで、この端末には通知が表示されません。';
+
+  @override
+  String get openSettings => '設定を開く';
+
+  @override
+  String get notificationsPitchForum => '返信、メンション、ダイレクトメッセージをロック画面ですぐにお知らせします。';
 }

@@ -958,5 +958,18 @@
   "postAwaitingApproval": "モデレーターが承認すると、投稿が表示されます。",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "長押しでほかのリアクション",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "通知をオンにする",
+  "notNow": "あとで",
+  "neverMissAReplyOn": "{forumName} の返信を見逃さない",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "今",
+  "notificationPreviewEarlier": "5分前",
+  "notificationPreviewReply": "Jane があなたに返信しました：ようこそ！見つけてくれてうれしいです。",
+  "notificationPreviewMessage": "Sam からメッセージ：金曜日は来ますか？",
+  "notificationsAreTurnedOffForThisApp": "このアプリの通知はオフになっています",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "設定で通知を許可するまで、この端末には通知が表示されません。",
+  "openSettings": "設定を開く",
+  "notificationsPitchForum": "返信、メンション、ダイレクトメッセージをロック画面ですぐにお知らせします。",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

@@ -29,6 +29,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'dart:async';
 import '../utils/app_navigation.dart';
+import 'enable_notifications_page.dart';
 
 class SiteHomePage extends StatefulWidget {
   final Site? siteToInitialize;
@@ -93,6 +94,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   bool _waitingForInitialization = false;
   // Set once this page has asked to close after a failed start.
   bool _leaving = false;
+  bool _askedForNotifications = false;
 
   // Track unread conversations count for badge
   int _unreadConversationsCount = 0;
@@ -949,6 +951,14 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   Future<void> _fetchInboxStat() async {
     if (_siteContext == null || !_siteContext!.isLoggedIn) {
       return;
+    }
+    // Signed in and the forum is up: the moment to ask for notification
+    // permission, once (EnableNotificationsPage decides whether it's due).
+    if (!_askedForNotifications) {
+      _askedForNotifications = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _siteContext != null) EnableNotificationsPage.maybeShow(context, _siteContext!);
+      });
     }
 
     try {

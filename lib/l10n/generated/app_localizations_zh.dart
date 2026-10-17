@@ -1591,4 +1591,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reactionHoldHint => '长按可选择更多反应';
+
+  @override
+  String get turnOnNotifications => '开启通知';
+
+  @override
+  String get notNow => '暂不';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return '不错过 $forumName 上的任何回复';
+  }
+
+  @override
+  String get notificationPreviewNow => '刚刚';
+
+  @override
+  String get notificationPreviewEarlier => '5 分钟前';
+
+  @override
+  String get notificationPreviewReply => 'Jane 回复了你：欢迎加入！很高兴你找到了我们。';
+
+  @override
+  String get notificationPreviewMessage => 'Sam 给你发了消息：周五你来吗？';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp => '此应用的通知已关闭';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      '在“设置”中允许通知之前，设备不会显示提醒。';
+
+  @override
+  String get openSettings => '打开设置';
+
+  @override
+  String get notificationsPitchForum => '回复、提及和私信会第一时间显示在锁屏上。';
 }

@@ -1685,4 +1685,44 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reactionHoldHint => 'Appui long pour plus de réactions';
+
+  @override
+  String get turnOnNotifications => 'Activer les notifications';
+
+  @override
+  String get notNow => 'Pas maintenant';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return 'Ne manquez aucune réponse sur $forumName';
+  }
+
+  @override
+  String get notificationPreviewNow => 'maintenant';
+
+  @override
+  String get notificationPreviewEarlier => 'il y a 5 min';
+
+  @override
+  String get notificationPreviewReply =>
+      'Jane vous a répondu : Bienvenue ! Ravis que vous nous ayez trouvés.';
+
+  @override
+  String get notificationPreviewMessage =>
+      'Sam vous a envoyé un message : Tu viens vendredi ?';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp =>
+      'Les notifications sont désactivées pour cette application';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      'Votre appareil n\'affichera aucune alerte tant que vous n\'autorisez pas les notifications dans les Réglages.';
+
+  @override
+  String get openSettings => 'Ouvrir les réglages';
+
+  @override
+  String get notificationsPitchForum =>
+      'Les réponses, mentions et messages privés sur votre écran de verrouillage, dès qu’ils arrivent.';
 }

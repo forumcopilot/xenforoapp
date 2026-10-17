@@ -982,5 +982,18 @@
   "postAwaitingApproval": "Il tuo messaggio apparirà quando un moderatore lo avrà approvato.",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "Tieni premuto per altre reazioni",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "Attiva le notifiche",
+  "notNow": "Non ora",
+  "neverMissAReplyOn": "Non perdere nessuna risposta su {forumName}",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "ora",
+  "notificationPreviewEarlier": "5 min fa",
+  "notificationPreviewReply": "Jane ti ha risposto: Benvenuto! Siamo felici che ci hai trovati.",
+  "notificationPreviewMessage": "Sam ti ha inviato un messaggio: Vieni venerdì?",
+  "notificationsAreTurnedOffForThisApp": "Le notifiche sono disattivate per questa app",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "Il dispositivo non mostrerà avvisi finché non consenti le notifiche nelle Impostazioni.",
+  "openSettings": "Apri impostazioni",
+  "notificationsPitchForum": "Risposte, menzioni e messaggi diretti sulla schermata di blocco, appena arrivano.",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

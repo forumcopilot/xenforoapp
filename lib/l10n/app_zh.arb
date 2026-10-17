@@ -982,5 +982,18 @@
   "postAwaitingApproval": "您的帖子将在版主批准后显示。",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "长按可选择更多反应",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "开启通知",
+  "notNow": "暂不",
+  "neverMissAReplyOn": "不错过 {forumName} 上的任何回复",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "刚刚",
+  "notificationPreviewEarlier": "5 分钟前",
+  "notificationPreviewReply": "Jane 回复了你：欢迎加入！很高兴你找到了我们。",
+  "notificationPreviewMessage": "Sam 给你发了消息：周五你来吗？",
+  "notificationsAreTurnedOffForThisApp": "此应用的通知已关闭",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "在“设置”中允许通知之前，设备不会显示提醒。",
+  "openSettings": "打开设置",
+  "notificationsPitchForum": "回复、提及和私信会第一时间显示在锁屏上。",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

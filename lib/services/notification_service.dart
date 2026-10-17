@@ -8,7 +8,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:forumcopilot_flutter/config/app_forum_config.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'device_service.dart';
 import 'push_notification_service.dart';
 import 'package:get/get.dart';
@@ -63,14 +62,9 @@ class NotificationService with ServiceErrorHandlingMixin {
     try {
       AppLogger.debug('🔧 [NotificationService] Starting initialization...');
 
-      // Request permissions with better error handling
-      try {
-        await _requestPermissions();
-        AppLogger.debug('✅ [NotificationService] Permissions requested successfully');
-      } catch (e) {
-        AppLogger.debug('⚠️ [NotificationService] Permission request failed: $e');
-        // Continue without permissions - user can grant them later
-      }
+      // No permission prompt at launch: it is asked after sign-in
+      // (EnableNotificationsPage), so iOS's one-time prompt isn't spent on a
+      // guest. The FCM token doesn't need it.
 
       // Initialize local notifications with better error handling
       try {
@@ -167,43 +161,6 @@ class NotificationService with ServiceErrorHandlingMixin {
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error waiting for APNs token: $e');
       return null;
-    }
-  }
-
-  // Request notification permissions
-  Future<void> _requestPermissions() async {
-    if (Platform.isAndroid) {
-      // Request notification permission for Android 13+
-      final status = await Permission.notification.request();
-      if (status.isDenied) {
-        AppLogger.debug('Notification permission denied');
-      }
-    }
-
-    // Request Firebase messaging permissions
-    final settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    AppLogger.debug('Firebase messaging permission status: ${settings.authorizationStatus}');
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      AppLogger.debug('✅ [NotificationService] Permissions granted');
-
-      // Check APNs token on iOS and macOS (both use APNs)
-      if (Platform.isIOS || Platform.isMacOS) {
-        AppLogger.debug('✅ [NotificationService] Checking for APNs token...');
-        // Use event-driven approach: check immediately and poll with short intervals if needed
-        await _waitForAPNsToken();
-      }
-    } else {
-      AppLogger.debug('❌ [NotificationService] Permissions not granted: ${settings.authorizationStatus}');
     }
   }
 

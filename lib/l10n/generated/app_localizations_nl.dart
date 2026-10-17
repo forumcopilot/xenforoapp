@@ -1663,4 +1663,44 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reactionHoldHint => 'Houd ingedrukt voor meer reacties';
+
+  @override
+  String get turnOnNotifications => 'Meldingen inschakelen';
+
+  @override
+  String get notNow => 'Niet nu';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return 'Mis geen antwoord op $forumName';
+  }
+
+  @override
+  String get notificationPreviewNow => 'nu';
+
+  @override
+  String get notificationPreviewEarlier => '5 min geleden';
+
+  @override
+  String get notificationPreviewReply =>
+      'Jane heeft je geantwoord: Welkom! Fijn dat je ons gevonden hebt.';
+
+  @override
+  String get notificationPreviewMessage =>
+      'Sam heeft je een bericht gestuurd: Kom je vrijdag?';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp =>
+      'Meldingen zijn uitgeschakeld voor deze app';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      'Je apparaat toont geen meldingen totdat je notificaties toestaat in Instellingen.';
+
+  @override
+  String get openSettings => 'Instellingen openen';
+
+  @override
+  String get notificationsPitchForum =>
+      'Reacties, vermeldingen en privéberichten op je vergrendelscherm, zodra ze binnenkomen.';
 }

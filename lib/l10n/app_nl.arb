@@ -1431,5 +1431,18 @@
   "postAwaitingApproval": "Je bericht verschijnt zodra een moderator het heeft goedgekeurd.",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "Houd ingedrukt voor meer reacties",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "Meldingen inschakelen",
+  "notNow": "Niet nu",
+  "neverMissAReplyOn": "Mis geen antwoord op {forumName}",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "nu",
+  "notificationPreviewEarlier": "5 min geleden",
+  "notificationPreviewReply": "Jane heeft je geantwoord: Welkom! Fijn dat je ons gevonden hebt.",
+  "notificationPreviewMessage": "Sam heeft je een bericht gestuurd: Kom je vrijdag?",
+  "notificationsAreTurnedOffForThisApp": "Meldingen zijn uitgeschakeld voor deze app",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "Je apparaat toont geen meldingen totdat je notificaties toestaat in Instellingen.",
+  "openSettings": "Instellingen openen",
+  "notificationsPitchForum": "Reacties, vermeldingen en privéberichten op je vergrendelscherm, zodra ze binnenkomen.",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

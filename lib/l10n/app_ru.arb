@@ -982,5 +982,18 @@
   "postAwaitingApproval": "Сообщение появится после одобрения модератором.",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "Удерживайте для других реакций",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "Включить уведомления",
+  "notNow": "Не сейчас",
+  "neverMissAReplyOn": "Не пропускайте ответы на {forumName}",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "сейчас",
+  "notificationPreviewEarlier": "5 мин назад",
+  "notificationPreviewReply": "Jane ответила вам: Добро пожаловать! Рады, что вы нас нашли.",
+  "notificationPreviewMessage": "Sam отправил вам сообщение: Придёшь в пятницу?",
+  "notificationsAreTurnedOffForThisApp": "Уведомления для этого приложения отключены",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "Устройство не будет показывать уведомления, пока вы не разрешите их в настройках.",
+  "openSettings": "Открыть настройки",
+  "notificationsPitchForum": "Ответы, упоминания и личные сообщения на экране блокировки, как только они приходят.",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

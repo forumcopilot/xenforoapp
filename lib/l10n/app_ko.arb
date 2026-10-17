@@ -982,5 +982,18 @@
   "postAwaitingApproval": "운영자가 승인하면 게시물이 표시됩니다.",
   "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
   "reactionHoldHint": "길게 누르면 다른 반응",
-  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"},
+  "turnOnNotifications": "알림 켜기",
+  "notNow": "나중에",
+  "neverMissAReplyOn": "{forumName}의 답글을 놓치지 마세요",
+  "@neverMissAReplyOn": {"description": "Enable-notifications page", "placeholders": {"forumName": {"type": "Object"}}},
+  "notificationPreviewNow": "지금",
+  "notificationPreviewEarlier": "5분 전",
+  "notificationPreviewReply": "Jane님이 답글을 남겼습니다: 환영해요! 찾아와 주셔서 반가워요.",
+  "notificationPreviewMessage": "Sam님이 메시지를 보냈습니다: 금요일에 오시나요?",
+  "notificationsAreTurnedOffForThisApp": "이 앱의 알림이 꺼져 있습니다",
+  "deviceWillNotShowAlertsUntilAllowedInSettings": "설정에서 알림을 허용할 때까지 이 기기에는 알림이 표시되지 않습니다.",
+  "openSettings": "설정 열기",
+  "notificationsPitchForum": "답글, 멘션, 쪽지를 잠금 화면에서 바로 알려 드립니다.",
+  "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"}
 }

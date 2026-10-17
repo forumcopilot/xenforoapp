@@ -1608,4 +1608,41 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reactionHoldHint => '길게 누르면 다른 반응';
+
+  @override
+  String get turnOnNotifications => '알림 켜기';
+
+  @override
+  String get notNow => '나중에';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return '$forumName의 답글을 놓치지 마세요';
+  }
+
+  @override
+  String get notificationPreviewNow => '지금';
+
+  @override
+  String get notificationPreviewEarlier => '5분 전';
+
+  @override
+  String get notificationPreviewReply =>
+      'Jane님이 답글을 남겼습니다: 환영해요! 찾아와 주셔서 반가워요.';
+
+  @override
+  String get notificationPreviewMessage => 'Sam님이 메시지를 보냈습니다: 금요일에 오시나요?';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp => '이 앱의 알림이 꺼져 있습니다';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      '설정에서 알림을 허용할 때까지 이 기기에는 알림이 표시되지 않습니다.';
+
+  @override
+  String get openSettings => '설정 열기';
+
+  @override
+  String get notificationsPitchForum => '답글, 멘션, 쪽지를 잠금 화면에서 바로 알려 드립니다.';
 }

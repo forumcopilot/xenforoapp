@@ -2995,6 +2995,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long press for more reactions'**
   String get reactionHoldHint;
+
+  /// UI text: Turn on notifications
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on notifications'**
+  String get turnOnNotifications;
+
+  /// UI text: Not now
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// Enable-notifications page
+  ///
+  /// In en, this message translates to:
+  /// **'Never miss a reply on {forumName}'**
+  String neverMissAReplyOn(Object forumName);
+
+  /// Enable-notifications page (a sample notification shown as a preview)
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get notificationPreviewNow;
+
+  /// Enable-notifications page (a sample notification shown as a preview)
+  ///
+  /// In en, this message translates to:
+  /// **'5m ago'**
+  String get notificationPreviewEarlier;
+
+  /// Enable-notifications page (a sample notification shown as a preview)
+  ///
+  /// In en, this message translates to:
+  /// **'Jane replied to you: Welcome aboard! Glad you found us.'**
+  String get notificationPreviewReply;
+
+  /// Enable-notifications page (a sample notification shown as a preview)
+  ///
+  /// In en, this message translates to:
+  /// **'Sam sent you a message: Are you coming on Friday?'**
+  String get notificationPreviewMessage;
+
+  /// UI text: Notifications are turned off for this app
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off for this app'**
+  String get notificationsAreTurnedOffForThisApp;
+
+  /// Grant page banner, shown when the OS notification permission was refused
+  ///
+  /// In en, this message translates to:
+  /// **'Your device will not show alerts until you allow notifications in Settings.'**
+  String get deviceWillNotShowAlertsUntilAllowedInSettings;
+
+  /// Button: open the app's page in the system settings
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// Shown under the title on the page that asks to turn on notifications after sign-in
+  ///
+  /// In en, this message translates to:
+  /// **'Replies, mentions and direct messages, on your lock screen as they happen.'**
+  String get notificationsPitchForum;
 }
 
 class _AppLocalizationsDelegate

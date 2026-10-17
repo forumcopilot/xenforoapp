@@ -1675,4 +1675,44 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reactionHoldHint => 'Удерживайте для других реакций';
+
+  @override
+  String get turnOnNotifications => 'Включить уведомления';
+
+  @override
+  String get notNow => 'Не сейчас';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return 'Не пропускайте ответы на $forumName';
+  }
+
+  @override
+  String get notificationPreviewNow => 'сейчас';
+
+  @override
+  String get notificationPreviewEarlier => '5 мин назад';
+
+  @override
+  String get notificationPreviewReply =>
+      'Jane ответила вам: Добро пожаловать! Рады, что вы нас нашли.';
+
+  @override
+  String get notificationPreviewMessage =>
+      'Sam отправил вам сообщение: Придёшь в пятницу?';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp =>
+      'Уведомления для этого приложения отключены';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      'Устройство не будет показывать уведомления, пока вы не разрешите их в настройках.';
+
+  @override
+  String get openSettings => 'Открыть настройки';
+
+  @override
+  String get notificationsPitchForum =>
+      'Ответы, упоминания и личные сообщения на экране блокировки, как только они приходят.';
 }

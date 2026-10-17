@@ -1674,4 +1674,44 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get reactionHoldHint => 'Pressione e segure para mais reações';
+
+  @override
+  String get turnOnNotifications => 'Ativar notificações';
+
+  @override
+  String get notNow => 'Agora não';
+
+  @override
+  String neverMissAReplyOn(Object forumName) {
+    return 'Não perca nenhuma resposta em $forumName';
+  }
+
+  @override
+  String get notificationPreviewNow => 'agora';
+
+  @override
+  String get notificationPreviewEarlier => 'há 5 min';
+
+  @override
+  String get notificationPreviewReply =>
+      'Jane respondeu você: Bem-vindo! Que bom que você nos encontrou.';
+
+  @override
+  String get notificationPreviewMessage =>
+      'Sam enviou uma mensagem: Você vem na sexta?';
+
+  @override
+  String get notificationsAreTurnedOffForThisApp =>
+      'As notificações estão desativadas para este app';
+
+  @override
+  String get deviceWillNotShowAlertsUntilAllowedInSettings =>
+      'O seu dispositivo não mostrará alertas até que permita as notificações em Configurações.';
+
+  @override
+  String get openSettings => 'Abrir configurações';
+
+  @override
+  String get notificationsPitchForum =>
+      'Respostas, menções e mensagens diretas na tela de bloqueio assim que chegam.';
 }

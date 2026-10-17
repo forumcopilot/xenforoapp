@@ -599,17 +599,17 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         await _saveSiteStates();
 
         AppLogger.debug('Successfully unregistered from site: ${state.siteName}');
-        _showToast('Push notifications disabled for ${state.siteName}', isError: false);
+        _showToast(l10nNow().pushDisabledFor(state.siteName), isError: false);
         update();
         return true;
       } else {
         AppLogger.debug('Failed to unregister from site: ${state.siteName}');
-        _showToast('Failed to disable push notifications', isError: true);
+        _showToast(l10nNow().failedToDisablePush, isError: true);
         return false;
       }
     } catch (e) {
       AppLogger.debug('Error unregistering site $siteId: $e');
-      _showToast('Error disabling push notifications', isError: true);
+      _showToast(l10nNow().failedToDisablePush, isError: true);
       return false;
     }
   }

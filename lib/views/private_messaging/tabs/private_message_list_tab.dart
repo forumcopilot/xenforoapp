@@ -83,8 +83,8 @@ class PrivateMessageListTabState extends FCStatefulWidget<PrivateMessageListTab>
           }
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: 'Sign in to view messages',
-            message: 'You need to be signed in to view your private messages.',
+            title: AppLocalizations.of(context).signInToViewMessages,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewConversations,
             icon: Icons.mail_outline_rounded,
           );
         }

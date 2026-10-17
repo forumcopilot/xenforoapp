@@ -355,7 +355,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isForward ? 'Forward' : 'Reply', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
+        title: Text(widget.isForward ? AppLocalizations.of(context).forward : AppLocalizations.of(context).reply, style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
         backgroundColor: colorScheme.surface,
         elevation: 3,
         shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
@@ -432,12 +432,12 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRecipientField('To', _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
+              _buildRecipientField(AppLocalizations.of(context).toLabel, _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
               const SizedBox(height: 8),
               TextField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Subject',
+                  labelText: AppLocalizations.of(context).subject,
                   hintText: AppLocalizations.of(context).enterSubject,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
@@ -473,7 +473,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                 controller: _messageController,
                 focusNode: _messageFocusNode,
                 decoration: InputDecoration(
-                  labelText: 'Message',
+                  labelText: AppLocalizations.of(context).message,
                   hintText: AppLocalizations.of(context).typeYourMessageHere,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),

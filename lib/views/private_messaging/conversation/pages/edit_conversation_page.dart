@@ -89,7 +89,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
       return true;
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Error: ${e.toString()}');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).error('$e'));
       }
       return false;
     } finally {
@@ -109,7 +109,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Edit Conversation',
+          AppLocalizations.of(context).editConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightSemiBold,
@@ -159,7 +159,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     ),
                     SizedBox(height: DesignTokens.spacingM),
                     Text(
-                      'Failed to load conversation',
+                      AppLocalizations.of(context).failedToLoadConversation,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.error,
                       ),
@@ -199,7 +199,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     ),
                     SizedBox(height: DesignTokens.spacingM),
                     Text(
-                      'Cannot edit this conversation',
+                      AppLocalizations.of(context).cannotEditConversation,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.error,
                       ),
@@ -252,7 +252,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
               children: [
                 // Title field
                 Text(
-                  'Title',
+                  AppLocalizations.of(context).titleLabel,
                   style: textTheme.titleSmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: DesignTokens.fontWeightMedium,
@@ -291,7 +291,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Options',
+                      AppLocalizations.of(context).options,
                       style: textTheme.titleSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: DesignTokens.fontWeightMedium,
@@ -308,14 +308,14 @@ class _EditConversationPageState extends State<EditConversationPage> {
                           // Open Invite toggle
                           SwitchListTile(
                             title: Text(
-                              'Open Invite',
+                              AppLocalizations.of(context).openInvite,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
                               ),
                             ),
                             subtitle: Text(
-                              'Allow any participant to invite others',
+                              AppLocalizations.of(context).allowAnyParticipantToInviteOthers,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -337,14 +337,14 @@ class _EditConversationPageState extends State<EditConversationPage> {
                           // Conversation Open toggle
                           SwitchListTile(
                             title: Text(
-                              'Conversation Open',
+                              AppLocalizations.of(context).conversationOpen,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
                               ),
                             ),
                             subtitle: Text(
-                              _conversationOpen == true ? 'Conversation is open for replies' : 'Conversation is closed (no replies allowed)',
+                              _conversationOpen == true ? AppLocalizations.of(context).conversationIsOpenForReplies : AppLocalizations.of(context).conversationIsClosedNoRepliesAllowed,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),

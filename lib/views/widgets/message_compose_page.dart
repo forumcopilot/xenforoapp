@@ -30,8 +30,8 @@ class MessageComposePage extends StatefulWidget {
   // Returns attachment ID on success, null on failure
   // If null, attachment upload buttons will be hidden
   final Future<String?> Function(XFile file)? onFileUpload;
-  final String titleHint;
-  final String contentHint;
+  final String? titleHint;
+  final String? contentHint;
   final bool showAppBar;
   final bool autoFocusContent;
   final String? forumName;
@@ -82,8 +82,8 @@ class MessageComposePage extends StatefulWidget {
     this.showTitleField = false,
     this.requireTitle = true, // Default to true to maintain existing behavior
     this.initialContent,
-    this.titleHint = 'Write your title...',
-    this.contentHint = 'Write your content...',
+    this.titleHint,
+    this.contentHint,
     this.showAppBar = true,
     this.autoFocusContent = true,
     this.forumName,
@@ -1713,7 +1713,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Title',
+                                    AppLocalizations.of(context).titleLabel,
                                     style: textTheme.titleSmall?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
                                       fontWeight: DesignTokens.fontWeightMedium,
@@ -1724,7 +1724,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                     controller: _titleController,
                                     focusNode: _titleFocusNode,
                                     decoration: InputDecoration(
-                                      hintText: widget.titleHint,
+                                      hintText: widget.titleHint ?? AppLocalizations.of(context).writeYourTitle,
                                       hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
@@ -1773,7 +1773,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   keyboardType: TextInputType.multiline,
                                   textCapitalization: TextCapitalization.sentences,
                                   decoration: InputDecoration(
-                                    hintText: widget.contentHint,
+                                    hintText: widget.contentHint ?? AppLocalizations.of(context).writeYourContent,
                                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(DesignTokens.radiusM),

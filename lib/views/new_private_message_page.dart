@@ -129,7 +129,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }
@@ -380,13 +380,13 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRecipientField('To', _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
+              _buildRecipientField(AppLocalizations.of(context).toLabel, _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
               const SizedBox(height: 8),
               TextField(
                 controller: _titleController,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context).subject,
-                  hintText: 'Enter subject',
+                  hintText: AppLocalizations.of(context).enterSubject,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
@@ -465,7 +465,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                         Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                         SizedBox(width: DesignTokens.spacingS),
                         Text(
-                          'Attachments',
+                          AppLocalizations.of(context).attachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: DesignTokens.fontWeightMedium,
@@ -669,7 +669,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }

@@ -387,12 +387,12 @@ class _EditPostPageState extends State<EditPostPage> {
           isEditing: true,
           key: const ValueKey('edit_post_compose'),
           siteContext: widget.siteContext,
-          title: 'Edit Post',
+          title: AppLocalizations.of(context).editPost,
           showTitleField: canEditTitle, // Only show title field if user can edit it
           requireTitle: false, // Allow empty titles for post editing
           titleController: _titleController,
           contentController: _contentController,
-          contentHint: 'Edit your post...',
+          contentHint: AppLocalizations.of(context).editYourPost,
           autoFocusContent: false, // Don't auto-focus any field when editing
           onSubmit: _handleSubmit,
           onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,

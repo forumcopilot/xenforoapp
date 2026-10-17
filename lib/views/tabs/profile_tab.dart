@@ -358,8 +358,8 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
           // Show only Not Signed In view when user is not logged in (no forum header)
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: 'Sign in to view profile',
-            message: 'You need to be signed in to view your profile.',
+            title: AppLocalizations.of(context).signInToViewProfile,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewYourProfile,
             icon: Icons.person_outline_rounded,
           );
         }

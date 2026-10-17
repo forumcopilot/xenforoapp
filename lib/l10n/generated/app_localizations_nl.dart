@@ -2619,4 +2619,186 @@ class AppLocalizationsNl extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return 'Kan afbeelding niet optimaliseren: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return 'E-mail gekopieerd naar klembord: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return 'Kon e-mail niet openen: $email';
+  }
+
+  @override
+  String get editPost => 'Bericht bewerken';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum =>
+      'Dit onderwerp is vastgezet bovenaan het forum';
+
+  @override
+  String get editConversation => 'Gesprek bewerken';
+
+  @override
+  String get failedToLoadConversation => 'Kon gesprek niet laden';
+
+  @override
+  String get cannotEditConversation => 'Kan dit gesprek niet bewerken';
+
+  @override
+  String get titleLabel => 'Titel';
+
+  @override
+  String get options => 'Opties';
+
+  @override
+  String get openInvite => 'Open uitnodigen';
+
+  @override
+  String get allowAnyParticipantToInviteOthers =>
+      'Sta toe dat elke deelnemer anderen uitnodigt';
+
+  @override
+  String get conversationOpen => 'Gesprek open';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return 'Kon gesprek niet aanmaken: $error';
+  }
+
+  @override
+  String get lockConversation => 'Gesprek vergrendelen';
+
+  @override
+  String get createConversationAsClosed =>
+      'Gesprek als gesloten maken (geen reacties toegestaan)';
+
+  @override
+  String get deleteAccount => 'Account verwijderen';
+
+  @override
+  String get deleteAccountDescription => 'Verwijder uw account van dit forum.';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      'Uw account wordt beheerd door het forum. Neem direct contact op met het forum voor accountverwijdering. Gebruik de knop Contact onderaan de forumhomepage.';
+
+  @override
+  String get forumUrlUnavailable => 'Forum-URL is niet beschikbaar.';
+
+  @override
+  String get couldNotOpenForumUrl => 'Kon forum-URL niet openen.';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      'Geen actie-URL beschikbaar voor dit meldingstype.';
+
+  @override
+  String get signInToViewNotifications => 'Meld u aan om meldingen te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications =>
+      'U moet aangemeld zijn om uw meldingen te bekijken.';
+
+  @override
+  String get errorLoadingNotifications => 'Fout bij laden van meldingen';
+
+  @override
+  String get pullDownToRefresh => 'Trek omlaag om te vernieuwen';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      'U heeft geen nieuwe meldingen. Kom later terug voor updates over onderwerpen die u volgt.';
+
+  @override
+  String get signInToViewProfile => 'Meld u aan om profiel te bekijken';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile =>
+      'U moet aangemeld zijn om uw profiel te bekijken.';
+
+  @override
+  String get emailLabel => 'E-mail';
+
+  @override
+  String get confirmPasswordLabel => 'Bevestig wachtwoord';
+
+  @override
+  String get protectedForum => 'Beveiligd forum';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName is met een wachtwoord beveiligd.';
+  }
+
+  @override
+  String get enterButton => 'Invoeren';
+
+  @override
+  String get recentPosts => 'Recente berichten';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return 'Passkey is momenteel niet beschikbaar op dit forum (code: $code)';
+  }
+
+  @override
+  String get initializingForum => 'Forum wordt gestart…';
+
+  @override
+  String get retryConnection => 'Opnieuw verbinden';
+
+  @override
+  String get pleaseConfirmPassword => 'Bevestig uw wachtwoord';
+
+  @override
+  String get pleaseEnterTheForumPassword => 'Voer het forumwachtwoord in';
+
+  @override
+  String get editYourPost => 'Bewerk uw bericht...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      'Onderwerp-ID ontbreekt. Kan niet naar het bericht navigeren.';
+
+  @override
+  String get conversationIsOpenForReplies => 'Gesprek is open voor reacties';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed =>
+      'Gesprek is gesloten (geen reacties toegestaan)';
+
+  @override
+  String get pleaseEnterAUsername => 'Voer een gebruikersnaam in';
+
+  @override
+  String usernameMinLength(int count) {
+    return 'De gebruikersnaam moet minstens $count tekens lang zijn';
+  }
+
+  @override
+  String get pleaseEnterAPassword => 'Voer een wachtwoord in';
+
+  @override
+  String passwordMinLength(int count) {
+    return 'Het wachtwoord moet minstens $count tekens lang zijn';
+  }
+
+  @override
+  String get writeYourTopicTitle => 'Titel van uw onderwerp...';
+
+  @override
+  String get writeYourTopicContent => 'Inhoud van uw onderwerp...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return 'Pushmeldingen uitgeschakeld voor $siteName';
+  }
+
+  @override
+  String get failedToDisablePush => 'Kan pushmeldingen niet uitschakelen';
+
+  @override
+  String get thisForum => 'dit forum';
 }

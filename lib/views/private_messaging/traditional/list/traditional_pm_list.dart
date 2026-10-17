@@ -257,7 +257,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
           return NotSignedInView(
             siteContext: widget.siteContext,
             title: AppLocalizations.of(context).signInToViewMessages,
-            message: 'You need to be signed in to view your private messages.',
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewConversations,
             icon: Icons.mail_outline_rounded,
           );
         }
@@ -267,7 +267,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
           return NotSignedInView(
             siteContext: widget.siteContext,
             title: AppLocalizations.of(context).privateMessagesNotAvailable,
-            message: 'You do not have permission to use private messaging.',
+            message: AppLocalizations.of(context).privateMessagesNotAvailable,
             icon: Icons.mail_outline_rounded,
           );
         }

@@ -301,7 +301,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
           showTitleField: false, // Messages don't have titles
           requireTitle: false,
           contentController: _contentController,
-          contentHint: 'Edit your message...',
+          contentHint: AppLocalizations.of(context).writeYourMessage,
           autoFocusContent: false, // Don't auto-focus when editing
           onSubmit: _handleSubmit,
           onFileUpload: (widget.siteContext.loginDataOutput?.canUploadConversationAttachment ?? false) ? _handleFileUpload : null,

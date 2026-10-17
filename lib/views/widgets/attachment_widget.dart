@@ -334,7 +334,7 @@ class AttachmentWidget extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text('Downloading $filename...'),
+              child: Text(AppLocalizations.of(context).downloading(filename)),
             ),
           ],
         ),
@@ -357,8 +357,8 @@ class AttachmentWidget extends StatelessWidget {
           final isInDownloads = filePath.contains('/Downloads/') || 
                                (filePath.contains('Downloads') && !filePath.contains('Containers'));
           final locationMessage = isInDownloads 
-              ? 'File saved to Downloads: $filename'
-              : 'File saved to Documents: $filename';
+              ? AppLocalizations.of(context).fileSavedToDownloads(filename)
+              : AppLocalizations.of(context).fileSavedToDocuments(filename);
           
           SnackbarHelper.showSuccess(context, locationMessage);
         }

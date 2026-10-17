@@ -52,7 +52,7 @@ class RecentPostsSection extends StatelessWidget {
         Padding(
           padding: DesignTokens.paddingL,
           child: Text(
-            'Recent Posts',
+            AppLocalizations.of(context).recentPosts,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,

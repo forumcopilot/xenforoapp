@@ -80,7 +80,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onReply,
-          tooltip: 'Reply',
+          tooltip: AppLocalizations.of(context).reply,
         ),
         IconButton(
           icon: Icon(
@@ -129,7 +129,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
                 ),
                 const SizedBox(width: DesignTokens.spacingM),
                 Text(
-                  'Delete',
+                  AppLocalizations.of(context).delete,
                   style: TextStyle(
                     color: colorScheme.error,
                   ),
@@ -148,7 +148,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
                 ),
                 const SizedBox(width: DesignTokens.spacingM),
                 Text(
-                  'Report User',
+                  AppLocalizations.of(context).reportUser,
                   style: TextStyle(
                     color: colorScheme.error,
                   ),

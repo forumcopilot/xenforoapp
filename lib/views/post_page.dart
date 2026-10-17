@@ -444,7 +444,7 @@ class _PostPageState extends State<PostPage> {
                         const SizedBox(width: DesignTokens.spacingM),
                         Expanded(
                           child: Text(
-                            'This topic is pinned to the top of the forum',
+                            AppLocalizations.of(context).thisTopicIsPinnedToTopOfForum,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 ),

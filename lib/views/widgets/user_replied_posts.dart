@@ -144,7 +144,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
         Padding(
           padding: DesignTokens.paddingL,
           child: Text(
-            'Recent Posts',
+            AppLocalizations.of(context).recentPosts,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightBold,

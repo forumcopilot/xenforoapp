@@ -2502,4 +2502,180 @@ class AppLocalizationsKo extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return '이미지를 최적화하지 못했습니다: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return '이메일이 클립보드에 복사되었습니다: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return '이메일을 열 수 없습니다: $email';
+  }
+
+  @override
+  String get editPost => '게시물 수정';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum => '이 토픽은 포럼 상단에 고정되어 있습니다';
+
+  @override
+  String get editConversation => '대화 편집';
+
+  @override
+  String get failedToLoadConversation => '대화를 불러오지 못했습니다';
+
+  @override
+  String get cannotEditConversation => '이 대화는 수정할 수 없습니다';
+
+  @override
+  String get titleLabel => '제목';
+
+  @override
+  String get options => '옵션';
+
+  @override
+  String get openInvite => '공개 초대';
+
+  @override
+  String get allowAnyParticipantToInviteOthers => '모든 참가자가 다른 사용자를 초대하도록 허용';
+
+  @override
+  String get conversationOpen => '대화 열림';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return '대화를 생성하지 못했습니다: $error';
+  }
+
+  @override
+  String get lockConversation => '대화 잠금';
+
+  @override
+  String get createConversationAsClosed => '대화를 닫힌 상태로 생성(답장 불가)';
+
+  @override
+  String get deleteAccount => '계정 삭제';
+
+  @override
+  String get deleteAccountDescription => '이 포럼에서 계정을 삭제합니다.';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      '계정은 포럼에서 관리됩니다. 계정 삭제를 위해 포럼에 직접 문의하세요. 포럼 홈 하단의 \"문의하기\" 버튼을 사용하세요.';
+
+  @override
+  String get forumUrlUnavailable => '포럼 URL을 사용할 수 없습니다.';
+
+  @override
+  String get couldNotOpenForumUrl => '포럼 URL을 열 수 없습니다.';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      '이 알림 유형에는 사용할 작업 URL이 없습니다.';
+
+  @override
+  String get signInToViewNotifications => '알림을 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications => '알림을 보려면 로그인해야 합니다.';
+
+  @override
+  String get errorLoadingNotifications => '알림을 불러오는 중 오류가 발생했습니다';
+
+  @override
+  String get pullDownToRefresh => '아래로 당겨 새로고침';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      '새 알림이 없습니다. 나중에 다시 확인하세요.';
+
+  @override
+  String get signInToViewProfile => '프로필을 보려면 로그인하세요';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile => '프로필을 보려면 로그인해야 합니다.';
+
+  @override
+  String get emailLabel => '이메일';
+
+  @override
+  String get confirmPasswordLabel => '비밀번호 확인';
+
+  @override
+  String get protectedForum => '보호된 포럼';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName 은(는) 비밀번호로 보호되어 있습니다.';
+  }
+
+  @override
+  String get enterButton => '입력';
+
+  @override
+  String get recentPosts => '최근 게시물';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return '이 포럼에서는 현재 패스키를 사용할 수 없습니다 (코드: $code)';
+  }
+
+  @override
+  String get initializingForum => '포럼을 준비하는 중…';
+
+  @override
+  String get retryConnection => '다시 연결';
+
+  @override
+  String get pleaseConfirmPassword => '비밀번호를 확인해 주세요';
+
+  @override
+  String get pleaseEnterTheForumPassword => '포럼 비밀번호를 입력하세요';
+
+  @override
+  String get editYourPost => '게시물을 수정하세요...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      '토픽 ID가 없어 게시글로 이동할 수 없습니다.';
+
+  @override
+  String get conversationIsOpenForReplies => '이 대화는 답장을 허용합니다';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed => '이 대화는 닫혀 있습니다(답장 불가)';
+
+  @override
+  String get pleaseEnterAUsername => '사용자 이름을 입력하세요';
+
+  @override
+  String usernameMinLength(int count) {
+    return '사용자 이름은 $count자 이상이어야 합니다';
+  }
+
+  @override
+  String get pleaseEnterAPassword => '비밀번호를 입력하세요';
+
+  @override
+  String passwordMinLength(int count) {
+    return '비밀번호는 $count자 이상이어야 합니다';
+  }
+
+  @override
+  String get writeYourTopicTitle => '주제 제목을 입력하세요...';
+
+  @override
+  String get writeYourTopicContent => '주제 내용을 입력하세요...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return '$siteName의 푸시 알림을 껐습니다';
+  }
+
+  @override
+  String get failedToDisablePush => '푸시 알림을 끄지 못했습니다';
+
+  @override
+  String get thisForum => '이 포럼';
 }

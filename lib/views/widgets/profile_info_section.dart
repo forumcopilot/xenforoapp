@@ -136,7 +136,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.calendar_today,
-                  title: 'Member Since',
+                  title: AppLocalizations.of(context).memberSince,
                   subtitle: DateFormat.yMMMMd().format(userInfo.registrationTime as DateTime),
                 ),
               if (userInfo.customFieldsList != null)
@@ -167,7 +167,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.access_time,
-                  title: 'Last Activity',
+                  title: AppLocalizations.of(context).lastActivity,
                   subtitle: DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(userInfo.lastActivityTime!.toLocal()),
                 ),
               if (userInfo.postCount != 0)
@@ -188,7 +188,7 @@ class ProfileInfoSection extends StatelessWidget {
                     fields.add(_buildInfoTile(
                       context,
                       icon: Icons.thumb_up,
-                      title: 'Likes Received',
+                      title: AppLocalizations.of(context).likesReceived,
                       subtitle: formatNumberFromString(context, likesReceivedField.first.value),
                     ));
                   }
@@ -196,7 +196,7 @@ class ProfileInfoSection extends StatelessWidget {
                     fields.add(_buildInfoTile(
                       context,
                       icon: Icons.thumb_up_outlined,
-                      title: 'Likes Given',
+                      title: AppLocalizations.of(context).likesGiven,
                       subtitle: formatNumberFromString(context, likesGivenField.first.value),
                     ));
                   }
@@ -301,7 +301,7 @@ class ProfileInfoSection extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     collapsedBackgroundColor: Colors.transparent,
                     title: Text(
-                      'Show More',
+                      AppLocalizations.of(context).showMore,
                       style: textTheme.titleSmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: DesignTokens.fontWeightMedium,

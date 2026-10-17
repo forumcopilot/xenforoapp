@@ -357,7 +357,7 @@ class _ReplyPageState extends State<ReplyPage> {
         title: AppLocalizations.of(context).reply,
         showTitleField: false,
         initialContent: _getInitialContent(),
-        contentHint: 'Write your reply...',
+        contentHint: AppLocalizations.of(context).writeYourReply,
         onSubmit: _handleSubmit,
         onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
         topicTitle: widget.topicTitle,

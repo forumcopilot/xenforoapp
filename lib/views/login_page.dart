@@ -235,7 +235,7 @@ class _LoginPageState extends State<LoginPage>
         if (!enabled && errorCode != null) ...[
           const SizedBox(height: DesignTokens.spacingS),
           Text(
-            'Passkey is currently not availalbe in this forum (code: $errorCode)',
+            AppLocalizations.of(context).passkeyNotAvailableInForum(errorCode),
             style: StyleBuilders.smallTextStyle(
               colorScheme: colorScheme,
               textTheme: textTheme,

@@ -2470,4 +2470,177 @@ class AppLocalizationsZh extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return '优化图片失败：$error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return '电子邮件已复制到剪贴板：$email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return '无法打开电子邮件：$email';
+  }
+
+  @override
+  String get editPost => '编辑帖子';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum => '该主题已置顶到论坛顶部';
+
+  @override
+  String get editConversation => '编辑对话';
+
+  @override
+  String get failedToLoadConversation => '加载会话失败';
+
+  @override
+  String get cannotEditConversation => '无法编辑此会话';
+
+  @override
+  String get titleLabel => '标题';
+
+  @override
+  String get options => '选项';
+
+  @override
+  String get openInvite => '开放邀请';
+
+  @override
+  String get allowAnyParticipantToInviteOthers => '允许任何参与者邀请其他人';
+
+  @override
+  String get conversationOpen => '会话开启';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return '创建会话失败：$error';
+  }
+
+  @override
+  String get lockConversation => '锁定会话';
+
+  @override
+  String get createConversationAsClosed => '将会话创建为关闭状态（不允许回复）';
+
+  @override
+  String get deleteAccount => '删除账户';
+
+  @override
+  String get deleteAccountDescription => '从此论坛中删除您的账户。';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      '您的账户由论坛管理。如需删除账户，请直接联系论坛。请使用论坛主页底部的“联系我们”按钮。';
+
+  @override
+  String get forumUrlUnavailable => '论坛 URL 不可用。';
+
+  @override
+  String get couldNotOpenForumUrl => '无法打开论坛 URL。';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType => '此通知类型没有可用的操作链接。';
+
+  @override
+  String get signInToViewNotifications => '登录后可查看通知';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications => '您需要登录后才能查看您的通知。';
+
+  @override
+  String get errorLoadingNotifications => '加载通知时出错';
+
+  @override
+  String get pullDownToRefresh => '下拉刷新';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater => '您暂无新通知。请稍后回来查看。';
+
+  @override
+  String get signInToViewProfile => '登录后可查看个人资料';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile => '您需要登录后才能查看您的个人资料。';
+
+  @override
+  String get emailLabel => '电子邮箱';
+
+  @override
+  String get confirmPasswordLabel => '确认密码';
+
+  @override
+  String get protectedForum => '受保护的论坛';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName 受密码保护。';
+  }
+
+  @override
+  String get enterButton => '进入';
+
+  @override
+  String get recentPosts => '最近帖子';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return '当前论坛暂不支持通行密钥（代码：$code）';
+  }
+
+  @override
+  String get initializingForum => '正在初始化论坛…';
+
+  @override
+  String get retryConnection => '重新连接';
+
+  @override
+  String get pleaseConfirmPassword => '请确认您的密码';
+
+  @override
+  String get pleaseEnterTheForumPassword => '请输入论坛密码';
+
+  @override
+  String get editYourPost => '编辑你的帖子...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost => '缺少主题 ID，无法跳转到该帖子。';
+
+  @override
+  String get conversationIsOpenForReplies => '会话已开启，可回复';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed => '会话已关闭（不允许回复）';
+
+  @override
+  String get pleaseEnterAUsername => '请输入用户名';
+
+  @override
+  String usernameMinLength(int count) {
+    return '用户名至少需要 $count 个字符';
+  }
+
+  @override
+  String get pleaseEnterAPassword => '请输入密码';
+
+  @override
+  String passwordMinLength(int count) {
+    return '密码至少需要 $count 个字符';
+  }
+
+  @override
+  String get writeYourTopicTitle => '输入主题标题...';
+
+  @override
+  String get writeYourTopicContent => '输入主题内容...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return '已关闭 $siteName 的推送通知';
+  }
+
+  @override
+  String get failedToDisablePush => '关闭推送通知失败';
+
+  @override
+  String get thisForum => '此论坛';
 }

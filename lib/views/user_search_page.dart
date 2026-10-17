@@ -136,7 +136,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Search User',
+          AppLocalizations.of(context).searchForMembers,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -195,16 +195,16 @@ class _UserSearchPageState extends State<UserSearchPage> {
     if (_users.isEmpty && _hasSearched) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: 'No users found',
-        description: 'Try searching with a different username',
+        title: AppLocalizations.of(context).noMembersFound,
+        description: AppLocalizations.of(context).trySearchingWithDifferentUsername,
       );
     }
 
     if (_users.isEmpty && !_hasSearched) {
       return EmptyStateWidget(
         icon: Icons.person_search_rounded,
-        title: 'Search for users',
-        description: 'Enter a username to find and invite users',
+        title: AppLocalizations.of(context).searchForMembers,
+        description: AppLocalizations.of(context).enterUsernameToFindMembers,
       );
     }
 

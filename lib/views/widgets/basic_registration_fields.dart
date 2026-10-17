@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class BasicRegistrationFields extends StatelessWidget {
   final TextEditingController usernameController;
@@ -65,16 +66,16 @@ class BasicRegistrationFields extends StatelessWidget {
               _buildTextField(
                 controller: usernameController,
                 autofillHints: const [AutofillHints.newUsername],
-                labelText: 'Username',
+                labelText: AppLocalizations.of(context).usernameLabel,
                 icon: Icons.person_rounded,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => emailFocusNode.requestFocus(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a username';
+                    return AppLocalizations.of(context).pleaseEnterAUsername;
                   }
                   if (value.length < 3) {
-                    return 'Username must be at least 3 characters';
+                    return AppLocalizations.of(context).usernameMinLength(3);
                   }
                   return null;
                 },
@@ -87,17 +88,17 @@ class BasicRegistrationFields extends StatelessWidget {
                 controller: emailController,
                 focusNode: emailFocusNode,
                 autofillHints: const [AutofillHints.email],
-                labelText: 'Email',
+                labelText: AppLocalizations.of(context).emailLabel,
                 icon: Icons.email_rounded,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => passwordFocusNode.requestFocus(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return AppLocalizations.of(context).pleaseEnterEmail;
                   }
                   if (!GetUtils.isEmail(value)) {
-                    return 'Please enter a valid email';
+                    return AppLocalizations.of(context).pleaseEnterValidEmail;
                   }
                   return null;
                 },
@@ -110,17 +111,17 @@ class BasicRegistrationFields extends StatelessWidget {
                 controller: passwordController,
                 focusNode: passwordFocusNode,
                 autofillHints: const [AutofillHints.newPassword],
-                labelText: 'Password',
+                labelText: AppLocalizations.of(context).passwordLabel,
                 isVisible: isPasswordVisible,
                 onVisibilityToggle: onPasswordVisibilityToggle,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => confirmPasswordFocusNode.requestFocus(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
+                    return AppLocalizations.of(context).pleaseEnterAPassword;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
+                    return AppLocalizations.of(context).passwordMinLength(6);
                   }
                   return null;
                 },
@@ -133,17 +134,17 @@ class BasicRegistrationFields extends StatelessWidget {
                 controller: confirmPasswordController,
                 focusNode: confirmPasswordFocusNode,
                 autofillHints: const [AutofillHints.newPassword],
-                labelText: 'Confirm Password',
+                labelText: AppLocalizations.of(context).confirmPasswordLabel,
                 isVisible: isConfirmPasswordVisible,
                 onVisibilityToggle: onConfirmPasswordVisibilityToggle,
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) => onConfirmPasswordSubmitted?.call(),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
+                    return AppLocalizations.of(context).pleaseConfirmPassword;
                   }
                   if (value != passwordController.text) {
-                    return 'Passwords do not match';
+                    return AppLocalizations.of(context).passwordsDoNotMatch;
                   }
                   return null;
                 },

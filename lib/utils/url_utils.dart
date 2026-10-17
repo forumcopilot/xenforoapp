@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'snackbar_helper.dart';
 import 'package:flutter/material.dart'; // Added for BuildContext
+import '../l10n/generated/app_localizations.dart';
 
 /// Forum template types enum
 enum ForumTemplate {
@@ -758,7 +759,7 @@ class UrlUtils {
     } catch (e) {
       debugPrint('Error handling URL tap: $e');
       if (context.mounted) {
-        SnackbarHelper.showInfo(context, 'Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenLink(url.length > 50 ? '${url.substring(0, 50)}...' : url));
       }
     }
   }
@@ -809,7 +810,7 @@ class UrlUtils {
     } catch (e) {
       debugPrint('Error handling URL tap: $e');
       if (context.mounted) {
-        SnackbarHelper.showInfo(context, 'Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenLink(url.length > 50 ? '${url.substring(0, 50)}...' : url));
       }
     }
   }
@@ -1011,13 +1012,13 @@ class UrlUtils {
         // Fallback: try to copy email to clipboard
         await Clipboard.setData(ClipboardData(text: cleanEmail));
         if (context.mounted) {
-          SnackbarHelper.showInfo(context, 'Email copied to clipboard: $cleanEmail');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).emailCopiedToClipboard(cleanEmail));
         }
       }
     } catch (e) {
       debugPrint('Error opening email address: $e');
       if (context.mounted) {
-        SnackbarHelper.showInfo(context, 'Could not open email: $email');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenEmail(email));
       }
     }
   }

@@ -2652,4 +2652,195 @@ class AppLocalizationsDe extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return 'Bild konnte nicht optimiert werden: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return 'E-Mail in Zwischenablage kopiert: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return 'E-Mail konnte nicht geoeffnet werden: $email';
+  }
+
+  @override
+  String get editPost => 'Beitrag bearbeiten';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum =>
+      'Dieses Thema ist oben im Forum angeheftet';
+
+  @override
+  String get editConversation => 'Unterhaltung bearbeiten';
+
+  @override
+  String get failedToLoadConversation =>
+      'Unterhaltung konnte nicht geladen werden';
+
+  @override
+  String get cannotEditConversation =>
+      'Diese Unterhaltung kann nicht bearbeitet werden';
+
+  @override
+  String get titleLabel => 'Titel';
+
+  @override
+  String get options => 'Optionen';
+
+  @override
+  String get openInvite => 'Offene Einladung';
+
+  @override
+  String get allowAnyParticipantToInviteOthers =>
+      'Allen Teilnehmern erlauben, weitere Personen einzuladen';
+
+  @override
+  String get conversationOpen => 'Unterhaltung offen';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return 'Unterhaltung konnte nicht erstellt werden: $error';
+  }
+
+  @override
+  String get lockConversation => 'Unterhaltung sperren';
+
+  @override
+  String get createConversationAsClosed =>
+      'Unterhaltung als geschlossen erstellen (keine Antworten erlaubt)';
+
+  @override
+  String get deleteAccount => 'Konto löschen';
+
+  @override
+  String get deleteAccountDescription =>
+      'Entfernen Sie Ihr Konto aus diesem Forum.';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      'Ihr Konto wird vom Forum verwaltet. Bitte wenden Sie sich direkt an das Forum, um das Konto zu löschen. Nutzen Sie die Schaltfläche „Kontakt“ unten auf der Forums-Startseite.';
+
+  @override
+  String get forumUrlUnavailable => 'Forum-URL ist nicht verfügbar.';
+
+  @override
+  String get couldNotOpenForumUrl => 'Forum-URL konnte nicht geöffnet werden.';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      'Für diesen Benachrichtigungstyp ist keine Aktions-URL verfügbar.';
+
+  @override
+  String get signInToViewNotifications =>
+      'Melden Sie sich an, um Benachrichtigungen zu sehen';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications =>
+      'Sie müssen angemeldet sein, um Ihre Benachrichtigungen anzusehen.';
+
+  @override
+  String get errorLoadingNotifications =>
+      'Fehler beim Laden der Benachrichtigungen';
+
+  @override
+  String get pullDownToRefresh => 'Zum Aktualisieren nach unten ziehen';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      'Sie haben keine neuen Benachrichtigungen. Schauen Sie später wieder vorbei.';
+
+  @override
+  String get signInToViewProfile =>
+      'Melden Sie sich an, um das Profil anzusehen';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile =>
+      'Sie müssen angemeldet sein, um Ihr Profil anzusehen.';
+
+  @override
+  String get emailLabel => 'E-Mail';
+
+  @override
+  String get confirmPasswordLabel => 'Passwort bestätigen';
+
+  @override
+  String get protectedForum => 'Geschuetztes Forum';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName ist passwortgeschuetzt.';
+  }
+
+  @override
+  String get enterButton => 'Eingeben';
+
+  @override
+  String get recentPosts => 'Neueste Beiträge';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return 'Passkey ist in diesem Forum derzeit nicht verfügbar (Code: $code)';
+  }
+
+  @override
+  String get initializingForum => 'Forum wird gestartet…';
+
+  @override
+  String get retryConnection => 'Erneut verbinden';
+
+  @override
+  String get pleaseConfirmPassword => 'Bitte bestätigen Sie Ihr Passwort';
+
+  @override
+  String get pleaseEnterTheForumPassword =>
+      'Bitte geben Sie das Forum-Passwort ein';
+
+  @override
+  String get editYourPost => 'Bearbeiten Sie Ihren Beitrag...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      'Themen-ID fehlt. Navigation zum Beitrag nicht möglich.';
+
+  @override
+  String get conversationIsOpenForReplies =>
+      'Unterhaltung ist für Antworten geöffnet';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed =>
+      'Unterhaltung ist geschlossen (keine Antworten erlaubt)';
+
+  @override
+  String get pleaseEnterAUsername => 'Bitte geben Sie einen Benutzernamen ein';
+
+  @override
+  String usernameMinLength(int count) {
+    return 'Der Benutzername muss mindestens $count Zeichen lang sein';
+  }
+
+  @override
+  String get pleaseEnterAPassword => 'Bitte geben Sie ein Passwort ein';
+
+  @override
+  String passwordMinLength(int count) {
+    return 'Das Passwort muss mindestens $count Zeichen lang sein';
+  }
+
+  @override
+  String get writeYourTopicTitle => 'Titel Ihres Themas...';
+
+  @override
+  String get writeYourTopicContent => 'Inhalt Ihres Themas...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return 'Push-Benachrichtigungen für $siteName deaktiviert';
+  }
+
+  @override
+  String get failedToDisablePush =>
+      'Push-Benachrichtigungen konnten nicht deaktiviert werden';
+
+  @override
+  String get thisForum => 'dieses Forum';
 }

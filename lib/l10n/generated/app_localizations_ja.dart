@@ -2509,4 +2509,181 @@ class AppLocalizationsJa extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return '画像を最適化できませんでした: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return 'メールアドレスをクリップボードにコピーしました: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return 'メールを開けませんでした: $email';
+  }
+
+  @override
+  String get editPost => '投稿を編集';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum => 'このトピックはフォーラムの上部に固定されています';
+
+  @override
+  String get editConversation => '会話を編集';
+
+  @override
+  String get failedToLoadConversation => '会話の読み込みに失敗しました';
+
+  @override
+  String get cannotEditConversation => 'この会話は編集できません';
+
+  @override
+  String get titleLabel => 'タイトル';
+
+  @override
+  String get options => 'オプション';
+
+  @override
+  String get openInvite => '招待を開放';
+
+  @override
+  String get allowAnyParticipantToInviteOthers => '参加者が他のユーザーを招待できるようにする';
+
+  @override
+  String get conversationOpen => '会話を開く';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return '会話の作成に失敗しました: $error';
+  }
+
+  @override
+  String get lockConversation => '会話をロック';
+
+  @override
+  String get createConversationAsClosed => '会話を閉じた状態で作成（返信不可）';
+
+  @override
+  String get deleteAccount => 'アカウントを削除';
+
+  @override
+  String get deleteAccountDescription => 'このフォーラムからあなたのアカウントを削除します。';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      'アカウントはフォーラム側で管理されています。アカウント削除はフォーラムへ直接お問い合わせください。フォーラムホーム下部の「お問い合わせ」ボタンをご利用ください。';
+
+  @override
+  String get forumUrlUnavailable => 'フォーラムURLを利用できません。';
+
+  @override
+  String get couldNotOpenForumUrl => 'フォーラムURLを開けませんでした。';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      'この通知タイプには利用可能なアクション URL がありません。';
+
+  @override
+  String get signInToViewNotifications => '通知を表示するにはサインインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications =>
+      '通知を表示するにはサインインが必要です。';
+
+  @override
+  String get errorLoadingNotifications => '通知の読み込みエラー';
+
+  @override
+  String get pullDownToRefresh => '下に引いて更新';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      '新しい通知はありません。後でもう一度ご確認ください。';
+
+  @override
+  String get signInToViewProfile => 'プロフィールを表示するにはサインインしてください';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile => 'プロフィールを表示するにはサインインが必要です。';
+
+  @override
+  String get emailLabel => 'メールアドレス';
+
+  @override
+  String get confirmPasswordLabel => 'パスワードを確認';
+
+  @override
+  String get protectedForum => '保護されたフォーラム';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName はパスワードで保護されています。';
+  }
+
+  @override
+  String get enterButton => '入力';
+
+  @override
+  String get recentPosts => '最近の投稿';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return 'このフォーラムでは現在パスキーを利用できません（コード: $code）';
+  }
+
+  @override
+  String get initializingForum => 'フォーラムを準備中…';
+
+  @override
+  String get retryConnection => '再接続';
+
+  @override
+  String get pleaseConfirmPassword => 'パスワードを確認してください';
+
+  @override
+  String get pleaseEnterTheForumPassword => 'フォーラムのパスワードを入力してください';
+
+  @override
+  String get editYourPost => '投稿を編集...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      'トピック ID がありません。投稿に移動できません。';
+
+  @override
+  String get conversationIsOpenForReplies => 'この会話は返信可能です';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed => 'この会話は閉じています（返信できません）';
+
+  @override
+  String get pleaseEnterAUsername => 'ユーザー名を入力してください';
+
+  @override
+  String usernameMinLength(int count) {
+    return 'ユーザー名は $count 文字以上にしてください';
+  }
+
+  @override
+  String get pleaseEnterAPassword => 'パスワードを入力してください';
+
+  @override
+  String passwordMinLength(int count) {
+    return 'パスワードは $count 文字以上にしてください';
+  }
+
+  @override
+  String get writeYourTopicTitle => 'トピックのタイトルを入力...';
+
+  @override
+  String get writeYourTopicContent => 'トピックの内容を入力...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return '$siteName のプッシュ通知をオフにしました';
+  }
+
+  @override
+  String get failedToDisablePush => 'プッシュ通知をオフにできませんでした';
+
+  @override
+  String get thisForum => 'このフォーラム';
 }

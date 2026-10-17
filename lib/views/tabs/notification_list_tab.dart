@@ -289,7 +289,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
         if (topicId == null) {
           _showErrorDialog(
             context,
-            'Topic ID is missing. Cannot navigate to the post.',
+            AppLocalizations.of(context).topicIdIsMissingCannotNavigateToThePost,
           );
           return;
         }
@@ -348,7 +348,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
       case AlertsDestination():
         SnackbarHelper.showInfo(
           context,
-          'No action URL available for this notification type.',
+          AppLocalizations.of(context).noActionUrlAvailableForThisNotificationType,
         );
     }
   }
@@ -390,7 +390,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           actions: <Widget>[
             TextButton(
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -411,8 +411,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: 'Sign in to view notifications',
-        message: 'You need to be signed in to view your notifications.',
+        title: AppLocalizations.of(context).signInToViewNotifications,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewYourNotifications,
         icon: Icons.notifications_outlined,
       );
     }
@@ -445,7 +445,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingXL),
                         Text(
-                          'Error loading notifications',
+                          AppLocalizations.of(context).errorLoadingNotifications,
                           style: textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -462,7 +462,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
                         Text(
-                          'Pull down to refresh',
+                          AppLocalizations.of(context).pullDownToRefresh,
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
@@ -503,7 +503,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingXL),
                         Text(
-                          "All caught up!",
+                          AppLocalizations.of(context).youAreAllCaughtUp,
                           style: textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -512,7 +512,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingS),
                         Text(
-                          'You have no new notifications. Check back later for updates on topics you\'re following.',
+                          AppLocalizations.of(context).youHaveNoNewNotificationsCheckBackLater,
                           style: textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -520,7 +520,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
                         Text(
-                          'Pull down to refresh',
+                          AppLocalizations.of(context).pullDownToRefresh,
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),

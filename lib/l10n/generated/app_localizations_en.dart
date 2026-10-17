@@ -2607,4 +2607,186 @@ class AppLocalizationsEn extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return 'Failed to optimize image: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return 'Email copied to clipboard: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return 'Could not open email: $email';
+  }
+
+  @override
+  String get editPost => 'Edit Post';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum =>
+      'This topic is pinned to the top of the forum';
+
+  @override
+  String get editConversation => 'Edit conversation';
+
+  @override
+  String get failedToLoadConversation => 'Failed to load conversation';
+
+  @override
+  String get cannotEditConversation => 'Cannot edit this conversation';
+
+  @override
+  String get titleLabel => 'Title';
+
+  @override
+  String get options => 'Options';
+
+  @override
+  String get openInvite => 'Open Invite';
+
+  @override
+  String get allowAnyParticipantToInviteOthers =>
+      'Allow any participant to invite others';
+
+  @override
+  String get conversationOpen => 'Conversation Open';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return 'Failed to create conversation: $error';
+  }
+
+  @override
+  String get lockConversation => 'Lock Conversation';
+
+  @override
+  String get createConversationAsClosed =>
+      'Create conversation as closed (no replies allowed)';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountDescription => 'Remove your account from this forum.';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      'Your account is managed by the forum. Please contact the forum directly for account removal. Use the Contact Us button at the bottom of the forum home page.';
+
+  @override
+  String get forumUrlUnavailable => 'Forum URL is unavailable.';
+
+  @override
+  String get couldNotOpenForumUrl => 'Could not open forum URL.';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      'No action URL available for this notification type.';
+
+  @override
+  String get signInToViewNotifications => 'Sign in to view notifications';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications =>
+      'You need to be signed in to view your notifications.';
+
+  @override
+  String get errorLoadingNotifications => 'Error loading notifications';
+
+  @override
+  String get pullDownToRefresh => 'Pull down to refresh';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      'You have no new notifications. Check back later for updates on topics you\'re following.';
+
+  @override
+  String get signInToViewProfile => 'Sign in to view profile';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile =>
+      'You need to be signed in to view your profile.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get protectedForum => 'Protected Forum';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName is password protected.';
+  }
+
+  @override
+  String get enterButton => 'Enter';
+
+  @override
+  String get recentPosts => 'Recent Posts';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return 'Passkey is currently not available in this forum (code: $code)';
+  }
+
+  @override
+  String get initializingForum => 'Initializing forum…';
+
+  @override
+  String get retryConnection => 'Retry Connection';
+
+  @override
+  String get pleaseConfirmPassword => 'Please confirm your password';
+
+  @override
+  String get pleaseEnterTheForumPassword => 'Please enter the forum password';
+
+  @override
+  String get editYourPost => 'Edit your post...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      'Topic ID is missing. Cannot navigate to the post.';
+
+  @override
+  String get conversationIsOpenForReplies => 'Conversation is open for replies';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed =>
+      'Conversation is closed (no replies allowed)';
+
+  @override
+  String get pleaseEnterAUsername => 'Please enter a username';
+
+  @override
+  String usernameMinLength(int count) {
+    return 'Username must be at least $count characters';
+  }
+
+  @override
+  String get pleaseEnterAPassword => 'Please enter a password';
+
+  @override
+  String passwordMinLength(int count) {
+    return 'Password must be at least $count characters';
+  }
+
+  @override
+  String get writeYourTopicTitle => 'Write your topic title...';
+
+  @override
+  String get writeYourTopicContent => 'Write your topic content...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return 'Push notifications disabled for $siteName';
+  }
+
+  @override
+  String get failedToDisablePush => 'Failed to disable push notifications';
+
+  @override
+  String get thisForum => 'this forum';
 }

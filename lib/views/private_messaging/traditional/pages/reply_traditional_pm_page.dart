@@ -356,7 +356,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isForward ? 'Forward' : 'Reply', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
+        title: Text(widget.isForward ? AppLocalizations.of(context).forward : AppLocalizations.of(context).reply, style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
         backgroundColor: colorScheme.surface,
         elevation: 3,
         shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
@@ -518,7 +518,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                         Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                         SizedBox(width: DesignTokens.spacingS),
                         Text(
-                          'Attachments',
+                          AppLocalizations.of(context).attachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: DesignTokens.fontWeightMedium,

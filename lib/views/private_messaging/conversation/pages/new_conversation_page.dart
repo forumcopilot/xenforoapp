@@ -162,7 +162,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         // Wrap other exceptions
         if (mounted) {
           // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          SnackbarHelper.showError(context, 'Failed to create conversation: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToCreateConversation('$e'));
         }
         return false;
       }
@@ -201,7 +201,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Participants',
+          AppLocalizations.of(context).participantsLabel,
           style: textTheme.titleSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -220,7 +220,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                 color: colorScheme.primary,
               ),
               label: Text(
-                'Add',
+                AppLocalizations.of(context).add,
                 style: TextStyle(
                   color: colorScheme.primary,
                 ),
@@ -270,7 +270,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
       child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'New Conversation',
+          AppLocalizations.of(context).newConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightSemiBold,
@@ -366,7 +366,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Subject',
+                            AppLocalizations.of(context).subject,
                             style: textTheme.titleSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: DesignTokens.fontWeightMedium,
@@ -376,7 +376,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           TextField(
                             controller: _titleController,
                             decoration: InputDecoration(
-                              hintText: 'Enter subject',
+                              hintText: AppLocalizations.of(context).enterSubject,
                               hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                               filled: true,
                               fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
@@ -412,7 +412,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Message',
+                            AppLocalizations.of(context).message,
                             style: textTheme.titleSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: DesignTokens.fontWeightMedium,
@@ -467,7 +467,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                 Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                                 SizedBox(width: DesignTokens.spacingS),
                                 Text(
-                                  'Attachments',
+                                  AppLocalizations.of(context).attachments,
                                   style: textTheme.titleSmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontWeight: DesignTokens.fontWeightMedium,
@@ -619,7 +619,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Options',
+                              AppLocalizations.of(context).options,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
@@ -635,14 +635,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                 children: [
                                   SwitchListTile(
                                     title: Text(
-                                      'Open Invite',
+                                      AppLocalizations.of(context).openInvite,
                                       style: textTheme.titleSmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: DesignTokens.fontWeightMedium,
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Allow any participant to invite others',
+                                      AppLocalizations.of(context).allowAnyParticipantToInviteOthers,
                                       style: textTheme.bodySmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
@@ -662,14 +662,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                   ),
                                   SwitchListTile(
                                     title: Text(
-                                      'Lock Conversation',
+                                      AppLocalizations.of(context).lockConversation,
                                       style: textTheme.titleSmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: DesignTokens.fontWeightMedium,
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Create conversation as closed (no replies allowed)',
+                                      AppLocalizations.of(context).createConversationAsClosed,
                                       style: textTheme.bodySmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
@@ -729,7 +729,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }
@@ -902,7 +902,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }
@@ -1027,7 +1027,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                     Icons.attach_file,
                     color: colorScheme.onSurfaceVariant,
                   ),
-                  tooltip: 'Attach File',
+                  tooltip: AppLocalizations.of(context).attachFile,
                   onPressed: _handleFileAttachment,
                 ),
               // Image upload button
@@ -1037,14 +1037,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
                     Icons.image,
                     color: colorScheme.onSurfaceVariant,
                   ),
-                  tooltip: 'Upload Image',
+                  tooltip: AppLocalizations.of(context).uploadImage,
                   onPressed: _handleImageAttachment,
                 ),
               // BBCode button
               PopupMenuButton<String>(
                 enabled: _isMessageFieldFocused,
                 icon: Icon(Icons.format_bold, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
-                tooltip: 'Formatting',
+                tooltip: AppLocalizations.of(context).formatting,
                 onSelected: _insertBBCode,
                 itemBuilder: (context) => [
                   // Text formatting
@@ -1221,7 +1221,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
               // Mention button
               IconButton(
                 icon: Icon(Icons.alternate_email, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
-                tooltip: 'Mention User',
+                tooltip: AppLocalizations.of(context).mentionUser,
                 onPressed: _isMessageFieldFocused ? _handleMention : null,
               ),
             ],

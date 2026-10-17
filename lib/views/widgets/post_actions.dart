@@ -858,7 +858,7 @@ class PostActionsHandler {
               }
             },
             child: Text(
-              'Login',
+              AppLocalizations.of(context).loginTitle,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

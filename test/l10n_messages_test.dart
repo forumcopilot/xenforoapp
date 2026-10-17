@@ -34,6 +34,11 @@ void main() {
         l10n.fileSizeExceedsMaximum('12 MB', '5 MB'),
         l10n.cannotAccessImageFile('EACCES'),
         l10n.failedToOptimizeImage('bad data'),
+        l10n.usernameMinLength(3),
+        l10n.passwordMinLength(6),
+        l10n.pushDisabledFor('Test Forum'),
+        l10n.couldNotOpenLink('https://forum.test/x'),
+        l10n.passkeyNotAvailableInForum(1001),
       ];
       for (final text in rendered) {
         expect(text, isNot(contains('{')), reason: text);

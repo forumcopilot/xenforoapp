@@ -275,7 +275,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Delete Account',
+              AppLocalizations.of(context).deleteAccount,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightSemiBold,
@@ -283,7 +283,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
             ),
             SizedBox(height: DesignTokens.spacingS),
             Text(
-              'Remove your account from this forum.',
+              AppLocalizations.of(context).deleteAccountDescription,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -295,7 +295,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
                 backgroundColor: colorScheme.error,
                 foregroundColor: colorScheme.onError,
               ),
-              child: const Text('Delete Account'),
+              child: Text(AppLocalizations.of(context).deleteAccount),
             ),
           ],
         ),
@@ -310,14 +310,14 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            'Delete Account',
+            AppLocalizations.of(context).deleteAccount,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightMedium,
             ),
           ),
           content: Text(
-            'Your account is managed by the forum. Please contact the forum directly for account removal. Use the Contact Us button at the bottom of the forum home page.',
+            AppLocalizations.of(context).deleteAccountContactForumMessage,
             style: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -338,7 +338,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
                 await _openForumHomePage(context);
               },
               child: Text(
-                'Continue',
+                AppLocalizations.of(context).continueButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -353,7 +353,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
   Future<void> _openForumHomePage(BuildContext context) async {
     final url = widget.siteContext.site.url;
     if (url.isEmpty) {
-      SnackbarHelper.showError(context, 'Forum URL is unavailable.');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).forumUrlUnavailable);
       return;
     }
 
@@ -361,7 +361,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      SnackbarHelper.showError(context, 'Could not open forum URL.');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).couldNotOpenForumUrl);
     }
   }
 }

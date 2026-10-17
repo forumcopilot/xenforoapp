@@ -572,7 +572,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
           elevation: DesignTokens.elevationNone,
         ),
         child: Text(
-          'Create Account',
+          AppLocalizations.of(context).createAccount,
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,

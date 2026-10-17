@@ -124,7 +124,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Edit conversation',
+                    AppLocalizations.of(context).editConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -145,7 +145,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Close conversation',
+                    AppLocalizations.of(context).closeConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -165,7 +165,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Open conversation',
+                    AppLocalizations.of(context).openConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -188,7 +188,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Leave conversation',
+                    AppLocalizations.of(context).leaveConversation,
                     style: TextStyle(
                       color: colorScheme.error,
                     ),
@@ -209,7 +209,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Report conversation',
+                    AppLocalizations.of(context).reportConversation,
                     style: TextStyle(
                       color: colorScheme.error,
                     ),
@@ -362,7 +362,7 @@ class ConversationAppBar extends BaseForumAppBar {
           Navigator.pop(context);
 
           // Show success message
-          SnackbarHelper.showSuccess(context, '$username has been invited to the conversation');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).usernameHasBeenInvited(username));
 
           // Refresh conversation data
           onInviteSuccess?.call();

@@ -4543,6 +4543,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to optimize image: {error}'**
   String failedToOptimizeImage(String error);
+
+  /// Message when email is copied to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Email copied to clipboard: {email}'**
+  String emailCopiedToClipboard(String email);
+
+  /// Error message when email app cannot be opened
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open email: {email}'**
+  String couldNotOpenEmail(String email);
+
+  /// No description provided for @editPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Post'**
+  String get editPost;
+
+  /// No description provided for @thisTopicIsPinnedToTopOfForum.
+  ///
+  /// In en, this message translates to:
+  /// **'This topic is pinned to the top of the forum'**
+  String get thisTopicIsPinnedToTopOfForum;
+
+  /// No description provided for @editConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit conversation'**
+  String get editConversation;
+
+  /// No description provided for @failedToLoadConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load conversation'**
+  String get failedToLoadConversation;
+
+  /// No description provided for @cannotEditConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot edit this conversation'**
+  String get cannotEditConversation;
+
+  /// No description provided for @titleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get titleLabel;
+
+  /// No description provided for @options.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get options;
+
+  /// No description provided for @openInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Invite'**
+  String get openInvite;
+
+  /// No description provided for @allowAnyParticipantToInviteOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow any participant to invite others'**
+  String get allowAnyParticipantToInviteOthers;
+
+  /// No description provided for @conversationOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Open'**
+  String get conversationOpen;
+
+  /// Error message when creating conversation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create conversation: {error}'**
+  String failedToCreateConversation(String error);
+
+  /// No description provided for @lockConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Conversation'**
+  String get lockConversation;
+
+  /// No description provided for @createConversationAsClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Create conversation as closed (no replies allowed)'**
+  String get createConversationAsClosed;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove your account from this forum.'**
+  String get deleteAccountDescription;
+
+  /// No description provided for @deleteAccountContactForumMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is managed by the forum. Please contact the forum directly for account removal. Use the Contact Us button at the bottom of the forum home page.'**
+  String get deleteAccountContactForumMessage;
+
+  /// No description provided for @forumUrlUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Forum URL is unavailable.'**
+  String get forumUrlUnavailable;
+
+  /// No description provided for @couldNotOpenForumUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open forum URL.'**
+  String get couldNotOpenForumUrl;
+
+  /// No description provided for @noActionUrlAvailableForThisNotificationType.
+  ///
+  /// In en, this message translates to:
+  /// **'No action URL available for this notification type.'**
+  String get noActionUrlAvailableForThisNotificationType;
+
+  /// No description provided for @signInToViewNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view notifications'**
+  String get signInToViewNotifications;
+
+  /// No description provided for @youNeedToBeSignedInToViewYourNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view your notifications.'**
+  String get youNeedToBeSignedInToViewYourNotifications;
+
+  /// No description provided for @errorLoadingNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading notifications'**
+  String get errorLoadingNotifications;
+
+  /// No description provided for @pullDownToRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down to refresh'**
+  String get pullDownToRefresh;
+
+  /// No description provided for @youHaveNoNewNotificationsCheckBackLater.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no new notifications. Check back later for updates on topics you\'re following.'**
+  String get youHaveNoNewNotificationsCheckBackLater;
+
+  /// No description provided for @signInToViewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view profile'**
+  String get signInToViewProfile;
+
+  /// No description provided for @youNeedToBeSignedInToViewYourProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to be signed in to view your profile.'**
+  String get youNeedToBeSignedInToViewYourProfile;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @protectedForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected Forum'**
+  String get protectedForum;
+
+  /// Message when forum requires a password
+  ///
+  /// In en, this message translates to:
+  /// **'{forumName} is password protected.'**
+  String forumIsPasswordProtected(String forumName);
+
+  /// No description provided for @enterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter'**
+  String get enterButton;
+
+  /// No description provided for @recentPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Posts'**
+  String get recentPosts;
+
+  /// Message when passkey login is unavailable for current forum
+  ///
+  /// In en, this message translates to:
+  /// **'Passkey is currently not available in this forum (code: {code})'**
+  String passkeyNotAvailableInForum(int code);
+
+  /// No description provided for @initializingForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing forum…'**
+  String get initializingForum;
+
+  /// No description provided for @retryConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry Connection'**
+  String get retryConnection;
+
+  /// No description provided for @pleaseConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get pleaseConfirmPassword;
+
+  /// No description provided for @pleaseEnterTheForumPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the forum password'**
+  String get pleaseEnterTheForumPassword;
+
+  /// No description provided for @editYourPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit your post...'**
+  String get editYourPost;
+
+  /// No description provided for @topicIdIsMissingCannotNavigateToThePost.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic ID is missing. Cannot navigate to the post.'**
+  String get topicIdIsMissingCannotNavigateToThePost;
+
+  /// No description provided for @conversationIsOpenForReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is open for replies'**
+  String get conversationIsOpenForReplies;
+
+  /// No description provided for @conversationIsClosedNoRepliesAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is closed (no replies allowed)'**
+  String get conversationIsClosedNoRepliesAllowed;
+
+  /// No description provided for @pleaseEnterAUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a username'**
+  String get pleaseEnterAUsername;
+
+  /// No description provided for @usernameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least {count} characters'**
+  String usernameMinLength(int count);
+
+  /// No description provided for @pleaseEnterAPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a password'**
+  String get pleaseEnterAPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least {count} characters'**
+  String passwordMinLength(int count);
+
+  /// No description provided for @writeYourTopicTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your topic title...'**
+  String get writeYourTopicTitle;
+
+  /// No description provided for @writeYourTopicContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your topic content...'**
+  String get writeYourTopicContent;
+
+  /// No description provided for @pushDisabledFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications disabled for {siteName}'**
+  String pushDisabledFor(String siteName);
+
+  /// No description provided for @failedToDisablePush.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to disable push notifications'**
+  String get failedToDisablePush;
+
+  /// Stands in for the forum address in "Your username and password will be sent to {domain}"
+  ///
+  /// In en, this message translates to:
+  /// **'this forum'**
+  String get thisForum;
 }
 
 class _AppLocalizationsDelegate

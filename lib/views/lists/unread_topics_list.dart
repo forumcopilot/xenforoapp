@@ -390,7 +390,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
         return NotSignedInView(
           siteContext: widget.siteContext,
           title: AppLocalizations.of(context).signInToViewUnreadTopics,
-          message: 'You need to be signed in to view topics your unread topics.',
+          message: AppLocalizations.of(context).youNeedToBeSignedInToViewUnreadTopics,
           icon: Icons.lock_outline_rounded,
         );
       }

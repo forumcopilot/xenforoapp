@@ -2639,4 +2639,188 @@ class AppLocalizationsRu extends AppLocalizations {
   String failedToOptimizeImage(String error) {
     return 'Не удалось оптимизировать изображение: $error';
   }
+
+  @override
+  String emailCopiedToClipboard(String email) {
+    return 'Email скопирован в буфер обмена: $email';
+  }
+
+  @override
+  String couldNotOpenEmail(String email) {
+    return 'Не удалось открыть email: $email';
+  }
+
+  @override
+  String get editPost => 'Редактировать сообщение';
+
+  @override
+  String get thisTopicIsPinnedToTopOfForum =>
+      'Эта тема закреплена вверху форума';
+
+  @override
+  String get editConversation => 'Редактировать разговор';
+
+  @override
+  String get failedToLoadConversation => 'Не удалось загрузить разговор';
+
+  @override
+  String get cannotEditConversation =>
+      'Невозможно отредактировать этот разговор';
+
+  @override
+  String get titleLabel => 'Заголовок';
+
+  @override
+  String get options => 'Параметры';
+
+  @override
+  String get openInvite => 'Открытые приглашения';
+
+  @override
+  String get allowAnyParticipantToInviteOthers =>
+      'Разрешить любому участнику приглашать других';
+
+  @override
+  String get conversationOpen => 'Разговор открыт';
+
+  @override
+  String failedToCreateConversation(String error) {
+    return 'Не удалось создать разговор: $error';
+  }
+
+  @override
+  String get lockConversation => 'Закрыть разговор';
+
+  @override
+  String get createConversationAsClosed =>
+      'Создать разговор как закрытый (ответы запрещены)';
+
+  @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountDescription => 'Удалите свой аккаунт с этого форума.';
+
+  @override
+  String get deleteAccountContactForumMessage =>
+      'Ваш аккаунт управляется форумом. Для удаления аккаунта обратитесь напрямую к форуму. Используйте кнопку «Связаться с нами» внизу главной страницы форума.';
+
+  @override
+  String get forumUrlUnavailable => 'URL форума недоступен.';
+
+  @override
+  String get couldNotOpenForumUrl => 'Не удалось открыть URL форума.';
+
+  @override
+  String get noActionUrlAvailableForThisNotificationType =>
+      'Для этого типа уведомления нет URL действия.';
+
+  @override
+  String get signInToViewNotifications =>
+      'Войдите, чтобы просматривать уведомления';
+
+  @override
+  String get youNeedToBeSignedInToViewYourNotifications =>
+      'Чтобы просматривать уведомления, необходимо войти в систему.';
+
+  @override
+  String get errorLoadingNotifications => 'Ошибка загрузки уведомлений';
+
+  @override
+  String get pullDownToRefresh => 'Потяните вниз, чтобы обновить';
+
+  @override
+  String get youHaveNoNewNotificationsCheckBackLater =>
+      'У вас нет новых уведомлений. Проверьте позже.';
+
+  @override
+  String get signInToViewProfile => 'Войдите, чтобы посмотреть профиль';
+
+  @override
+  String get youNeedToBeSignedInToViewYourProfile =>
+      'Чтобы посмотреть профиль, необходимо войти в систему.';
+
+  @override
+  String get emailLabel => 'Эл. почта';
+
+  @override
+  String get confirmPasswordLabel => 'Подтвердите пароль';
+
+  @override
+  String get protectedForum => 'Защищенный форум';
+
+  @override
+  String forumIsPasswordProtected(String forumName) {
+    return '$forumName защищен паролем.';
+  }
+
+  @override
+  String get enterButton => 'Войти';
+
+  @override
+  String get recentPosts => 'Недавние сообщения';
+
+  @override
+  String passkeyNotAvailableInForum(int code) {
+    return 'Passkey сейчас недоступен на этом форуме (код: $code)';
+  }
+
+  @override
+  String get initializingForum => 'Запуск форума…';
+
+  @override
+  String get retryConnection => 'Повторить подключение';
+
+  @override
+  String get pleaseConfirmPassword => 'Пожалуйста, подтвердите пароль';
+
+  @override
+  String get pleaseEnterTheForumPassword => 'Введите пароль форума';
+
+  @override
+  String get editYourPost => 'Редактируйте ваше сообщение...';
+
+  @override
+  String get topicIdIsMissingCannotNavigateToThePost =>
+      'Отсутствует ID темы. Невозможно перейти к сообщению.';
+
+  @override
+  String get conversationIsOpenForReplies => 'Разговор открыт для ответов';
+
+  @override
+  String get conversationIsClosedNoRepliesAllowed =>
+      'Разговор закрыт (ответы не разрешены)';
+
+  @override
+  String get pleaseEnterAUsername => 'Введите имя пользователя';
+
+  @override
+  String usernameMinLength(int count) {
+    return 'Имя пользователя должно быть не короче $count символов';
+  }
+
+  @override
+  String get pleaseEnterAPassword => 'Введите пароль';
+
+  @override
+  String passwordMinLength(int count) {
+    return 'Пароль должен быть не короче $count символов';
+  }
+
+  @override
+  String get writeYourTopicTitle => 'Заголовок темы...';
+
+  @override
+  String get writeYourTopicContent => 'Текст темы...';
+
+  @override
+  String pushDisabledFor(String siteName) {
+    return 'Push-уведомления для $siteName выключены';
+  }
+
+  @override
+  String get failedToDisablePush => 'Не удалось выключить push-уведомления';
+
+  @override
+  String get thisForum => 'этот форум';
 }

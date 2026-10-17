@@ -978,7 +978,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -1036,7 +1036,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,

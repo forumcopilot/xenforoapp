@@ -269,7 +269,7 @@ class PostListItemHeader extends StatelessWidget {
               Get.to(() => LoginPage(siteContext: siteContext));
             },
             child: Text(
-              'Login',
+              AppLocalizations.of(context).loginTitle,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

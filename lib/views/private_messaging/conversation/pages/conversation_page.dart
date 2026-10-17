@@ -17,6 +17,7 @@ import '../widgets/conversation_quick_reply_bar.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../../../theme/design_tokens.dart';
 import 'package:get/get.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
 import '../../../../utils/snackbar_helper.dart';
@@ -1131,6 +1132,8 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         if (canReply)
           ConversationQuickReplyBar(
             draftKey: _replyDraftKey,
+            siteContext: widget.siteContext,
+            serverDraftKey: XenForoDraftProxy.conversationReplyKey(widget.conversationId),
             onSend: _sendQuickReply,
             onOpenFullEditor: _openFullReply,
           ),

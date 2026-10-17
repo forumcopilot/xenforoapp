@@ -19,6 +19,7 @@ import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/snackbar_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/server_draft.dart';
 import '../../utils/app_navigation.dart';
 
 class MessageComposePage extends StatefulWidget {
@@ -74,6 +75,12 @@ class MessageComposePage extends StatefulWidget {
   /// one, closing loses nothing, so it doesn't ask before discarding.
   final String? draftKey;
 
+  /// The forum's own key for this draft (XenForo: thread-{id}, forum-{id},
+  /// conversation-reply-{id}), to keep it on the forum as well, where the
+  /// web editor shows it; null for none. Needs [draftKey]. With
+  /// [showTitleField], the title is kept too.
+  final String? serverDraftKey;
+
   const MessageComposePage({
     super.key,
     required this.siteContext,
@@ -106,6 +113,7 @@ class MessageComposePage extends StatefulWidget {
     this.showSignatureToggle = false,
     this.isEditing = false,
     this.draftKey,
+    this.serverDraftKey,
   });
 
   @override
@@ -189,32 +197,58 @@ class _MessageComposePageState extends State<MessageComposePage> {
     _baselineContent = _contentController.text;
 
     if (widget.draftKey != null) {
+      final serverKey = widget.serverDraftKey;
+      if (serverKey != null) _serverDraft = ServerDraft(siteContext: widget.siteContext, key: serverKey);
       _restoreDraft();
       _contentController.addListener(_scheduleDraftSave);
+      if (_serverDraft != null) _titleController.addListener(_scheduleDraftSave);
     }
   }
 
   Timer? _draftTimer;
   bool _sent = false;
+  ServerDraft? _serverDraft;
 
   // Never over text already typed or put there by the page (a quote).
   Future<void> _restoreDraft() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final draft = prefs.getString(widget.draftKey!);
-      if (!mounted || draft == null || draft.trim().isEmpty) return;
-      if (_contentController.text.trim().isNotEmpty) return;
-      _contentController.text = draft;
-      _contentController.selection = TextSelection.collapsed(offset: draft.length);
+      if (!mounted) return;
+      if (draft != null && draft.trim().isNotEmpty) {
+        if (_contentController.text.trim().isNotEmpty) return;
+        _contentController.text = draft;
+        _contentController.selection = TextSelection.collapsed(offset: draft.length);
+        return;
+      }
+      // None here: the forum's, from the web editor or another device.
+      await _restoreServerDraft();
     } catch (e) {
       debugPrint('MessageComposePage: restoring the draft failed: $e');
     }
   }
 
+  Future<void> _restoreServerDraft() async {
+    final serverDraft = _serverDraft;
+    if (serverDraft == null || _contentController.text.trim().isNotEmpty) return;
+    final draft = await serverDraft.load();
+    // Never over what was typed meanwhile.
+    if (!mounted || draft == null || _contentController.text.trim().isNotEmpty) return;
+    final title = draft.topicTitle;
+    if (widget.showTitleField && title != null && _titleController.text.trim().isEmpty) {
+      _titleController.text = title;
+    }
+    _contentController.text = draft.reply;
+    _contentController.selection = TextSelection.collapsed(offset: draft.reply.length);
+  }
+
   void _scheduleDraftSave() {
     _draftTimer?.cancel();
     _draftTimer = Timer(const Duration(seconds: 2), _saveDraft);
+    if (!_sent) _serverDraft?.schedule(_contentController.text, title: _draftTitle);
   }
+
+  String? get _draftTitle => widget.showTitleField ? _titleController.text : null;
 
   Future<void> _saveDraft() async {
     final key = widget.draftKey;
@@ -237,6 +271,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (key == null) return;
     _sent = true;
     _draftTimer?.cancel();
+    unawaited(_serverDraft?.discard());
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(key);
@@ -275,8 +310,12 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (widget.draftKey != null) {
       _draftTimer?.cancel();
       _contentController.removeListener(_scheduleDraftSave);
-      // Closed without sending: keep what was typed.
-      if (!_sent) _saveDraft();
+      _titleController.removeListener(_scheduleDraftSave);
+      // Closed without sending: keep what was typed, here and on the forum.
+      if (!_sent) {
+        _saveDraft();
+        _serverDraft?.saveNow(_contentController.text, title: _draftTitle);
+      }
     }
     // Only dispose controllers if we own them
     if (_ownsTitleController) {

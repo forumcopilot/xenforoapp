@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../services/server_draft.dart';
 
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../theme/design_tokens.dart';
@@ -16,9 +19,16 @@ class ConversationQuickReplyBar extends StatefulWidget {
     required this.draftKey,
     required this.onSend,
     this.onOpenFullEditor,
+    this.siteContext,
+    this.serverDraftKey,
   });
 
   final String draftKey;
+
+  /// The forum's own key for the draft (conversation-reply-{id}), to keep it
+  /// on the forum too, where the web editor shows it; needs [siteContext].
+  final String? serverDraftKey;
+  final SiteContext? siteContext;
 
   /// Sends the text; true when it was posted.
   final Future<bool> Function(String text) onSend;
@@ -37,10 +47,14 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
   Timer? _draftTimer;
   bool _sending = false;
   bool _hasText = false;
+  ServerDraft? _serverDraft;
 
   @override
   void initState() {
     super.initState();
+    final key = widget.serverDraftKey;
+    final siteContext = widget.siteContext;
+    if (key != null && siteContext != null) _serverDraft = ServerDraft(siteContext: siteContext, key: key);
     _controller.addListener(_onChanged);
     _restoreDraft();
   }
@@ -48,7 +62,11 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
   Future<void> _restoreDraft() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final draft = prefs.getString(widget.draftKey);
+      var draft = prefs.getString(widget.draftKey);
+      if (draft == null || draft.trim().isEmpty) {
+        // None here: the forum's, from the web editor or another device.
+        draft = (await _serverDraft?.load())?.reply;
+      }
       // Never over text already typed.
       if (!mounted || draft == null || draft.trim().isEmpty || _controller.text.isNotEmpty) return;
       _controller.text = draft;
@@ -63,6 +81,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
     if (hasText != _hasText) setState(() => _hasText = hasText);
     _draftTimer?.cancel();
     _draftTimer = Timer(const Duration(seconds: 2), _saveDraft);
+    _serverDraft?.schedule(_controller.text);
   }
 
   Future<void> _saveDraft() async {
@@ -95,6 +114,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
     }
     if (!mounted || !sent) return;
     _controller.clear();
+    unawaited(_serverDraft?.discard());
     await _saveDraft();
     if (mounted) _focusNode.requestFocus();
   }
@@ -105,7 +125,11 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
     _draftTimer?.cancel();
     final sent = await open(_controller);
     if (!mounted) return;
-    if (sent) _controller.clear();
+    if (sent) {
+      _controller.clear();
+      // The full editor removed the forum's copy when it posted.
+      _serverDraft?.cancel();
+    }
     await _saveDraft();
   }
 
@@ -113,8 +137,9 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
   void dispose() {
     _draftTimer?.cancel();
     _controller.removeListener(_onChanged);
-    // Left without sending: keep what was typed.
+    // Left without sending: keep what was typed, here and on the forum.
     _saveDraft();
+    _serverDraft?.saveNow(_controller.text);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();

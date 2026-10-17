@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
 import 'package:flutter/foundation.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../services/attachment_uploader.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 
 class ReplyConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -192,6 +193,8 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
         // A plain reply keeps a draft on this device, per forum and
         // conversation (a reply with a quote opens with the quote instead).
         draftKey: 'dm_reply_draft:${widget.siteContext.site.pluginUrl}:${widget.conversationId}',
+        // And on the forum, where the web editor shows it.
+        serverDraftKey: XenForoDraftProxy.conversationReplyKey(widget.conversationId),
         onSuccess: (success) {
           // Return true to indicate reply was successful
           return true;

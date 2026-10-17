@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../utils/snackbar_helper.dart';
 import '../services/attachment_uploader.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 
 class ReplyPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -239,6 +240,10 @@ class _ReplyPageState extends State<ReplyPage> {
         onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
         topicTitle: widget.topicTitle,
         onRemoveAttachment: _uploader.remove,
+        // The reply is kept as a draft, on this device and on the forum (where
+        // the web editor shows it), until it is posted.
+        draftKey: 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}',
+        serverDraftKey: XenForoDraftProxy.replyKey(widget.threadId),
         onSuccess: (success) {
           // Never null on success: the caller reads null as "closed without posting".
           return _createdPostId ?? true;

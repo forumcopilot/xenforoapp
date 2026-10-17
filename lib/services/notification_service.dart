@@ -27,6 +27,7 @@ import 'package:forumcopilot_flutter/utils/url_utils.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../utils/l10n_now.dart';
+import 'notification_channels.dart';
 import '../utils/app_navigation.dart';
 import '../utils/forum_links.dart';
 
@@ -199,15 +200,11 @@ class NotificationService with ServiceErrorHandlingMixin {
     );
   }
 
+  /// One channel per kind of notification (messages, replies and mentions,
+  /// likes, other), so each can be silenced on its own in the phone's
+  /// settings; there used to be one for everything.
   Future<void> _createAndroidNotificationChannel() async {
     if (!Platform.isAndroid) return;
-
-    final channel = AndroidNotificationChannel(
-      'forum_copilot_channel',
-      l10nNow().notificationChannelName,
-      description: l10nNow().notificationChannelDescription,
-      importance: Importance.high,
-    );
 
     final androidPlugin = _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin == null) {
@@ -215,8 +212,10 @@ class NotificationService with ServiceErrorHandlingMixin {
       return;
     }
 
-    await androidPlugin.createNotificationChannel(channel);
-    AppLogger.debug('✅ [NotificationService] Android notification channel created');
+    for (final channel in NotificationChannels.all(l10nNow())) {
+      await androidPlugin.createNotificationChannel(channel);
+    }
+    AppLogger.debug('✅ [NotificationService] Android notification channels created');
   }
 
   // On iOS and macOS firebase_messaging is the notification centre delegate,
@@ -397,15 +396,23 @@ class NotificationService with ServiceErrorHandlingMixin {
     _handleMessageOpenedApp(message);
   }
 
-  // Show local notification
+  /// A push that arrives while the app is open, shown in its kind's channel
+  /// and stacked with the same forum's notifications.
   Future<void> _showLocalNotification(RemoteMessage message) async {
+    final l10n = l10nNow();
+    final kind = NotificationChannels.kindOf(message.data);
+    final group = NotificationChannels.groupOf(message.data);
+    final title = message.notification?.title ?? message.data['title']?.toString() ?? l10n.appTitle;
+    final body = message.notification?.body ?? message.data['body']?.toString() ?? '';
     final androidDetails = AndroidNotificationDetails(
-      'forum_copilot_channel',
-      l10nNow().notificationChannelName,
-      channelDescription: l10nNow().notificationChannelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
+      NotificationChannels.idOf(kind),
+      NotificationChannels.nameOf(kind, l10n),
+      channelDescription: NotificationChannels.descriptionOf(kind, l10n),
+      importance: kind == NotificationKind.reactions ? Importance.defaultImportance : Importance.high,
+      priority: kind == NotificationKind.reactions ? Priority.defaultPriority : Priority.high,
       showWhen: true,
+      groupKey: group,
+      groupAlertBehavior: GroupAlertBehavior.children,
     );
 
     const darwinDetails = DarwinNotificationDetails(
@@ -425,11 +432,32 @@ class NotificationService with ServiceErrorHandlingMixin {
 
     await _localNotifications.show(
       id: message.hashCode,
-      title: message.notification?.title ?? 'Forum Copilot',
-      body: message.notification?.body ?? 'New notification',
+      title: title,
+      body: body,
       notificationDetails: details,
       payload: payload,
     );
+
+    // Android stacks a group only under a summary; it makes no sound itself
+    // (the group alerts for its children).
+    if (Platform.isAndroid) {
+      await _localNotifications.show(
+        id: group.hashCode,
+        title: title,
+        body: body,
+        notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails(
+            NotificationChannels.idOf(kind),
+            NotificationChannels.nameOf(kind, l10n),
+            channelDescription: NotificationChannels.descriptionOf(kind, l10n),
+            groupKey: group,
+            setAsGroupSummary: true,
+            groupAlertBehavior: GroupAlertBehavior.children,
+            onlyAlertOnce: true,
+          ),
+        ),
+      );
+    }
   }
 
   // Handle notification tap

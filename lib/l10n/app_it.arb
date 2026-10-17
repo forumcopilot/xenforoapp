@@ -1309,5 +1309,13 @@
   "copyLink": "Copia link",
   "linkCopied": "Link copiato",
   "sharedFilesAttached": "{count, plural, =1{1 file condiviso allegato.} other{{count} file condivisi allegati.}}",
-  "sharedFilesPartlyAttached": "{count, plural, =1{1 file allegato. Non allegati: {names}} other{{count} file allegati. Non allegati: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, =1{1 file allegato. Non allegati: {names}} other{{count} file allegati. Non allegati: {names}}}",
+  "notificationChannelMessages": "Messaggi",
+  "notificationChannelMessagesDescription": "Nuovi messaggi diretti e le risposte",
+  "notificationChannelReplies": "Risposte e menzioni",
+  "notificationChannelRepliesDescription": "Risposte nelle discussioni che segui, citazioni e menzioni",
+  "notificationChannelReactions": "Mi piace e reazioni",
+  "notificationChannelReactionsDescription": "Mi piace e reazioni ai tuoi messaggi",
+  "notificationChannelOther": "Altre notifiche",
+  "notificationChannelOtherDescription": "Follower, trofei e altri avvisi del forum"
 }

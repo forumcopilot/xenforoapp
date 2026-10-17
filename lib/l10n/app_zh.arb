@@ -1309,5 +1309,13 @@
   "copyLink": "复制链接",
   "linkCopied": "链接已复制",
   "sharedFilesAttached": "{count, plural, other{已附加 {count} 个共享文件。}}",
-  "sharedFilesPartlyAttached": "{count, plural, other{已附加 {count} 个文件。未能附加：{names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, other{已附加 {count} 个文件。未能附加：{names}}}",
+  "notificationChannelMessages": "私信",
+  "notificationChannelMessagesDescription": "新的私信及其回复",
+  "notificationChannelReplies": "回复和提及",
+  "notificationChannelRepliesDescription": "关注主题中的回复、引用和提及",
+  "notificationChannelReactions": "点赞和回应",
+  "notificationChannelReactionsDescription": "对你的帖子和消息的点赞与回应",
+  "notificationChannelOther": "其他通知",
+  "notificationChannelOtherDescription": "关注、奖杯和其他论坛提醒"
 }

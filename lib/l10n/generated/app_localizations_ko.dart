@@ -2757,4 +2757,29 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => '메시지';
+
+  @override
+  String get notificationChannelMessagesDescription => '새 다이렉트 메시지와 답장';
+
+  @override
+  String get notificationChannelReplies => '답글 및 멘션';
+
+  @override
+  String get notificationChannelRepliesDescription => '구독 중인 글의 답글, 인용 및 멘션';
+
+  @override
+  String get notificationChannelReactions => '좋아요 및 반응';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      '내 게시물과 메시지에 대한 좋아요 및 반응';
+
+  @override
+  String get notificationChannelOther => '기타 알림';
+
+  @override
+  String get notificationChannelOtherDescription => '팔로우, 트로피 및 기타 포럼 알림';
 }

@@ -2722,4 +2722,28 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => '私信';
+
+  @override
+  String get notificationChannelMessagesDescription => '新的私信及其回复';
+
+  @override
+  String get notificationChannelReplies => '回复和提及';
+
+  @override
+  String get notificationChannelRepliesDescription => '关注主题中的回复、引用和提及';
+
+  @override
+  String get notificationChannelReactions => '点赞和回应';
+
+  @override
+  String get notificationChannelReactionsDescription => '对你的帖子和消息的点赞与回应';
+
+  @override
+  String get notificationChannelOther => '其他通知';
+
+  @override
+  String get notificationChannelOtherDescription => '关注、奖杯和其他论坛提醒';
 }

@@ -2917,4 +2917,32 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => 'Сообщения';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Новые личные сообщения и ответы на них';
+
+  @override
+  String get notificationChannelReplies => 'Ответы и упоминания';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Ответы в отслеживаемых темах, цитаты и упоминания';
+
+  @override
+  String get notificationChannelReactions => 'Лайки и реакции';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Лайки и реакции на ваши сообщения';
+
+  @override
+  String get notificationChannelOther => 'Другие уведомления';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Подписки, награды и другие оповещения форума';
 }

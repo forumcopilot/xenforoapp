@@ -69,7 +69,7 @@
         <!-- Default notification channel for Firebase Cloud Messaging -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="forum_app_channel" />
+            android:value="forum_copilot_channel" />
         <meta-data
             android:name="asset_statements"
             android:resource="@string/asset_statements" />

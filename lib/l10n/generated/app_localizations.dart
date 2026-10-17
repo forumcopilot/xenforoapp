@@ -4909,6 +4909,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{Attached 1 file. Not attached: {names}} other{Attached {count} files. Not attached: {names}}}'**
   String sharedFilesPartlyAttached(int count, String names);
+
+  /// Android notification channel name: direct messages
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notificationChannelMessages;
+
+  /// No description provided for @notificationChannelMessagesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New direct messages and replies to them'**
+  String get notificationChannelMessagesDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Replies and mentions'**
+  String get notificationChannelReplies;
+
+  /// No description provided for @notificationChannelRepliesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies in threads you watch, quotes and mentions'**
+  String get notificationChannelRepliesDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Likes and reactions'**
+  String get notificationChannelReactions;
+
+  /// No description provided for @notificationChannelReactionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes and reactions to your posts and messages'**
+  String get notificationChannelReactionsDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Other notifications'**
+  String get notificationChannelOther;
+
+  /// No description provided for @notificationChannelOtherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows, trophies and other forum alerts'**
+  String get notificationChannelOtherDescription;
 }
 
 class _AppLocalizationsDelegate

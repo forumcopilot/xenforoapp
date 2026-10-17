@@ -1309,5 +1309,13 @@
   "copyLink": "Копировать ссылку",
   "linkCopied": "Ссылка скопирована",
   "sharedFilesAttached": "{count, plural, one{Прикреплён {count} общий файл.} few{Прикреплено {count} общих файла.} many{Прикреплено {count} общих файлов.} other{Прикреплено {count} общих файла.}}",
-  "sharedFilesPartlyAttached": "{count, plural, one{Прикреплён {count} файл. Не прикреплены: {names}} few{Прикреплено {count} файла. Не прикреплены: {names}} many{Прикреплено {count} файлов. Не прикреплены: {names}} other{Прикреплено {count} файла. Не прикреплены: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, one{Прикреплён {count} файл. Не прикреплены: {names}} few{Прикреплено {count} файла. Не прикреплены: {names}} many{Прикреплено {count} файлов. Не прикреплены: {names}} other{Прикреплено {count} файла. Не прикреплены: {names}}}",
+  "notificationChannelMessages": "Сообщения",
+  "notificationChannelMessagesDescription": "Новые личные сообщения и ответы на них",
+  "notificationChannelReplies": "Ответы и упоминания",
+  "notificationChannelRepliesDescription": "Ответы в отслеживаемых темах, цитаты и упоминания",
+  "notificationChannelReactions": "Лайки и реакции",
+  "notificationChannelReactionsDescription": "Лайки и реакции на ваши сообщения",
+  "notificationChannelOther": "Другие уведомления",
+  "notificationChannelOtherDescription": "Подписки, награды и другие оповещения форума"
 }

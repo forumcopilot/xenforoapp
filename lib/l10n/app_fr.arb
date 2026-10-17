@@ -1285,5 +1285,13 @@
   "copyLink": "Copier le lien",
   "linkCopied": "Lien copié",
   "sharedFilesAttached": "{count, plural, one{{count} fichier partagé joint.} other{{count} fichiers partagés joints.}}",
-  "sharedFilesPartlyAttached": "{count, plural, one{{count} fichier joint. Non joints : {names}} other{{count} fichiers joints. Non joints : {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, one{{count} fichier joint. Non joints : {names}} other{{count} fichiers joints. Non joints : {names}}}",
+  "notificationChannelMessages": "Messages",
+  "notificationChannelMessagesDescription": "Nouveaux messages privés et leurs réponses",
+  "notificationChannelReplies": "Réponses et mentions",
+  "notificationChannelRepliesDescription": "Réponses dans les sujets suivis, citations et mentions",
+  "notificationChannelReactions": "J’aime et réactions",
+  "notificationChannelReactionsDescription": "J’aime et réactions à vos messages",
+  "notificationChannelOther": "Autres notifications",
+  "notificationChannelOtherDescription": "Abonnements, trophées et autres alertes du forum"
 }

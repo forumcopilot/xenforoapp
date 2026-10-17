@@ -2894,4 +2894,32 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => 'Mensagens';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Novas mensagens diretas e respostas';
+
+  @override
+  String get notificationChannelReplies => 'Respostas e menções';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Respostas em tópicos que você segue, citações e menções';
+
+  @override
+  String get notificationChannelReactions => 'Curtidas e reações';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Curtidas e reações às suas mensagens';
+
+  @override
+  String get notificationChannelOther => 'Outras notificações';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Seguidores, troféus e outros alertas do fórum';
 }

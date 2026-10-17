@@ -1905,5 +1905,17 @@
   "sharedFilesAttached": "{count, plural, =1{Attached 1 shared file.} other{Attached {count} shared files.}}",
   "@sharedFilesAttached": {"description": "After files shared into the app were attached to a new topic", "placeholders": {"count": {"type": "int"}}},
   "sharedFilesPartlyAttached": "{count, plural, =1{Attached 1 file. Not attached: {names}} other{Attached {count} files. Not attached: {names}}}",
-  "@sharedFilesPartlyAttached": {"description": "After files shared into the app were attached to a new topic, some failed; names lists them", "placeholders": {"count": {"type": "int"}, "names": {"type": "String"}}}
+  "@sharedFilesPartlyAttached": {"description": "After files shared into the app were attached to a new topic, some failed; names lists them", "placeholders": {"count": {"type": "int"}, "names": {"type": "String"}}},
+  "notificationChannelMessages": "Messages",
+  "@notificationChannelMessages": {"description": "Android notification channel name: direct messages"},
+  "notificationChannelMessagesDescription": "New direct messages and replies to them",
+  "notificationChannelReplies": "Replies and mentions",
+  "@notificationChannelReplies": {"description": "Android notification channel name"},
+  "notificationChannelRepliesDescription": "Replies in threads you watch, quotes and mentions",
+  "notificationChannelReactions": "Likes and reactions",
+  "@notificationChannelReactions": {"description": "Android notification channel name"},
+  "notificationChannelReactionsDescription": "Likes and reactions to your posts and messages",
+  "notificationChannelOther": "Other notifications",
+  "@notificationChannelOther": {"description": "Android notification channel name"},
+  "notificationChannelOtherDescription": "Follows, trophies and other forum alerts"
 }

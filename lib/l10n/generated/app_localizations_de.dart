@@ -2927,4 +2927,32 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => 'Nachrichten';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Neue Direktnachrichten und Antworten darauf';
+
+  @override
+  String get notificationChannelReplies => 'Antworten und Erwähnungen';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Antworten in beobachteten Themen, Zitate und Erwähnungen';
+
+  @override
+  String get notificationChannelReactions => 'Likes und Reaktionen';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Likes und Reaktionen auf deine Beiträge und Nachrichten';
+
+  @override
+  String get notificationChannelOther => 'Weitere Benachrichtigungen';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Folgen, Trophäen und andere Forenbenachrichtigungen';
 }

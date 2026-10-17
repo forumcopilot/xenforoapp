@@ -1309,5 +1309,13 @@
   "copyLink": "Copiar enlace",
   "linkCopied": "Enlace copiado",
   "sharedFilesAttached": "{count, plural, =1{Se adjuntó 1 archivo compartido.} other{Se adjuntaron {count} archivos compartidos.}}",
-  "sharedFilesPartlyAttached": "{count, plural, =1{Se adjuntó 1 archivo. Sin adjuntar: {names}} other{Se adjuntaron {count} archivos. Sin adjuntar: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, =1{Se adjuntó 1 archivo. Sin adjuntar: {names}} other{Se adjuntaron {count} archivos. Sin adjuntar: {names}}}",
+  "notificationChannelMessages": "Mensajes",
+  "notificationChannelMessagesDescription": "Mensajes directos nuevos y sus respuestas",
+  "notificationChannelReplies": "Respuestas y menciones",
+  "notificationChannelRepliesDescription": "Respuestas en temas que sigues, citas y menciones",
+  "notificationChannelReactions": "Me gusta y reacciones",
+  "notificationChannelReactionsDescription": "Me gusta y reacciones a tus mensajes",
+  "notificationChannelOther": "Otras notificaciones",
+  "notificationChannelOtherDescription": "Seguidores, trofeos y otras alertas del foro"
 }

@@ -2765,4 +2765,29 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => 'メッセージ';
+
+  @override
+  String get notificationChannelMessagesDescription => '新しいダイレクトメッセージとその返信';
+
+  @override
+  String get notificationChannelReplies => '返信とメンション';
+
+  @override
+  String get notificationChannelRepliesDescription => 'ウォッチ中のスレッドへの返信、引用、メンション';
+
+  @override
+  String get notificationChannelReactions => 'いいねとリアクション';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'あなたの投稿やメッセージへのいいねとリアクション';
+
+  @override
+  String get notificationChannelOther => 'その他の通知';
+
+  @override
+  String get notificationChannelOtherDescription => 'フォロー、トロフィー、その他のフォーラム通知';
 }

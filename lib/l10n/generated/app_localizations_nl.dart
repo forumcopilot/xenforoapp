@@ -2885,4 +2885,32 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationChannelMessages => 'Berichten';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Nieuwe privéberichten en antwoorden daarop';
+
+  @override
+  String get notificationChannelReplies => 'Reacties en vermeldingen';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Reacties in gevolgde onderwerpen, citaten en vermeldingen';
+
+  @override
+  String get notificationChannelReactions => 'Likes en reacties';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Likes en reacties op je berichten';
+
+  @override
+  String get notificationChannelOther => 'Overige meldingen';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Volgers, trofeeën en andere forummeldingen';
 }

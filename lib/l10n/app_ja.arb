@@ -1285,5 +1285,13 @@
   "copyLink": "リンクをコピー",
   "linkCopied": "リンクをコピーしました",
   "sharedFilesAttached": "{count, plural, other{共有ファイルを {count} 件添付しました。}}",
-  "sharedFilesPartlyAttached": "{count, plural, other{{count} 件を添付しました。添付できなかったファイル: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, other{{count} 件を添付しました。添付できなかったファイル: {names}}}",
+  "notificationChannelMessages": "メッセージ",
+  "notificationChannelMessagesDescription": "新しいダイレクトメッセージとその返信",
+  "notificationChannelReplies": "返信とメンション",
+  "notificationChannelRepliesDescription": "ウォッチ中のスレッドへの返信、引用、メンション",
+  "notificationChannelReactions": "いいねとリアクション",
+  "notificationChannelReactionsDescription": "あなたの投稿やメッセージへのいいねとリアクション",
+  "notificationChannelOther": "その他の通知",
+  "notificationChannelOtherDescription": "フォロー、トロフィー、その他のフォーラム通知"
 }

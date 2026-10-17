@@ -1309,5 +1309,13 @@
   "copyLink": "링크 복사",
   "linkCopied": "링크를 복사했습니다",
   "sharedFilesAttached": "{count, plural, other{공유 파일 {count}개를 첨부했습니다.}}",
-  "sharedFilesPartlyAttached": "{count, plural, other{{count}개를 첨부했습니다. 첨부하지 못한 파일: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, other{{count}개를 첨부했습니다. 첨부하지 못한 파일: {names}}}",
+  "notificationChannelMessages": "메시지",
+  "notificationChannelMessagesDescription": "새 다이렉트 메시지와 답장",
+  "notificationChannelReplies": "답글 및 멘션",
+  "notificationChannelRepliesDescription": "구독 중인 글의 답글, 인용 및 멘션",
+  "notificationChannelReactions": "좋아요 및 반응",
+  "notificationChannelReactionsDescription": "내 게시물과 메시지에 대한 좋아요 및 반응",
+  "notificationChannelOther": "기타 알림",
+  "notificationChannelOtherDescription": "팔로우, 트로피 및 기타 포럼 알림"
 }

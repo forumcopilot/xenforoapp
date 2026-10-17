@@ -1285,5 +1285,13 @@
   "copyLink": "Link kopieren",
   "linkCopied": "Link kopiert",
   "sharedFilesAttached": "{count, plural, =1{1 geteilte Datei angehängt.} other{{count} geteilte Dateien angehängt.}}",
-  "sharedFilesPartlyAttached": "{count, plural, =1{1 Datei angehängt. Nicht angehängt: {names}} other{{count} Dateien angehängt. Nicht angehängt: {names}}}"
+  "sharedFilesPartlyAttached": "{count, plural, =1{1 Datei angehängt. Nicht angehängt: {names}} other{{count} Dateien angehängt. Nicht angehängt: {names}}}",
+  "notificationChannelMessages": "Nachrichten",
+  "notificationChannelMessagesDescription": "Neue Direktnachrichten und Antworten darauf",
+  "notificationChannelReplies": "Antworten und Erwähnungen",
+  "notificationChannelRepliesDescription": "Antworten in beobachteten Themen, Zitate und Erwähnungen",
+  "notificationChannelReactions": "Likes und Reaktionen",
+  "notificationChannelReactionsDescription": "Likes und Reaktionen auf deine Beiträge und Nachrichten",
+  "notificationChannelOther": "Weitere Benachrichtigungen",
+  "notificationChannelOtherDescription": "Folgen, Trophäen und andere Forenbenachrichtigungen"
 }

@@ -1301,5 +1301,9 @@
   "pushDisabledFor": "已关闭 {siteName} 的推送通知",
   "failedToDisablePush": "关闭推送通知失败",
   "thisForum": "此论坛",
-  "openFullEditor": "完整编辑器"
+  "openFullEditor": "完整编辑器",
+  "statsMembers": "{count, plural, other{{count} 位成员}}",
+  "statsTopics": "{count, plural, other{{count} 个主题}}",
+  "statsPosts": "{count, plural, other{{count} 个帖子}}",
+  "searchForumName": "搜索 {forumName}"
 }

@@ -13,6 +13,46 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../utils/app_navigation.dart';
 
 class ForumActions {
+  /// Whether the visitor can search [siteContext]'s forum: members, and
+  /// guests where the forum lets guests search.
+  static bool canSearch(SiteContext siteContext) =>
+      siteContext.isLoggedIn || (siteContext.configDataOutput?.guestSearch ?? false);
+
+  /// Asks, then marks every forum read (the Home and Forums tabs' action).
+  static Future<void> confirmMarkAllRead(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(
+            l10n.markAllForumsAsRead,
+            style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
+          ),
+          content: Text(
+            l10n.markAllForumsAsReadMessage,
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel, style: TextStyle(color: colorScheme.onSurfaceVariant)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.markAsRead, style: TextStyle(color: colorScheme.primary)),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed == true && context.mounted) {
+      await ForumActions().markAllAsRead(context, '0');
+    }
+  }
+
   // Track if markAllAsRead is currently in progress to prevent concurrent calls
   // Static to prevent concurrent calls across all instances
   static bool _isMarkingAsRead = false;

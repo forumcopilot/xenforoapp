@@ -1301,5 +1301,9 @@
   "pushDisabledFor": "{siteName}의 푸시 알림을 껐습니다",
   "failedToDisablePush": "푸시 알림을 끄지 못했습니다",
   "thisForum": "이 포럼",
-  "openFullEditor": "전체 편집기"
+  "openFullEditor": "전체 편집기",
+  "statsMembers": "{count, plural, other{회원 {count}명}}",
+  "statsTopics": "{count, plural, other{주제 {count}개}}",
+  "statsPosts": "{count, plural, other{게시물 {count}개}}",
+  "searchForumName": "{forumName} 검색"
 }

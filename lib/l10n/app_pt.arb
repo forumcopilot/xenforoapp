@@ -1301,5 +1301,9 @@
   "pushDisabledFor": "Notificações push desativadas para {siteName}",
   "failedToDisablePush": "Falha ao desativar as notificações push",
   "thisForum": "este fórum",
-  "openFullEditor": "Editor completo"
+  "openFullEditor": "Editor completo",
+  "statsMembers": "{count, plural, =1{{count} membro} other{{count} membros}}",
+  "statsTopics": "{count, plural, =1{{count} tópico} other{{count} tópicos}}",
+  "statsPosts": "{count, plural, =1{{count} mensagem} other{{count} mensagens}}",
+  "searchForumName": "Pesquisar em {forumName}"
 }

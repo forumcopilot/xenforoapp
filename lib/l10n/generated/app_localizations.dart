@@ -4861,6 +4861,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Full editor'**
   String get openFullEditor;
+
+  /// Forum home header stats, joined with " · "; the number is compact (56.8K)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} member} other{{count} members}}'**
+  String statsMembers(int count);
+
+  /// Forum home header stats, joined with " · "; the number is compact (18.5K)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} topic} other{{count} topics}}'**
+  String statsTopics(int count);
+
+  /// Forum home header stats, joined with " · "; the number is compact (1.2M)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} post} other{{count} posts}}'**
+  String statsPosts(int count);
+
+  /// The search field in the forum home header
+  ///
+  /// In en, this message translates to:
+  /// **'Search {forumName}'**
+  String searchForumName(String forumName);
 }
 
 class _AppLocalizationsDelegate

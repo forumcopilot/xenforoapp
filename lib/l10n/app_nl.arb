@@ -1750,5 +1750,9 @@
   "pushDisabledFor": "Pushmeldingen uitgeschakeld voor {siteName}",
   "failedToDisablePush": "Kan pushmeldingen niet uitschakelen",
   "thisForum": "dit forum",
-  "openFullEditor": "Volledige editor"
+  "openFullEditor": "Volledige editor",
+  "statsMembers": "{count, plural, =1{{count} lid} other{{count} leden}}",
+  "statsTopics": "{count, plural, =1{{count} onderwerp} other{{count} onderwerpen}}",
+  "statsPosts": "{count, plural, =1{{count} bericht} other{{count} berichten}}",
+  "searchForumName": "Zoeken in {forumName}"
 }

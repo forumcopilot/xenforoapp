@@ -650,8 +650,10 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   int _getTabIndex(String tabType) => _enabledTabs.indexOf(tabType);
   bool _isCurrentTab(String tabType) => _tabController.index == _getTabIndex(tabType);
 
-  // Build the appropriate app bar for the current tab
-  PreferredSizeWidget _buildAppBarForCurrentTab(bool isLoggedIn, bool canSendPM) {
+  // Build the appropriate app bar for the current tab. Home has none: its
+  // header (ForumMasthead, in the tab) collapses into one.
+  PreferredSizeWidget? _buildAppBarForCurrentTab(
+      bool isLoggedIn, bool canSendPM) {
     if (_siteContext == null) {
       return ForumAppBar(
         siteContext: SiteContext(siteType: 'none', site: Site(name: 'Loading...', url: '', description: '', siteType: 'none')),
@@ -663,10 +665,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     switch (currentTabType) {
       case _topicsTab:
-        return TopicsTabAppBar(
-          siteContext: _siteContext!,
-          isLoggedIn: isLoggedIn,
-        );
+        return null;
       case _forumsTab:
         return ForumsTabAppBar(
           siteContext: _siteContext!,

@@ -5,7 +5,10 @@ import 'package:forumcopilot_flutter/views/lists/latest_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/unread_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/participated_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/subscribed_topics_list.dart';
-import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
+import 'package:forumcopilot_flutter/views/widgets/forum_masthead.dart';
+import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
+import 'package:forumcopilot_flutter/views/search_page.dart';
+import 'package:forumcopilot_flutter/utils/app_navigation.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
@@ -384,6 +387,27 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
     }
   }
 
+  /// The forum's header, which collapses into this tab's app bar.
+  Widget _buildMasthead() {
+    final siteContext = widget.siteContext;
+    final l10n = AppLocalizations.of(context);
+    return ForumMasthead(
+      siteContext: siteContext,
+      boardStats: widget.boardStats,
+      onSearch: ForumActions.canSearch(siteContext)
+          ? () => AppNavigation.push(context, SearchPage(siteContext: siteContext))
+          : null,
+      actions: [
+        if (siteContext.isLoggedIn)
+          IconButton(
+            icon: const Icon(Icons.done_all_rounded),
+            tooltip: l10n.markForumRead,
+            onPressed: () => ForumActions.confirmMarkAllRead(context),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Always build the hidden widgets first to ensure they're initialized
@@ -394,14 +418,11 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
     if (errorWidget != null) {
       return Stack(
         children: [
-          Column(
-            children: [
-              ForumHeaderWidget(
-                boardStats: widget.boardStats,
-                extendUnderAppBar: true,
-              ),
-              _buildFilterChips(),
-              Expanded(child: errorWidget),
+          CustomScrollView(
+            slivers: [
+              _buildMasthead(),
+              SliverToBoxAdapter(child: _buildFilterChips()),
+              SliverFillRemaining(child: errorWidget),
             ],
           ),
           hiddenWidgets,
@@ -415,16 +436,12 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
       children: [
         RefreshIndicator(
           onRefresh: _handleRefresh,
+          // Below the collapsed header, not behind it.
+          edgeOffset: MediaQuery.paddingOf(context).top + ForumMasthead.collapsedHeight,
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              // Forum Header
-              SliverToBoxAdapter(
-                child: ForumHeaderWidget(
-                  boardStats: widget.boardStats,
-                  extendUnderAppBar: true,
-                ),
-              ),
+              _buildMasthead(),
               // Filter Chips
               SliverToBoxAdapter(child: _buildFilterChips()),
               // Empty state or topic items, as a sliver

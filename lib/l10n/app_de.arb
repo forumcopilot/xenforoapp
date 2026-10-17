@@ -1277,5 +1277,9 @@
   "pushDisabledFor": "Push-Benachrichtigungen für {siteName} deaktiviert",
   "failedToDisablePush": "Push-Benachrichtigungen konnten nicht deaktiviert werden",
   "thisForum": "dieses Forum",
-  "openFullEditor": "Vollständiger Editor"
+  "openFullEditor": "Vollständiger Editor",
+  "statsMembers": "{count, plural, =1{{count} Mitglied} other{{count} Mitglieder}}",
+  "statsTopics": "{count, plural, =1{{count} Thema} other{{count} Themen}}",
+  "statsPosts": "{count, plural, =1{{count} Beitrag} other{{count} Beiträge}}",
+  "searchForumName": "{forumName} durchsuchen"
 }

@@ -1301,5 +1301,9 @@
   "pushDisabledFor": "Push-уведомления для {siteName} выключены",
   "failedToDisablePush": "Не удалось выключить push-уведомления",
   "thisForum": "этот форум",
-  "openFullEditor": "Полный редактор"
+  "openFullEditor": "Полный редактор",
+  "statsMembers": "{count, plural, one{{count} участник} few{{count} участника} many{{count} участников} other{{count} участника}}",
+  "statsTopics": "{count, plural, one{{count} тема} few{{count} темы} many{{count} тем} other{{count} темы}}",
+  "statsPosts": "{count, plural, one{{count} сообщение} few{{count} сообщения} many{{count} сообщений} other{{count} сообщения}}",
+  "searchForumName": "Поиск по {forumName}"
 }

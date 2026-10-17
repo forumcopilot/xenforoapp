@@ -46,6 +46,14 @@ class SiteContext {
   bool get isLoggedIn => _isLoggedIn.value;
   ValueNotifier<bool> get isLoggedInNotifier => _isLoggedIn;
 
+  /// Bumped on every sign-in and sign-out. A request notes it when it starts;
+  /// a reply to a request from an earlier generation must not change the
+  /// login state ([isCurrentSession]): a late reply could otherwise flip the
+  /// app back to signed in or out, or bring back the previous account's data.
+  int _sessionGeneration = 0;
+  int get sessionGeneration => _sessionGeneration;
+  bool isCurrentSession(int generation) => generation == _sessionGeneration;
+
   String get siteKey => md5.convert(utf8.encode(site.pluginUrl)).toString();
 
   SiteContext({
@@ -93,6 +101,7 @@ class SiteContext {
     lastGetConfigFcIsLogin = null;
     loginDataOutput = null;
     lastSuccessfulLoginMethod = null;
+    _sessionGeneration++;
     FCCache.clearSiteCache(siteKey);
   }
 
@@ -300,6 +309,7 @@ class SiteContext {
   void updateLoginState() {
     print('🔒 [SITE_CONTEXT] updateLoginState() called');
     final newLoginState = isLoginInformationAvailable;
+    _sessionGeneration++;
     _isLoggedIn.value = newLoginState;
     print('🔒 [SITE_CONTEXT] Login state updated: $newLoginState');
   }

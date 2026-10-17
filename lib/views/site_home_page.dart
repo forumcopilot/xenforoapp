@@ -961,6 +961,12 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       });
     }
 
+    // Counts that arrive after a sign-out or account switch belong to the
+    // previous account: drop them rather than show its badges.
+    final siteContext = _siteContext!;
+    final generation = siteContext.sessionGeneration;
+    bool stillCurrent() => mounted && siteContext.isCurrentSession(generation);
+
     try {
       AppLogger.debug('📬 [SITE_HOME] Fetching inbox stat...');
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
@@ -972,8 +978,9 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         final unreadAlerts = result['unreadAlerts'] as int;
 
         if (inboxStat.result) {
-          AppLogger.debug('📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, $unreadAlerts unread alerts');
-          if (mounted) {
+          AppLogger.debug(
+              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, $unreadAlerts unread alerts');
+          if (stillCurrent()) {
             setState(() {
               _unreadConversationsCount = inboxStat.unreadConversations;
               _unreadAlertsCount = unreadAlerts;
@@ -986,8 +993,9 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         // Fallback for proxies that don't support unread alert counts
         final inboxStat = await conversationProxy.getInboxStatAsync();
         if (inboxStat.result) {
-          AppLogger.debug('📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations');
-          if (mounted) {
+          AppLogger.debug(
+              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations');
+          if (stillCurrent()) {
             setState(() {
               _unreadConversationsCount = inboxStat.unreadConversations;
               // unreadAlerts not available for this proxy type

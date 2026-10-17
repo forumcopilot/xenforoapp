@@ -2989,6 +2989,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your post will appear once a moderator approves it.'**
   String get postAwaitingApproval;
+
+  /// Screen-reader hint on the react button: a long press opens the reaction picker
+  ///
+  /// In en, this message translates to:
+  /// **'Long press for more reactions'**
+  String get reactionHoldHint;
 }
 
 class _AppLocalizationsDelegate

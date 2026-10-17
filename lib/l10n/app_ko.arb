@@ -980,5 +980,7 @@
   "notificationsTab": "알림",
   "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
   "postAwaitingApproval": "운영자가 승인하면 게시물이 표시됩니다.",
-  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"},
+  "reactionHoldHint": "길게 누르면 다른 반응",
+  "@reactionHoldHint": {"description": "Screen-reader hint on the react button: a long press opens the reaction picker"}
 }

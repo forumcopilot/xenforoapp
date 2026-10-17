@@ -1659,4 +1659,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Your post will appear once a moderator approves it.';
+
+  @override
+  String get reactionHoldHint => 'Long press for more reactions';
 }

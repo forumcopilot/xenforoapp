@@ -1605,4 +1605,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get postAwaitingApproval => '운영자가 승인하면 게시물이 표시됩니다.';
+
+  @override
+  String get reactionHoldHint => '길게 누르면 다른 반응';
 }

@@ -17,6 +17,7 @@ import '../../utils/bbcode_processor.dart';
 import '../../utils/url_utils.dart';
 import '../../utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/accessibility_helpers.dart';
 import '../../theme/style_builders.dart';
 import 'post_list_item_header.dart';
 import 'post_list_item_attachment.dart';
@@ -886,6 +887,9 @@ class _PostListItemState extends State<PostListItem> {
             currentReaction: _currentReaction,
             isLoggedIn: widget.siteContext.isLoggedIn,
             onLike: _handleLikeAction,
+            onLongPressLike: ReactionRegistry.instance.isAvailable && widget.siteContext.isLoggedIn
+                ? _handleReactionPicker
+                : null,
             onShowLikes: _showLikesBottomSheet,
             trailing: (widget.siteContext.isLoggedIn &&
                     (_postsController.threadDataOutput.value?.topic.canReply ??
@@ -951,11 +955,11 @@ class _PostListItemState extends State<PostListItem> {
 
   Widget _buildReplyButtonWithMenu(
       BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor =
-        colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
-
-    return GestureDetector(
+    // The shared 48dp icon button with a ripple, in full-strength
+    // onSurfaceVariant (at 40-50% it read as disabled).
+    return AccessibilityHelpers.accessibleIconButton(
+      label: AppLocalizations.of(context)?.reply ?? 'Reply',
+      context: context,
       onTap: () {
         showDialog(
           context: context,
@@ -1008,9 +1012,9 @@ class _PostListItemState extends State<PostListItem> {
           },
         );
       },
-      child: Icon(
+      icon: Icon(
         Icons.reply_rounded,
-        color: iconColor,
+        color: colorScheme.onSurfaceVariant,
         size: DesignTokens.iconSizeMedium,
       ),
     );
@@ -1140,9 +1144,36 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
+  /// A tap on the react button. On a forum with reactions it likes with the
+  /// main reaction, or takes your reaction back if you have one; the picker
+  /// is a long press ([_handleReactionPicker]). Every Like used to take two
+  /// taps there, as the tap opened the picker.
   void _handleLikeAction() async {
+    if (ReactionRegistry.instance.isAvailable && widget.siteContext.isLoggedIn) {
+      final reactionId = _visitorReactionId ?? ReactionRegistry.instance.defaultReaction?.id;
+      if (reactionId != null) {
+        await _postActionsHandler.handleReaction(
+          context: context,
+          siteContext: widget.siteContext,
+          post: widget.post,
+          reactionId: reactionId,
+          currentReactionId: _visitorReactionId,
+          setIsLiked: (val) => setState(() => _isLiked = val),
+          setLikeCount: (val) => setState(() => _likeCount = val),
+          setVisitorReaction: (val) => setState(() => _visitorReactionId = val),
+        );
+        return;
+      }
+    }
+    await _handleReactionPickerOrLike();
+  }
+
+  /// A long press on the react button: the reaction picker.
+  void _handleReactionPicker() => _handleReactionPickerOrLike();
+
+  Future<void> _handleReactionPickerOrLike() async {
     // Multi-reaction path: if the forum exposes a reaction set (newer plugin),
-    // tapping opens the chooser. Picking the current reaction toggles it off.
+    // this opens the chooser. Picking the current reaction toggles it off.
     if (ReactionRegistry.instance.isAvailable) {
       if (!widget.siteContext.isLoggedIn) {
         _postActionsHandler.handleLike(

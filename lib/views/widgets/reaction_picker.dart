@@ -39,8 +39,10 @@ Future<FCReaction?> showReactionPicker(
       // within that if the wrapped rows are taller.
       final maxSheetHeight = MediaQuery.of(ctx).size.height * 0.7;
       return SafeArea(
+        // Full width: Material 3's sheet shrinks to content that doesn't
+        // expand, and the centred grid doesn't.
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: maxSheetHeight),
+          constraints: BoxConstraints(minWidth: double.infinity, maxHeight: maxSheetHeight),
           child: Padding(
             // The theme draws the drag handle above.
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),

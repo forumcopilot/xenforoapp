@@ -1612,4 +1612,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get postAwaitingApproval => 'モデレーターが承認すると、投稿が表示されます。';
+
+  @override
+  String get reactionHoldHint => '長押しでほかのリアクション';
 }

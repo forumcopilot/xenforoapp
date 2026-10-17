@@ -1672,4 +1672,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Сообщение появится после одобрения модератором.';
+
+  @override
+  String get reactionHoldHint => 'Удерживайте для других реакций';
 }

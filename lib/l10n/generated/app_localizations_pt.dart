@@ -1671,4 +1671,7 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Sua postagem aparecerá quando um moderador aprová-la.';
+
+  @override
+  String get reactionHoldHint => 'Pressione e segure para mais reações';
 }

@@ -24,17 +24,23 @@ class AccessibilityHelpers {
     bool isSelected = false,
     BuildContext? context,
     double? minSize,
+    VoidCallback? onLongPress,
   }) {
     final effectiveMinSize = minSize ?? 48.0; // Minimum touch target size
-    
+
     return Semantics(
       label: label,
       hint: hint,
       button: true,
       enabled: onTap != null,
       selected: isSelected,
-      child: GestureDetector(
+      // InkResponse hit-tests the whole 48dp target and shows a ripple; the
+      // GestureDetector over a colourless Container only answered on the
+      // icon's own pixels, with no feedback.
+      child: InkResponse(
         onTap: onTap,
+        onLongPress: onLongPress,
+        radius: effectiveMinSize / 2,
         child: Container(
           constraints: BoxConstraints(
             minWidth: effectiveMinSize,

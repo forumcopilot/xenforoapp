@@ -1588,4 +1588,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get postAwaitingApproval => '您的帖子将在版主批准后显示。';
+
+  @override
+  String get reactionHoldHint => '长按可选择更多反应';
 }

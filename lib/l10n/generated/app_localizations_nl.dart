@@ -1660,4 +1660,7 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Je bericht verschijnt zodra een moderator het heeft goedgekeurd.';
+
+  @override
+  String get reactionHoldHint => 'Houd ingedrukt voor meer reacties';
 }

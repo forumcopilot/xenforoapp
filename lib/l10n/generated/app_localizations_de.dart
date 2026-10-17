@@ -1679,4 +1679,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Dein Beitrag erscheint, sobald ein Moderator ihn freigegeben hat.';
+
+  @override
+  String get reactionHoldHint => 'Lange drücken für weitere Reaktionen';
 }

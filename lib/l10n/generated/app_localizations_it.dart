@@ -1672,4 +1672,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get postAwaitingApproval =>
       'Il tuo messaggio apparirà quando un moderatore lo avrà approvato.';
+
+  @override
+  String get reactionHoldHint => 'Tieni premuto per altre reazioni';
 }

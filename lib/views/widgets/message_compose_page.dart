@@ -1548,8 +1548,11 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   color: colorScheme.onSurface,
                 ),
                 leading: Builder(
+                  // A writing form opens as a full-screen dialog (FormPageRoute),
+                  // so it closes with ✕, Material's close for such a form.
                   builder: (context) => IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded),
+                    icon: const Icon(Icons.close_rounded),
+                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                     onPressed: _handleBackNavigation,
                   ),
                 ),

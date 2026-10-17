@@ -21,6 +21,7 @@ import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class UserProfilePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -483,7 +484,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         if (conversationSupported) {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(
+                                            FormPageRoute(
                                               builder: (context) => NewConversationPage(
                                                 siteContext: widget.siteContext,
                                                 initialRecipient: _userInfo!.username,

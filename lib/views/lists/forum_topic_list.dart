@@ -17,6 +17,7 @@ import '../widgets/subforum_header_widget.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumTopicList extends StatefulWidget {
   final SiteContext siteContext;
@@ -236,7 +237,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
     }
 
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => NewTopicPage(
           siteContext: widget.siteContext,
           forumId: widget.forum.id,

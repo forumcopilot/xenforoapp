@@ -8,6 +8,7 @@ import 'listitems/message_item.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class PrivateMessagePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -56,7 +57,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   void _onReplyPressed() {
     if (_message != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(
+        FormPageRoute(
           builder: (context) => ReplyPrivateMessagePage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
@@ -85,7 +86,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
       }
 
       Navigator.of(context).push(
-        MaterialPageRoute(
+        FormPageRoute(
           builder: (context) => ReplyPrivateMessagePage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
@@ -102,7 +103,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   void _onForwardPressed() {
     if (_message != null) {
       Navigator.of(context).push(
-        MaterialPageRoute(
+        FormPageRoute(
           builder: (context) => ReplyPrivateMessagePage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,

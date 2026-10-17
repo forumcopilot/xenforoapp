@@ -28,6 +28,7 @@ import 'widgets/resettable_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'dart:async';
+import '../utils/app_navigation.dart';
 
 class SiteHomePage extends StatefulWidget {
   final Site? siteToInitialize;
@@ -554,7 +555,9 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     if (_siteContext!.configDataOutput?.conversation ?? false) {
       final result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => NewConversationPage(siteContext: _siteContext!)),
+        FormPageRoute(
+            builder: (context) =>
+                NewConversationPage(siteContext: _siteContext!)),
       );
       if (result == true) {
         _pmListKey.currentState?.resetTab();

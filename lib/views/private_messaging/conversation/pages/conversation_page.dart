@@ -20,6 +20,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class ConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -96,7 +97,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Future<void> _onReplyPressed() async {
     if (_conversation != null) {
       final result = await Navigator.of(context).push(
-        MaterialPageRoute(
+        FormPageRoute(
           builder: (context) => ReplyConversationPage(
             siteContext: widget.siteContext,
             conversationId: widget.conversationId,
@@ -752,7 +753,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Future<void> _editConversation() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => EditConversationPage(
           siteContext: widget.siteContext,
           conversationId: widget.conversationId,
@@ -1414,7 +1415,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onQuoteMessage(FCConversationMessage message) async {
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => ReplyConversationPage(
           siteContext: widget.siteContext,
           conversationId: widget.conversationId,
@@ -1433,7 +1434,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onEditMessage(FCConversationMessage message) async {
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => EditConversationMessagePage(
           siteContext: widget.siteContext,
           messageId: message.messageId,

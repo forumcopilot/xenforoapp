@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/views/lists/forum_topic_list.dart';
 import 'package:forumcopilot_flutter/views/new_topic_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class ForumTopicsPage extends StatefulWidget {
   final FCForum forum;
@@ -38,7 +39,7 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
     }
 
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => NewTopicPage(
           siteContext: widget.siteContext,
           forumId: widget.forum.id,

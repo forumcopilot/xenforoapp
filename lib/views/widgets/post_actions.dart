@@ -17,6 +17,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class PostActionsHandler {
   final SiteContext siteContext;
@@ -93,7 +94,7 @@ class PostActionsHandler {
     AppLogger.debug('   - postId: $postId');
     final result = await Navigator.push<dynamic>(
       context,
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => ReplyPage(
           siteContext: siteContext,
           threadId: actualTopicId!,
@@ -189,7 +190,7 @@ class PostActionsHandler {
     AppLogger.debug('   - postId: $postId');
     final result = await Navigator.push<dynamic>(
       context,
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => ReplyPage(
           siteContext: siteContext,
           threadId: actualTopicId!,
@@ -232,7 +233,7 @@ class PostActionsHandler {
 
     final result = await Navigator.push<dynamic>(
       context,
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => EditPostPage(
           siteContext: siteContext,
           postId: postId,

@@ -17,6 +17,7 @@ import 'global_loader_controller.dart';
 import '../models/site_visit_history.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/app_navigation.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
@@ -307,7 +308,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       if (loginResult.hadCredentials) {
         if (Get.context != null) {
           AppLogger.info('Showing login screen after auto-login failure');
-          await Get.to(() => LoginPage(siteContext: siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
         } else {
           AppLogger.warning('No context available to show login screen after auto-login failure');
         }
@@ -357,7 +358,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
         if (loginResult.hadCredentials) {
           if (Get.context != null) {
             AppLogger.info('Showing login screen after auto-login failure (initialized site)');
-            await Get.to(() => LoginPage(siteContext: siteContext));
+            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
           } else {
             AppLogger.warning('No context available to show login screen after auto-login failure (initialized site)');
           }

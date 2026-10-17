@@ -603,9 +603,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         _pmListKey.currentState?.resetTab();
       }
     } else {
-      final result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => NewTraditionalPMPage(siteContext: _siteContext!)),
-      );
+      final result = await AppNavigation.push(context, NewTraditionalPMPage(siteContext: _siteContext!));
       if (result == true) {
         _pmListKey.currentState?.resetTab();
       }

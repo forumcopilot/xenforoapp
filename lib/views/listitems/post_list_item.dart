@@ -36,6 +36,7 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/gestures.dart' show GestureRecognizer;
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/utils/preview_selection.dart';
+import '../../utils/app_navigation.dart';
 
 /// Everything a post's body needs that is derived from its text and its
 /// attachment lists. Immutable, and shared through [_postContentCache].
@@ -572,8 +573,7 @@ class _PostListItemState extends State<PostListItem> {
                 if (!loginResult.success &&
                     loginResult.hadCredentials &&
                     Get.currentRoute != '/LoginPage') {
-                  await Get.to(
-                      () => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
                 if (!widget.siteContext.isLoggedIn) {
                   AppLogger.debug(
@@ -583,32 +583,22 @@ class _PostListItemState extends State<PostListItem> {
               if (postId != null) {
                 final String effectiveTopicId =
                     topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: widget.siteContext,
                       topicId: effectiveTopicId,
                       title: '',
                       mode: PostsListMode.thread_by_post,
                       anchorPostId: postId,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: widget.siteContext,
                       topicId: topicId,
                       title: '',
                       mode: PostsListMode.normal,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               }
             });
           },
@@ -632,28 +622,18 @@ class _PostListItemState extends State<PostListItem> {
       },
       onMentionTap: (username) {
         AppLogger.debug('BBCode Mention tapped: $username');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onAttachmentTap: (String url, bool isImage, bool canView) {
         if (canView) {
@@ -665,12 +645,7 @@ class _PostListItemState extends State<PostListItem> {
               AppLogger.debug('No onShowImage action defined');
             }
           } else if (isVideoFile(url)) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FullScreenVideoViewer(videoUrl: url),
-              ),
-            );
+            AppNavigation.push(context, FullScreenVideoViewer(videoUrl: url));
           } else {
             UrlUtils.handleUrlTap(url, context);
           }

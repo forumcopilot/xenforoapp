@@ -10,6 +10,7 @@ import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ProfilePictureSection extends StatefulWidget {
   final SiteContext siteContext;
@@ -156,16 +157,11 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
               GestureDetector(
                 onTap: () {
                   if (widget.imageUrl.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FullScreenImageViewer(
+                    AppNavigation.push(context, FullScreenImageViewer(
                           imageUrls: [widget.imageUrl],
                           initialIndex: 0,
                           heroTag: 'profile_picture_${widget.username}',
-                        ),
-                      ),
-                    );
+                        ));
                   }
                 },
                 child: _selectedImageFile != null

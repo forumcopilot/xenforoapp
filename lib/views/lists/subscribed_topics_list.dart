@@ -15,6 +15,7 @@ import 'package:forumcopilot_sdk/models/results/fc_subscription_result.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class SubscribedTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -235,20 +236,20 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             final int pageSize = SettingsContext.instance.pagePerSize.value;
             final int totalPostNum = topic.replyCount + 1;
             final int gotoPage = (totalPostNum - 1) ~/ pageSize + 1;
-            Get.to(() => PostPage(
+            AppNavigation.pushGlobal(PostPage(
                   siteContext: widget.siteContext,
                   topicId: topic.id,
                   title: topic.title,
                   mode: PostsListMode.first_unread,
                   gotoPage: gotoPage,
                   forumId: topic.forumId,
-                ));
+                ), name: '/PostPage');
           },
         ),
       );

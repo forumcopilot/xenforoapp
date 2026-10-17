@@ -11,6 +11,7 @@ import '../views/user_search_page.dart';
 import 'widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class AddMembersPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -138,16 +139,11 @@ class _AddMembersPageState extends State<AddMembersPage> {
           ),
           backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
           onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserSearchPage(
+            final result = await AppNavigation.push(context, UserSearchPage(
                   siteContext: widget.siteContext,
                   onUserSelected: (username, iconUrl) {},
                   selectedUsers: [..._toRecipients],
-                ),
-              ),
-            );
+                ));
             if (result != null && result is Map<String, dynamic>) {
               final username = result['username'] as String;
               final iconUrl = result['iconUrl'] as String?;

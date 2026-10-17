@@ -14,6 +14,7 @@ import 'package:forumcopilot_flutter/utils/passkey_validation_result.dart';
 import 'forgot_password_page.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
+import '../utils/app_navigation.dart';
 
 class LoginPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -359,11 +360,8 @@ class _LoginPageState extends State<LoginPage>
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage(
-                                      siteContext: widget.siteContext)),
-                            );
+                            AppNavigation.push(context, ForgotPasswordPage(
+                                      siteContext: widget.siteContext));
                           },
                           child: Text(
                             l10n.forgotPassword,

@@ -11,6 +11,7 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../widgets/sheet_title.dart';
+import '../../../../utils/app_navigation.dart';
 
 class ConversationAppBar extends BaseForumAppBar {
   final SiteContext siteContext;
@@ -268,17 +269,12 @@ class ConversationAppBar extends BaseForumAppBar {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userId: participant.userId,
                                     userName: participant.username,
                                     profilePictureUrl: participant.iconUrl,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Row(
                               children: [

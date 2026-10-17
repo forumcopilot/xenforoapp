@@ -11,6 +11,7 @@ import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
 import '../utils/l10n_now.dart';
+import '../utils/app_navigation.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {
@@ -161,7 +162,7 @@ class SiteInitializationService {
         } else {
           AppLogger.info('🔍 [INIT_SERVICE] ❌ Automatic login failed: ${loginResult.errorMessage ?? "unknown error"}, hadCredentials=${loginResult.hadCredentials}');
           if (loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-            await Get.to(() => LoginPage(siteContext: siteContext));
+            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
           }
         }
       } else {

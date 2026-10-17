@@ -116,7 +116,7 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
       final loginController = Get.find<LoginController>();
       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
       }
     });
   }

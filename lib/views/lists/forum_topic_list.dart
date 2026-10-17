@@ -418,15 +418,15 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
-                    Get.to(() => PostPage(
+                    AppNavigation.pushGlobal(PostPage(
                           siteContext: widget.siteContext,
                           topicId: topic.id,
                           title: topic.title,
                           isAnnouncement: true,
-                        ));
+                        ), name: '/PostPage');
                   },
                 )),
           ],
@@ -442,11 +442,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+                    AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
                   },
                 )),
           ],
@@ -463,11 +463,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+                    AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
                   },
                 )),
           ],

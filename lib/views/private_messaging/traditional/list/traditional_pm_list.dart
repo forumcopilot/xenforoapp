@@ -10,6 +10,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../pages/traditional_pm_page.dart';
 import 'traditional_pm_list_item.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class TraditionalPMList extends StatefulWidget {
   final SiteContext siteContext;
@@ -206,10 +207,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
   }
 
   void _onMessageTap(FCPrivateMessage message) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TraditionalPMPage(
+    AppNavigation.push(context, TraditionalPMPage(
           siteContext: widget.siteContext,
           messageId: message.msg_id ?? '',
           boxId: widget.isInbox ? "INBOX" : "SENTBOX",
@@ -222,9 +220,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
               });
             }
           },
-        ),
-      ),
-    );
+        ));
   }
 
   @override

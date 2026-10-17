@@ -10,6 +10,7 @@ import '../login_page.dart';
 import '../register_page.dart';
 import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
@@ -89,10 +90,7 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
     return IconButton(
       icon: const Icon(Icons.manage_search_rounded),
       tooltip: AppLocalizations.of(context).search,
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => SearchPage(siteContext: siteContext)),
-      ),
+      onPressed: () => AppNavigation.push(context, SearchPage(siteContext: siteContext)),
     );
   }
 
@@ -100,10 +98,7 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
     return IconButton(
       icon: const Icon(Icons.people_alt_rounded),
       tooltip: AppLocalizations.of(context).members,
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MembersPage(siteContext: siteContext)),
-      ),
+      onPressed: () => AppNavigation.push(context, MembersPage(siteContext: siteContext)),
     );
   }
 
@@ -155,10 +150,10 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   Future<void> _handleMenuAction(BuildContext context, String value) async {
     switch (value) {
       case 'sign_in':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => LoginPage(siteContext: siteContext)));
+        AppNavigation.push(context, LoginPage(siteContext: siteContext));
         break;
       case 'register':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterPage(siteContext: siteContext)));
+        AppNavigation.push(context, RegisterPage(siteContext: siteContext));
         break;
       case 'mark_read':
         ForumActions().markAllAsRead(context, '0');

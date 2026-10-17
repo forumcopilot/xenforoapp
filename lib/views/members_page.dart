@@ -12,6 +12,7 @@ import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import '../theme/design_tokens.dart';
 import '../utils/number_utils.dart';
 import 'widgets/filter_chip_bar.dart';
+import '../utils/app_navigation.dart';
 
 class MembersPage extends StatefulWidget {
   const MembersPage({
@@ -422,17 +423,12 @@ class _MembersPageState extends State<MembersPage> {
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userId: user.id,
               userName: user.username,
               profilePictureUrl: user.iconUrl,
-            ),
-          ),
-        );
+            ));
       },
     );
   }

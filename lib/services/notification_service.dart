@@ -27,6 +27,7 @@ import 'package:forumcopilot_flutter/utils/url_utils.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../utils/l10n_now.dart';
+import '../utils/app_navigation.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -570,10 +571,10 @@ class NotificationService with ServiceErrorHandlingMixin {
 
       // Navigate to forum home which will initialize the forum and attempt auto-login
       AppLogger.debug('🚀 [NotificationService] Opening ForumSiteHomePage for forum ${targetForum.name} (${targetForum.id})');
-      Get.to(() => SiteHomePage(
+      AppNavigation.pushGlobal(SiteHomePage(
             siteToInitialize: targetForum,
             showGlobalLoader: false,
-          ));
+          ), name: '/SiteHomePage');
 
       // Wait for initialization to complete with timeout
       const Duration timeout = Duration(seconds: 30);
@@ -678,7 +679,7 @@ class NotificationService with ServiceErrorHandlingMixin {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Get.to(() => LoginPage(siteContext: siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
         }
         if (!siteContext.isLoggedIn) {
           AppLogger.debug('⚠️ [NotificationService] Proceeding to thread as guest after login screen');

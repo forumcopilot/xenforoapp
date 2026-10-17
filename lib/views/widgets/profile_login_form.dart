@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/register_page.dart';
 import 'package:forumcopilot_flutter/views/forgot_password_page.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ProfileLoginForm extends StatefulWidget {
   final SiteContext siteContext;
@@ -181,7 +182,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPasswordPage(siteContext: widget.siteContext)));
+                        AppNavigation.push(context, ForgotPasswordPage(siteContext: widget.siteContext));
                       },
                       child: Text(AppLocalizations.of(context).forgotPassword, style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w500)),
                     ),
@@ -253,7 +254,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       Text(AppLocalizations.of(context).dontHaveAnAccount, style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
                       TextButton(
                         onPressed: () {
-                          Get.to(() => RegisterPage(siteContext: widget.siteContext));
+                          AppNavigation.pushGlobal(RegisterPage(siteContext: widget.siteContext), name: '/RegisterPage');
                         },
                         child: Text(AppLocalizations.of(context).register, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
                       ),

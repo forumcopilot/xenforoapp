@@ -7,6 +7,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import '../../theme/design_tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class PostListItemAttachment extends StatelessWidget {
   final List<FCAttachment> attachments;
@@ -77,16 +78,10 @@ class PostListItemAttachment extends StatelessWidget {
                             ? () {
                                 if (isVideoFile(att.filename) ||
                                     isVideoFile(att.url)) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          FullScreenVideoViewer(
+                                  AppNavigation.push(context, FullScreenVideoViewer(
                                         videoUrl: att.url,
                                         title: att.filename,
-                                      ),
-                                    ),
-                                  );
+                                      ));
                                 } else {
                                   _downloadAttachment(
                                       context, att.url, att.filename);

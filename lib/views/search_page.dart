@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 import 'login_page.dart';
 import 'widgets/filter_chip_bar.dart';
+import '../utils/app_navigation.dart';
 
 class SearchPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -571,19 +572,14 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: t.id,
                     title: t.title,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {
@@ -663,22 +659,17 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: p.topicId,
                     title: p.topicTitle ?? p.title,
                     mode: PostsListMode.thread_by_post,
                     anchorPostId: p.id,
                     forumId: p.topicId,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {
@@ -743,19 +734,14 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: t.id,
                     title: t.title,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {

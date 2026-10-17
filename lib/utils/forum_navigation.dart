@@ -3,6 +3,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import 'package:forumcopilot_flutter/views/forum_topics_page.dart';
 import 'package:forumcopilot_flutter/views/in_app_web_view_page.dart';
+import 'app_navigation.dart';
 
 /// Pushes either the in-app web view (for link forums) or [ForumTopicsPage].
 ///
@@ -14,24 +15,14 @@ void pushForumOrLinkForum(
   SiteContext siteContext,
 ) {
   if (forum.isLinkForum && forum.externalUrl != null && forum.externalUrl!.isNotEmpty) {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => InAppWebViewPage(
+    AppNavigation.push(context, InAppWebViewPage(
           url: forum.externalUrl!,
           title: forum.name,
-        ),
-      ),
-    );
+        ));
   } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => ForumTopicsPage(
+    AppNavigation.push(context, ForumTopicsPage(
           forum: forum,
           siteContext: siteContext,
-        ),
-      ),
-    );
+        ));
   }
 }

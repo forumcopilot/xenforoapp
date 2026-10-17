@@ -8,6 +8,7 @@ import '../appbars/traditional_pm_app_bar.dart';
 import 'reply_traditional_pm_page.dart';
 import '../widgets/traditional_pm_item.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class TraditionalPMPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -55,17 +56,13 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
 
   void _onReplyPressed() {
     if (_message != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             initialRecipients: [_message!.msg_from ?? ''],
             subject: widget.subject,
             isQuote: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 
@@ -84,35 +81,27 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
         }
       }
 
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             initialRecipients: allRecipients,
             subject: widget.subject,
             isQuote: true,
             showCcField: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 
   void _onForwardPressed() {
     if (_message != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             username: null,
             subject: 'Fwd: ${_cleanSubject(widget.subject)}',
             isQuote: true,
             isForward: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 

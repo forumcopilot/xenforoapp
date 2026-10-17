@@ -10,6 +10,7 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/number_utils.dart';
+import '../utils/app_navigation.dart';
 
 class MemberSearchPage extends StatefulWidget {
   const MemberSearchPage({
@@ -268,17 +269,12 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
             borderRadius: BorderRadius.circular(DesignTokens.radiusM),
           ),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfilePage(
+            AppNavigation.push(context, UserProfilePage(
                   siteContext: widget.siteContext,
                   userId: member.id,
                   userName: member.username,
                   profilePictureUrl: member.iconUrl,
-                ),
-              ),
-            );
+                ));
           },
         );
       },

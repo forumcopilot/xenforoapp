@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
-import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/utils/time_utils.dart';
 import '../user_profile_page.dart';
 // import '../widgets/cached_redirect_image.dart';
@@ -12,6 +11,7 @@ import '../../utils/avatar_cache_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 // import '../../utils/avatar_color_utils.dart';
 
 class PostListItemHeader extends StatelessWidget {
@@ -108,17 +108,12 @@ class PostListItemHeader extends StatelessWidget {
                         }
 
                         // Navigate to user profile if logged in
-                        Navigator.push(
-                          this.context,
-                          MaterialPageRoute(
-                            builder: (context) => UserProfilePage(
+                        AppNavigation.push(this.context, UserProfilePage(
                               siteContext: siteContext,
                               userName: post.authorName,
                               userId: post.authorId,
                               profilePictureUrl: post.authorIconUrl,
-                            ),
-                          ),
-                        );
+                            ));
                       },
                       child: Text(
                         post.authorName,
@@ -266,7 +261,7 @@ class PostListItemHeader extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Get.to(() => LoginPage(siteContext: siteContext));
+              AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
             },
             child: Text(
               AppLocalizations.of(context).loginTitle,

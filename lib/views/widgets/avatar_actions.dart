@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/post_actions.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/app_navigation.dart';
 
 class AvatarActions {
   void handleAvatarTap(BuildContext context, SiteContext siteContext, String userId, String userName, {PostActionsHandler? postActionsHandler, VoidCallback? onRefresh}) {
@@ -24,16 +24,11 @@ class AvatarActions {
     }
 
     // Navigate to user profile if logged in
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserProfilePage(
+    AppNavigation.push(context, UserProfilePage(
           siteContext: siteContext,
           userId: userId,
           userName: userName,
-        ),
-      ),
-    );
+        ));
   }
 
   void _showSimpleLoginPrompt(BuildContext context, SiteContext siteContext) {
@@ -66,7 +61,7 @@ class AvatarActions {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Get.to(() => LoginPage(siteContext: siteContext));
+              AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
             },
             child: Text(
               AppLocalizations.of(context).loginTitle,

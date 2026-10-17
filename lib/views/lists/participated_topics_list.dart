@@ -13,6 +13,7 @@ import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class ParticipatedTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -233,11 +234,11 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             // At the first unread post, as the Latest list opens topics (signed in only).
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+            AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
           },
         ),
       );

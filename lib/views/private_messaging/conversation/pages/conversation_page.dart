@@ -178,11 +178,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => LoginPage(siteContext: widget.siteContext),
-            ),
-          );
+          await AppNavigation.push(context, LoginPage(siteContext: widget.siteContext));
         }
       }
       if (mounted) {

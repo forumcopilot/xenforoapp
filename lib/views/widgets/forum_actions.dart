@@ -10,6 +10,7 @@ import 'package:forumcopilot_flutter/controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumActions {
   // Track if markAllAsRead is currently in progress to prevent concurrent calls
@@ -96,7 +97,7 @@ class ForumActions {
           onSuccess();
         } else {
           // Default behavior: navigate to forum topics page
-          Get.to(() => ForumTopicsPage(forum: forum, siteContext: siteContext));
+          AppNavigation.pushGlobal(ForumTopicsPage(forum: forum, siteContext: siteContext), name: '/ForumTopicsPage');
         }
       } else {
         // Login failed, show error message

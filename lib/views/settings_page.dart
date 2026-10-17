@@ -8,6 +8,7 @@ import '../theme/design_tokens.dart';
 import 'settings_category_page.dart' show ForumSettingsCategoryPage;
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class ForumSettingsPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -226,15 +227,10 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
           color: colorScheme.onSurfaceVariant,
         ),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ForumSettingsCategoryPage(
+          AppNavigation.push(context, ForumSettingsCategoryPage(
                 siteContext: widget.siteContext,
                 category: category,
-              ),
-            ),
-          );
+              ));
         },
       ),
     );

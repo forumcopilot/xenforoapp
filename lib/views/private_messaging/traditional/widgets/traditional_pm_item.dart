@@ -12,6 +12,7 @@ import '../../../../utils/url_utils.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../utils/app_navigation.dart';
 
 class TraditionalPMItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -36,35 +37,20 @@ class TraditionalPMItem extends StatelessWidget {
         await UrlUtils.handleUrlTap(url, context);
       },
       onMentionTap: (username) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // An inline [IMG] picture (tapping it used to do nothing).
-      onImageTap: (url, _, heroTag) => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FullScreenImageViewer(imageUrls: [url], heroTag: heroTag),
-        ),
-      ),
+      onImageTap: (url, _, heroTag) => AppNavigation.push(context, FullScreenImageViewer(imageUrls: [url], heroTag: heroTag)),
       onVideoTap: (url) => UrlUtils.handleUrlTap(url, context),
     );
 
@@ -127,16 +113,11 @@ class TraditionalPMItem extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserProfilePage(
+                          AppNavigation.push(context, UserProfilePage(
                                 siteContext: siteContext,
                                 userName: message.msgFrom ?? message.authorName,
                                 profilePictureUrl: message.iconUrl,
-                              ),
-                            ),
-                          );
+                              ));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -199,15 +180,10 @@ class TraditionalPMItem extends StatelessWidget {
                         children: (message.msgTo as List<String>? ?? []).map((recipient) {
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userName: recipient,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Container(
                               padding: EdgeInsets.symmetric(

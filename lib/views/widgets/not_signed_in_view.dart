@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/register_page.dart';
 import 'empty_state_view.dart';
+import '../../utils/app_navigation.dart';
 
 class NotSignedInView extends StatelessWidget {
   final SiteContext siteContext;
@@ -27,7 +28,7 @@ class NotSignedInView extends StatelessWidget {
     if (autoShowLogin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.currentRoute != '/LoginPage') {
-          Get.to(() => LoginPage(siteContext: siteContext));
+          AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
         }
       });
     }
@@ -40,11 +41,11 @@ class NotSignedInView extends StatelessWidget {
       hint: message,
       actions: [
         FilledButton(
-          onPressed: () => Get.to(() => LoginPage(siteContext: siteContext)),
+          onPressed: () => AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage'),
           child: Text(AppLocalizations.of(context).loginButton),
         ),
         OutlinedButton(
-          onPressed: () => Get.to(() => RegisterPage(siteContext: siteContext)),
+          onPressed: () => AppNavigation.pushGlobal(RegisterPage(siteContext: siteContext), name: '/RegisterPage'),
           child: Text(AppLocalizations.of(context).register),
         ),
       ],

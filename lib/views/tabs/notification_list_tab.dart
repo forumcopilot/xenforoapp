@@ -16,6 +16,7 @@ import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../services/notification_router.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class NotificationListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -293,56 +294,36 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           );
           return;
         }
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PostPage(
+        AppNavigation.push(context, PostPage(
               siteContext: widget.siteContext,
               topicId: topicId,
               title: _extractTopicTitleFromMessage(alert.message),
               mode: PostsListMode.thread_by_post,
               anchorPostId: postId,
               forumId: '', // Forum ID may not be available
-            ),
-          ),
-        );
+            ));
       case TopicDestination(:final topicId):
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PostPage(
+        AppNavigation.push(context, PostPage(
               siteContext: widget.siteContext,
               topicId: topicId,
               title: _extractTopicTitleFromMessage(alert.message),
               mode: PostsListMode.first_unread,
               forumId: '', // Forum ID may not be available
-            ),
-          ),
-        );
+            ));
       case ConversationDestination(:final conversationId, :final messageId):
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConversationPage(
+        AppNavigation.push(context, ConversationPage(
               siteContext: widget.siteContext,
               conversationId: conversationId,
               subject: _extractSubjectFromMessage(alert.message),
               anchorMessageId: messageId,
-            ),
-          ),
-        );
+            ));
       case ProfileDestination(:final userId, :final username):
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userId: userId,
               userName: username,
               profilePictureUrl: alert.icon_url,
-            ),
-          ),
-        );
+            ));
       case LinkDestination(:final url):
         await UrlUtils.openUrl(url);
       case AlertsDestination():

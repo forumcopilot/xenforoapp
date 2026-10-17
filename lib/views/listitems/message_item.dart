@@ -11,6 +11,7 @@ import '../../utils/url_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class MessageItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -35,27 +36,17 @@ class MessageItem extends StatelessWidget {
         await UrlUtils.handleUrlTap(url, context);
       },
       onMentionTap: (username) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // You can add onImageTap/onVideoTap if needed
     );
@@ -119,16 +110,11 @@ class MessageItem extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserProfilePage(
+                          AppNavigation.push(context, UserProfilePage(
                                 siteContext: siteContext,
                                 userName: message.msgFrom ?? message.authorName,
                                 profilePictureUrl: message.iconUrl,
-                              ),
-                            ),
-                          );
+                              ));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -191,15 +177,10 @@ class MessageItem extends StatelessWidget {
                         children: (message.msgTo as List<String>? ?? []).map((recipient) {
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userName: recipient,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Container(
                               padding: EdgeInsets.symmetric(

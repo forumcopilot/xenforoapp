@@ -12,6 +12,7 @@ import 'package:forumcopilot_flutter/utils/time_utils.dart';
 import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class UserRepliedPosts extends StatefulWidget {
   final SiteContext siteContext;
@@ -165,7 +166,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Get.to(() => LoginPage(siteContext: widget.siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
         }
         if (!widget.siteContext.isLoggedIn) {
           AppLogger.debug('UserRepliedPosts: proceeding to thread as guest after login screen');
@@ -180,23 +181,23 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
       // Navigate to the specific post if post_id is available, otherwise use first_unread mode
       if (post.postId.isNotEmpty) {
         AppLogger.debug('Navigating to specific post: ${post.postId} in topic: ${post.topicId}');
-        Get.to(() => PostPage(
+        AppNavigation.pushGlobal(PostPage(
               siteContext: widget.siteContext,
               topicId: post.topicId,
               title: post.topicTitle,
               mode: PostsListMode.thread_by_post,
               anchorPostId: post.postId,
               forumId: post.forumId.isNotEmpty ? post.forumId : null,
-            ));
+            ), name: '/PostPage');
       } else {
         AppLogger.debug('No post_id available, navigating to latest posts in topic: ${post.topicId}');
-        Get.to(() => PostPage(
+        AppNavigation.pushGlobal(PostPage(
               siteContext: widget.siteContext,
               topicId: post.topicId,
               title: post.topicTitle,
               mode: PostsListMode.first_unread,
               forumId: post.forumId.isNotEmpty ? post.forumId : null,
-            ));
+            ), name: '/PostPage');
       }
     } catch (e) {
       AppLogger.debug('Error navigating to post: $e');

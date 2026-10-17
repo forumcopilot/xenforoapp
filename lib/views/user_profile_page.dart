@@ -73,7 +73,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Get.to(() => LoginPage(siteContext: widget.siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
         }
       }
       if (!mounted) {
@@ -365,16 +365,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         ? _userInfo!.iconUrl!
                                         : (widget.profilePictureUrl != null && widget.profilePictureUrl!.isNotEmpty ? widget.profilePictureUrl! : null);
                                     if (imageUrl != null && imageUrl.isNotEmpty) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FullScreenImageViewer(
+                                      AppNavigation.push(context, FullScreenImageViewer(
                                             imageUrls: [imageUrl],
                                             initialIndex: 0,
                                             heroTag: 'profile_picture_${_userInfo!.username}',
-                                          ),
-                                        ),
-                                      );
+                                          ));
                                     }
                                   },
                                   child: UserAvatar(
@@ -494,16 +489,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                             ),
                                           );
                                         } else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => NewTraditionalPMPage(
+                                          AppNavigation.push(context, NewTraditionalPMPage(
                                                 siteContext: widget.siteContext,
                                                 initialRecipient: _userInfo!.username,
                                                 initialRecipientIconUrl: (_userInfo!.iconUrl != null && _userInfo!.iconUrl!.isNotEmpty) ? _userInfo!.iconUrl! : (widget.profilePictureUrl ?? null),
-                                              ),
-                                            ),
-                                          );
+                                              ));
                                         }
                                       },
                                       icon: Icon(Icons.message, size: DesignTokens.iconSizeM),

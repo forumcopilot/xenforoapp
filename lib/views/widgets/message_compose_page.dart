@@ -19,6 +19,7 @@ import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/snackbar_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/app_navigation.dart';
 
 class MessageComposePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -1244,10 +1245,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
   }
 
   void _handleMention() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserSearchPage(
+    AppNavigation.push(context, UserSearchPage(
           siteContext: widget.siteContext,
           onUserSelected: (username, iconUrl) {
             final currentText = _contentController.text;
@@ -1263,9 +1261,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
             _contentFocusNode.requestFocus();
           },
           selectedUsers: const [],
-        ),
-      ),
-    );
+        ));
   }
 
   Future<void> _submit() async {

@@ -26,6 +26,7 @@ import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 /// Icon for a conversation message's react button: the viewer's chosen
 /// reaction glyph (emoji or custom image) when they've reacted, else the heart.
@@ -131,7 +132,7 @@ class ConversationHeaderItem extends StatelessWidget {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
                 }
                 if (!siteContext.isLoggedIn) {
                   AppLogger.debug('ConversationHeaderItem: proceeding to thread as guest after login screen');
@@ -139,32 +140,22 @@ class ConversationHeaderItem extends StatelessWidget {
               }
               if (postId != null) {
                 final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: siteContext,
                       topicId: effectiveTopicId,
                       title: '',
                       mode: PostsListMode.thread_by_post,
                       anchorPostId: postId,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: siteContext,
                       topicId: topicId,
                       title: '',
                       mode: PostsListMode.normal,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               }
             });
           },
@@ -172,28 +163,18 @@ class ConversationHeaderItem extends StatelessWidget {
       },
       onMentionTap: (username) {
         AppLogger.debug('ConversationHeaderItem: BBCode Mention tapped: $username');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('ConversationHeaderItem: BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // An inline [IMG] picture (tapping it used to do nothing).
       onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
@@ -224,17 +205,12 @@ class ConversationHeaderItem extends StatelessWidget {
                   // grey for everyone else's, whoever was online.
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
+                      AppNavigation.push(context, UserProfilePage(
                             siteContext: siteContext,
                             userId: message.userId,
                             userName: message.username,
                             profilePictureUrl: message.iconUrl,
-                          ),
-                        ),
-                      );
+                          ));
                     },
                     child: UserAvatar(
                       username: message.username,
@@ -257,17 +233,12 @@ class ConversationHeaderItem extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProfilePage(
+                            AppNavigation.push(context, UserProfilePage(
                                   siteContext: siteContext,
                                   userId: message.userId,
                                   userName: message.username,
                                   profilePictureUrl: message.iconUrl,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text(
                             message.username,
@@ -639,7 +610,7 @@ class ConversationItem extends StatelessWidget {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
                 }
                 if (!siteContext.isLoggedIn) {
                   AppLogger.debug('ConversationItem: proceeding to thread as guest after login screen');
@@ -647,60 +618,40 @@ class ConversationItem extends StatelessWidget {
               }
               if (postId != null) {
                 final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: siteContext,
                       topicId: effectiveTopicId,
                       title: '',
                       mode: PostsListMode.thread_by_post,
                       anchorPostId: postId,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
+                AppNavigation.push(context, PostPage(
                       siteContext: siteContext,
                       topicId: topicId,
                       title: '',
                       mode: PostsListMode.normal,
                       forumId: forumId,
-                    ),
-                  ),
-                );
+                    ));
               }
             });
           },
         );
       },
       onMentionTap: (username) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('ConversationItem: BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // An inline [IMG] picture (tapping it used to do nothing).
       onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
@@ -732,17 +683,12 @@ class ConversationItem extends StatelessWidget {
                   // grey for everyone else's, whoever was online.
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
+                      AppNavigation.push(context, UserProfilePage(
                             siteContext: siteContext,
                             userId: message.userId,
                             userName: message.username,
                             profilePictureUrl: message.iconUrl,
-                          ),
-                        ),
-                      );
+                          ));
                     },
                     child: UserAvatar(
                       username: message.username,
@@ -765,17 +711,12 @@ class ConversationItem extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProfilePage(
+                            AppNavigation.push(context, UserProfilePage(
                                   siteContext: siteContext,
                                   userId: message.userId,
                                   userName: message.username,
                                   profilePictureUrl: message.iconUrl,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text(
                             message.username,

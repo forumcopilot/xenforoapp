@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../../../../utils/file_utils.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class NewConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -318,15 +319,11 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           // Pop the new conversation page first
                           Navigator.of(context).pop();
                           // Then navigate to the conversation page
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ConversationPage(
+                          AppNavigation.push(context, ConversationPage(
                                 siteContext: widget.siteContext,
                                 conversationId: _createdConversationId!,
                                 subject: _createdConversationTitle ?? title,
-                              ),
-                            ),
-                          );
+                              ));
                         } else {
                           // Fallback: just pop if conversation ID is missing
                           Navigator.of(context).pop(true);
@@ -971,10 +968,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
   }
 
   void _handleMention() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserSearchPage(
+    AppNavigation.push(context, UserSearchPage(
           siteContext: widget.siteContext,
           onUserSelected: (username, iconUrl) {
             final currentText = _messageController.text;
@@ -990,9 +984,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
             _messageFocusNode.requestFocus();
           },
           selectedUsers: const [],
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildBottomToolbar() {

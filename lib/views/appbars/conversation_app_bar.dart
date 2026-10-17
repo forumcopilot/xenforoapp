@@ -13,6 +13,7 @@ import 'package:forumcopilot_flutter/theme/style_builders.dart';
 import 'dart:math' as math;
 import '../../utils/snackbar_helper.dart';
 import '../widgets/sheet_title.dart';
+import '../../utils/app_navigation.dart';
 
 class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget {
   final SiteContext siteContext;
@@ -447,17 +448,12 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userId: participant.userId,
                                     userName: participant.username,
                                     profilePictureUrl: participant.iconUrl,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Row(
                               children: [

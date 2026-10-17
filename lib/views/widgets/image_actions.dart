@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ImageActions {
   final PostController _postsController;
@@ -131,19 +132,14 @@ class ImageActions {
         return;
       }
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FullScreenImageViewer(
+      AppNavigation.push(context, FullScreenImageViewer(
             imageUrls: allImageUrls,
             initialIndex: tappedIndex,
             // The tag of the widget that was tapped -- the one Hero on screen
             // the viewer can fly from. The '<id>_image_<n>' names built above
             // never matched anything, so the flight never ran.
             heroTag: heroTag,
-          ),
-        ),
-      );
+          ));
     }
   }
 }

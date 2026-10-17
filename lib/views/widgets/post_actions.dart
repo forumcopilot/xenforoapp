@@ -5,7 +5,6 @@ import 'package:forumcopilot_sdk/models/entities/fc_like.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
-import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/post_controller.dart';
 import 'package:forumcopilot_flutter/views/reply_page.dart';
 import 'package:forumcopilot_flutter/views/edit_post_page.dart';
@@ -837,7 +836,7 @@ class PostActionsHandler {
             onPressed: () async {
               Navigator.pop(context);
               // Navigate to login page and wait for result
-              final result = await Get.to(() => LoginPage(siteContext: siteContext));
+              final result = await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
               // If login was successful, refresh the post view
               if (result == true && refreshCallback != null) {
                 // Wait for authentication state to be fully updated

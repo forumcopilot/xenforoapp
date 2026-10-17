@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class LinkPreviewCard extends StatefulWidget {
   final String url;
@@ -154,7 +155,7 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
             final loginController = Get.find<LoginController>();
             final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
             if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-              await Get.to(() => LoginPage(siteContext: widget.siteContext));
+              await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
             }
             if (!widget.siteContext.isLoggedIn) {
               AppLogger.debug('LinkPreviewCard: proceeding to thread as guest after login screen');
@@ -163,33 +164,23 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
           // Handle forum navigation
           if (postId != null) {
             // Navigate to specific post
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PostPage(
+            AppNavigation.push(context, PostPage(
                   siteContext: widget.siteContext,
                   topicId: topicId,
                   title: '', // Could be enhanced with actual topic title
                   mode: PostsListMode.thread_by_post,
                   anchorPostId: postId,
                   forumId: forumId,
-                ),
-              ),
-            );
+                ));
           } else if (topicId.isNotEmpty) {
             // Navigate to topic
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PostPage(
+            AppNavigation.push(context, PostPage(
                   siteContext: widget.siteContext,
                   topicId: topicId,
                   title: '', // Could be enhanced with actual topic title
                   mode: PostsListMode.normal,
                   forumId: forumId,
-                ),
-              ),
-            );
+                ));
           } else if (forumId != null) {
             // Navigate to forum
             _navigateToForum(widget.siteContext, forumId);

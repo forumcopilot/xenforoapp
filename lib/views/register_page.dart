@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class RegisterPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -670,7 +671,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     }
 
     // Navigate to Additional Information page
-    await Get.to(() => AdditionalInformationPage(
+    await AppNavigation.pushGlobal(AdditionalInformationPage(
           registrationRequirements: _registrationRequirements!,
           customFields: _customFields,
           customFieldControllers: _customFieldControllers,
@@ -710,7 +711,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             _setAdditionalInfoError = setErrorCallback;
           },
           siteUrl: widget.siteContext.site.url,
-        ));
+        ), name: '/AdditionalInformationPage');
   }
 
   /// Determines if an error is related to basic registration fields

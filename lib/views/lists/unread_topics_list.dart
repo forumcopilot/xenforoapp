@@ -14,6 +14,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import '../../core/logging/app_logger.dart';
+import '../../utils/app_navigation.dart';
 
 class UnreadTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -303,11 +304,11 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             // At the first unread post: these are the topics with unread posts.
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+            AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
           },
           onMarkAsRead: (topicId) {
             controller!.markTopicAsRead(topicId);

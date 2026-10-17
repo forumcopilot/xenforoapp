@@ -658,14 +658,15 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             );
           }
         } catch (e) {
+          // The keystore refused the read (the iOS Keychain around a lock
+          // change, say), which is not the same as no saved login: keep what
+          // this session knows rather than saving it as signed out. The next
+          // "session expired" reply runs a relogin that reads again.
           AppLogger.debug(
-              '🔐 [AUTO_LOGIN] Error loading credentials from SiteVisitTracker: $e');
-          siteContext.loginDataOutput = null;
-          await siteContext.saveToDevice();
-          siteContext.updateLoginState();
+              '🔐 [AUTO_LOGIN] Could not read the saved login, keeping the session as it is: $e');
           return AutoLoginResult(
             success: false,
-            hadCredentials: false,
+            hadCredentials: false, // nothing was tried; no login-failure UI
             reasonCode: PushLoginReasonCode.transientError,
           );
         }

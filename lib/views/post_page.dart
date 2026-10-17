@@ -9,6 +9,7 @@ import 'lists/posts_list.dart';
 import 'widgets/delete_topic_dialog.dart';
 import 'appbars/posts_page_app_bar.dart';
 import '../utils/url_utils.dart';
+import '../utils/snackbar_helper.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({
@@ -103,28 +104,7 @@ class _PostPageState extends State<PostPage> {
       // If sharing fails, show an error message
       if (mounted) {
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.failedToShareTopic(e.toString()),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: DesignTokens.paddingS,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            duration: const Duration(seconds: 3),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)!.failedToShareTopic(e.toString()));
       }
     }
   }
@@ -140,23 +120,7 @@ class _PostPageState extends State<PostPage> {
   void _handleSubscribe() async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.pleaseLoginToSubscribe(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: DesignTokens.paddingS,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseLoginToSubscribe(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo));
       return;
     }
 
@@ -176,31 +140,8 @@ class _PostPageState extends State<PostPage> {
     } catch (e) {
       if (mounted) {
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
         // Hide any existing SnackBar before showing a new one
-        scaffoldMessenger.hideCurrentSnackBar();
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.failedToSubscribeToThread(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 4),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)!.failedToSubscribeToThread(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo));
       }
     }
   }
@@ -217,29 +158,7 @@ class _PostPageState extends State<PostPage> {
           _isClosed = !_isClosed;
         });
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              _isClosed ? AppLocalizations.of(context)!.topicClosed : AppLocalizations.of(context)!.topicOpened,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 2),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
-        );
+        SnackbarHelper.showInfo(context, _isClosed ? AppLocalizations.of(context)!.topicClosed : AppLocalizations.of(context)!.topicOpened);
         _refreshCallback?.call();
       }
     } catch (e) {
@@ -259,29 +178,7 @@ class _PostPageState extends State<PostPage> {
           _isSticky = !_isSticky;
         });
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              _isSticky ? AppLocalizations.of(context)!.topicStickied : AppLocalizations.of(context)!.topicUnstickied,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 2),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).colorScheme.inversePrimary,
-          ),
-        );
+        SnackbarHelper.showInfo(context, _isSticky ? AppLocalizations.of(context)!.topicStickied : AppLocalizations.of(context)!.topicUnstickied);
         _refreshCallback?.call();
       }
     } catch (e) {
@@ -367,27 +264,7 @@ class _PostPageState extends State<PostPage> {
   void _showFailure(Object error) {
     if (!mounted) return;
     final reason = error is _ActionFailed ? error.message?.trim() : null;
-    final colorScheme = Theme.of(context).colorScheme;
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-    scaffoldMessenger.hideCurrentSnackBar();
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          reason != null && reason.isNotEmpty ? reason : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'),
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onErrorContainer),
-        ),
-        backgroundColor: colorScheme.errorContainer,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-        ),
-        margin: DesignTokens.paddingS,
-        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-        duration: const Duration(seconds: 4),
-        showCloseIcon: true,
-        closeIconColor: colorScheme.onErrorContainer,
-      ),
-    );
+    SnackbarHelper.showError(context, reason != null && reason.isNotEmpty ? reason : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'));
   }
 
   @override
@@ -417,29 +294,7 @@ class _PostPageState extends State<PostPage> {
               // Handle any errors during refresh
               if (mounted) {
                 // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-                final scaffoldMessenger = ScaffoldMessenger.of(context);
-                scaffoldMessenger.showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Refresh failed: $e',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                    ),
-                    margin: DesignTokens.paddingS,
-                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-                    duration: const Duration(seconds: 4),
-                    // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-                    // with an action stays until tapped and queues later messages behind it.
-                    showCloseIcon: true,
-                    closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                );
+                SnackbarHelper.showError(context, 'Refresh failed: $e');
               }
             } finally {
               if (mounted) {

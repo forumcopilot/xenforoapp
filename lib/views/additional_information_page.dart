@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/snackbar_helper.dart';
 
 class AdditionalInformationPage extends StatefulWidget {
   final FCRegistrationRequirements registrationRequirements;
@@ -591,9 +592,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Date of Birth if required
     if (req.dateOfBirth != null && (req.dateOfBirth!.required || req.dateOfBirth!.requireDob == true)) {
       if (_selectedDateOfBirth == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseSelectDateOfBirth ?? 'Please select your date of birth')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseSelectDateOfBirth ?? 'Please select your date of birth');
         return;
       }
     }
@@ -601,9 +600,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Location if required
     if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
       if (widget.locationController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseEnterLocation ?? 'Please enter your location')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterLocation ?? 'Please enter your location');
         return;
       }
     }
@@ -611,24 +608,18 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Email Choice if required
     if (req.emailChoice != null && (req.emailChoice!.required || req.emailChoice!.requireEmailChoice == true)) {
       if (_emailChoice == null || _emailChoice == false) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseIndicateEmailPreference ?? 'Please indicate your email preference')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseIndicateEmailPreference ?? 'Please indicate your email preference');
         return;
       }
     }
     
     // Validate policies if required
     if (req.termsOfService?.required == true && !_acceptTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.pleaseAcceptTermsOfService ?? 'Please accept the Terms of Service')),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseAcceptTermsOfService ?? 'Please accept the Terms of Service');
       return;
     }
     if (req.privacyPolicy?.required == true && !_acceptPrivacy) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.pleaseAcceptPrivacyPolicy ?? 'Please accept the Privacy Policy')),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseAcceptPrivacyPolicy ?? 'Please accept the Privacy Policy');
       return;
     }
 

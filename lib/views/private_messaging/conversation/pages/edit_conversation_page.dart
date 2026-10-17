@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class EditConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -55,13 +56,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
   Future<bool> _handleSubmit() async {
     if (_titleController.text.trim().isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.titleCannotBeEmpty ?? 'Title cannot be empty'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.titleCannotBeEmpty ?? 'Title cannot be empty');
       }
       return false;
     }
@@ -81,38 +76,20 @@ class _EditConversationPageState extends State<EditConversationPage> {
       if (!result.result) {
         final errorMessage = result.resultText?.trim();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage ?? AppLocalizations.of(context)?.failedToSaveConversation ?? 'Failed to save conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage ?? AppLocalizations.of(context)?.failedToSaveConversation ?? 'Failed to save conversation');
         }
         return false;
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.conversationUpdatedSuccessfully ?? 'Conversation updated successfully'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationUpdatedSuccessfully ?? 'Conversation updated successfully');
         Navigator.of(context).pop(true); // Return true to indicate success
       }
 
       return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, 'Error: ${e.toString()}');
       }
       return false;
     } finally {

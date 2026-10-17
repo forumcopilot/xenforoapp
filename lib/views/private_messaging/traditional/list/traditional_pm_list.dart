@@ -9,6 +9,7 @@ import '../../../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../pages/traditional_pm_page.dart';
 import 'traditional_pm_list_item.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class TraditionalPMList extends StatefulWidget {
   final SiteContext siteContext;
@@ -199,12 +200,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e');
       }
     }
   }
@@ -384,12 +380,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       await _loadMorePrivateMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorLoadingMoreMessages(e.toString()) ?? 'Error loading more messages: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorLoadingMoreMessages(e.toString()) ?? 'Error loading more messages: $e');
       }
     } finally {
       if (mounted) {

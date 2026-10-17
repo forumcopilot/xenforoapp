@@ -16,6 +16,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/error_dialog.dart';
+import '../../utils/snackbar_helper.dart';
 
 class PostsList extends StatefulWidget {
   const PostsList({
@@ -478,48 +479,8 @@ class _PostsState extends State<PostsList> {
       // Show user-friendly error message
       if (mounted) {
         final errorMessage = extractErrorMessage(e);
-        // Capture ScaffoldMessengerState and theme to avoid using context after unmount
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        final theme = Theme.of(context);
-        final errorContainerColor = theme.colorScheme.errorContainer;
-        final onErrorContainerColor = theme.colorScheme.onErrorContainer;
 
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: onErrorContainerColor,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    errorMessage,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: onErrorContainerColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: errorContainerColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingL - DesignTokens.spacingXS,
-            ),
-            duration: const Duration(seconds: 4),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: onErrorContainerColor,
-          ),
-        );
+        SnackbarHelper.showInfo(context, errorMessage);
       }
 
       // Still rethrow to allow upper layers to handle if needed

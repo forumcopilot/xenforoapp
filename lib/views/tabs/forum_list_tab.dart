@@ -10,6 +10,7 @@ import '../listitems/forum_list_item.dart';
 
 import '../widgets/forum_header_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ForumListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -149,20 +150,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
       if (e is FCApiException && e.message.toLowerCase().contains('security locked')) {
         final errorMessage = extractErrorMessage(e);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                errorMessage,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              margin: DesignTokens.paddingS,
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
       // Don't show error for subscribed forums otherwise, just keep the previous value
@@ -223,20 +211,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
           _isLoading = false;
         });
         // Show error to user via SnackBar for important errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              errorMessage,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: DesignTokens.paddingS,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, errorMessage);
       }
     }
   }
@@ -244,20 +219,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: DesignTokens.paddingS,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, 'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums');
       return;
     }
 

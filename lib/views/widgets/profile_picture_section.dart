@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/utils/file_picker_utils.dart';
 import 'dart:io';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ProfilePictureSection extends StatefulWidget {
   final SiteContext siteContext;
@@ -38,20 +39,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
     final canUploadAvatar = widget.siteContext.loginDataOutput?.canUploadAvatar ?? false;
     if (!canUploadAvatar) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'You do not have permission to upload avatars',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showError(context, 'You do not have permission to upload avatars');
       }
       return;
     }
@@ -92,20 +80,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
               });
             }
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Avatar uploaded successfully',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              SnackbarHelper.showInfo(context, 'Avatar uploaded successfully');
             }
           } else {
             throw Exception(uploadAttachmentResult.resultText);
@@ -128,20 +103,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
         });
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick image: $e',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to pick image: $e');
       }
     }
   }

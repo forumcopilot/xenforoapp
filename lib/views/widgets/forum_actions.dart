@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/forum_topics_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_password_dialog.dart';
 import 'package:forumcopilot_flutter/controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ForumActions {
   // Track if markAllAsRead is currently in progress to prevent concurrent calls
@@ -40,22 +41,7 @@ class ForumActions {
         // Double-check context is still valid before showing snackbar
         if (context.mounted) {
           try {
-            final theme = Theme.of(context);
-            final scaffoldMessenger = ScaffoldMessenger.of(context);
-            scaffoldMessenger.showSnackBar(
-              SnackBar(
-                content: Text(
-                  'All forum topics have been marked as read',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onInverseSurface,
-                  ),
-                ),
-                backgroundColor: theme.colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(8),
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            SnackbarHelper.showInfo(context, 'All forum topics have been marked as read');
           } catch (e) {
             // Context became invalid between mounted check and usage
             // Silently ignore - the operation succeeded, just can't show UI feedback

@@ -16,6 +16,7 @@ import '../listitems/forum_list_item.dart';
 import '../widgets/subforum_header_widget.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ForumTopicList extends StatefulWidget {
   final SiteContext siteContext;
@@ -230,20 +231,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
 
   Future<void> _handleNewTopic() async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to create a new topic',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, 'Please login to create a new topic');
       return;
     }
 
@@ -265,20 +253,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, 'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums');
       return;
     }
 

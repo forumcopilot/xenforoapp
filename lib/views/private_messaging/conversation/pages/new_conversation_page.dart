@@ -15,6 +15,7 @@ import '../../../../theme/design_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../../../../utils/file_utils.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class NewConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -154,84 +155,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
             errorMessage = errorMessage.substring(11);
           }
           // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          final colorScheme = Theme.of(context).colorScheme;
-          final textTheme = Theme.of(context).textTheme;
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
         return false;
       } else {
         // Wrap other exceptions
         if (mounted) {
           // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          final colorScheme = Theme.of(context).colorScheme;
-          final textTheme = Theme.of(context).textTheme;
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to create conversation: ${e.toString()}',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, 'Failed to create conversation: ${e.toString()}');
         }
         return false;
       }
@@ -377,13 +308,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
                       final success = await _handleSubmit(title, content);
                       if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.conversationCreatedSuccessfully ?? 'Conversation created successfully'),
-                            backgroundColor: colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationCreatedSuccessfully ?? 'Conversation created successfully');
 
                         // Dismiss keyboard before navigating
                         FocusScope.of(context).unfocus();
@@ -804,19 +729,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return null;
     }
@@ -834,19 +747,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
       if (!validation.isValid) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
         }
         return null;
       }
@@ -865,19 +766,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
             errorMessage = errorMessage.substring(11);
           }
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
           return null;
         }
@@ -966,13 +855,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
           _uploadingFiles.remove(file.path);
         });
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file');
         }
         return null;
       }
@@ -991,13 +874,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         _uploadingFiles.remove(file.path);
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
       }
       return null;
     }
@@ -1025,19 +902,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return;
     }

@@ -9,6 +9,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../pages/conversation_page.dart';
 import 'conversation_list_item.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class ConversationList extends StatefulWidget {
   final SiteContext siteContext;
@@ -201,12 +202,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e');
       }
     }
   }
@@ -449,12 +445,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
       await _loadMoreConversations();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorLoadingMoreConversations(e.toString()) ?? 'Error loading more conversations: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorLoadingMoreConversations(e.toString()) ?? 'Error loading more conversations: $e');
       }
     } finally {
       if (mounted) {

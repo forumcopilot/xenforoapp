@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:forumcopilot_sdk/models/results/fc_attachment_result.dart';
 import 'package:image_picker/image_picker.dart';
+import '../utils/snackbar_helper.dart';
 
 /// Mixin providing common attachment upload functionality
 /// Can be used by pages that need to handle file uploads
@@ -117,19 +118,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
     // Check attachment count limit before file selection
     if (!canAddMoreAttachments(attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return;
     }
@@ -160,19 +149,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
 
         if (!validation.isValid) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  validation.errorMessage ?? 'File validation failed',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
           }
           return;
         }
@@ -193,19 +170,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
             debugPrint('❌ [HANDLE_FILE] Error optimizing image: $e');
             String errorMessage = _extractErrorMessage(e);
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, errorMessage);
             }
             setState(() {
               isUploading = false;
@@ -231,38 +196,14 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
           } else {
             debugPrint('❌ [HANDLE_FILE] Upload failed: ${success.resultText}');
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    success.resultText ?? 'Failed to upload file',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, success.resultText ?? 'Failed to upload file');
             }
           }
         } catch (e, stackTrace) {
           debugPrint('❌ [HANDLE_FILE] Exception during upload: $e');
           debugPrint('❌ [HANDLE_FILE] Stack trace: $stackTrace');
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  e.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, e.toString());
           }
         } finally {
           setState(() {
@@ -289,38 +230,14 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
           } else {
             debugPrint('❌ [HANDLE_FILE] Upload failed: ${success.resultText}');
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    success.resultText ?? 'Failed to upload file',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, success.resultText ?? 'Failed to upload file');
             }
           }
         } catch (e, stackTrace) {
           debugPrint('❌ [HANDLE_FILE] Exception during upload: $e');
           debugPrint('❌ [HANDLE_FILE] Stack trace: $stackTrace');
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  e.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, e.toString());
           }
         } finally {
           setState(() {
@@ -348,19 +265,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
     // Check attachment count limit before file selection
     if (!canAddMoreAttachments(attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return;
     }
@@ -378,19 +283,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
       // Limit to remaining slots if there's a limit
       if (remainingSlots != null && selectedImages.length > remainingSlots) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Only ${remainingSlots} more attachment(s) allowed. Selecting first ${remainingSlots} image(s).',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showInfo(context, 'Only ${remainingSlots} more attachment(s) allowed. Selecting first ${remainingSlots} image(s).');
         }
         selectedImages = selectedImages.take(remainingSlots).toList();
       }
@@ -415,19 +308,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
         // Check if we've reached the limit
         if (!canAddMoreAttachments(attachments.length, constraints)) {
           if (mounted && allowMultiple) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Attachment limit reached. Skipping remaining images.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showInfo(context, 'Attachment limit reached. Skipping remaining images.');
           }
           break;
         }
@@ -443,19 +324,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
 
           if (!validation.isValid) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}');
             }
             continue; // Skip this image and continue with next
           }
@@ -476,19 +345,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
               debugPrint('❌ [HANDLE_IMAGE] Error optimizing image ${image.name}: $e');
               String errorMessage = _extractErrorMessage(e);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${image.name}: $errorMessage',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${image.name}: $errorMessage');
               }
               setState(() {
                 isUploading = false;
@@ -509,36 +366,12 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
               });
             } else {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${imageToUpload.name}: ${success.resultText ?? 'Failed to upload image'}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${imageToUpload.name}: ${success.resultText ?? 'Failed to upload image'}');
               }
             }
           } catch (e) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${imageToUpload.name}: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, '${imageToUpload.name}: ${e.toString()}');
             }
           } finally {
             setState(() {
@@ -559,36 +392,12 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
               });
             } else {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${image.name}: ${success.resultText ?? 'Failed to upload image'}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${image.name}: ${success.resultText ?? 'Failed to upload image'}');
               }
             }
           } catch (e) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${image.name}: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, '${image.name}: ${e.toString()}');
             }
           } finally {
             setState(() {

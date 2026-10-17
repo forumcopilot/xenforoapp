@@ -25,6 +25,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 /// Icon for a conversation message's react button: the viewer's chosen
 /// reaction glyph (emoji or custom image) when they've reacted, else the heart.
@@ -542,19 +543,7 @@ class _ConversationAttachmentActions {
     }
 
     if (allImageUrls.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'No images found to display.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, 'No images found to display.');
       return;
     }
 
@@ -572,19 +561,7 @@ class _ConversationAttachmentActions {
   }
 
   void onLoginRequired(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Please login to view this attachment',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SnackbarHelper.showError(context, 'Please login to view this attachment');
   }
 }
 

@@ -10,6 +10,7 @@ import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
 import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:flutter/foundation.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class ReplyConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -87,25 +88,13 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
           if (errorMessage.startsWith('Exception: ')) {
             errorMessage = errorMessage.substring(11);
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
         return false;
       } else {
         // Wrap other exceptions
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.failedToSendReply(e.toString()) ?? 'Failed to send reply: ${e.toString()}'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToSendReply(e.toString()) ?? 'Failed to send reply: ${e.toString()}');
         }
         return false;
       }
@@ -248,19 +237,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return null;
     }
@@ -278,19 +255,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
 
       if (!validation.isValid) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
         }
         return null;
       }
@@ -309,19 +274,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
             errorMessage = errorMessage.substring(11);
           }
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
           return null;
         }
@@ -390,13 +343,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       } else {
         debugPrint('❌ [REPLY_CONVERSATION] File upload failed: ${uploadAttachmentResult.resultText}');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file');
         }
         return null;
       }
@@ -404,13 +351,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       debugPrint('❌ [REPLY_CONVERSATION] Exception in _handleFileUpload: $e');
       debugPrint('❌ [REPLY_CONVERSATION] Stack trace: $stackTrace');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
       }
       return null;
     } finally {

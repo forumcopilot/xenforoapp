@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/utils/error_dialog.dart';
 import 'package:forumcopilot_flutter/views/widgets/custom_field_widget.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_custom_field_definition.dart';
 import '../theme/design_tokens.dart';
+import '../utils/snackbar_helper.dart';
 
 class ForumSettingsCategoryPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -234,13 +235,7 @@ class _ForumSettingsCategoryPageState extends State<ForumSettingsCategoryPage> {
             }
           });
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.resultText ?? 'Failed to save setting'),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackbarHelper.showError(context, result.resultText ?? 'Failed to save setting');
         }
       }
     } catch (e) {

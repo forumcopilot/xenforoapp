@@ -19,6 +19,7 @@ import '../../../../utils/accessibility_helpers.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class ConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -122,34 +123,19 @@ class _ConversationPageState extends State<ConversationPage> {
           // Call the callback to update the conversation state in the list
           widget.onMarkUnread?.call();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationMarkedAsUnread ?? 'Conversation marked as unread'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationMarkedAsUnread ?? 'Conversation marked as unread');
           // Pop back to the conversation list
           Navigator.pop(context);
         } else {
           // API call returned false - show error message
           final errorMessage =
               result.resultText?.isNotEmpty == true ? result.resultText! : AppLocalizations.of(context)?.failedToMarkConversationAsUnread('') ?? 'Failed to mark conversation as unread';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToMarkConversationAsUnread(e.toString()) ?? 'Failed to mark conversation as unread: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToMarkConversationAsUnread(e.toString()) ?? 'Failed to mark conversation as unread: $e');
       }
     }
   }
@@ -610,31 +596,16 @@ class _ConversationPageState extends State<ConversationPage> {
 
       if (mounted) {
         if (result.result) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationClosed ?? 'Conversation closed'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationClosed ?? 'Conversation closed');
           // Refresh conversation to update state
           await _loadConversation();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToCloseConversation('') ?? 'Failed to close conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context)?.failedToCloseConversation('') ?? 'Failed to close conversation');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToCloseConversation(e.toString()) ?? 'Failed to close conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToCloseConversation(e.toString()) ?? 'Failed to close conversation: $e');
       }
     }
   }
@@ -684,31 +655,16 @@ class _ConversationPageState extends State<ConversationPage> {
 
       if (mounted) {
         if (result.result) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationOpened ?? 'Conversation opened'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationOpened ?? 'Conversation opened');
           // Refresh conversation to update state
           await _loadConversation();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.resultText ?? 'Failed to open conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, result.resultText ?? 'Failed to open conversation');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToOpenConversation(e.toString()) ?? 'Failed to open conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToOpenConversation(e.toString()) ?? 'Failed to open conversation: $e');
       }
     }
   }
@@ -760,21 +716,11 @@ class _ConversationPageState extends State<ConversationPage> {
         Navigator.of(context).pop(true);
       } else {
         // The page used to close as if the conversation had been left.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e');
       }
     }
   }
@@ -1381,12 +1327,7 @@ class _ConversationPageState extends State<ConversationPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToJumpToMessage(e.toString()) ?? 'Failed to jump to message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToJumpToMessage(e.toString()) ?? 'Failed to jump to message: $e');
       }
     }
   }
@@ -1509,12 +1450,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onLikeMessage(FCConversationMessage message) async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)?.pleaseLoginToLikeMessages ?? 'Please login to like messages'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseLoginToLikeMessages ?? 'Please login to like messages');
       return;
     }
 
@@ -1643,14 +1579,9 @@ class _ConversationPageState extends State<ConversationPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)
+        SnackbarHelper.showError(context, AppLocalizations.of(context)
                     ?.failedToLikeOrUnlikeMessage(wasLiked ? (AppLocalizations.of(context)?.unlike ?? 'unlike') : (AppLocalizations.of(context)?.like ?? 'like'), e.toString()) ??
-                'Failed to ${wasLiked ? 'unlike' : 'like'} message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+                'Failed to ${wasLiked ? 'unlike' : 'like'} message: $e');
       }
     }
   }
@@ -1758,9 +1689,7 @@ class _ConversationPageState extends State<ConversationPage> {
         }
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to react: $e')),
-        );
+        SnackbarHelper.showInfo(context, 'Failed to react: $e');
       }
     }
   }

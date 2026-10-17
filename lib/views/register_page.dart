@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
+import '../utils/snackbar_helper.dart';
 
 class RegisterPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -776,9 +777,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Date of Birth if required
       if (req.dateOfBirth != null && (req.dateOfBirth!.required || req.dateOfBirth!.requireDob == true)) {
         if (_selectedDateOfBirth == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectDateOfBirth)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseSelectDateOfBirth);
           return;
         }
       }
@@ -786,9 +785,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Location if required
       if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
         if (_locationController.text.trim().isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterLocation)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseEnterLocation);
           return;
         }
       }
@@ -796,9 +793,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Email Choice if required
       if (req.emailChoice != null && (req.emailChoice!.required || req.emailChoice!.requireEmailChoice == true)) {
         if (_emailChoice == null || _emailChoice == false) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseIndicateEmailPreference)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseIndicateEmailPreference);
           return;
         }
       }
@@ -811,16 +806,12 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           if (controller != null) {
             final value = controller.text.trim();
             if (value.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllRequiredFields)),
-              );
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseFillAllRequiredFields);
               return;
             }
           } else {
             // Controller not found for required field
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(AppLocalizations.of(context)?.pleaseFillInAllRequiredFields ?? 'Please fill in all required fields')),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseFillInAllRequiredFields ?? 'Please fill in all required fields');
             return;
           }
         }
@@ -828,15 +819,11 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
       // Validate policies if required
       if (req.termsOfService?.required == true && !_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.pleaseAcceptTermsOfService)),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseAcceptTermsOfService);
         return;
       }
       if (req.privacyPolicy?.required == true && !_acceptPrivacy) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.pleaseAcceptPrivacyPolicy)),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseAcceptPrivacyPolicy);
         return;
       }
     }
@@ -1085,15 +1072,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       );
     } catch (e) {
       debugPrint('[RegisterPage] Failed to open website: $e');
-      Get.snackbar(
-        AppLocalizations.of(context)!.errorTitle,
-        AppLocalizations.of(context)!.couldNotOpenForumWebsite(url),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        colorText: Theme.of(context).colorScheme.onErrorContainer,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context)!.couldNotOpenForumWebsite(url));
     }
   }
 
@@ -1141,20 +1120,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         Get.offAll(() => const SiteHomePage());
         // Use server message if available, otherwise use default success message
         final successMessage = serverMessage ?? AppLocalizations.of(context)!.registrationSuccessfulAutoLogin;
-        Get.snackbar(
-          AppLocalizations.of(context)!.welcome,
-          successMessage,
-          backgroundColor: colorScheme.primaryContainer,
-          colorText: colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 3),
-          icon: Icon(
-            Icons.check_circle_rounded,
-            color: colorScheme.onPrimaryContainer,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, successMessage);
       } else {
         debugPrint('[RegisterPage] Automatic login failed, redirecting to manual login');
         // Show server message in dialog if available, otherwise show snackbar
@@ -1167,15 +1133,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           return const SiteHomePage();
         });
         if (serverMessage == null || serverMessage.isEmpty) {
-          Get.snackbar(
-            AppLocalizations.of(context)!.registrationSuccessful,
-            AppLocalizations.of(context)!.pleaseLoginWithNewAccount,
-            backgroundColor: colorScheme.primaryContainer,
-            colorText: colorScheme.onPrimaryContainer,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            borderRadius: 12,
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)!.pleaseLoginWithNewAccount);
         }
       }
     } catch (e) {
@@ -1190,15 +1148,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         return const SiteHomePage();
       });
       if (serverMessage == null || serverMessage.isEmpty) {
-        Get.snackbar(
-          'Registration Successful',
-          'Please log in with your new account.',
-          backgroundColor: colorScheme.primaryContainer,
-          colorText: colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        SnackbarHelper.showSuccess(context, 'Please log in with your new account.');
       }
     }
   }

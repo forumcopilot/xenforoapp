@@ -20,6 +20,7 @@ import 'login_page.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../utils/snackbar_helper.dart';
 
 class UserProfilePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -929,12 +930,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 FilledButton(
                   onPressed: () {
                     if (selectedReason == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalizations.of(context)!.pleaseSelectReason),
-                          backgroundColor: colorScheme.error,
-                        ),
-                      );
+                      SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseSelectReason);
                       return;
                     }
 
@@ -1010,108 +1006,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
           if (reportResult.result) {
             AppLogger.debug('Report submitted successfully for user: ${_userInfo!.id}');
             // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Text(
-                      AppLocalizations.of(context)?.reportSubmittedSuccessfully ?? 'Report submitted successfully',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.reportSubmittedSuccessfully ?? 'Report submitted successfully');
           } else {
             final errorMessage =
                 (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : (AppLocalizations.of(context)?.failedToSubmitReport ?? 'Failed to submit report');
             AppLogger.debug('Report failed for user: ${_userInfo!.id}, error: $errorMessage');
             // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Expanded(
-                      child: Text(
-                        errorMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 5),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
         }
       } catch (e) {
         AppLogger.debug('Exception occurred while reporting user: ${_userInfo!.id}, error: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      '${AppLocalizations.of(context)?.failedToSubmitReport ?? 'Failed to submit report'}: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, '${AppLocalizations.of(context)?.failedToSubmitReport ?? 'Failed to submit report'}: ${e.toString()}');
         }
       }
     }
@@ -1401,12 +1308,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   FilledButton(
                     onPressed: () {
                       if (banLength == 'temporary' && selectedEndDate == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.pleaseSelectEndDateForTemporaryBan ?? 'Please select an end date for temporary ban'),
-                            backgroundColor: colorScheme.error,
-                          ),
-                        );
+                        SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseSelectEndDateForTemporaryBan ?? 'Please select an end date for temporary ban');
                         return;
                       }
 
@@ -1501,112 +1403,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
           if (banResult.result) {
             AppLogger.debug('User banned successfully: ${_userInfo!.id}');
             // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Text(
-                      AppLocalizations.of(context)?.userBannedSuccessfully ?? 'User banned successfully',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.userBannedSuccessfully ?? 'User banned successfully');
             // Refresh entire page to reflect ban status
             await _refreshProfile();
           } else {
             final errorMessage = (banResult.resultText != null && banResult.resultText!.isNotEmpty) ? banResult.resultText! : (AppLocalizations.of(context)?.failedToBanUser ?? 'Failed to ban user');
             AppLogger.debug('Ban failed for user: ${_userInfo!.id}, error: $errorMessage');
             // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Expanded(
-                      child: Text(
-                        errorMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 5),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
         }
       } catch (e) {
         AppLogger.debug('Exception occurred while banning user: ${_userInfo!.id}, error: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to ban user: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, 'Failed to ban user: ${e.toString()}');
         }
       }
     }
@@ -1713,36 +1523,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         if (unbanResult.result) {
           AppLogger.debug('User unbanned successfully: ${_userInfo!.id}');
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Text(
-                    AppLocalizations.of(context)?.userUnbannedSuccessfully ?? 'User unbanned successfully',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.userUnbannedSuccessfully ?? 'User unbanned successfully');
           // Refresh entire page to reflect unban status
           await _refreshProfile();
         } else {
@@ -1750,73 +1531,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
               (unbanResult.resultText != null && unbanResult.resultText!.isNotEmpty) ? unbanResult.resultText! : (AppLocalizations.of(context)?.failedToUnbanUser ?? 'Failed to unban user');
           AppLogger.debug('Unban failed for user: ${_userInfo!.id}, error: $errorMessage');
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       AppLogger.debug('Exception occurred while unbanning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    'Failed to unban user: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: const EdgeInsets.all(8),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to unban user: ${e.toString()}');
       }
     }
   }
@@ -2170,38 +1891,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               : 'Successfully cleaned spam for ${spamCleanResult.username ?? _userInfo!.username}';
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      successMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showInfo(context, successMessage);
           // Refresh entire page state to reflect all changes
           // This will cause all widgets including UserRepliedPosts to rebuild and fetch fresh data
           if (context.mounted) {
@@ -2211,76 +1901,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
           final errorMessage = (spamCleanResult.resultText != null && spamCleanResult.resultText!.isNotEmpty) ? spamCleanResult.resultText! : 'Failed to clean spam';
           AppLogger.debug('Spam clean failed for user: ${_userInfo!.id}, error: $errorMessage');
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       AppLogger.debug('Exception occurred while spam cleaning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    'Failed to clean spam: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingM,
-            ),
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to clean spam: ${e.toString()}');
       }
     }
   }

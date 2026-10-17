@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'snackbar_helper.dart';
 import 'package:flutter/material.dart'; // Added for BuildContext
 
 /// Forum template types enum
@@ -757,12 +758,7 @@ class UrlUtils {
     } catch (e) {
       debugPrint('Error handling URL tap: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}');
       }
     }
   }
@@ -813,12 +809,7 @@ class UrlUtils {
     } catch (e) {
       debugPrint('Error handling URL tap: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}');
       }
     }
   }
@@ -1020,23 +1011,13 @@ class UrlUtils {
         // Fallback: try to copy email to clipboard
         await Clipboard.setData(ClipboardData(text: cleanEmail));
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Email copied to clipboard: $cleanEmail'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showInfo(context, 'Email copied to clipboard: $cleanEmail');
         }
       }
     } catch (e) {
       debugPrint('Error opening email address: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open email: $email'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'Could not open email: $email');
       }
     }
   }

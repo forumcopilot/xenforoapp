@@ -4,6 +4,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_poll.dart';
 import 'package:forumcopilot_flutter/services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Twitter/X-style poll card shown at the top of a thread when the thread has a poll.
 class ThreadPollCard extends StatefulWidget {
@@ -57,23 +58,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
       final updated = await postProxy.votePollAsync(widget.topicId, _selectedIds.toList());
       if (updated != null && mounted) {
         widget.onVoteSuccess(updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.vote,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            margin: DesignTokens.paddingS,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.vote);
       } else if (mounted) {
         _showError('Vote failed. Please try again.');
       }
@@ -85,23 +70,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        behavior: SnackBarBehavior.floating,
-        margin: DesignTokens.paddingS,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-        ),
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    SnackbarHelper.showError(context, message);
   }
 
   @override

@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/utils/error_dialog.dart';
 import '../theme/design_tokens.dart';
 import 'settings_category_page.dart' show ForumSettingsCategoryPage;
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/snackbar_helper.dart';
 
 class ForumSettingsPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -352,19 +353,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
   Future<void> _openForumHomePage(BuildContext context) async {
     final url = widget.siteContext.site.url;
     if (url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Forum URL is unavailable.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showError(context, 'Forum URL is unavailable.');
       return;
     }
 
@@ -372,19 +361,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Could not open forum URL.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showError(context, 'Could not open forum URL.');
     }
   }
 }

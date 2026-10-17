@@ -11,6 +11,7 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_flutter/utils/avatar_color_utils.dart';
 import 'package:forumcopilot_flutter/theme/style_builders.dart';
 import 'dart:math' as math;
+import '../../utils/snackbar_helper.dart';
 
 class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget {
   final SiteContext siteContext;
@@ -550,34 +551,19 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           Navigator.pop(context);
           
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.usernameHasBeenInvited(username)),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)!.usernameHasBeenInvited(username));
 
           // Refresh conversation data
           onInviteSuccess?.call();
         } else {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(inviteResult.resultText ?? 'Failed to invite user'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, inviteResult.resultText ?? 'Failed to invite user');
         }
       } catch (e) {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorInvitingUser(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)!.errorInvitingUser(e.toString()));
       }
     }
   }

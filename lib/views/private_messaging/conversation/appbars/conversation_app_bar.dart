@@ -9,6 +9,7 @@ import 'package:forumcopilot_flutter/utils/avatar_cache_utils.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class ConversationAppBar extends BaseForumAppBar {
   final SiteContext siteContext;
@@ -371,34 +372,19 @@ class ConversationAppBar extends BaseForumAppBar {
           Navigator.pop(context);
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$username has been invited to the conversation'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, '$username has been invited to the conversation');
 
           // Refresh conversation data
           onInviteSuccess?.call();
         } else {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(inviteResult.resultText ?? AppLocalizations.of(context)?.errorInvitingUser('') ?? 'Failed to invite user'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, inviteResult.resultText ?? AppLocalizations.of(context)?.errorInvitingUser('') ?? 'Failed to invite user');
         }
       } catch (e) {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorInvitingUser(e.toString()) ?? 'Error inviting user: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorInvitingUser(e.toString()) ?? 'Error inviting user: $e');
       }
     }
   }

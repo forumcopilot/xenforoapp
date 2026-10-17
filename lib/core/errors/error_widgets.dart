@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:get/get.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Reusable error widgets for consistent error display throughout the app
 class ErrorWidgets {
@@ -376,21 +377,7 @@ class ErrorSnackbar {
     SnackPosition position = SnackPosition.BOTTOM,
     VoidCallback? onTap,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.errorContainer,
-      colorText: Get.theme.colorScheme.onErrorContainer,
-      icon: Icon(
-        Icons.error_outline,
-        color: Get.theme.colorScheme.onErrorContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-      onTap: onTap != null ? (_) => onTap() : null,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showError(ctx, message);
   }
 
   /// Show success snackbar
@@ -400,20 +387,7 @@ class ErrorSnackbar {
     Duration duration = const Duration(seconds: 3),
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.primaryContainer,
-      colorText: Get.theme.colorScheme.onPrimaryContainer,
-      icon: Icon(
-        Icons.check_circle_outline,
-        color: Get.theme.colorScheme.onPrimaryContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showSuccess(ctx, message);
   }
 
   /// Show warning snackbar
@@ -423,19 +397,6 @@ class ErrorSnackbar {
     Duration duration = const Duration(seconds: 4),
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.tertiaryContainer,
-      colorText: Get.theme.colorScheme.onTertiaryContainer,
-      icon: Icon(
-        Icons.warning_outlined,
-        color: Get.theme.colorScheme.onTertiaryContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showInfo(ctx, message);
   }
 }

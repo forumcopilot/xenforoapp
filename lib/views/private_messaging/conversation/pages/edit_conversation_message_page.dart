@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
 import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class EditConversationMessagePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -63,25 +64,13 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       if (!result.result) {
         final errorMessage = result.resultText?.trim();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage ?? 'Failed to save message'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage ?? 'Failed to save message');
         }
         return false;
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.messageUpdatedSuccessfully ?? 'Message updated successfully'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageUpdatedSuccessfully ?? 'Message updated successfully');
         // Dismiss keyboard before navigating back
         FocusScope.of(context).unfocus();
         Navigator.of(context).pop(true); // Return true to indicate success
@@ -90,13 +79,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppLocalizations.of(context)?.error ?? 'Error'}: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context)?.error ?? 'Error'}: ${e.toString()}');
       }
       return false;
     }
@@ -129,25 +112,13 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
         // Provide a more descriptive error message
         final errorMessage = removeResult.resultText?.trim();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage ?? 'Failed to remove attachment. Please check your permissions.'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage ?? 'Failed to remove attachment. Please check your permissions.');
         }
         return false;
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToRemoveAttachment(e.toString()) ?? 'Failed to remove attachment: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToRemoveAttachment(e.toString()) ?? 'Failed to remove attachment: ${e.toString()}');
       }
       return false;
     }
@@ -162,19 +133,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       // Check attachment count limit
       if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Maximum of ${constraints!.count} attachment(s) allowed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
         }
         return null;
       }
@@ -192,19 +151,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
 
         if (!validation.isValid) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  validation.errorMessage ?? 'File validation failed',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
           }
           return null;
         }
@@ -221,19 +168,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
               errorMessage = errorMessage.substring(11);
             }
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    errorMessage,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, errorMessage);
             }
             return null;
           }

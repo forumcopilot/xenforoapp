@@ -13,6 +13,7 @@ import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import '../../../../theme/design_tokens.dart';
 import 'dart:io';
 import '../../../../utils/file_utils.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class ReplyTraditionalPMPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -144,19 +145,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return null;
     }
@@ -174,19 +163,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
 
       if (!validation.isValid) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
         }
         return null;
       }
@@ -204,19 +181,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
             errorMessage = errorMessage.substring(11);
           }
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
           return null;
         }
@@ -418,13 +383,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
                     try {
                       final success = await _handleSubmit(_titleController.text, _messageController.text);
                       if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.replySentSuccessfully ?? 'Reply sent successfully'),
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.replySentSuccessfully ?? 'Reply sent successfully');
                         Navigator.of(context).pop(true);
                       }
                     } finally {
@@ -750,13 +709,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
         });
         // Show error to user
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
         }
       }
     }
@@ -769,19 +722,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return;
     }
@@ -825,13 +766,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
         });
         // Show error to user
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.failedToUploadImage(e.toString()) ?? 'Failed to upload image: ${e.toString()}'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadImage(e.toString()) ?? 'Failed to upload image: ${e.toString()}');
         }
       }
     }

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'app_exceptions.dart';
 import '../../controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Centralized error handling system for the Forum Copilot app
 ///
@@ -276,14 +277,7 @@ class ErrorHandler {
       );
     } catch (e) {
       // Fallback to snackbar if dialog fails
-      Get.snackbar(
-        title,
-        message,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 5),
-        backgroundColor: Get.theme.colorScheme.errorContainer,
-        colorText: Get.theme.colorScheme.onErrorContainer,
-      );
+      if (Get.context case final ctx?) SnackbarHelper.showError(ctx, message);
     }
   }
 

@@ -10,6 +10,7 @@ import '../views/user_search_page.dart';
 // import '../views/widgets/cached_redirect_image.dart';
 import 'widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
+import '../utils/snackbar_helper.dart';
 
 class AddMembersPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -204,13 +205,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
                       final content = _messageController.text;
                       final success = await _handleSubmit(content);
                       if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.membersAddedSuccessfully ?? 'Members added successfully'),
-                            backgroundColor: colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.membersAddedSuccessfully ?? 'Members added successfully');
                         Navigator.of(context).pop(true);
                       }
                     } finally {

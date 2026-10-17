@@ -13,6 +13,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
+import '../../utils/snackbar_helper.dart';
 
 class LinkPreviewCard extends StatefulWidget {
   final String url;
@@ -116,23 +117,13 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
       } else {
         AppLogger.debug('DEBUG: LinkPreview forum not found or widget unmounted');
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.forumNotFoundById(forumId) ?? 'Forum not found: $forumId'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.forumNotFoundById(forumId) ?? 'Forum not found: $forumId');
         }
       }
     } catch (e) {
       AppLogger.debug('DEBUG: LinkPreview error navigating to forum $forumId: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToNavigateToForum ?? 'Failed to navigate to forum'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.failedToNavigateToForum ?? 'Failed to navigate to forum');
       }
     }
   }

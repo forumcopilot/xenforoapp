@@ -7,6 +7,7 @@ import 'reply_private_message_page.dart';
 import 'listitems/message_item.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/snackbar_helper.dart';
 
 class PrivateMessagePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -124,23 +125,13 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
         // Call the callback to update the message state in the list
         widget.onMarkUnread?.call();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread');
         // Pop back to the message list
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e');
       }
     }
   }
@@ -212,12 +203,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e');
       }
     }
   }

@@ -16,6 +16,7 @@ import 'package:forumcopilot_flutter/views/widgets/cached_redirect_image.dart';
 import 'dart:io';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/snackbar_helper.dart';
 
 class MessageComposePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -348,19 +349,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Maximum of ${constraints!.count} attachment(s) allowed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
         }
         return;
       }
@@ -384,19 +373,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
           if (!validation.isValid) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    validation.errorMessage ?? 'File validation failed',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
             }
             return;
           }
@@ -413,19 +390,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 errorMessage = errorMessage.substring(11);
               }
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, errorMessage);
               }
               return;
             }
@@ -462,20 +427,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               _cachedAttachmentsKey = '';
             });
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Failed to upload file. Please try again.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
+              SnackbarHelper.showError(context, 'Failed to upload file. Please try again.');
             }
           }
         } catch (e) {
@@ -492,38 +444,13 @@ class _MessageComposePageState extends State<MessageComposePage> {
             if (errorMessage.startsWith('Exception: ')) {
               errorMessage = errorMessage.substring(11);
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Failed to upload file: $errorMessage',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(8),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showError(context, 'Failed to upload file: $errorMessage');
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick file',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to pick file');
       }
     }
   }
@@ -538,19 +465,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Maximum of ${constraints!.count} attachment(s) allowed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
         }
         return;
       }
@@ -566,19 +481,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Limit to remaining slots if there's a limit
       if (remainingSlots != null && selectedImages.length > remainingSlots) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Only ${remainingSlots} more attachment(s) allowed. Processing first ${remainingSlots} image(s).',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showInfo(context, 'Only ${remainingSlots} more attachment(s) allowed. Processing first ${remainingSlots} image(s).');
         }
         selectedImages = selectedImages.take(remainingSlots).toList();
       }
@@ -592,19 +495,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
           // Check if we've reached the limit
           if (!canAddMoreAttachments(_attachments.length, constraints)) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Attachment limit reached. Skipping remaining images.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showInfo(context, 'Attachment limit reached. Skipping remaining images.');
             }
             break;
           }
@@ -621,19 +512,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
             if (!validation.isValid) {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}');
               }
               continue; // Skip this image and continue with next
             }
@@ -650,19 +529,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   errorMessage = errorMessage.substring(11);
                 }
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '${image.name}: $errorMessage',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                      margin: const EdgeInsets.all(8),
-                    ),
-                  );
+                  SnackbarHelper.showError(context, '${image.name}: $errorMessage');
                 }
                 continue; // Skip this image and continue with next
               }
@@ -698,20 +565,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 _cachedAttachmentsKey = '';
               });
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${imageToUpload.name}: Failed to upload image. Please try again.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    behavior: SnackBarBehavior.floating,
-                    margin: const EdgeInsets.all(8),
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${imageToUpload.name}: Failed to upload image. Please try again.');
               }
             }
           } catch (e) {
@@ -728,39 +582,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
               if (errorMessage.startsWith('Exception: ')) {
                 errorMessage = errorMessage.substring(11);
               }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${imageToUpload.name}: Failed to upload image: $errorMessage',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
+              SnackbarHelper.showError(context, '${imageToUpload.name}: Failed to upload image: $errorMessage');
             }
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick image',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to pick image');
       }
     }
   }
@@ -842,19 +671,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to remove attachment: ${e.toString()}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Failed to remove attachment: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -1382,36 +1199,12 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
   Future<void> _submit() async {
     if (widget.showTitleField && widget.requireTitle && _titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.pleaseEnterTitle ?? 'Please enter a title',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterTitle ?? 'Please enter a title');
       return;
     }
 
     if (_contentController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.pleaseEnterContent ?? 'Please enter some content',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterContent ?? 'Please enter some content');
       return;
     }
 
@@ -1448,45 +1241,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
           widget.onError!(e as Exception);
         } else {
           // Cache theme values to avoid multiple Theme.of(context) calls that could trigger rebuilds
-          final theme = Theme.of(context);
-          final colorScheme = theme.colorScheme;
-          final textTheme = theme.textTheme;
           
-          // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      e.toString(),
-                      style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, e.toString());
         }
       }
     } finally {

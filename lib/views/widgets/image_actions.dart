@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/controllers/post_controller.dart';
 import 'package:forumcopilot_flutter/utils/bbcode_processor.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ImageActions {
   final PostController _postsController;
@@ -67,19 +68,7 @@ class ImageActions {
     if (postsList != null) {
       final post = postsList.firstWhereOrNull((p) => p.id == postId);
       if (post == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Post not found.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Post not found.');
         return;
       }
       AppLogger.debug('\nCollecting all images from post $postId:');
@@ -137,19 +126,7 @@ class ImageActions {
       AppLogger.debug('Total images found: ${allImageUrls.length}\n');
 
       if (allImageUrls.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No images found to display.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'No images found to display.');
         return;
       }
 

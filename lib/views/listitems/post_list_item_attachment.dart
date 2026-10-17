@@ -6,6 +6,7 @@ import '../../utils/file_utils.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import '../../theme/design_tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 class PostListItemAttachment extends StatelessWidget {
   final List<FCAttachment> attachments;
@@ -135,17 +136,8 @@ class PostListItemAttachment extends StatelessWidget {
 
         // On iOS, filePath will be empty after sharing
         if (filePath.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)?.openingShareSheet(filename) ??
-                    'Opening share sheet for $filename',
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.openingShareSheet(filename) ??
+                    'Opening share sheet for $filename');
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
           final isInDownloads = filePath.contains('/Downloads/') ||
@@ -157,29 +149,14 @@ class PostListItemAttachment extends StatelessWidget {
               : (AppLocalizations.of(context)?.fileSavedToDocuments(filename) ??
                   'File saved to Documents: $filename');
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(locationMessage),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, locationMessage);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)
+        SnackbarHelper.showError(context, AppLocalizations.of(context)
                     ?.errorDownloading(filename, e.toString()) ??
-                'Error downloading $filename: $e'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+                'Error downloading $filename: $e');
       }
     }
   }

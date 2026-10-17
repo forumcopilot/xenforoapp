@@ -9,7 +9,7 @@ import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
 import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
 import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
-import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../utils/snackbar_helper.dart';
 
 class NewTopicPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -84,45 +84,13 @@ class _NewTopicPageState extends State<NewTopicPage> {
   /// The forum holds this topic for a moderator: say so, or it seems to vanish.
   void _showAwaitingApproval() {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.'),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 6),
-      ),
-    );
+    SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.');
   }
 
   Future<bool> _handleSubmit(String title, String content) async {
     // Validate required prefix before submission
     if (_requirePrefix && (_selectedPrefixId == null || _selectedPrefixId!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context)?.pleaseSelectPrefix ?? 'Please select a prefix',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseSelectPrefix ?? 'Please select a prefix');
       return false;
     }
 
@@ -186,19 +154,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
       }
       return null;
     }
@@ -216,19 +172,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
 
       if (!validation.isValid) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
         }
         return null;
       }
@@ -247,19 +191,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
             errorMessage = errorMessage.substring(11);
           }
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
           return null;
         }
@@ -380,41 +312,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
             errorMessage = errorMessage.substring(11);
           }
 
-          // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       },
     );

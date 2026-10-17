@@ -7,6 +7,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// A reusable breadcrumb navigation widget for forum pages
 class ForumBreadcrumb extends StatelessWidget {
@@ -137,23 +138,13 @@ class ForumBreadcrumb extends StatelessWidget {
         AppLogger.debug('Forum not found in manager: ${forum.id}');
         // Show error message to user
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.forumNotFound(forum.name) ?? 'Forum not found: ${forum.name}'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.forumNotFound(forum.name) ?? 'Forum not found: ${forum.name}');
         }
       }
     } catch (e) {
       AppLogger.debug('Error navigating to forum ${forum.id}: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToNavigateToForumName(forum.name) ?? 'Failed to navigate to ${forum.name}'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.failedToNavigateToForumName(forum.name) ?? 'Failed to navigate to ${forum.name}');
       }
     }
   }

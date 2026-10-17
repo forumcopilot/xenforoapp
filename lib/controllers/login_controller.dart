@@ -20,6 +20,7 @@ import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/errors/app_exceptions.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_sdk/services/fc_http_overrides.dart';
+import '../utils/snackbar_helper.dart';
 import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
@@ -65,16 +66,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     Future.microtask(() {
       final context = Get.context;
       if (context != null && context.mounted) {
-        Get.snackbar(
-          'Login result',
-          message,
-          backgroundColor: Get.theme.colorScheme.primaryContainer,
-          colorText: Get.theme.colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-          margin: const EdgeInsets.all(12),
-          borderRadius: 8,
-        );
+        if (Get.context case final ctx?) SnackbarHelper.showSuccess(ctx, message);
       }
     });
   }

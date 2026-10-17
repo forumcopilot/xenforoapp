@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import '../controllers/global_loader_controller.dart';
 import '../theme/design_tokens.dart';
+import 'snackbar_helper.dart';
 
 /// Extracts a user-friendly error message from an exception
 /// For FCApiException, returns the message property
@@ -91,15 +92,7 @@ void showErrorDialog(String errorMessage) {
                     Clipboard.setData(ClipboardData(text: errorMessage));
                     // Defer snackbar to next frame as well, for safety
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Get.snackbar(
-                        l10n?.copied ?? "Copied",
-                        l10n?.errorMessageCopiedToClipboard ?? "Error message copied to clipboard",
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Get.theme.colorScheme.surfaceContainerHighest,
-                        colorText: Get.theme.colorScheme.onSurface,
-                        borderRadius: 8,
-                        margin: const EdgeInsets.all(8),
-                      );
+                      if (Get.context case final ctx?) SnackbarHelper.showInfo(ctx, l10n?.errorMessageCopiedToClipboard ?? "Error message copied to clipboard");
                     });
                   },
                 ),

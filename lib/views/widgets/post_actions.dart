@@ -16,6 +16,7 @@ import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 class PostActionsHandler {
   final SiteContext siteContext;
@@ -48,33 +49,7 @@ class PostActionsHandler {
     // Add check for can_reply
     if (!(data?.topic.canReply ?? false)) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(
-                AppLocalizations.of(context)!.youCannotReplyToThisThread,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context)!.youCannotReplyToThisThread);
       return;
     }
 
@@ -82,33 +57,7 @@ class PostActionsHandler {
     final forumId = data?.topic.forumId ?? (fallbackForumId != null && fallbackForumId!.isNotEmpty ? fallbackForumId : null);
     if (forumId == null || forumId.isEmpty) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Text(
-                AppLocalizations.of(context)!.pleaseWaitForThreadToLoad,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
       return;
     }
 
@@ -124,33 +73,7 @@ class PostActionsHandler {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Text(
-                  AppLocalizations.of(context)!.pleaseWaitForThreadToLoad,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
         return;
       }
     } else {
@@ -158,33 +81,7 @@ class PostActionsHandler {
       actualTopicId = topicId;
       if (actualTopicId.isEmpty) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Text(
-                  AppLocalizations.of(context)!.pleaseWaitForThreadToLoad,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
         return;
       }
     }
@@ -231,40 +128,7 @@ class PostActionsHandler {
     } else if (result == false && context.mounted) {
       // Show error message
       // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Expanded(
-                child: Text(
-                  'Failed to post reply. Please try again.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-          duration: const Duration(seconds: 4),
-          // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-          // with an action stays until tapped and queues later messages behind it.
-          showCloseIcon: true,
-          closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-        ),
-      );
+      SnackbarHelper.showError(context, 'Failed to post reply. Please try again.');
     }
   }
 
@@ -288,19 +152,7 @@ class PostActionsHandler {
     if (forumId == null || forumId.isEmpty) {
       AppLogger.debug('⚠️ [POST_ACTIONS] forumId is null or empty - showing error');
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please wait for the thread to load',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
       return;
     }
 
@@ -315,19 +167,7 @@ class PostActionsHandler {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Please wait for the thread to load',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
         return;
       }
     } else {
@@ -337,19 +177,7 @@ class PostActionsHandler {
       if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from parameter is empty - showing error');
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Please wait for the thread to load',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
         return;
       }
     }
@@ -453,40 +281,7 @@ class PostActionsHandler {
     } else if (result == false && context.mounted) {
       // Show error message
       // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: DesignTokens.spacingM),
-              Expanded(
-                child: Text(
-                  'Failed to update post. Please try again.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-          duration: const Duration(seconds: 4),
-          // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-          // with an action stays until tapped and queues later messages behind it.
-          showCloseIcon: true,
-          closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-        ),
-      );
+      SnackbarHelper.showError(context, 'Failed to update post. Please try again.');
     }
   }
 
@@ -627,33 +422,7 @@ class PostActionsHandler {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Text(
-                    'Post deleted successfully',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showInfo(context, 'Post deleted successfully');
         }
       } catch (e) {
         AppLogger.debug('Error deleting post: $e');
@@ -664,39 +433,7 @@ class PostActionsHandler {
           scaffoldMessenger.hideCurrentSnackBar();
 
           // Show error message
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to delete post: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, 'Failed to delete post: ${e.toString()}');
         }
       }
     }
@@ -809,73 +546,14 @@ class PostActionsHandler {
           if (reportResult.result) {
             AppLogger.debug('Report submitted successfully for post: $postId');
             // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Text(
-                      'Report submitted successfully',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                margin: const EdgeInsets.all(8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showInfo(context, 'Report submitted successfully');
           } else {
             // Show error message with server response
             final errorMessage = (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : 'Failed to submit report';
 
             AppLogger.debug('Report failed for post: $postId, error: $errorMessage');
             // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-            final scaffoldMessenger = ScaffoldMessenger.of(context);
-            scaffoldMessenger.showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Expanded(
-                      child: Text(
-                        errorMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                margin: const EdgeInsets.all(8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                duration: const Duration(seconds: 4),
-                // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-                // with an action stays until tapped and queues later messages behind it.
-                showCloseIcon: true,
-                closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
         }
       } catch (e) {
@@ -887,39 +565,7 @@ class PostActionsHandler {
           scaffoldMessenger.hideCurrentSnackBar();
 
           // Show error message
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to submit report: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, 'Failed to submit report: ${e.toString()}');
         }
       }
     }
@@ -928,19 +574,7 @@ class PostActionsHandler {
   Future<void> handleViewHistory(BuildContext context, String postId) async {
     AppLogger.debug('Handling view history of post: $postId');
     // TODO: Implement view history functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'View history functionality coming soon',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SnackbarHelper.showInfo(context, 'View history functionality coming soon');
   }
 
   // --- Like/Unlike Post ---
@@ -1001,11 +635,9 @@ class PostActionsHandler {
       setLikeCount(post.likesInfo.length);
       // Removed onRefresh() call - local state updates are sufficient for like actions
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(wasLiked 
+        SnackbarHelper.showInfo(context, wasLiked 
             ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike post: $e')
-            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like post: $e'))),
-        );
+            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like post: $e'));
       }
     }
   }
@@ -1109,9 +741,7 @@ class PostActionsHandler {
       }
       setLikeCount(post.likesInfo.length);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to react: $e')),
-        );
+        SnackbarHelper.showInfo(context, 'Failed to react: $e');
       }
     }
   }
@@ -1172,11 +802,9 @@ class PostActionsHandler {
       }
       setLikeCount(message.likesInfo.length);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(wasLiked 
+        SnackbarHelper.showInfo(context, wasLiked 
             ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike message: $e')
-            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like message: $e'))),
-        );
+            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like message: $e'));
       }
     }
   }

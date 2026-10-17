@@ -7,6 +7,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../appbars/traditional_pm_app_bar.dart';
 import 'reply_traditional_pm_page.dart';
 import '../widgets/traditional_pm_item.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class TraditionalPMPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -123,22 +124,12 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
       if (mounted) {
         widget.onMarkUnread?.call();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread');
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e');
       }
     }
   }
@@ -210,12 +201,7 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e');
       }
     }
   }

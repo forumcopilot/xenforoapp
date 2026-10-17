@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 class BrokenImageWidget extends StatelessWidget {
   final double width;
@@ -123,12 +124,7 @@ class BrokenImageWidget extends StatelessWidget {
                             }
                           } catch (e) {
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(AppLocalizations.of(context)?.couldNotOpenLink(e.toString()) ?? 'Could not open link: ${e.toString()}'),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
+                              SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.couldNotOpenLink(e.toString()) ?? 'Could not open link: ${e.toString()}');
                             }
                           }
                         },

@@ -763,7 +763,9 @@ class AccountController extends AbstractController
             $passwordChange = $this->service('XF:User\PasswordChange', $visitor, $newPassword);
             $passwordChange->setLogIp(true);
             $passwordChange->setNotify(true);
-            $passwordChange->setInvalidateRememberKeys(true);
+            // Handled below, as XenForo's own password page does
+            // (Pub\Controller\Account::actionSecuritySave).
+            $passwordChange->setInvalidateRememberKeys(false);
 
             // Validate before saving
             if (!$passwordChange->isValid($error)) {
@@ -772,6 +774,13 @@ class AccountController extends AbstractController
 
             // Save password change
             $passwordChange->save();
+
+            // Keep this session signed in: clears every remember key (other
+            // devices sign in again), gives this one a new key if it had one,
+            // and updates the session's password date. Without it the change
+            // ended the app's own session, and the app had to sign in again
+            // with the new password.
+            $this->getLoginPlugin()->handleVisitorPasswordChange();
 
             $result = new FCUpdatePasswordResult(true, null);
             return $this->apiSuccess($result);

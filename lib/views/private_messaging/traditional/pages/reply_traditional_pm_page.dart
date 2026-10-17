@@ -145,7 +145,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }
@@ -433,7 +433,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRecipientField('To', _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
+              _buildRecipientField(AppLocalizations.of(context).toLabel, _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
               const SizedBox(height: 8),
               TextField(
                 controller: _titleController,
@@ -722,7 +722,7 @@ class _ReplyTraditionalPMPageState extends State<ReplyTraditionalPMPage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }

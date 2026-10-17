@@ -328,7 +328,7 @@ class ForumHeaderWidget extends StatelessWidget {
                         children: [
                           if ((boardStats?.total_posts ?? 0) > 0)
                             Text(
-                              '${formatNumber(context, boardStats?.total_posts ?? 0)} Posts',
+                              AppLocalizations.of(context).postsCountFormatted(formatNumber(context, boardStats?.total_posts ?? 0)),
                               style: TextStyle(
                                 color: colorScheme.onSurface.withValues(alpha: DesignTokens.opacityHigh),
                                 fontWeight: DesignTokens.fontWeightMedium,

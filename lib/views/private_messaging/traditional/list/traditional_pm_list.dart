@@ -288,7 +288,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading messages: $_error',
+              AppLocalizations.of(context).errorLoadingMessages('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
@@ -313,7 +313,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: Text(
-                    'No ${widget.isInbox ? "inbox" : "sent"} messages',
+                    widget.isInbox ? AppLocalizations.of(context).noInboxMessages : AppLocalizations.of(context).noSentMessages,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),

@@ -143,7 +143,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 elevation: DesignTokens.elevationMedium,
               ),
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.onPrimary,
                   fontWeight: DesignTokens.fontWeightBold,

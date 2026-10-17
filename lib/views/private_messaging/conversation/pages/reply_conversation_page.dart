@@ -240,7 +240,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }

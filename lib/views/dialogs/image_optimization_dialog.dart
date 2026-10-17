@@ -29,26 +29,26 @@ Future<bool> showImageOptimizationDialog(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'This image exceeds the upload limits and needs to be optimized:',
+                AppLocalizations.of(context).imageExceedsUploadLimits,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
                 context,
-                'Original Size',
+                AppLocalizations.of(context).originalSize,
                 formatFileSize(plan.originalSize),
               ),
               if (plan.originalWidth != null && plan.originalHeight != null)
                 _buildInfoRow(
                   context,
-                  'Original Dimensions',
+                  AppLocalizations.of(context).originalDimensions,
                   '${plan.originalWidth} × ${plan.originalHeight} px',
                 ),
               const SizedBox(height: 12),
               const Divider(),
               const SizedBox(height: 12),
               Text(
-                'Optimizations to be applied:',
+                AppLocalizations.of(context).optimizationsToBeApplied,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -58,24 +58,24 @@ Future<bool> showImageOptimizationDialog(
                 _buildActionRow(
                   context,
                   Icons.aspect_ratio,
-                  'Resize',
+                  AppLocalizations.of(context).resizeImage,
                   '${plan.originalWidth} × ${plan.originalHeight} → ${plan.targetWidth} × ${plan.targetHeight} px',
                 ),
               if (plan.needsFormatConversion)
                 _buildActionRow(
                   context,
                   Icons.transform,
-                  'Convert Format',
+                  AppLocalizations.of(context).convertFormat,
                   plan.originalFormat != null && plan.targetFormat != null
-                      ? '${plan.originalFormat!.toUpperCase()} → ${plan.targetFormat!.toUpperCase()}${plan.originalFormat!.toLowerCase() != 'jpg' && plan.originalFormat!.toLowerCase() != 'jpeg' ? ' (smaller file size)' : ' (format not supported)'}'
-                      : 'Convert to JPG (format not supported or for size reduction)',
+                      ? '${plan.originalFormat!.toUpperCase()} → ${plan.targetFormat!.toUpperCase()}${plan.originalFormat!.toLowerCase() != 'jpg' && plan.originalFormat!.toLowerCase() != 'jpeg' ? ' (${AppLocalizations.of(context).smallerFileSize})' : ' (${AppLocalizations.of(context).formatNotSupported})'}'
+                      : AppLocalizations.of(context).convertToJpgReason,
                 ),
               if (plan.needsCompression)
                 _buildActionRow(
                   context,
                   Icons.compress,
-                  'Compress',
-                  'Quality: ${plan.quality}% to meet size limit',
+                  AppLocalizations.of(context).compressImage,
+                  AppLocalizations.of(context).compressQuality(plan.quality!),
                 ),
               const SizedBox(height: 12),
               const Divider(),
@@ -83,13 +83,13 @@ Future<bool> showImageOptimizationDialog(
               if (plan.estimatedSize != null)
                 _buildInfoRow(
                   context,
-                  'Estimated Final Size',
+                  AppLocalizations.of(context).estimatedFinalSize,
                   formatFileSize(plan.estimatedSize!),
                   isHighlight: true,
                 ),
               if (plan.estimatedSize != null)
                 Text(
-                  'Reduction: ${((1 - plan.estimatedSize! / plan.originalSize) * 100).toStringAsFixed(1)}%',
+                  AppLocalizations.of(context).sizeReduction(((1 - plan.estimatedSize! / plan.originalSize) * 100).toStringAsFixed(1)),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                       ),

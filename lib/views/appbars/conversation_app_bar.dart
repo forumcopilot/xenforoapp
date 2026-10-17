@@ -261,7 +261,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                       if (participantCount > 0) ...[
                         const SizedBox(height: DesignTokens.spacingS),
                         Text(
-                          '$participantCount ${participantCount == 1 ? 'participant' : 'participants'}',
+                          AppLocalizations.of(context).participantCount(participantCount),
                           style: StyleBuilders.titleTextStyle(
                             colorScheme: colorScheme,
                             textTheme: textTheme,

@@ -89,7 +89,7 @@ class _ForumSettingsCategoryPageState extends State<ForumSettingsCategoryPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error loading settings: ${e.toString()}';
+          _error = AppLocalizations.of(context).errorLoadingSettings('$e');
           _isLoading = false;
         });
         showErrorDialogFromException(e);
@@ -269,25 +269,25 @@ class _ForumSettingsCategoryPageState extends State<ForumSettingsCategoryPage> {
       if (setting.fieldType == 'number') {
         final numValue = num.tryParse(value);
         if (numValue == null) {
-          return 'Please enter a valid number';
+          return AppLocalizations.of(context).pleaseEnterValidNumber;
         }
         if (setting.min != null && numValue < setting.min!) {
-          return 'Value must be at least ${setting.min}';
+          return AppLocalizations.of(context).valueMustBeAtLeast('${setting.min}');
         }
         if (setting.max != null && numValue > setting.max!) {
-          return 'Value must be at most ${setting.max}';
+          return AppLocalizations.of(context).valueMustBeAtMost('${setting.max}');
         }
       }
 
       if (setting.fieldType == 'textbox' || setting.fieldType == 'textarea') {
         if (setting.maxLength != null && value.length > setting.maxLength!) {
-          return 'Maximum length is ${setting.maxLength} characters';
+          return AppLocalizations.of(context).maximumLengthCharacters(setting.maxLength!);
         }
         if (setting.pattern != null) {
           try {
             final regex = RegExp(setting.pattern!);
             if (!regex.hasMatch(value)) {
-              return 'Invalid format';
+              return AppLocalizations.of(context).invalidFormat;
             }
           } catch (e) {
             // Invalid regex pattern, skip validation

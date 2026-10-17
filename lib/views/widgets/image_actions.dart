@@ -6,6 +6,7 @@ import 'package:forumcopilot_flutter/utils/bbcode_processor.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ImageActions {
   final PostController _postsController;
@@ -68,7 +69,7 @@ class ImageActions {
     if (postsList != null) {
       final post = postsList.firstWhereOrNull((p) => p.id == postId);
       if (post == null) {
-        SnackbarHelper.showError(context, 'Post not found.');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).postNotFound);
         return;
       }
       AppLogger.debug('\nCollecting all images from post $postId:');
@@ -126,7 +127,7 @@ class ImageActions {
       AppLogger.debug('Total images found: ${allImageUrls.length}\n');
 
       if (allImageUrls.isEmpty) {
-        SnackbarHelper.showInfo(context, 'No images found to display.');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).noImagesToDisplay);
         return;
       }
 

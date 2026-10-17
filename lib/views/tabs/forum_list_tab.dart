@@ -219,7 +219,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, 'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums');
+      SnackbarHelper.showInfo(context, subscribe ? AppLocalizations.of(context).pleaseLoginToSubscribeForums : AppLocalizations.of(context).pleaseLoginToUnsubscribeForums);
       return;
     }
 
@@ -282,7 +282,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'Unable to Load Forums',
+              AppLocalizations.of(context).unableToLoadForums,
               textAlign: TextAlign.center,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.error,
@@ -337,7 +337,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                     ),
                     const SizedBox(height: DesignTokens.spacingXL),
                     Text(
-                      "No Forums Available",
+                      AppLocalizations.of(context).noForumsAvailable,
                       style: textTheme.headlineSmall?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: DesignTokens.fontWeightBold,
@@ -346,7 +346,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                     ),
                     const SizedBox(height: DesignTokens.spacingS),
                     Text(
-                      'There are no forums to display. This might be due to permissions or the forum structure.',
+                      AppLocalizations.of(context).noForumsToDisplay,
                       style: textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -389,7 +389,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                   ),
                   const SizedBox(width: DesignTokens.spacingS),
                   Text(
-                    'Subscribed Forums',
+                    AppLocalizations.of(context).subscribedForums,
                     style: StyleBuilders.titleTextStyle(
                       colorScheme: colorScheme,
                       textTheme: textTheme,

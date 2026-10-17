@@ -1771,4 +1771,747 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get connectionErrorTitle => 'Error de conexión';
+
+  @override
+  String get authenticationErrorTitle => 'Error de autenticación';
+
+  @override
+  String get permissionErrorTitle => 'Error de permisos';
+
+  @override
+  String get errorNoConnection =>
+      'Sin conexión a internet. Revisa la configuración de red.';
+
+  @override
+  String get errorTimeout =>
+      'La solicitud tardó demasiado. Inténtalo de nuevo.';
+
+  @override
+  String get errorServer => 'Error del servidor. Inténtalo más tarde.';
+
+  @override
+  String get errorNetwork => 'Error de red. Inténtalo de nuevo.';
+
+  @override
+  String get errorInvalidCredentials => 'Usuario o contraseña incorrectos.';
+
+  @override
+  String get errorSessionExpired =>
+      'Tu sesión ha caducado. Inicia sesión de nuevo.';
+
+  @override
+  String get errorAccountLocked =>
+      'Tu cuenta ha sido bloqueada. Ponte en contacto con el soporte.';
+
+  @override
+  String get errorAuthFailed => 'Error de autenticación. Inténtalo de nuevo.';
+
+  @override
+  String get errorForumNotFound => 'No se encontró el foro.';
+
+  @override
+  String get errorForumAccessDenied =>
+      'No tienes permiso para acceder a este foro.';
+
+  @override
+  String get errorForumUnavailable =>
+      'El foro no está disponible en este momento. Inténtalo más tarde.';
+
+  @override
+  String get errorForumGeneric =>
+      'Se produjo un error en el foro. Inténtalo de nuevo.';
+
+  @override
+  String get errorDataNotFound => 'No se encontraron los datos solicitados.';
+
+  @override
+  String get errorDataCorrupted =>
+      'Los datos parecen estar dañados. Actualiza la página.';
+
+  @override
+  String get errorCache =>
+      'No se pudieron cargar los datos guardados. Inténtalo de nuevo.';
+
+  @override
+  String get errorInvalidInput =>
+      'Algo de lo que has introducido no es válido.';
+
+  @override
+  String get errorRequiredField => 'Completa todos los campos obligatorios.';
+
+  @override
+  String get errorPermissionDenied => 'No tienes permiso para hacer eso.';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return '$feature no está disponible en este foro.';
+  }
+
+  @override
+  String get errorStorageFull =>
+      'El almacenamiento está lleno. Libera algo de espacio.';
+
+  @override
+  String get errorStorageAccessDenied =>
+      'Acceso al almacenamiento denegado. Revisa los permisos de la app.';
+
+  @override
+  String get loginInfo => 'Información de inicio de sesión';
+
+  @override
+  String get loginFailed => 'Error al iniciar sesión';
+
+  @override
+  String get topicAnnouncement => 'Anuncio';
+
+  @override
+  String get topicPinned => 'Fijado';
+
+  @override
+  String get topicLocked => 'Cerrado';
+
+  @override
+  String get topicPoll => 'Encuesta';
+
+  @override
+  String get deletedBadge => 'ELIMINADO';
+
+  @override
+  String get protectedBadge => 'Protegido';
+
+  @override
+  String get lockTopic => 'Cerrar tema';
+
+  @override
+  String get unlockTopic => 'Reabrir tema';
+
+  @override
+  String get lockTopicConfirm =>
+      '¿Seguro que quieres cerrar este tema? Los demás usuarios no podrán responder ni interactuar con él.';
+
+  @override
+  String get unlockTopicConfirm =>
+      '¿Seguro que quieres reabrir este tema? Los demás usuarios podrán volver a responder e interactuar con él.';
+
+  @override
+  String get stickTopic => 'Fijar tema';
+
+  @override
+  String get unstickTopic => 'Desfijar tema';
+
+  @override
+  String get stickTopicConfirm =>
+      '¿Seguro que quieres fijar este tema? Aparecerá arriba del foro para todos los usuarios.';
+
+  @override
+  String get unstickTopicConfirm =>
+      '¿Seguro que quieres desfijar este tema? Ya no aparecerá arriba del foro.';
+
+  @override
+  String get undeleteTopic => 'Restaurar tema';
+
+  @override
+  String get undeleteTopicConfirm =>
+      '¿Seguro que quieres restaurar este tema? Volverá a ser visible para los demás usuarios.';
+
+  @override
+  String get additionalInformation => 'Información adicional';
+
+  @override
+  String get dateOfBirth => 'Fecha de nacimiento';
+
+  @override
+  String get selectDateOfBirth => 'Selecciona tu fecha de nacimiento';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: 'Edad mínima: $age años',
+      one: 'Edad mínima: $age año',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => 'La ubicación es obligatoria';
+
+  @override
+  String get receiveSiteMailings => 'Recibir correos del sitio';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return 'Acepto los $document';
+  }
+
+  @override
+  String get termsOfService => 'Términos del servicio';
+
+  @override
+  String get privacyPolicy => 'Política de privacidad';
+
+  @override
+  String get imageExceedsUploadLimits =>
+      'Esta imagen supera los límites de subida y debe optimizarse:';
+
+  @override
+  String get originalSize => 'Tamaño original';
+
+  @override
+  String get originalDimensions => 'Dimensiones originales';
+
+  @override
+  String get optimizationsToBeApplied => 'Optimizaciones que se aplicarán:';
+
+  @override
+  String get resizeImage => 'Redimensionar';
+
+  @override
+  String get convertFormat => 'Convertir formato';
+
+  @override
+  String get smallerFileSize => 'archivo más pequeño';
+
+  @override
+  String get formatNotSupported => 'formato no compatible';
+
+  @override
+  String get convertToJpgReason =>
+      'Convertir a JPG (formato no compatible o para reducir el tamaño)';
+
+  @override
+  String get compressImage => 'Comprimir';
+
+  @override
+  String compressQuality(int quality) {
+    return 'Calidad: $quality % para cumplir el límite de tamaño';
+  }
+
+  @override
+  String get estimatedFinalSize => 'Tamaño final estimado';
+
+  @override
+  String sizeReduction(String percent) {
+    return 'Reducción: $percent %';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic =>
+      'Inicia sesión para crear un tema nuevo';
+
+  @override
+  String get pleaseLoginToSubscribeForums =>
+      'Inicia sesión para suscribirte a foros';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums =>
+      'Inicia sesión para cancelar la suscripción a foros';
+
+  @override
+  String errorLoadingContent(String error) {
+    return 'Error al cargar el contenido: $error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics =>
+      'No tienes permiso para ver los temas de este subforo.';
+
+  @override
+  String get noDiscussionsYet => 'Todavía no hay conversaciones.';
+
+  @override
+  String get unableToLoadForums => 'No se pudieron cargar los foros';
+
+  @override
+  String get noForumsAvailable => 'No hay foros disponibles';
+
+  @override
+  String get noForumsToDisplay =>
+      'No hay foros para mostrar. Puede deberse a los permisos o a la estructura del foro.';
+
+  @override
+  String get subscribedForums => 'Foros suscritos';
+
+  @override
+  String get allForumTopicsMarkedRead =>
+      'Todos los temas del foro se marcaron como leídos';
+
+  @override
+  String postsCountFormatted(String count) {
+    return '$count mensajes';
+  }
+
+  @override
+  String get jumpToPost => 'Ir al mensaje';
+
+  @override
+  String get jump => 'Ir';
+
+  @override
+  String get endOfDiscussion => 'Fin de la conversación';
+
+  @override
+  String refreshFailed(String error) {
+    return 'Error al actualizar: $error';
+  }
+
+  @override
+  String get topicDeletedHidden =>
+      'Este tema está eliminado y oculto para los demás usuarios';
+
+  @override
+  String get topicClosedNoReplies =>
+      'Este tema está cerrado y ya no admite respuestas';
+
+  @override
+  String get youAreSubscribedToTopic => 'Estás suscrito a este tema';
+
+  @override
+  String get refreshing => 'Actualizando...';
+
+  @override
+  String get unableToLoadForumsTryAgain =>
+      'No se pudieron cargar los foros. Inténtalo de nuevo.';
+
+  @override
+  String get noPostableForums => 'No hay foros en los que puedas publicar.';
+
+  @override
+  String get changeForumQuestion => '¿Cambiar de foro?';
+
+  @override
+  String get changeForumRemovesAttachments =>
+      'Al cambiar de foro se quitarán los archivos adjuntos que subiste, porque están vinculados al foro elegido.';
+
+  @override
+  String get changeForum => 'Cambiar de foro';
+
+  @override
+  String get chooseForumBeforePosting => 'Elige un foro antes de publicar';
+
+  @override
+  String get accountCannotUploadAttachments =>
+      'Tu cuenta no puede subir archivos adjuntos en este sitio.';
+
+  @override
+  String get forumNoAttachments => 'Este foro no admite archivos adjuntos.';
+
+  @override
+  String get forumNoAttachmentsChooseAnother =>
+      'Este foro no admite archivos adjuntos. Elige otro foro para subir los archivos compartidos.';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      'Este foro no admite archivos adjuntos. Los archivos compartidos quedarán pendientes hasta que elijas otro foro.';
+
+  @override
+  String get tapToChangeForum => 'Toca para cambiar de foro';
+
+  @override
+  String get chooseWhichForum => 'Elige en qué foro publicar';
+
+  @override
+  String get selectAForum => 'Selecciona un foro';
+
+  @override
+  String get unableToLoadForumsNow =>
+      'No se pueden cargar los foros en este momento.';
+
+  @override
+  String get pickForumBeforeUploading =>
+      'Elige un foro antes de subir archivos adjuntos o publicar.';
+
+  @override
+  String get uploadingSharedFiles => 'Subiendo archivos compartidos...';
+
+  @override
+  String get selectForum => 'Seleccionar foro';
+
+  @override
+  String get noForumsMatchSearch => 'Ningún foro coincide con tu búsqueda.';
+
+  @override
+  String get unknown => 'Desconocido';
+
+  @override
+  String get closeConversationConfirm =>
+      '¿Seguro que quieres cerrar esta conversación? No se podrán enviar respuestas nuevas.';
+
+  @override
+  String get openConversationConfirm =>
+      '¿Seguro que quieres abrir esta conversación? Se podrán enviar respuestas nuevas.';
+
+  @override
+  String get leaveConversationConfirm =>
+      '¿Seguro que quieres salir de esta conversación? Se ocultará de tu bandeja de entrada.';
+
+  @override
+  String get close => 'Cerrar';
+
+  @override
+  String get open => 'Abrir';
+
+  @override
+  String get leave => 'Salir';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return 'Error al cargar la conversación: $error';
+  }
+
+  @override
+  String get conversationNotFound => 'No se encontró la conversación';
+
+  @override
+  String get conversationClosedNoReplies =>
+      'Esta conversación está cerrada y ya no admite respuestas';
+
+  @override
+  String get noMessagesFound => 'No se encontraron mensajes';
+
+  @override
+  String get endOfConversation => 'Fin de la conversación';
+
+  @override
+  String get jumpToMessage => 'Ir al mensaje';
+
+  @override
+  String get jumpToFirstMessage => 'Ir al primer mensaje';
+
+  @override
+  String get jumpToLastMessage => 'Ir al último mensaje';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return 'Mensaje $position de $total';
+  }
+
+  @override
+  String get tapToJumpToMessage => 'Toca para ir a un mensaje concreto';
+
+  @override
+  String failedToReact(String error) {
+    return 'No se pudo reaccionar: $error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count participantes',
+      one: '$count participante',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => 'No hay imágenes para mostrar.';
+
+  @override
+  String get pleaseLoginToViewAttachment =>
+      'Inicia sesión para ver este archivo adjunto';
+
+  @override
+  String get inbox => 'Recibidos';
+
+  @override
+  String get sent => 'Enviados';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return 'Error al cargar los mensajes: $error';
+  }
+
+  @override
+  String get noInboxMessages => 'No hay mensajes recibidos';
+
+  @override
+  String get noSentMessages => 'No hay mensajes enviados';
+
+  @override
+  String get unknownDate => 'Fecha desconocida';
+
+  @override
+  String get searchForTopics => 'Buscar temas';
+
+  @override
+  String get noTopicsFound => 'No se encontraron temas';
+
+  @override
+  String get noPostsFound => 'No se encontraron mensajes';
+
+  @override
+  String get trySearchingDifferentKeywords => 'Prueba con otras palabras clave';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return 'Error al cargar los ajustes: $error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => 'Introduce un número válido';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return 'El valor debe ser al menos $min';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return 'El valor debe ser como máximo $max';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return 'La longitud máxima es de $max caracteres';
+  }
+
+  @override
+  String get invalidFormat => 'Formato no válido';
+
+  @override
+  String get shareToForumCopilot => 'Compartir en Forum Copilot';
+
+  @override
+  String get noSavedForumAccounts =>
+      'No se encontraron cuentas de foro guardadas.';
+
+  @override
+  String get addForumAccountFirst =>
+      'Primero añade una cuenta de foro en Forum Copilot y vuelve a compartir.';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count archivos listos para adjuntar',
+      one: '$count archivo listo para adjuntar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled =>
+      'El texto compartido se rellenará automáticamente';
+
+  @override
+  String errorSearchingForums(String error) {
+    return 'Error al buscar foros: $error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return 'No se pudo cargar la información del usuario: $error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return '¿Seguro que quieres desbloquear a $username?';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments =>
+      'Eliminar mensajes, mensajes de perfil y comentarios';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return '¿Seguro que quieres limpiar el spam de $username?';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return 'Se limpió el spam de $username';
+  }
+
+  @override
+  String get failedToCleanSpam => 'No se pudo limpiar el spam';
+
+  @override
+  String imagesCount(int count) {
+    return 'Imágenes ($count)';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles =>
+      'Inicia sesión para ver los perfiles de usuario.';
+
+  @override
+  String get tapToOpen => 'Toca para abrir';
+
+  @override
+  String get imageNotAvailable => 'Imagen no disponible';
+
+  @override
+  String get tapToViewFullSizeImage =>
+      'Toca para ver la imagen a tamaño completo';
+
+  @override
+  String get loadingImage => 'Cargando imagen...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return 'Cargando imagen de $host';
+  }
+
+  @override
+  String get tapToReveal => '(toca para mostrar)';
+
+  @override
+  String get inlineAttachments => 'Archivos adjuntos insertados';
+
+  @override
+  String get thisFieldIsRequired => 'Este campo es obligatorio';
+
+  @override
+  String get pleaseEnterValidPhoneNumber =>
+      'Introduce un número de teléfono válido';
+
+  @override
+  String get pleaseEnterValidUrl => 'Introduce una URL válida';
+
+  @override
+  String get permissionDeniedToSaveImage =>
+      'No hay permiso para guardar la imagen';
+
+  @override
+  String get postNotFound => 'No se encontró el mensaje.';
+
+  @override
+  String get failedToUploadFileTryAgain =>
+      'No se pudo subir el archivo. Inténtalo de nuevo.';
+
+  @override
+  String get failedToPickFile => 'No se pudo seleccionar el archivo';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Solo se permiten $count archivos adjuntos más. Se usarán las primeras $count imágenes.',
+      one: 'Solo se permite 1 archivo adjunto más. Se usará la primera imagen.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping =>
+      'Se alcanzó el límite de archivos adjuntos. Se omiten las imágenes restantes.';
+
+  @override
+  String get imageValidationFailed => 'La imagen no es válida';
+
+  @override
+  String get imageUploadFailed => 'No se pudo subir la imagen';
+
+  @override
+  String get failedToUploadImageTryAgain =>
+      'No se pudo subir la imagen. Inténtalo de nuevo.';
+
+  @override
+  String get failedToPickImage => 'No se pudo seleccionar la imagen';
+
+  @override
+  String get prefix => 'Prefijo';
+
+  @override
+  String get failedToLoadPrefixes => 'No se pudieron cargar los prefijos';
+
+  @override
+  String get attachFileHint => 'Adjuntar un archivo a este mensaje';
+
+  @override
+  String get uploadImageHint => 'Subir una imagen a este mensaje';
+
+  @override
+  String get openFormattingOptions => 'Abrir opciones de formato';
+
+  @override
+  String get failedToPostReply =>
+      'No se pudo publicar la respuesta. Inténtalo de nuevo.';
+
+  @override
+  String get failedToUpdatePost =>
+      'No se pudo actualizar el mensaje. Inténtalo de nuevo.';
+
+  @override
+  String get postDeletedSuccessfully => 'Mensaje eliminado';
+
+  @override
+  String failedToDeletePost(String error) {
+    return 'No se pudo eliminar el mensaje: $error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars =>
+      'No tienes permiso para subir avatares';
+
+  @override
+  String get avatarUploadedSuccessfully => 'Avatar subido';
+
+  @override
+  String get unknownTopic => 'Tema desconocido';
+
+  @override
+  String get connectionTimeoutTitle => 'Tiempo de conexión agotado';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return 'Se agotó el tiempo de conexión con $siteName. Revisa tu conexión a internet e inténtalo de nuevo.';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return 'No se pudo conectar con $siteName. Comprueba que el foro esté disponible y que el plugin esté instalado.';
+  }
+
+  @override
+  String get voteFailedTryAgain => 'No se pudo votar. Inténtalo de nuevo.';
+
+  @override
+  String get noUserSpecified => 'No se indicó ningún usuario';
+
+  @override
+  String get failedToLoadRecentPosts =>
+      'No se pudieron cargar los mensajes recientes';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return 'No se pudo cargar la vista previa: $error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Agradecido por $count personas',
+      one: 'Agradecido por $count persona',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => 'Agradecido por';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return 'Máximo de $count archivo(s) adjunto(s) permitido(s)';
+  }
+
+  @override
+  String get toLabel => 'Para';
+
+  @override
+  String get closeConversation => 'Cerrar conversación';
+
+  @override
+  String get openConversation => 'Abrir conversación';
 }

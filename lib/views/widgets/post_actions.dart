@@ -128,8 +128,7 @@ class PostActionsHandler {
       }
     } else if (result == false && context.mounted) {
       // Show error message
-      // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-      SnackbarHelper.showError(context, 'Failed to post reply. Please try again.');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPostReply);
     }
   }
 
@@ -153,7 +152,7 @@ class PostActionsHandler {
     if (forumId == null || forumId.isEmpty) {
       AppLogger.debug('⚠️ [POST_ACTIONS] forumId is null or empty - showing error');
       if (!context.mounted) return;
-      SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
       return;
     }
 
@@ -168,7 +167,7 @@ class PostActionsHandler {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
-        SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
         return;
       }
     } else {
@@ -178,7 +177,7 @@ class PostActionsHandler {
       if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from parameter is empty - showing error');
         if (!context.mounted) return;
-        SnackbarHelper.showInfo(context, 'Please wait for the thread to load');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
         return;
       }
     }
@@ -281,8 +280,7 @@ class PostActionsHandler {
       }
     } else if (result == false && context.mounted) {
       // Show error message
-      // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-      SnackbarHelper.showError(context, 'Failed to update post. Please try again.');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUpdatePost);
     }
   }
 
@@ -423,7 +421,7 @@ class PostActionsHandler {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
           // Show success message
-          SnackbarHelper.showInfo(context, 'Post deleted successfully');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).postDeletedSuccessfully);
         }
       } catch (e) {
         AppLogger.debug('Error deleting post: $e');
@@ -434,7 +432,7 @@ class PostActionsHandler {
           scaffoldMessenger.hideCurrentSnackBar();
 
           // Show error message
-          SnackbarHelper.showError(context, 'Failed to delete post: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToDeletePost('$e'));
         }
       }
     }
@@ -514,7 +512,7 @@ class PostActionsHandler {
               ),
               const SizedBox(width: DesignTokens.spacingM),
               Text(
-                'Submitting report...',
+                AppLocalizations.of(context).submittingReport,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
@@ -547,10 +545,10 @@ class PostActionsHandler {
           if (reportResult.result) {
             AppLogger.debug('Report submitted successfully for post: $postId');
             // Show success message
-            SnackbarHelper.showInfo(context, 'Report submitted successfully');
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).reportSubmittedSuccessfully);
           } else {
             // Show error message with server response
-            final errorMessage = (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : 'Failed to submit report';
+            final errorMessage = (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : AppLocalizations.of(context).failedToSubmitReport;
 
             AppLogger.debug('Report failed for post: $postId, error: $errorMessage');
             // Capture ScaffoldMessengerState to ensure dismiss button works correctly
@@ -566,16 +564,10 @@ class PostActionsHandler {
           scaffoldMessenger.hideCurrentSnackBar();
 
           // Show error message
-          SnackbarHelper.showError(context, 'Failed to submit report: ${e.toString()}');
+          SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToSubmitReport}: $e');
         }
       }
     }
-  }
-
-  Future<void> handleViewHistory(BuildContext context, String postId) async {
-    AppLogger.debug('Handling view history of post: $postId');
-    // TODO: Implement view history functionality
-    SnackbarHelper.showInfo(context, 'View history functionality coming soon');
   }
 
   // --- Like/Unlike Post ---
@@ -742,7 +734,7 @@ class PostActionsHandler {
       }
       setLikeCount(post.likesInfo.length);
       if (context.mounted) {
-        SnackbarHelper.showInfo(context, 'Failed to react: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToReact('$e'));
       }
     }
   }
@@ -822,7 +814,7 @@ class PostActionsHandler {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Login Required',
+          AppLocalizations.of(context).loginRequired,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -837,7 +829,7 @@ class PostActionsHandler {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

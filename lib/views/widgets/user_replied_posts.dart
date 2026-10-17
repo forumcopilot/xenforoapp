@@ -11,6 +11,7 @@ import '../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/utils/time_utils.dart';
 import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class UserRepliedPosts extends StatefulWidget {
   final SiteContext siteContext;
@@ -62,7 +63,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
   Future<void> _fetchRecentPosts({bool loadMore = false}) async {
     if (widget.userName == null && widget.userId == null) {
       setState(() {
-        _error = 'No user specified';
+        _error = AppLocalizations.of(context).noUserSpecified;
         _isLoading = false;
       });
       return;
@@ -114,7 +115,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
       AppLogger.debug('Stack trace: $stack');
       if (mounted) {
         setState(() {
-          _error = 'Failed to load recent posts';
+          _error = AppLocalizations.of(context).failedToLoadRecentPosts;
           _isLoading = false;
           _isLoadingMore = false;
         });
@@ -282,7 +283,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
                 children: [
                   Expanded(
                     child: Text(
-                      post.topicTitle.isNotEmpty ? post.topicTitle : 'Unknown Topic',
+                      post.topicTitle.isNotEmpty ? post.topicTitle : AppLocalizations.of(context).unknownTopic,
                       style: StyleBuilders.titleTextStyle(
                         colorScheme: colorScheme,
                         textTheme: textTheme,

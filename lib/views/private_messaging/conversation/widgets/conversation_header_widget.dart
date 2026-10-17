@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import 'package:forumcopilot_flutter/utils/avatar_cache_utils.dart';
 import '../appbars/conversation_app_bar.dart';
 import 'dart:math' as math;
+import '../../../../l10n/generated/app_localizations.dart';
 
 /// Widget that displays conversation header with overlapping avatars, title, and participant count
 /// Similar to subforum header style
@@ -236,7 +237,7 @@ class ConversationHeaderWidget extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               child: Text(
-                                '$participantCount ${participantCount == 1 ? 'participant' : 'participants'}',
+                                AppLocalizations.of(context).participantCount(participantCount),
                                 style: textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.onSurface,
                                   fontSize: DesignTokens.fontSizeS,
@@ -246,7 +247,7 @@ class ConversationHeaderWidget extends StatelessWidget {
                             ),
                           )
                         : Text(
-                            '$participantCount ${participantCount == 1 ? 'participant' : 'participants'}',
+                            AppLocalizations.of(context).participantCount(participantCount),
                             style: textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurface,
                               fontSize: DesignTokens.fontSizeS,

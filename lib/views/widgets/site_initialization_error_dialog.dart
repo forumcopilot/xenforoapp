@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Utility class for showing site initialization error dialogs
 class SiteInitializationErrorDialog {
@@ -12,10 +13,10 @@ class SiteInitializationErrorDialog {
   ) {
     final isTimeoutError = error.toLowerCase().contains('timeout') || 
                           error.toLowerCase().contains('timed out');
-    final title = isTimeoutError ? 'Connection Timeout' : 'Connection Failed';
+    final title = isTimeoutError ? AppLocalizations.of(context).connectionTimeoutTitle : AppLocalizations.of(context).connectionFailed;
     final message = isTimeoutError 
-        ? 'The connection to ${site.name} timed out. Please check your internet connection and try again.'
-        : 'Failed to connect to ${site.name}. Please check if the forum is available and the plugin is installed.';
+        ? AppLocalizations.of(context).connectionTimedOutTo(site.name)
+        : AppLocalizations.of(context).failedToConnectCheckPlugin(site.name);
 
     showDialog(
       context: context,
@@ -45,7 +46,7 @@ class SiteInitializationErrorDialog {
                 Navigator.of(dialogContext).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),

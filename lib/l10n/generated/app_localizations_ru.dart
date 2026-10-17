@@ -1769,4 +1769,751 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Пароли не совпадают';
+
+  @override
+  String get connectionErrorTitle => 'Ошибка соединения';
+
+  @override
+  String get authenticationErrorTitle => 'Ошибка аутентификации';
+
+  @override
+  String get permissionErrorTitle => 'Ошибка доступа';
+
+  @override
+  String get errorNoConnection =>
+      'Нет подключения к интернету. Проверьте настройки сети.';
+
+  @override
+  String get errorTimeout =>
+      'Время ожидания запроса истекло. Попробуйте ещё раз.';
+
+  @override
+  String get errorServer => 'Ошибка сервера. Попробуйте позже.';
+
+  @override
+  String get errorNetwork => 'Ошибка сети. Попробуйте ещё раз.';
+
+  @override
+  String get errorInvalidCredentials => 'Неверное имя пользователя или пароль.';
+
+  @override
+  String get errorSessionExpired =>
+      'Срок действия сеанса истёк. Войдите снова.';
+
+  @override
+  String get errorAccountLocked =>
+      'Ваша учётная запись заблокирована. Обратитесь в поддержку.';
+
+  @override
+  String get errorAuthFailed => 'Ошибка аутентификации. Попробуйте ещё раз.';
+
+  @override
+  String get errorForumNotFound => 'Форум не найден.';
+
+  @override
+  String get errorForumAccessDenied => 'У вас нет доступа к этому форуму.';
+
+  @override
+  String get errorForumUnavailable =>
+      'Форум сейчас недоступен. Попробуйте позже.';
+
+  @override
+  String get errorForumGeneric => 'Ошибка форума. Попробуйте ещё раз.';
+
+  @override
+  String get errorDataNotFound => 'Запрошенные данные не найдены.';
+
+  @override
+  String get errorDataCorrupted =>
+      'Похоже, данные повреждены. Обновите страницу.';
+
+  @override
+  String get errorCache =>
+      'Не удалось загрузить сохранённые данные. Попробуйте ещё раз.';
+
+  @override
+  String get errorInvalidInput => 'Введены недопустимые данные.';
+
+  @override
+  String get errorRequiredField => 'Заполните все обязательные поля.';
+
+  @override
+  String get errorPermissionDenied => 'У вас нет прав на это действие.';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return '$feature недоступно на этом форуме.';
+  }
+
+  @override
+  String get errorStorageFull => 'Хранилище заполнено. Освободите место.';
+
+  @override
+  String get errorStorageAccessDenied =>
+      'Нет доступа к хранилищу. Проверьте разрешения приложения.';
+
+  @override
+  String get loginInfo => 'Информация о входе';
+
+  @override
+  String get loginFailed => 'Не удалось войти';
+
+  @override
+  String get topicAnnouncement => 'Объявление';
+
+  @override
+  String get topicPinned => 'Закреплено';
+
+  @override
+  String get topicLocked => 'Закрыто';
+
+  @override
+  String get topicPoll => 'Опрос';
+
+  @override
+  String get deletedBadge => 'УДАЛЕНО';
+
+  @override
+  String get protectedBadge => 'Защищён';
+
+  @override
+  String get lockTopic => 'Закрыть тему';
+
+  @override
+  String get unlockTopic => 'Открыть тему';
+
+  @override
+  String get lockTopicConfirm =>
+      'Закрыть эту тему? Другие пользователи не смогут отвечать в ней.';
+
+  @override
+  String get unlockTopicConfirm =>
+      'Открыть эту тему? Другие пользователи снова смогут отвечать в ней.';
+
+  @override
+  String get stickTopic => 'Закрепить тему';
+
+  @override
+  String get unstickTopic => 'Открепить тему';
+
+  @override
+  String get stickTopicConfirm =>
+      'Закрепить эту тему? Она будет показываться вверху форума для всех.';
+
+  @override
+  String get unstickTopicConfirm =>
+      'Открепить эту тему? Она больше не будет показываться вверху форума.';
+
+  @override
+  String get undeleteTopic => 'Восстановить тему';
+
+  @override
+  String get undeleteTopicConfirm =>
+      'Восстановить эту тему? Она снова станет видна другим пользователям.';
+
+  @override
+  String get additionalInformation => 'Дополнительная информация';
+
+  @override
+  String get dateOfBirth => 'Дата рождения';
+
+  @override
+  String get selectDateOfBirth => 'Выберите дату рождения';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: 'Минимальный возраст: $age года',
+      many: 'Минимальный возраст: $age лет',
+      few: 'Минимальный возраст: $age года',
+      one: 'Минимальный возраст: $age год',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => 'Укажите местоположение';
+
+  @override
+  String get receiveSiteMailings => 'Получать рассылки сайта';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return 'Я принимаю $document';
+  }
+
+  @override
+  String get termsOfService => 'Условия использования';
+
+  @override
+  String get privacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get imageExceedsUploadLimits =>
+      'Изображение превышает ограничения загрузки и будет оптимизировано:';
+
+  @override
+  String get originalSize => 'Исходный размер';
+
+  @override
+  String get originalDimensions => 'Исходные размеры';
+
+  @override
+  String get optimizationsToBeApplied => 'Будут применены:';
+
+  @override
+  String get resizeImage => 'Изменить размер';
+
+  @override
+  String get convertFormat => 'Изменить формат';
+
+  @override
+  String get smallerFileSize => 'меньший размер файла';
+
+  @override
+  String get formatNotSupported => 'формат не поддерживается';
+
+  @override
+  String get convertToJpgReason =>
+      'Преобразовать в JPG (формат не поддерживается или для уменьшения размера)';
+
+  @override
+  String get compressImage => 'Сжать';
+
+  @override
+  String compressQuality(int quality) {
+    return 'Качество: $quality%, чтобы уложиться в лимит';
+  }
+
+  @override
+  String get estimatedFinalSize => 'Ожидаемый размер';
+
+  @override
+  String sizeReduction(String percent) {
+    return 'Уменьшение: $percent%';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic => 'Войдите, чтобы создать тему';
+
+  @override
+  String get pleaseLoginToSubscribeForums =>
+      'Войдите, чтобы подписаться на форумы';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums =>
+      'Войдите, чтобы отписаться от форумов';
+
+  @override
+  String errorLoadingContent(String error) {
+    return 'Ошибка загрузки содержимого: $error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics =>
+      'У вас нет прав на просмотр тем в этом подфоруме.';
+
+  @override
+  String get noDiscussionsYet => 'Обсуждений пока нет.';
+
+  @override
+  String get unableToLoadForums => 'Не удалось загрузить форумы';
+
+  @override
+  String get noForumsAvailable => 'Нет доступных форумов';
+
+  @override
+  String get noForumsToDisplay =>
+      'Нет форумов для показа. Возможно, дело в правах доступа или структуре форума.';
+
+  @override
+  String get subscribedForums => 'Подписки на форумы';
+
+  @override
+  String get allForumTopicsMarkedRead =>
+      'Все темы форума отмечены как прочитанные';
+
+  @override
+  String postsCountFormatted(String count) {
+    return 'Сообщений: $count';
+  }
+
+  @override
+  String get jumpToPost => 'Перейти к сообщению';
+
+  @override
+  String get jump => 'Перейти';
+
+  @override
+  String get endOfDiscussion => 'Конец обсуждения';
+
+  @override
+  String refreshFailed(String error) {
+    return 'Не удалось обновить: $error';
+  }
+
+  @override
+  String get topicDeletedHidden =>
+      'Эта тема удалена и скрыта от других пользователей';
+
+  @override
+  String get topicClosedNoReplies => 'Тема закрыта, ответы не принимаются';
+
+  @override
+  String get youAreSubscribedToTopic => 'Вы подписаны на эту тему';
+
+  @override
+  String get refreshing => 'Обновление...';
+
+  @override
+  String get unableToLoadForumsTryAgain =>
+      'Не удалось загрузить форумы. Попробуйте ещё раз.';
+
+  @override
+  String get noPostableForums => 'Нет форумов, в которых можно публиковать.';
+
+  @override
+  String get changeForumQuestion => 'Сменить форум?';
+
+  @override
+  String get changeForumRemovesAttachments =>
+      'При смене форума загруженные вложения будут удалены: они привязаны к выбранному форуму.';
+
+  @override
+  String get changeForum => 'Сменить форум';
+
+  @override
+  String get chooseForumBeforePosting => 'Выберите форум перед публикацией';
+
+  @override
+  String get accountCannotUploadAttachments =>
+      'Ваша учётная запись не может загружать вложения на этом сайте.';
+
+  @override
+  String get forumNoAttachments => 'На этом форуме вложения запрещены.';
+
+  @override
+  String get forumNoAttachmentsChooseAnother =>
+      'На этом форуме вложения запрещены. Выберите другой форум, чтобы загрузить файлы.';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      'На этом форуме вложения запрещены. Файлы подождут, пока вы не выберете другой форум.';
+
+  @override
+  String get tapToChangeForum => 'Нажмите, чтобы сменить форум';
+
+  @override
+  String get chooseWhichForum => 'Выберите форум для публикации';
+
+  @override
+  String get selectAForum => 'Выберите форум';
+
+  @override
+  String get unableToLoadForumsNow => 'Сейчас не удаётся загрузить форумы.';
+
+  @override
+  String get pickForumBeforeUploading =>
+      'Выберите форум, прежде чем загружать вложения или публиковать.';
+
+  @override
+  String get uploadingSharedFiles => 'Загрузка файлов...';
+
+  @override
+  String get selectForum => 'Выбор форума';
+
+  @override
+  String get noForumsMatchSearch => 'Форумы не найдены.';
+
+  @override
+  String get unknown => 'Неизвестно';
+
+  @override
+  String get closeConversationConfirm =>
+      'Закрыть этот разговор? В нём нельзя будет отвечать.';
+
+  @override
+  String get openConversationConfirm =>
+      'Открыть этот разговор? В нём снова можно будет отвечать.';
+
+  @override
+  String get leaveConversationConfirm =>
+      'Покинуть этот разговор? Он исчезнет из входящих.';
+
+  @override
+  String get close => 'Закрыть';
+
+  @override
+  String get open => 'Открыть';
+
+  @override
+  String get leave => 'Покинуть';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return 'Ошибка загрузки разговора: $error';
+  }
+
+  @override
+  String get conversationNotFound => 'Разговор не найден';
+
+  @override
+  String get conversationClosedNoReplies =>
+      'Разговор закрыт, ответы не принимаются';
+
+  @override
+  String get noMessagesFound => 'Сообщений не найдено';
+
+  @override
+  String get endOfConversation => 'Конец разговора';
+
+  @override
+  String get jumpToMessage => 'Перейти к сообщению';
+
+  @override
+  String get jumpToFirstMessage => 'Перейти к первому сообщению';
+
+  @override
+  String get jumpToLastMessage => 'Перейти к последнему сообщению';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return 'Сообщение $position из $total';
+  }
+
+  @override
+  String get tapToJumpToMessage => 'Нажмите, чтобы перейти к сообщению';
+
+  @override
+  String failedToReact(String error) {
+    return 'Не удалось отреагировать: $error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участника',
+      many: '$count участников',
+      few: '$count участника',
+      one: '$count участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => 'Нет изображений для показа.';
+
+  @override
+  String get pleaseLoginToViewAttachment => 'Войдите, чтобы открыть вложение';
+
+  @override
+  String get inbox => 'Входящие';
+
+  @override
+  String get sent => 'Отправленные';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return 'Ошибка загрузки сообщений: $error';
+  }
+
+  @override
+  String get noInboxMessages => 'Нет входящих сообщений';
+
+  @override
+  String get noSentMessages => 'Нет отправленных сообщений';
+
+  @override
+  String get unknownDate => 'Дата неизвестна';
+
+  @override
+  String get searchForTopics => 'Поиск тем';
+
+  @override
+  String get noTopicsFound => 'Темы не найдены';
+
+  @override
+  String get noPostsFound => 'Сообщения не найдены';
+
+  @override
+  String get trySearchingDifferentKeywords =>
+      'Попробуйте другие ключевые слова';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return 'Ошибка загрузки настроек: $error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => 'Введите корректное число';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return 'Значение должно быть не меньше $min';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return 'Значение должно быть не больше $max';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return 'Максимальная длина — $max символов';
+  }
+
+  @override
+  String get invalidFormat => 'Неверный формат';
+
+  @override
+  String get shareToForumCopilot => 'Поделиться в Forum Copilot';
+
+  @override
+  String get noSavedForumAccounts => 'Сохранённых учётных записей форумов нет.';
+
+  @override
+  String get addForumAccountFirst =>
+      'Сначала добавьте учётную запись форума в Forum Copilot, затем поделитесь снова.';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count файла готовы к отправке',
+      many: '$count файлов готовы к отправке',
+      few: '$count файла готовы к отправке',
+      one: '$count файл готов к отправке',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled => 'Текст будет вставлен заранее';
+
+  @override
+  String errorSearchingForums(String error) {
+    return 'Ошибка поиска форумов: $error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return 'Не удалось загрузить данные пользователя: $error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return 'Разблокировать $username?';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments =>
+      'Удалить сообщения, записи в профиле и комментарии';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return 'Очистить спам пользователя $username?';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return 'Спам пользователя $username очищен';
+  }
+
+  @override
+  String get failedToCleanSpam => 'Не удалось очистить спам';
+
+  @override
+  String imagesCount(int count) {
+    return 'Изображения ($count)';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles =>
+      'Войдите, чтобы просматривать профили.';
+
+  @override
+  String get tapToOpen => 'Нажмите, чтобы открыть';
+
+  @override
+  String get imageNotAvailable => 'Изображение недоступно';
+
+  @override
+  String get tapToViewFullSizeImage =>
+      'Нажмите, чтобы открыть изображение целиком';
+
+  @override
+  String get loadingImage => 'Загрузка изображения...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return 'Загрузка изображения с $host';
+  }
+
+  @override
+  String get tapToReveal => '(нажмите, чтобы показать)';
+
+  @override
+  String get inlineAttachments => 'Встроенные вложения';
+
+  @override
+  String get thisFieldIsRequired => 'Это обязательное поле';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => 'Введите корректный номер телефона';
+
+  @override
+  String get pleaseEnterValidUrl => 'Введите корректный URL';
+
+  @override
+  String get permissionDeniedToSaveImage =>
+      'Нет разрешения на сохранение изображения';
+
+  @override
+  String get postNotFound => 'Сообщение не найдено.';
+
+  @override
+  String get failedToUploadFileTryAgain =>
+      'Не удалось загрузить файл. Попробуйте ещё раз.';
+
+  @override
+  String get failedToPickFile => 'Не удалось выбрать файл';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Можно добавить ещё $count вложения. Будут использованы первые $count изображения.',
+      many:
+          'Можно добавить ещё $count вложений. Будут использованы первые $count изображений.',
+      few:
+          'Можно добавить ещё $count вложения. Будут использованы первые $count изображения.',
+      one:
+          'Можно добавить ещё $count вложение. Будет использовано первое изображение.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping =>
+      'Достигнут лимит вложений. Остальные изображения пропущены.';
+
+  @override
+  String get imageValidationFailed => 'Изображение не прошло проверку';
+
+  @override
+  String get imageUploadFailed => 'Не удалось загрузить изображение';
+
+  @override
+  String get failedToUploadImageTryAgain =>
+      'Не удалось загрузить изображение. Попробуйте ещё раз.';
+
+  @override
+  String get failedToPickImage => 'Не удалось выбрать изображение';
+
+  @override
+  String get prefix => 'Префикс';
+
+  @override
+  String get failedToLoadPrefixes => 'Не удалось загрузить префиксы';
+
+  @override
+  String get attachFileHint => 'Прикрепить файл к сообщению';
+
+  @override
+  String get uploadImageHint => 'Добавить изображение к сообщению';
+
+  @override
+  String get openFormattingOptions => 'Открыть параметры форматирования';
+
+  @override
+  String get failedToPostReply =>
+      'Не удалось отправить ответ. Попробуйте ещё раз.';
+
+  @override
+  String get failedToUpdatePost =>
+      'Не удалось изменить сообщение. Попробуйте ещё раз.';
+
+  @override
+  String get postDeletedSuccessfully => 'Сообщение удалено';
+
+  @override
+  String failedToDeletePost(String error) {
+    return 'Не удалось удалить сообщение: $error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars =>
+      'У вас нет прав на загрузку аватаров';
+
+  @override
+  String get avatarUploadedSuccessfully => 'Аватар загружен';
+
+  @override
+  String get unknownTopic => 'Неизвестная тема';
+
+  @override
+  String get connectionTimeoutTitle => 'Время ожидания истекло';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return 'Время ожидания соединения с $siteName истекло. Проверьте подключение к интернету и попробуйте снова.';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return 'Не удалось подключиться к $siteName. Проверьте, что форум доступен и плагин установлен.';
+  }
+
+  @override
+  String get voteFailedTryAgain =>
+      'Не удалось проголосовать. Попробуйте ещё раз.';
+
+  @override
+  String get noUserSpecified => 'Пользователь не указан';
+
+  @override
+  String get failedToLoadRecentPosts =>
+      'Не удалось загрузить последние сообщения';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return 'Не удалось загрузить предпросмотр: $error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Поблагодарили $count человека',
+      many: 'Поблагодарили $count человек',
+      few: 'Поблагодарили $count человека',
+      one: 'Поблагодарил $count человек',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => 'Поблагодарили';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return 'Разрешено не более $count вложений';
+  }
+
+  @override
+  String get toLabel => 'Кому';
+
+  @override
+  String get closeConversation => 'Закрыть разговор';
+
+  @override
+  String get openConversation => 'Открыть разговор';
 }

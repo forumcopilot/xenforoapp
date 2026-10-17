@@ -74,7 +74,7 @@ class TopicListItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          topic.authorName.isNotEmpty ? topic.authorName : "Unknown",
+                          topic.authorName.isNotEmpty ? topic.authorName : AppLocalizations.of(context).unknown,
                           style: textTheme.titleMedium?.copyWith(
                             color: topic.hasNewPosts ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                             fontWeight: topic.hasNewPosts ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightMedium,
@@ -133,7 +133,7 @@ class TopicListItem extends StatelessWidget {
                           ),
                           SizedBox(width: DesignTokens.spacingXS),
                           Text(
-                            'DELETED',
+                            AppLocalizations.of(context).deletedBadge,
                             style: StyleBuilders.smallTextStyle(
                               colorScheme: colorScheme,
                               textTheme: textTheme,
@@ -268,7 +268,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Announcement',
+                                AppLocalizations.of(context).topicAnnouncement,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -289,7 +289,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Pinned',
+                                AppLocalizations.of(context).topicPinned,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -310,7 +310,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Subscribed',
+                                AppLocalizations.of(context).subscribed,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -331,7 +331,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Locked',
+                                AppLocalizations.of(context).topicLocked,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -353,7 +353,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Poll',
+                                AppLocalizations.of(context).topicPoll,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,

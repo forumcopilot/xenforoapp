@@ -24,6 +24,7 @@ import '../utils/snackbar_helper.dart';
 import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
+import '../l10n/generated/app_localizations.dart';
 
 /// Stable reason codes for push/login diagnostics.
 abstract class PushLoginReasonCode {
@@ -1455,7 +1456,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Login Info',
+                AppLocalizations.of(Get.context!).loginInfo,
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1485,7 +1486,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               ),
             ),
             child: Text(
-              'OK',
+              AppLocalizations.of(Get.context!).okButton,
               style: TextStyle(
                 color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
@@ -1516,7 +1517,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Login Failed',
+                AppLocalizations.of(Get.context!).loginFailed,
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1546,7 +1547,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               ),
             ),
             child: Text(
-              'OK',
+              AppLocalizations.of(Get.context!).okButton,
               style: TextStyle(
                 color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,

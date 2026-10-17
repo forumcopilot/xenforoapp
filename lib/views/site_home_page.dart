@@ -242,7 +242,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 setState(() {
                   _waitingForInitialization = false;
                 });
-                _showErrorAndGoBack(currentSite, 'Connection timed out. The site may be down or unreachable.');
+                _showErrorAndGoBack(currentSite, AppLocalizations.of(context).connectionTimedOut);
               }
             } catch (e) {
               AppLogger.error('🏁 [SITE_HOME] ❌ Site verification failed: $e - site may be down');

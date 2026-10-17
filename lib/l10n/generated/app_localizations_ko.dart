@@ -1696,4 +1696,695 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => '비밀번호가 일치하지 않습니다';
+
+  @override
+  String get connectionErrorTitle => '연결 오류';
+
+  @override
+  String get authenticationErrorTitle => '인증 오류';
+
+  @override
+  String get permissionErrorTitle => '권한 오류';
+
+  @override
+  String get errorNoConnection => '인터넷에 연결되어 있지 않습니다. 네트워크 설정을 확인하세요.';
+
+  @override
+  String get errorTimeout => '요청 시간이 초과되었습니다. 다시 시도하세요.';
+
+  @override
+  String get errorServer => '서버 오류가 발생했습니다. 나중에 다시 시도하세요.';
+
+  @override
+  String get errorNetwork => '네트워크 오류가 발생했습니다. 다시 시도하세요.';
+
+  @override
+  String get errorInvalidCredentials => '사용자 이름 또는 비밀번호가 올바르지 않습니다.';
+
+  @override
+  String get errorSessionExpired => '세션이 만료되었습니다. 다시 로그인하세요.';
+
+  @override
+  String get errorAccountLocked => '계정이 잠겼습니다. 지원팀에 문의하세요.';
+
+  @override
+  String get errorAuthFailed => '인증에 실패했습니다. 다시 시도하세요.';
+
+  @override
+  String get errorForumNotFound => '포럼을 찾을 수 없습니다.';
+
+  @override
+  String get errorForumAccessDenied => '이 포럼에 접근할 권한이 없습니다.';
+
+  @override
+  String get errorForumUnavailable => '포럼을 현재 사용할 수 없습니다. 나중에 다시 시도하세요.';
+
+  @override
+  String get errorForumGeneric => '포럼 오류가 발생했습니다. 다시 시도하세요.';
+
+  @override
+  String get errorDataNotFound => '요청한 데이터를 찾을 수 없습니다.';
+
+  @override
+  String get errorDataCorrupted => '데이터가 손상된 것 같습니다. 페이지를 새로 고치세요.';
+
+  @override
+  String get errorCache => '캐시된 데이터를 불러오지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get errorInvalidInput => '입력한 내용 중 올바르지 않은 항목이 있습니다.';
+
+  @override
+  String get errorRequiredField => '필수 항목을 모두 입력하세요.';
+
+  @override
+  String get errorPermissionDenied => '이 작업을 수행할 권한이 없습니다.';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return '이 포럼에서는 $feature을(를) 사용할 수 없습니다.';
+  }
+
+  @override
+  String get errorStorageFull => '저장 공간이 가득 찼습니다. 공간을 확보하세요.';
+
+  @override
+  String get errorStorageAccessDenied => '저장소 접근이 거부되었습니다. 앱 권한을 확인하세요.';
+
+  @override
+  String get loginInfo => '로그인 정보';
+
+  @override
+  String get loginFailed => '로그인 실패';
+
+  @override
+  String get topicAnnouncement => '공지';
+
+  @override
+  String get topicPinned => '고정됨';
+
+  @override
+  String get topicLocked => '잠김';
+
+  @override
+  String get topicPoll => '투표';
+
+  @override
+  String get deletedBadge => '삭제됨';
+
+  @override
+  String get protectedBadge => '보호됨';
+
+  @override
+  String get lockTopic => '주제 잠그기';
+
+  @override
+  String get unlockTopic => '주제 잠금 해제';
+
+  @override
+  String get lockTopicConfirm =>
+      '이 주제를 잠그시겠습니까? 다른 사용자가 답글을 달거나 상호작용할 수 없게 됩니다.';
+
+  @override
+  String get unlockTopicConfirm =>
+      '이 주제의 잠금을 해제하시겠습니까? 다른 사용자가 다시 답글을 달고 상호작용할 수 있습니다.';
+
+  @override
+  String get stickTopic => '주제 고정';
+
+  @override
+  String get unstickTopic => '주제 고정 해제';
+
+  @override
+  String get stickTopicConfirm => '이 주제를 고정하시겠습니까? 모든 사용자에게 포럼 상단에 표시됩니다.';
+
+  @override
+  String get unstickTopicConfirm =>
+      '이 주제의 고정을 해제하시겠습니까? 더 이상 포럼 상단에 표시되지 않습니다.';
+
+  @override
+  String get undeleteTopic => '주제 복원';
+
+  @override
+  String get undeleteTopicConfirm => '이 주제를 복원하시겠습니까? 다른 사용자에게 다시 표시됩니다.';
+
+  @override
+  String get additionalInformation => '추가 정보';
+
+  @override
+  String get dateOfBirth => '생년월일';
+
+  @override
+  String get selectDateOfBirth => '생년월일 선택';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: '최소 나이: $age세',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => '위치는 필수입니다';
+
+  @override
+  String get receiveSiteMailings => '사이트 메일 수신';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return '$document에 동의합니다';
+  }
+
+  @override
+  String get termsOfService => '서비스 약관';
+
+  @override
+  String get privacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get imageExceedsUploadLimits => '이 이미지는 업로드 한도를 초과하므로 최적화해야 합니다:';
+
+  @override
+  String get originalSize => '원본 크기';
+
+  @override
+  String get originalDimensions => '원본 해상도';
+
+  @override
+  String get optimizationsToBeApplied => '적용할 최적화:';
+
+  @override
+  String get resizeImage => '크기 조정';
+
+  @override
+  String get convertFormat => '형식 변환';
+
+  @override
+  String get smallerFileSize => '파일 크기 축소';
+
+  @override
+  String get formatNotSupported => '지원되지 않는 형식';
+
+  @override
+  String get convertToJpgReason => 'JPG로 변환(지원되지 않는 형식이거나 크기 축소)';
+
+  @override
+  String get compressImage => '압축';
+
+  @override
+  String compressQuality(int quality) {
+    return '크기 제한을 맞추기 위해 품질 $quality%';
+  }
+
+  @override
+  String get estimatedFinalSize => '예상 최종 크기';
+
+  @override
+  String sizeReduction(String percent) {
+    return '감소율: $percent%';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic => '새 주제를 만들려면 로그인하세요';
+
+  @override
+  String get pleaseLoginToSubscribeForums => '포럼을 구독하려면 로그인하세요';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums => '포럼 구독을 취소하려면 로그인하세요';
+
+  @override
+  String errorLoadingContent(String error) {
+    return '콘텐츠 로드 오류: $error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics => '이 하위 포럼의 주제를 볼 권한이 없습니다.';
+
+  @override
+  String get noDiscussionsYet => '아직 토론이 없습니다.';
+
+  @override
+  String get unableToLoadForums => '포럼을 불러올 수 없습니다';
+
+  @override
+  String get noForumsAvailable => '사용 가능한 포럼이 없습니다';
+
+  @override
+  String get noForumsToDisplay => '표시할 포럼이 없습니다. 권한 또는 포럼 구조 때문일 수 있습니다.';
+
+  @override
+  String get subscribedForums => '구독한 포럼';
+
+  @override
+  String get allForumTopicsMarkedRead => '포럼의 모든 주제를 읽음으로 표시했습니다';
+
+  @override
+  String postsCountFormatted(String count) {
+    return '게시물 $count개';
+  }
+
+  @override
+  String get jumpToPost => '게시물로 이동';
+
+  @override
+  String get jump => '이동';
+
+  @override
+  String get endOfDiscussion => '토론의 끝';
+
+  @override
+  String refreshFailed(String error) {
+    return '새로 고침 실패: $error';
+  }
+
+  @override
+  String get topicDeletedHidden => '이 주제는 삭제되어 다른 사용자에게 보이지 않습니다';
+
+  @override
+  String get topicClosedNoReplies => '이 주제는 닫혀 있어 더 이상 답글을 받지 않습니다';
+
+  @override
+  String get youAreSubscribedToTopic => '이 주제를 구독 중입니다';
+
+  @override
+  String get refreshing => '새로 고치는 중...';
+
+  @override
+  String get unableToLoadForumsTryAgain => '포럼을 불러올 수 없습니다. 다시 시도하세요.';
+
+  @override
+  String get noPostableForums => '게시할 수 있는 포럼이 없습니다.';
+
+  @override
+  String get changeForumQuestion => '포럼을 변경하시겠습니까?';
+
+  @override
+  String get changeForumRemovesAttachments =>
+      '첨부파일은 선택한 포럼에 연결되어 있어 포럼을 변경하면 업로드한 첨부파일이 삭제됩니다.';
+
+  @override
+  String get changeForum => '포럼 변경';
+
+  @override
+  String get chooseForumBeforePosting => '게시하기 전에 포럼을 선택하세요';
+
+  @override
+  String get accountCannotUploadAttachments =>
+      '이 사이트에서는 회원님의 계정으로 첨부파일을 업로드할 수 없습니다.';
+
+  @override
+  String get forumNoAttachments => '이 포럼은 첨부파일을 허용하지 않습니다.';
+
+  @override
+  String get forumNoAttachmentsChooseAnother =>
+      '이 포럼은 첨부파일을 허용하지 않습니다. 공유한 파일을 업로드하려면 다른 포럼을 선택하세요.';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      '이 포럼은 첨부파일을 허용하지 않습니다. 다른 포럼을 선택할 때까지 공유한 파일은 대기 상태로 유지됩니다.';
+
+  @override
+  String get tapToChangeForum => '탭하여 포럼 변경';
+
+  @override
+  String get chooseWhichForum => '게시할 포럼을 선택하세요';
+
+  @override
+  String get selectAForum => '포럼 선택';
+
+  @override
+  String get unableToLoadForumsNow => '지금은 포럼을 불러올 수 없습니다.';
+
+  @override
+  String get pickForumBeforeUploading => '첨부파일을 업로드하거나 게시하기 전에 포럼을 선택하세요.';
+
+  @override
+  String get uploadingSharedFiles => '공유한 파일을 업로드하는 중...';
+
+  @override
+  String get selectForum => '포럼 선택';
+
+  @override
+  String get noForumsMatchSearch => '검색과 일치하는 포럼이 없습니다.';
+
+  @override
+  String get unknown => '알 수 없음';
+
+  @override
+  String get closeConversationConfirm => '이 대화를 닫으시겠습니까? 새 답장을 보낼 수 없게 됩니다.';
+
+  @override
+  String get openConversationConfirm => '이 대화를 여시겠습니까? 새 답장을 보낼 수 있게 됩니다.';
+
+  @override
+  String get leaveConversationConfirm => '이 대화에서 나가시겠습니까? 받은 편지함에서 숨겨집니다.';
+
+  @override
+  String get close => '닫기';
+
+  @override
+  String get open => '열기';
+
+  @override
+  String get leave => '나가기';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return '대화 로드 오류: $error';
+  }
+
+  @override
+  String get conversationNotFound => '대화를 찾을 수 없습니다';
+
+  @override
+  String get conversationClosedNoReplies => '이 대화는 닫혀 있어 더 이상 답장을 받지 않습니다';
+
+  @override
+  String get noMessagesFound => '메시지가 없습니다';
+
+  @override
+  String get endOfConversation => '대화의 끝';
+
+  @override
+  String get jumpToMessage => '메시지로 이동';
+
+  @override
+  String get jumpToFirstMessage => '첫 메시지로 이동';
+
+  @override
+  String get jumpToLastMessage => '마지막 메시지로 이동';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return '메시지 $position/$total';
+  }
+
+  @override
+  String get tapToJumpToMessage => '탭하여 특정 메시지로 이동';
+
+  @override
+  String failedToReact(String error) {
+    return '반응하지 못했습니다: $error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '참여자 $count명',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => '표시할 이미지가 없습니다.';
+
+  @override
+  String get pleaseLoginToViewAttachment => '이 첨부파일을 보려면 로그인하세요';
+
+  @override
+  String get inbox => '받은 편지함';
+
+  @override
+  String get sent => '보낸 편지함';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return '메시지 로드 오류: $error';
+  }
+
+  @override
+  String get noInboxMessages => '받은 메시지가 없습니다';
+
+  @override
+  String get noSentMessages => '보낸 메시지가 없습니다';
+
+  @override
+  String get unknownDate => '날짜 알 수 없음';
+
+  @override
+  String get searchForTopics => '주제 검색';
+
+  @override
+  String get noTopicsFound => '주제를 찾을 수 없습니다';
+
+  @override
+  String get noPostsFound => '게시물을 찾을 수 없습니다';
+
+  @override
+  String get trySearchingDifferentKeywords => '다른 키워드로 검색해 보세요';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return '설정 로드 오류: $error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => '올바른 숫자를 입력하세요';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return '값은 $min 이상이어야 합니다';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return '값은 $max 이하여야 합니다';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return '최대 $max자까지 입력할 수 있습니다';
+  }
+
+  @override
+  String get invalidFormat => '형식이 올바르지 않습니다';
+
+  @override
+  String get shareToForumCopilot => 'Forum Copilot로 공유';
+
+  @override
+  String get noSavedForumAccounts => '저장된 포럼 계정이 없습니다.';
+
+  @override
+  String get addForumAccountFirst => '먼저 Forum Copilot에 포럼 계정을 추가한 후 다시 공유하세요.';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '첨부할 파일 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled => '공유한 텍스트가 미리 입력됩니다';
+
+  @override
+  String errorSearchingForums(String error) {
+    return '포럼 검색 오류: $error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return '사용자 정보를 불러오지 못했습니다: $error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return '$username님의 차단을 해제하시겠습니까?';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments => '게시물, 프로필 게시물, 댓글 삭제';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return '$username님의 스팸을 정리하시겠습니까?';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return '$username님의 스팸을 정리했습니다';
+  }
+
+  @override
+  String get failedToCleanSpam => '스팸을 정리하지 못했습니다';
+
+  @override
+  String imagesCount(int count) {
+    return '이미지 ($count)';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles => '사용자 프로필을 보려면 로그인하세요.';
+
+  @override
+  String get tapToOpen => '탭하여 열기';
+
+  @override
+  String get imageNotAvailable => '이미지를 사용할 수 없습니다';
+
+  @override
+  String get tapToViewFullSizeImage => '탭하여 원본 크기로 보기';
+
+  @override
+  String get loadingImage => '이미지를 불러오는 중...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return '$host에서 이미지를 불러오는 중';
+  }
+
+  @override
+  String get tapToReveal => '(탭하여 보기)';
+
+  @override
+  String get inlineAttachments => '본문 첨부파일';
+
+  @override
+  String get thisFieldIsRequired => '필수 항목입니다';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => '올바른 전화번호를 입력하세요';
+
+  @override
+  String get pleaseEnterValidUrl => '올바른 URL을 입력하세요';
+
+  @override
+  String get permissionDeniedToSaveImage => '이미지를 저장할 권한이 없습니다';
+
+  @override
+  String get postNotFound => '게시물을 찾을 수 없습니다.';
+
+  @override
+  String get failedToUploadFileTryAgain => '파일을 업로드하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get failedToPickFile => '파일을 선택하지 못했습니다';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '첨부파일은 $count개만 더 추가할 수 있습니다. 처음 $count개의 이미지를 사용합니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping =>
+      '첨부파일 한도에 도달했습니다. 나머지 이미지는 건너뜁니다.';
+
+  @override
+  String get imageValidationFailed => '이미지 확인에 실패했습니다';
+
+  @override
+  String get imageUploadFailed => '이미지를 업로드하지 못했습니다';
+
+  @override
+  String get failedToUploadImageTryAgain => '이미지를 업로드하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get failedToPickImage => '이미지를 선택하지 못했습니다';
+
+  @override
+  String get prefix => '말머리';
+
+  @override
+  String get failedToLoadPrefixes => '말머리를 불러오지 못했습니다';
+
+  @override
+  String get attachFileHint => '이 메시지에 파일 첨부';
+
+  @override
+  String get uploadImageHint => '이 메시지에 이미지 업로드';
+
+  @override
+  String get openFormattingOptions => '서식 옵션 열기';
+
+  @override
+  String get failedToPostReply => '답글을 게시하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get failedToUpdatePost => '게시물을 수정하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get postDeletedSuccessfully => '게시물을 삭제했습니다';
+
+  @override
+  String failedToDeletePost(String error) {
+    return '게시물을 삭제하지 못했습니다: $error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars => '아바타를 업로드할 권한이 없습니다';
+
+  @override
+  String get avatarUploadedSuccessfully => '아바타를 업로드했습니다';
+
+  @override
+  String get unknownTopic => '알 수 없는 주제';
+
+  @override
+  String get connectionTimeoutTitle => '연결 시간 초과';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return '$siteName에 대한 연결 시간이 초과되었습니다. 인터넷 연결을 확인하고 다시 시도하세요.';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return '$siteName에 연결하지 못했습니다. 포럼을 사용할 수 있고 플러그인이 설치되어 있는지 확인하세요.';
+  }
+
+  @override
+  String get voteFailedTryAgain => '투표하지 못했습니다. 다시 시도하세요.';
+
+  @override
+  String get noUserSpecified => '사용자가 지정되지 않았습니다';
+
+  @override
+  String get failedToLoadRecentPosts => '최근 게시물을 불러오지 못했습니다';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return '미리보기를 불러오지 못했습니다: $error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count명이 감사 표시',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => '감사 표시한 회원';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return '첨부파일은 최대 $count개까지 허용됩니다';
+  }
+
+  @override
+  String get toLabel => '받는 사람';
+
+  @override
+  String get closeConversation => '대화 닫기';
+
+  @override
+  String get openConversation => '대화 열기';
 }

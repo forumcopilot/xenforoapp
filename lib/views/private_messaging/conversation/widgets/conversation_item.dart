@@ -543,7 +543,7 @@ class _ConversationAttachmentActions {
     }
 
     if (allImageUrls.isEmpty) {
-      SnackbarHelper.showInfo(context, 'No images found to display.');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).noImagesToDisplay);
       return;
     }
 
@@ -561,7 +561,7 @@ class _ConversationAttachmentActions {
   }
 
   void onLoginRequired(BuildContext context) {
-    SnackbarHelper.showError(context, 'Please login to view this attachment');
+    SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToViewAttachment);
   }
 }
 

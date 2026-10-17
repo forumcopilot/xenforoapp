@@ -11,6 +11,7 @@ import '../../../../utils/time_utils.dart';
 import '../../../../utils/url_utils.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class TraditionalPMItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -182,7 +183,7 @@ class TraditionalPMItem extends StatelessWidget {
                     SizedBox(
                       width: DesignTokens.iconSizeXL + DesignTokens.spacingXS,
                       child: Text(
-                        'To:',
+                        '${AppLocalizations.of(context).toLabel}:',
                         style: StyleBuilders.bodyTextStyle(
                           colorScheme: colorScheme,
                           textTheme: textTheme,

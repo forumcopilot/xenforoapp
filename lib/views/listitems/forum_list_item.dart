@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_icon_widget.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ForumListItem extends StatelessWidget {
   final FCForum forum;
@@ -157,7 +158,7 @@ class ForumListItem extends StatelessWidget {
                                       ),
                                       const SizedBox(width: DesignTokens.spacingXS),
                                       Text(
-                                        'Protected',
+                                        AppLocalizations.of(context).protectedBadge,
                                         style: StyleBuilders.smallTextStyle(
                                           colorScheme: colorScheme,
                                           textTheme: textTheme,

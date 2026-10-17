@@ -1072,7 +1072,7 @@ class _PostsState extends State<PostsList> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Jump to Post',
+            AppLocalizations.of(context).jumpToPost,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -1110,7 +1110,7 @@ class _PostsState extends State<PostsList> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -1188,7 +1188,7 @@ class _PostsState extends State<PostsList> {
                 await _loadInitialPosts(startNum, lastNum, PostsListMode.goto_page, gotoPost: selectedPostIndex);
               },
               child: Text(
-                'Jump',
+                AppLocalizations.of(context).jump,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -1302,7 +1302,7 @@ class _PostsState extends State<PostsList> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
-                            'End of the discussion',
+                            AppLocalizations.of(context).endOfDiscussion,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontStyle: FontStyle.italic,

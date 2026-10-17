@@ -12,6 +12,7 @@ import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class RecentPostsSection extends StatelessWidget {
   final SiteContext siteContext;
@@ -112,7 +113,7 @@ class RecentPostsSection extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          post.authorName.isNotEmpty ? post.authorName : 'Unknown',
+                          post.authorName.isNotEmpty ? post.authorName : AppLocalizations.of(context).unknown,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightSemiBold,
@@ -143,7 +144,7 @@ class RecentPostsSection extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      post.topicTitle.isNotEmpty ? post.topicTitle : 'Unknown Topic',
+                      post.topicTitle.isNotEmpty ? post.topicTitle : AppLocalizations.of(context).unknownTopic,
                       style: StyleBuilders.titleTextStyle(
                         colorScheme: colorScheme,
                         textTheme: textTheme,

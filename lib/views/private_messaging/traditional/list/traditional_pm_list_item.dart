@@ -5,6 +5,7 @@ import '../../../../utils/time_utils.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class TraditionalPMListItem extends StatefulWidget {
   final FCPrivateMessage message;
@@ -158,7 +159,7 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
                         Row(
                           children: [
                             Text(
-                              (widget.message.timestamp != null && widget.message.timestamp!.isNotEmpty) ? _formatTimestamp(widget.message.timestamp!, context) : 'Unknown date',
+                              (widget.message.timestamp != null && widget.message.timestamp!.isNotEmpty) ? _formatTimestamp(widget.message.timestamp!, context) : AppLocalizations.of(context).unknownDate,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -189,7 +190,7 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
       final dateTime = DateTime.parse(timestamp);
       return formatSmartDateTime(dateTime, context);
     } catch (e) {
-      return 'Unknown date';
+      return AppLocalizations.of(context).unknownDate;
     }
   }
 }

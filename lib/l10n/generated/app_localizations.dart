@@ -3163,6 +3163,1194 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get passwordsDoNotMatch;
+
+  /// No description provided for @connectionErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Error'**
+  String get connectionErrorTitle;
+
+  /// No description provided for @authenticationErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Error'**
+  String get authenticationErrorTitle;
+
+  /// No description provided for @permissionErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Error'**
+  String get permissionErrorTitle;
+
+  /// No description provided for @errorNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your network settings.'**
+  String get errorNoConnection;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please try again.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred. Please try again later.'**
+  String get errorServer;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error occurred. Please try again.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password.'**
+  String get errorInvalidCredentials;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log in again.'**
+  String get errorSessionExpired;
+
+  /// No description provided for @errorAccountLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been locked. Please contact support.'**
+  String get errorAccountLocked;
+
+  /// No description provided for @errorAuthFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication failed. Please try again.'**
+  String get errorAuthFailed;
+
+  /// No description provided for @errorForumNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Forum not found.'**
+  String get errorForumNotFound;
+
+  /// No description provided for @errorForumAccessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this forum.'**
+  String get errorForumAccessDenied;
+
+  /// No description provided for @errorForumUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Forum is currently unavailable. Please try again later.'**
+  String get errorForumUnavailable;
+
+  /// No description provided for @errorForumGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Forum error occurred. Please try again.'**
+  String get errorForumGeneric;
+
+  /// No description provided for @errorDataNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested data not found.'**
+  String get errorDataNotFound;
+
+  /// No description provided for @errorDataCorrupted.
+  ///
+  /// In en, this message translates to:
+  /// **'Data appears to be corrupted. Please refresh the page.'**
+  String get errorDataCorrupted;
+
+  /// No description provided for @errorCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load cached data. Please try again.'**
+  String get errorCache;
+
+  /// No description provided for @errorInvalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Something you entered is not valid.'**
+  String get errorInvalidInput;
+
+  /// No description provided for @errorRequiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required fields.'**
+  String get errorRequiredField;
+
+  /// No description provided for @errorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to do that.'**
+  String get errorPermissionDenied;
+
+  /// A feature the forum does not offer, e.g. Passkeys
+  ///
+  /// In en, this message translates to:
+  /// **'{feature} is not available on this forum.'**
+  String errorFeatureNotAvailable(String feature);
+
+  /// No description provided for @errorStorageFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage is full. Please free up some space.'**
+  String get errorStorageFull;
+
+  /// No description provided for @errorStorageAccessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage access denied. Please check app permissions.'**
+  String get errorStorageAccessDenied;
+
+  /// No description provided for @loginInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Info'**
+  String get loginInfo;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Failed'**
+  String get loginFailed;
+
+  /// No description provided for @topicAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get topicAnnouncement;
+
+  /// No description provided for @topicPinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get topicPinned;
+
+  /// No description provided for @topicLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get topicLocked;
+
+  /// No description provided for @topicPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll'**
+  String get topicPoll;
+
+  /// Badge on a deleted post or topic, upper case where the language has it
+  ///
+  /// In en, this message translates to:
+  /// **'DELETED'**
+  String get deletedBadge;
+
+  /// Badge on a password-protected forum
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protectedBadge;
+
+  /// No description provided for @lockTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Topic'**
+  String get lockTopic;
+
+  /// No description provided for @unlockTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Topic'**
+  String get unlockTopic;
+
+  /// No description provided for @lockTopicConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to lock this topic? Other users will not be able to reply or interact with it.'**
+  String get lockTopicConfirm;
+
+  /// No description provided for @unlockTopicConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlock this topic? Other users will be able to reply and interact with it again.'**
+  String get unlockTopicConfirm;
+
+  /// No description provided for @stickTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Stick Topic'**
+  String get stickTopic;
+
+  /// No description provided for @unstickTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unstick Topic'**
+  String get unstickTopic;
+
+  /// No description provided for @stickTopicConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to stick this topic? It will appear at the top of the forum for all users.'**
+  String get stickTopicConfirm;
+
+  /// No description provided for @unstickTopicConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unstick this topic? It will no longer appear at the top of the forum.'**
+  String get unstickTopicConfirm;
+
+  /// No description provided for @undeleteTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Undelete Topic'**
+  String get undeleteTopic;
+
+  /// No description provided for @undeleteTopicConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to undelete this topic? It will be visible to other users again.'**
+  String get undeleteTopicConfirm;
+
+  /// No description provided for @additionalInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInformation;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @selectDateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date of birth'**
+  String get selectDateOfBirth;
+
+  /// No description provided for @minimumAge.
+  ///
+  /// In en, this message translates to:
+  /// **'{age, plural, one{Minimum age: {age} year} other{Minimum age: {age} years}}'**
+  String minimumAge(int age);
+
+  /// No description provided for @locationIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is required'**
+  String get locationIsRequired;
+
+  /// No description provided for @receiveSiteMailings.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive site mailings'**
+  String get receiveSiteMailings;
+
+  /// Registration checkbox; {document} is the linked Terms of Service or Privacy Policy
+  ///
+  /// In en, this message translates to:
+  /// **'I accept the {document}'**
+  String iAcceptTheDocument(String document);
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @imageExceedsUploadLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'This image exceeds the upload limits and needs to be optimized:'**
+  String get imageExceedsUploadLimits;
+
+  /// No description provided for @originalSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Size'**
+  String get originalSize;
+
+  /// No description provided for @originalDimensions.
+  ///
+  /// In en, this message translates to:
+  /// **'Original Dimensions'**
+  String get originalDimensions;
+
+  /// No description provided for @optimizationsToBeApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimizations to be applied:'**
+  String get optimizationsToBeApplied;
+
+  /// No description provided for @resizeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Resize'**
+  String get resizeImage;
+
+  /// No description provided for @convertFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert Format'**
+  String get convertFormat;
+
+  /// No description provided for @smallerFileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'smaller file size'**
+  String get smallerFileSize;
+
+  /// No description provided for @formatNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'format not supported'**
+  String get formatNotSupported;
+
+  /// No description provided for @convertToJpgReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert to JPG (format not supported or for size reduction)'**
+  String get convertToJpgReason;
+
+  /// No description provided for @compressImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Compress'**
+  String get compressImage;
+
+  /// No description provided for @compressQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality: {quality}% to meet size limit'**
+  String compressQuality(int quality);
+
+  /// No description provided for @estimatedFinalSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated Final Size'**
+  String get estimatedFinalSize;
+
+  /// No description provided for @sizeReduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduction: {percent}%'**
+  String sizeReduction(String percent);
+
+  /// No description provided for @pleaseLoginToCreateTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to create a new topic'**
+  String get pleaseLoginToCreateTopic;
+
+  /// No description provided for @pleaseLoginToSubscribeForums.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to subscribe to forums'**
+  String get pleaseLoginToSubscribeForums;
+
+  /// No description provided for @pleaseLoginToUnsubscribeForums.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to unsubscribe from forums'**
+  String get pleaseLoginToUnsubscribeForums;
+
+  /// No description provided for @errorLoadingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading content: {error}'**
+  String errorLoadingContent(String error);
+
+  /// No description provided for @noPermissionToViewSubforumTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view topics in this subforum.'**
+  String get noPermissionToViewSubforumTopics;
+
+  /// No description provided for @noDiscussionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No discussions yet.'**
+  String get noDiscussionsYet;
+
+  /// No description provided for @unableToLoadForums.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to Load Forums'**
+  String get unableToLoadForums;
+
+  /// No description provided for @noForumsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No Forums Available'**
+  String get noForumsAvailable;
+
+  /// No description provided for @noForumsToDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no forums to display. This might be due to permissions or the forum structure.'**
+  String get noForumsToDisplay;
+
+  /// No description provided for @subscribedForums.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribed Forums'**
+  String get subscribedForums;
+
+  /// No description provided for @allForumTopicsMarkedRead.
+  ///
+  /// In en, this message translates to:
+  /// **'All forum topics have been marked as read'**
+  String get allForumTopicsMarkedRead;
+
+  /// Forum post total; {count} is already formatted (e.g. 12.3K)
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Posts'**
+  String postsCountFormatted(String count);
+
+  /// No description provided for @jumpToPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to Post'**
+  String get jumpToPost;
+
+  /// No description provided for @jump.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump'**
+  String get jump;
+
+  /// No description provided for @endOfDiscussion.
+  ///
+  /// In en, this message translates to:
+  /// **'End of the discussion'**
+  String get endOfDiscussion;
+
+  /// No description provided for @refreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh failed: {error}'**
+  String refreshFailed(String error);
+
+  /// No description provided for @topicDeletedHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This topic is deleted and hidden from other users'**
+  String get topicDeletedHidden;
+
+  /// No description provided for @topicClosedNoReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'This topic is closed and no longer accepting replies'**
+  String get topicClosedNoReplies;
+
+  /// No description provided for @youAreSubscribedToTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'You are subscribed to this topic'**
+  String get youAreSubscribedToTopic;
+
+  /// No description provided for @refreshing.
+  ///
+  /// In en, this message translates to:
+  /// **'Refreshing...'**
+  String get refreshing;
+
+  /// No description provided for @unableToLoadForumsTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load forums. Please try again.'**
+  String get unableToLoadForumsTryAgain;
+
+  /// No description provided for @noPostableForums.
+  ///
+  /// In en, this message translates to:
+  /// **'No postable forums are available.'**
+  String get noPostableForums;
+
+  /// No description provided for @changeForumQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Change forum?'**
+  String get changeForumQuestion;
+
+  /// No description provided for @changeForumRemovesAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the forum will remove your uploaded attachments because attachments are tied to the selected forum.'**
+  String get changeForumRemovesAttachments;
+
+  /// No description provided for @changeForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Forum'**
+  String get changeForum;
+
+  /// No description provided for @chooseForumBeforePosting.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a forum before posting'**
+  String get chooseForumBeforePosting;
+
+  /// No description provided for @accountCannotUploadAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account cannot upload attachments on this site.'**
+  String get accountCannotUploadAttachments;
+
+  /// No description provided for @forumNoAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'This forum does not allow attachments.'**
+  String get forumNoAttachments;
+
+  /// No description provided for @forumNoAttachmentsChooseAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'This forum does not allow attachments. Choose a different forum to upload the shared files.'**
+  String get forumNoAttachmentsChooseAnother;
+
+  /// No description provided for @forumNoAttachmentsSharedPending.
+  ///
+  /// In en, this message translates to:
+  /// **'This forum does not allow attachments. Shared files will stay pending until you choose another forum.'**
+  String get forumNoAttachmentsSharedPending;
+
+  /// No description provided for @tapToChangeForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change forum'**
+  String get tapToChangeForum;
+
+  /// No description provided for @chooseWhichForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which forum to post to'**
+  String get chooseWhichForum;
+
+  /// No description provided for @selectAForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a forum'**
+  String get selectAForum;
+
+  /// No description provided for @unableToLoadForumsNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load forums right now.'**
+  String get unableToLoadForumsNow;
+
+  /// No description provided for @pickForumBeforeUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a forum before uploading attachments or posting.'**
+  String get pickForumBeforeUploading;
+
+  /// No description provided for @uploadingSharedFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading shared files...'**
+  String get uploadingSharedFiles;
+
+  /// No description provided for @selectForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Forum'**
+  String get selectForum;
+
+  /// No description provided for @noForumsMatchSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No forums match your search.'**
+  String get noForumsMatchSearch;
+
+  /// Stands in for a missing member name
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @closeConversationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to close this conversation? This will prevent new replies from being posted.'**
+  String get closeConversationConfirm;
+
+  /// No description provided for @openConversationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to open this conversation? This will allow new replies to be posted.'**
+  String get openConversationConfirm;
+
+  /// No description provided for @leaveConversationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave this conversation? This will hide it from your inbox.'**
+  String get leaveConversationConfirm;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
+
+  /// No description provided for @errorLoadingConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading conversation: {error}'**
+  String errorLoadingConversation(String error);
+
+  /// No description provided for @conversationNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation not found'**
+  String get conversationNotFound;
+
+  /// No description provided for @conversationClosedNoReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is closed and no longer accepting replies'**
+  String get conversationClosedNoReplies;
+
+  /// No description provided for @noMessagesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages found'**
+  String get noMessagesFound;
+
+  /// No description provided for @endOfConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'End of conversation'**
+  String get endOfConversation;
+
+  /// No description provided for @jumpToMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to Message'**
+  String get jumpToMessage;
+
+  /// No description provided for @jumpToFirstMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to first message'**
+  String get jumpToFirstMessage;
+
+  /// No description provided for @jumpToLastMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to last message'**
+  String get jumpToLastMessage;
+
+  /// No description provided for @messagePositionOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Message {position} of {total}'**
+  String messagePositionOf(int position, int total);
+
+  /// No description provided for @tapToJumpToMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to jump to a specific message'**
+  String get tapToJumpToMessage;
+
+  /// No description provided for @failedToReact.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to react: {error}'**
+  String failedToReact(String error);
+
+  /// No description provided for @participantCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} participant} other{{count} participants}}'**
+  String participantCount(int count);
+
+  /// No description provided for @noImagesToDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'No images found to display.'**
+  String get noImagesToDisplay;
+
+  /// No description provided for @pleaseLoginToViewAttachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to view this attachment'**
+  String get pleaseLoginToViewAttachment;
+
+  /// No description provided for @inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbox'**
+  String get inbox;
+
+  /// No description provided for @sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get sent;
+
+  /// No description provided for @errorLoadingMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading messages: {error}'**
+  String errorLoadingMessages(String error);
+
+  /// No description provided for @noInboxMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No inbox messages'**
+  String get noInboxMessages;
+
+  /// No description provided for @noSentMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No sent messages'**
+  String get noSentMessages;
+
+  /// No description provided for @unknownDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown date'**
+  String get unknownDate;
+
+  /// No description provided for @searchForTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for topics'**
+  String get searchForTopics;
+
+  /// No description provided for @noTopicsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics found'**
+  String get noTopicsFound;
+
+  /// No description provided for @noPostsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts found'**
+  String get noPostsFound;
+
+  /// No description provided for @trySearchingDifferentKeywords.
+  ///
+  /// In en, this message translates to:
+  /// **'Try searching with different keywords'**
+  String get trySearchingDifferentKeywords;
+
+  /// No description provided for @errorLoadingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading settings: {error}'**
+  String errorLoadingSettings(String error);
+
+  /// No description provided for @pleaseEnterValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number'**
+  String get pleaseEnterValidNumber;
+
+  /// No description provided for @valueMustBeAtLeast.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be at least {min}'**
+  String valueMustBeAtLeast(String min);
+
+  /// No description provided for @valueMustBeAtMost.
+  ///
+  /// In en, this message translates to:
+  /// **'Value must be at most {max}'**
+  String valueMustBeAtMost(String max);
+
+  /// No description provided for @maximumLengthCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum length is {max} characters'**
+  String maximumLengthCharacters(int max);
+
+  /// No description provided for @invalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid format'**
+  String get invalidFormat;
+
+  /// No description provided for @shareToForumCopilot.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to Forum Copilot'**
+  String get shareToForumCopilot;
+
+  /// No description provided for @noSavedForumAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved forum accounts found.'**
+  String get noSavedForumAccounts;
+
+  /// No description provided for @addForumAccountFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a forum account in Forum Copilot first, then try sharing again.'**
+  String get addForumAccountFirst;
+
+  /// No description provided for @filesReadyToAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} file ready to attach} other{{count} files ready to attach}}'**
+  String filesReadyToAttach(int count);
+
+  /// No description provided for @sharedTextWillBePrefilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared text will be prefilled'**
+  String get sharedTextWillBePrefilled;
+
+  /// No description provided for @errorSearchingForums.
+  ///
+  /// In en, this message translates to:
+  /// **'Error searching forums: {error}'**
+  String errorSearchingForums(String error);
+
+  /// No description provided for @failedToLoadUserInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load user info: {error}'**
+  String failedToLoadUserInfo(String error);
+
+  /// No description provided for @areYouSureUnban.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unban {username}?'**
+  String areYouSureUnban(String username);
+
+  /// No description provided for @deletePostsProfilePostsComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete posts, profile posts, and comments'**
+  String get deletePostsProfilePostsComments;
+
+  /// No description provided for @areYouSureSpamClean.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to spam clean {username}?'**
+  String areYouSureSpamClean(String username);
+
+  /// No description provided for @successfullyCleanedSpamFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully cleaned spam for {username}'**
+  String successfullyCleanedSpamFor(String username);
+
+  /// No description provided for @failedToCleanSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to clean spam'**
+  String get failedToCleanSpam;
+
+  /// No description provided for @imagesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Images ({count})'**
+  String imagesCount(int count);
+
+  /// No description provided for @pleaseLoginToViewProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to view user profiles.'**
+  String get pleaseLoginToViewProfiles;
+
+  /// No description provided for @tapToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open'**
+  String get tapToOpen;
+
+  /// No description provided for @imageNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Image not available'**
+  String get imageNotAvailable;
+
+  /// No description provided for @tapToViewFullSizeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view full size image'**
+  String get tapToViewFullSizeImage;
+
+  /// No description provided for @loadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading image...'**
+  String get loadingImage;
+
+  /// No description provided for @loadingImageFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading image from {host}'**
+  String loadingImageFrom(String host);
+
+  /// Under a spoiler title
+  ///
+  /// In en, this message translates to:
+  /// **'(tap to reveal)'**
+  String get tapToReveal;
+
+  /// No description provided for @inlineAttachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Inline Attachments'**
+  String get inlineAttachments;
+
+  /// No description provided for @thisFieldIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get thisFieldIsRequired;
+
+  /// No description provided for @pleaseEnterValidPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid phone number'**
+  String get pleaseEnterValidPhoneNumber;
+
+  /// No description provided for @pleaseEnterValidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid URL'**
+  String get pleaseEnterValidUrl;
+
+  /// No description provided for @permissionDeniedToSaveImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied to save image'**
+  String get permissionDeniedToSaveImage;
+
+  /// No description provided for @postNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Post not found.'**
+  String get postNotFound;
+
+  /// No description provided for @failedToUploadFileTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload file. Please try again.'**
+  String get failedToUploadFileTryAgain;
+
+  /// No description provided for @failedToPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick file'**
+  String get failedToPickFile;
+
+  /// No description provided for @onlyMoreAttachmentsAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Only 1 more attachment allowed. Using the first image.} other{Only {count} more attachments allowed. Using the first {count} images.}}'**
+  String onlyMoreAttachmentsAllowed(int count);
+
+  /// No description provided for @attachmentLimitReachedSkipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment limit reached. Skipping remaining images.'**
+  String get attachmentLimitReachedSkipping;
+
+  /// No description provided for @imageValidationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image validation failed'**
+  String get imageValidationFailed;
+
+  /// No description provided for @imageUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image'**
+  String get imageUploadFailed;
+
+  /// No description provided for @failedToUploadImageTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image. Please try again.'**
+  String get failedToUploadImageTryAgain;
+
+  /// No description provided for @failedToPickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick image'**
+  String get failedToPickImage;
+
+  /// Thread prefix (a label like [Solved] before the title)
+  ///
+  /// In en, this message translates to:
+  /// **'Prefix'**
+  String get prefix;
+
+  /// No description provided for @failedToLoadPrefixes.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load prefixes'**
+  String get failedToLoadPrefixes;
+
+  /// No description provided for @attachFileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach a file to this message'**
+  String get attachFileHint;
+
+  /// No description provided for @uploadImageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload an image to this message'**
+  String get uploadImageHint;
+
+  /// No description provided for @openFormattingOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open formatting options'**
+  String get openFormattingOptions;
+
+  /// No description provided for @failedToPostReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to post reply. Please try again.'**
+  String get failedToPostReply;
+
+  /// No description provided for @failedToUpdatePost.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update post. Please try again.'**
+  String get failedToUpdatePost;
+
+  /// No description provided for @postDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Post deleted successfully'**
+  String get postDeletedSuccessfully;
+
+  /// No description provided for @failedToDeletePost.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete post: {error}'**
+  String failedToDeletePost(String error);
+
+  /// No description provided for @noPermissionToUploadAvatars.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to upload avatars'**
+  String get noPermissionToUploadAvatars;
+
+  /// No description provided for @avatarUploadedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Avatar uploaded successfully'**
+  String get avatarUploadedSuccessfully;
+
+  /// No description provided for @unknownTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Topic'**
+  String get unknownTopic;
+
+  /// No description provided for @connectionTimeoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Timeout'**
+  String get connectionTimeoutTitle;
+
+  /// No description provided for @connectionTimedOutTo.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection to {siteName} timed out. Please check your internet connection and try again.'**
+  String connectionTimedOutTo(String siteName);
+
+  /// No description provided for @failedToConnectCheckPlugin.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to connect to {siteName}. Please check if the forum is available and the plugin is installed.'**
+  String failedToConnectCheckPlugin(String siteName);
+
+  /// No description provided for @voteFailedTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Vote failed. Please try again.'**
+  String get voteFailedTryAgain;
+
+  /// No description provided for @noUserSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'No user specified'**
+  String get noUserSpecified;
+
+  /// No description provided for @failedToLoadRecentPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load recent posts'**
+  String get failedToLoadRecentPosts;
+
+  /// No description provided for @failedToLoadPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load preview: {error}'**
+  String failedToLoadPreview(String error);
+
+  /// No description provided for @thanksCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Thanked by {count} person} other{Thanked by {count} people}}'**
+  String thanksCountLabel(int count);
+
+  /// No description provided for @thankedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanked By'**
+  String get thankedBy;
+
+  /// Error message when attachment count exceeds limit
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum of {count} attachment(s) allowed'**
+  String maximumAttachmentsAllowed(int count);
+
+  /// No description provided for @toLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get toLabel;
+
+  /// No description provided for @closeConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Close conversation'**
+  String get closeConversation;
+
+  /// No description provided for @openConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Open conversation'**
+  String get openConversation;
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:forumcopilot_sdk/models/results/fc_attachment_result.dart';
 import 'package:image_picker/image_picker.dart';
 import '../utils/snackbar_helper.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// Mixin providing common attachment upload functionality
 /// Can be used by pages that need to handle file uploads
@@ -118,7 +119,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
     // Check attachment count limit before file selection
     if (!canAddMoreAttachments(attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }
@@ -265,7 +266,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
     // Check attachment count limit before file selection
     if (!canAddMoreAttachments(attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }
@@ -283,7 +284,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
       // Limit to remaining slots if there's a limit
       if (remainingSlots != null && selectedImages.length > remainingSlots) {
         if (mounted) {
-          SnackbarHelper.showInfo(context, 'Only ${remainingSlots} more attachment(s) allowed. Selecting first ${remainingSlots} image(s).');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).onlyMoreAttachmentsAllowed(remainingSlots));
         }
         selectedImages = selectedImages.take(remainingSlots).toList();
       }
@@ -308,7 +309,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
         // Check if we've reached the limit
         if (!canAddMoreAttachments(attachments.length, constraints)) {
           if (mounted && allowMultiple) {
-            SnackbarHelper.showInfo(context, 'Attachment limit reached. Skipping remaining images.');
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).attachmentLimitReachedSkipping);
           }
           break;
         }
@@ -324,7 +325,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
 
           if (!validation.isValid) {
             if (mounted) {
-              SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}');
+              SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? AppLocalizations.of(context).imageValidationFailed}');
             }
             continue; // Skip this image and continue with next
           }
@@ -366,7 +367,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
               });
             } else {
               if (mounted) {
-                SnackbarHelper.showError(context, '${imageToUpload.name}: ${success.resultText ?? 'Failed to upload image'}');
+                SnackbarHelper.showError(context, '${imageToUpload.name}: ${success.resultText ?? AppLocalizations.of(context).imageUploadFailed}');
               }
             }
           } catch (e) {
@@ -392,7 +393,7 @@ mixin AttachmentUploadMixin<T extends StatefulWidget> on State<T> {
               });
             } else {
               if (mounted) {
-                SnackbarHelper.showError(context, '${image.name}: ${success.resultText ?? 'Failed to upload image'}');
+                SnackbarHelper.showError(context, '${image.name}: ${success.resultText ?? AppLocalizations.of(context).imageUploadFailed}');
               }
             }
           } catch (e) {

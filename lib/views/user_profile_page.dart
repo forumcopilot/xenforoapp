@@ -160,9 +160,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
       });
     } catch (e) {
       AppLogger.debug('Error fetching user info: $e');
-      showErrorDialog('Failed to load user info: $e');
+      if (!mounted) return;
+      showErrorDialog(AppLocalizations.of(context).failedToLoadUserInfo('$e'));
       setState(() {
-        _error = 'Failed to load user info. $e';
+        _error = AppLocalizations.of(context).failedToLoadUserInfo('$e');
         _isLoading = false;
       });
     }
@@ -1417,7 +1418,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       } catch (e) {
         AppLogger.debug('Exception occurred while banning user: ${_userInfo!.id}, error: $e');
         if (context.mounted) {
-          SnackbarHelper.showError(context, 'Failed to ban user: ${e.toString()}');
+          SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToBanUser}: $e');
         }
       }
     }
@@ -1443,7 +1444,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
           content: Text(
-            'Are you sure you want to unban ${_userInfo!.username}?',
+            AppLocalizations.of(context).areYouSureUnban(_userInfo!.username),
             style: textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -1452,7 +1453,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
@@ -1538,7 +1539,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } catch (e) {
       AppLogger.debug('Exception occurred while unbanning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        SnackbarHelper.showError(context, 'Failed to unban user: ${e.toString()}');
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToUnbanUser}: $e');
       }
     }
   }
@@ -1575,7 +1576,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Spam Clean ${_userInfo!.username}',
+                      AppLocalizations.of(context).spamClean(_userInfo!.username),
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -1617,7 +1618,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                       ),
                       subtitle: Text(
-                        'Delete posts, profile posts, and comments',
+                        AppLocalizations.of(context).deletePostsProfilePostsComments,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1674,7 +1675,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     const SizedBox(height: DesignTokens.spacingL),
                     Text(
-                      'This action cannot be undone.',
+                      AppLocalizations.of(context).thisActionCannotBeUndone,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.error,
                         fontWeight: DesignTokens.fontWeightMedium,
@@ -1741,7 +1742,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Are you sure you want to spam clean ${_userInfo!.username}?',
+                AppLocalizations.of(context).areYouSureSpamClean(_userInfo!.username),
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -1749,7 +1750,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               if (selectedActions.isNotEmpty) ...[
                 const SizedBox(height: DesignTokens.spacingL),
                 Text(
-                  'Selected actions:',
+                  AppLocalizations.of(context).selectedActions,
                   style: textTheme.titleSmall?.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -1777,7 +1778,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ],
               const SizedBox(height: DesignTokens.spacingL),
               Text(
-                'This action cannot be undone.',
+                AppLocalizations.of(context).thisActionCannotBeUndone,
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.error,
                   fontWeight: DesignTokens.fontWeightMedium,
@@ -1789,7 +1790,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
@@ -1888,7 +1889,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
           final successMessage = actionsPerformed.isNotEmpty
               ? l10n.successfullyCleanedSpam(spamCleanResult.username ?? _userInfo!.username, actionsPerformed.join(', '))
-              : 'Successfully cleaned spam for ${spamCleanResult.username ?? _userInfo!.username}';
+              : l10n.successfullyCleanedSpamFor(spamCleanResult.username ?? _userInfo!.username);
 
           // Show success message
           SnackbarHelper.showInfo(context, successMessage);
@@ -1898,7 +1899,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             await _refreshProfile();
           }
         } else {
-          final errorMessage = (spamCleanResult.resultText != null && spamCleanResult.resultText!.isNotEmpty) ? spamCleanResult.resultText! : 'Failed to clean spam';
+          final errorMessage = (spamCleanResult.resultText != null && spamCleanResult.resultText!.isNotEmpty) ? spamCleanResult.resultText! : AppLocalizations.of(context).failedToCleanSpam;
           AppLogger.debug('Spam clean failed for user: ${_userInfo!.id}, error: $errorMessage');
           // Show error message
           SnackbarHelper.showError(context, errorMessage);
@@ -1907,7 +1908,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } catch (e) {
       AppLogger.debug('Exception occurred while spam cleaning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        SnackbarHelper.showError(context, 'Failed to clean spam: ${e.toString()}');
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToCleanSpam}: $e');
       }
     }
   }

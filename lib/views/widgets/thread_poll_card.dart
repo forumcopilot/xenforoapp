@@ -60,7 +60,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
         widget.onVoteSuccess(updated);
         SnackbarHelper.showInfo(context, AppLocalizations.of(context).vote);
       } else if (mounted) {
-        _showError('Vote failed. Please try again.');
+        _showError(AppLocalizations.of(context).voteFailedTryAgain);
       }
     } catch (e) {
       if (mounted) _showError(e.toString());

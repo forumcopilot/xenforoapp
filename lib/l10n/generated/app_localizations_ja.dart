@@ -1702,4 +1702,697 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'パスワードが一致しません';
+
+  @override
+  String get connectionErrorTitle => '接続エラー';
+
+  @override
+  String get authenticationErrorTitle => '認証エラー';
+
+  @override
+  String get permissionErrorTitle => '権限エラー';
+
+  @override
+  String get errorNoConnection => 'インターネットに接続されていません。ネットワーク設定を確認してください。';
+
+  @override
+  String get errorTimeout => 'リクエストがタイムアウトしました。もう一度お試しください。';
+
+  @override
+  String get errorServer => 'サーバーエラーが発生しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get errorNetwork => 'ネットワークエラーが発生しました。もう一度お試しください。';
+
+  @override
+  String get errorInvalidCredentials => 'ユーザー名またはパスワードが正しくありません。';
+
+  @override
+  String get errorSessionExpired => 'セッションの有効期限が切れました。もう一度ログインしてください。';
+
+  @override
+  String get errorAccountLocked => 'アカウントがロックされています。サポートにお問い合わせください。';
+
+  @override
+  String get errorAuthFailed => '認証に失敗しました。もう一度お試しください。';
+
+  @override
+  String get errorForumNotFound => 'フォーラムが見つかりません。';
+
+  @override
+  String get errorForumAccessDenied => 'このフォーラムにアクセスする権限がありません。';
+
+  @override
+  String get errorForumUnavailable => 'フォーラムは現在利用できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get errorForumGeneric => 'フォーラムでエラーが発生しました。もう一度お試しください。';
+
+  @override
+  String get errorDataNotFound => '要求されたデータが見つかりません。';
+
+  @override
+  String get errorDataCorrupted => 'データが破損しているようです。ページを更新してください。';
+
+  @override
+  String get errorCache => 'キャッシュデータを読み込めませんでした。もう一度お試しください。';
+
+  @override
+  String get errorInvalidInput => '入力内容に無効なものがあります。';
+
+  @override
+  String get errorRequiredField => '必須項目をすべて入力してください。';
+
+  @override
+  String get errorPermissionDenied => 'この操作を行う権限がありません。';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return 'このフォーラムでは$featureを利用できません。';
+  }
+
+  @override
+  String get errorStorageFull => 'ストレージがいっぱいです。空き容量を確保してください。';
+
+  @override
+  String get errorStorageAccessDenied => 'ストレージへのアクセスが拒否されました。アプリの権限を確認してください。';
+
+  @override
+  String get loginInfo => 'ログイン情報';
+
+  @override
+  String get loginFailed => 'ログインに失敗しました';
+
+  @override
+  String get topicAnnouncement => 'お知らせ';
+
+  @override
+  String get topicPinned => 'ピン留め';
+
+  @override
+  String get topicLocked => 'ロック中';
+
+  @override
+  String get topicPoll => '投票';
+
+  @override
+  String get deletedBadge => '削除済み';
+
+  @override
+  String get protectedBadge => '保護';
+
+  @override
+  String get lockTopic => 'トピックをロック';
+
+  @override
+  String get unlockTopic => 'トピックのロックを解除';
+
+  @override
+  String get lockTopicConfirm => 'このトピックをロックしてもよろしいですか？他のユーザーは返信や操作ができなくなります。';
+
+  @override
+  String get unlockTopicConfirm =>
+      'このトピックのロックを解除してもよろしいですか？他のユーザーが再び返信や操作をできるようになります。';
+
+  @override
+  String get stickTopic => 'トピックを固定';
+
+  @override
+  String get unstickTopic => 'トピックの固定を解除';
+
+  @override
+  String get stickTopicConfirm =>
+      'このトピックを固定してもよろしいですか？すべてのユーザーのフォーラム上部に表示されます。';
+
+  @override
+  String get unstickTopicConfirm =>
+      'このトピックの固定を解除してもよろしいですか？フォーラムの上部に表示されなくなります。';
+
+  @override
+  String get undeleteTopic => 'トピックを復元';
+
+  @override
+  String get undeleteTopicConfirm => 'このトピックを復元してもよろしいですか？他のユーザーに再び表示されます。';
+
+  @override
+  String get additionalInformation => '追加情報';
+
+  @override
+  String get dateOfBirth => '生年月日';
+
+  @override
+  String get selectDateOfBirth => '生年月日を選択';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: '最低年齢: $age歳',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => '所在地は必須です';
+
+  @override
+  String get receiveSiteMailings => 'サイトからのメールを受け取る';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return '$documentに同意します';
+  }
+
+  @override
+  String get termsOfService => '利用規約';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get imageExceedsUploadLimits => 'この画像はアップロードの上限を超えているため、最適化が必要です:';
+
+  @override
+  String get originalSize => '元のサイズ';
+
+  @override
+  String get originalDimensions => '元の寸法';
+
+  @override
+  String get optimizationsToBeApplied => '適用される最適化:';
+
+  @override
+  String get resizeImage => 'サイズ変更';
+
+  @override
+  String get convertFormat => '形式を変換';
+
+  @override
+  String get smallerFileSize => 'ファイルサイズ縮小';
+
+  @override
+  String get formatNotSupported => '非対応の形式';
+
+  @override
+  String get convertToJpgReason => 'JPG に変換（非対応の形式、またはサイズ縮小のため）';
+
+  @override
+  String get compressImage => '圧縮';
+
+  @override
+  String compressQuality(int quality) {
+    return 'サイズ上限に収めるため品質 $quality%';
+  }
+
+  @override
+  String get estimatedFinalSize => '推定最終サイズ';
+
+  @override
+  String sizeReduction(String percent) {
+    return '削減率: $percent%';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic => '新しいトピックを作成するにはログインしてください';
+
+  @override
+  String get pleaseLoginToSubscribeForums => 'フォーラムを購読するにはログインしてください';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums => 'フォーラムの購読を解除するにはログインしてください';
+
+  @override
+  String errorLoadingContent(String error) {
+    return 'コンテンツの読み込みエラー: $error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics => 'このサブフォーラムのトピックを閲覧する権限がありません。';
+
+  @override
+  String get noDiscussionsYet => 'まだディスカッションはありません。';
+
+  @override
+  String get unableToLoadForums => 'フォーラムを読み込めません';
+
+  @override
+  String get noForumsAvailable => '利用できるフォーラムはありません';
+
+  @override
+  String get noForumsToDisplay => '表示するフォーラムがありません。権限またはフォーラムの構成が原因の可能性があります。';
+
+  @override
+  String get subscribedForums => '購読中のフォーラム';
+
+  @override
+  String get allForumTopicsMarkedRead => 'フォーラムのすべてのトピックを既読にしました';
+
+  @override
+  String postsCountFormatted(String count) {
+    return '$count 件の投稿';
+  }
+
+  @override
+  String get jumpToPost => '投稿へ移動';
+
+  @override
+  String get jump => '移動';
+
+  @override
+  String get endOfDiscussion => 'ディスカッションの終わり';
+
+  @override
+  String refreshFailed(String error) {
+    return '更新に失敗しました: $error';
+  }
+
+  @override
+  String get topicDeletedHidden => 'このトピックは削除されており、他のユーザーには表示されません';
+
+  @override
+  String get topicClosedNoReplies => 'このトピックはロックされており、返信できません';
+
+  @override
+  String get youAreSubscribedToTopic => 'このトピックを購読しています';
+
+  @override
+  String get refreshing => '更新中...';
+
+  @override
+  String get unableToLoadForumsTryAgain => 'フォーラムを読み込めませんでした。もう一度お試しください。';
+
+  @override
+  String get noPostableForums => '投稿できるフォーラムがありません。';
+
+  @override
+  String get changeForumQuestion => 'フォーラムを変更しますか？';
+
+  @override
+  String get changeForumRemovesAttachments =>
+      '添付ファイルは選択したフォーラムに紐づいているため、フォーラムを変更するとアップロード済みの添付ファイルは削除されます。';
+
+  @override
+  String get changeForum => 'フォーラムを変更';
+
+  @override
+  String get chooseForumBeforePosting => '投稿する前にフォーラムを選択してください';
+
+  @override
+  String get accountCannotUploadAttachments =>
+      'このサイトではお使いのアカウントで添付ファイルをアップロードできません。';
+
+  @override
+  String get forumNoAttachments => 'このフォーラムでは添付ファイルを使用できません。';
+
+  @override
+  String get forumNoAttachmentsChooseAnother =>
+      'このフォーラムでは添付ファイルを使用できません。共有したファイルをアップロードするには別のフォーラムを選択してください。';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      'このフォーラムでは添付ファイルを使用できません。別のフォーラムを選択するまで、共有したファイルは保留されます。';
+
+  @override
+  String get tapToChangeForum => 'タップしてフォーラムを変更';
+
+  @override
+  String get chooseWhichForum => '投稿先のフォーラムを選択してください';
+
+  @override
+  String get selectAForum => 'フォーラムを選択';
+
+  @override
+  String get unableToLoadForumsNow => '現在フォーラムを読み込めません。';
+
+  @override
+  String get pickForumBeforeUploading =>
+      '添付ファイルをアップロードまたは投稿する前にフォーラムを選択してください。';
+
+  @override
+  String get uploadingSharedFiles => '共有したファイルをアップロード中...';
+
+  @override
+  String get selectForum => 'フォーラムを選択';
+
+  @override
+  String get noForumsMatchSearch => '検索に一致するフォーラムはありません。';
+
+  @override
+  String get unknown => '不明';
+
+  @override
+  String get closeConversationConfirm => 'この会話を閉じてもよろしいですか？新しい返信を送信できなくなります。';
+
+  @override
+  String get openConversationConfirm => 'この会話を開いてもよろしいですか？新しい返信を送信できるようになります。';
+
+  @override
+  String get leaveConversationConfirm => 'この会話から退出してもよろしいですか？受信トレイに表示されなくなります。';
+
+  @override
+  String get close => '閉じる';
+
+  @override
+  String get open => '開く';
+
+  @override
+  String get leave => '退出';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return '会話の読み込みエラー: $error';
+  }
+
+  @override
+  String get conversationNotFound => '会話が見つかりません';
+
+  @override
+  String get conversationClosedNoReplies => 'この会話は閉じられており、返信できません';
+
+  @override
+  String get noMessagesFound => 'メッセージが見つかりません';
+
+  @override
+  String get endOfConversation => '会話の終わり';
+
+  @override
+  String get jumpToMessage => 'メッセージへ移動';
+
+  @override
+  String get jumpToFirstMessage => '最初のメッセージへ移動';
+
+  @override
+  String get jumpToLastMessage => '最後のメッセージへ移動';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return 'メッセージ $position/$total';
+  }
+
+  @override
+  String get tapToJumpToMessage => 'タップして特定のメッセージへ移動';
+
+  @override
+  String failedToReact(String error) {
+    return 'リアクションに失敗しました: $error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '参加者 $count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => '表示する画像がありません。';
+
+  @override
+  String get pleaseLoginToViewAttachment => 'この添付ファイルを表示するにはログインしてください';
+
+  @override
+  String get inbox => '受信トレイ';
+
+  @override
+  String get sent => '送信済み';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return 'メッセージの読み込みエラー: $error';
+  }
+
+  @override
+  String get noInboxMessages => '受信メッセージはありません';
+
+  @override
+  String get noSentMessages => '送信済みメッセージはありません';
+
+  @override
+  String get unknownDate => '日付不明';
+
+  @override
+  String get searchForTopics => 'トピックを検索';
+
+  @override
+  String get noTopicsFound => 'トピックが見つかりません';
+
+  @override
+  String get noPostsFound => '投稿が見つかりません';
+
+  @override
+  String get trySearchingDifferentKeywords => '別のキーワードで検索してみてください';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return '設定の読み込みエラー: $error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => '有効な数値を入力してください';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return '$min 以上の値を入力してください';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return '$max 以下の値を入力してください';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return '最大 $max 文字までです';
+  }
+
+  @override
+  String get invalidFormat => '形式が正しくありません';
+
+  @override
+  String get shareToForumCopilot => 'Forum Copilot に共有';
+
+  @override
+  String get noSavedForumAccounts => '保存されたフォーラムアカウントがありません。';
+
+  @override
+  String get addForumAccountFirst =>
+      'まず Forum Copilot でフォーラムアカウントを追加してから、もう一度共有してください。';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '添付できるファイル $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled => '共有したテキストが入力されます';
+
+  @override
+  String errorSearchingForums(String error) {
+    return 'フォーラム検索エラー: $error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return 'ユーザー情報を読み込めませんでした: $error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return '$username の禁止を解除してもよろしいですか？';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments => '投稿、プロフィール投稿、コメントを削除';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return '$username のスパムを一掃してもよろしいですか？';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return '$username のスパムを一掃しました';
+  }
+
+  @override
+  String get failedToCleanSpam => 'スパムを一掃できませんでした';
+
+  @override
+  String imagesCount(int count) {
+    return '画像 ($count)';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles => 'ユーザープロフィールを表示するにはログインしてください。';
+
+  @override
+  String get tapToOpen => 'タップして開く';
+
+  @override
+  String get imageNotAvailable => '画像を表示できません';
+
+  @override
+  String get tapToViewFullSizeImage => 'タップして画像を原寸で表示';
+
+  @override
+  String get loadingImage => '画像を読み込み中...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return '$host から画像を読み込み中';
+  }
+
+  @override
+  String get tapToReveal => '（タップして表示）';
+
+  @override
+  String get inlineAttachments => 'インライン添付ファイル';
+
+  @override
+  String get thisFieldIsRequired => 'この項目は必須です';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => '有効な電話番号を入力してください';
+
+  @override
+  String get pleaseEnterValidUrl => '有効な URL を入力してください';
+
+  @override
+  String get permissionDeniedToSaveImage => '画像を保存する権限がありません';
+
+  @override
+  String get postNotFound => '投稿が見つかりません。';
+
+  @override
+  String get failedToUploadFileTryAgain => 'ファイルをアップロードできませんでした。もう一度お試しください。';
+
+  @override
+  String get failedToPickFile => 'ファイルを選択できませんでした';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '添付できるのはあと $count 件です。最初の $count 枚の画像を使用します。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping =>
+      '添付ファイルの上限に達しました。残りの画像はスキップされます。';
+
+  @override
+  String get imageValidationFailed => '画像の検証に失敗しました';
+
+  @override
+  String get imageUploadFailed => '画像をアップロードできませんでした';
+
+  @override
+  String get failedToUploadImageTryAgain => '画像をアップロードできませんでした。もう一度お試しください。';
+
+  @override
+  String get failedToPickImage => '画像を選択できませんでした';
+
+  @override
+  String get prefix => 'プレフィックス';
+
+  @override
+  String get failedToLoadPrefixes => 'プレフィックスを読み込めませんでした';
+
+  @override
+  String get attachFileHint => 'このメッセージにファイルを添付';
+
+  @override
+  String get uploadImageHint => 'このメッセージに画像をアップロード';
+
+  @override
+  String get openFormattingOptions => '書式オプションを開く';
+
+  @override
+  String get failedToPostReply => '返信を投稿できませんでした。もう一度お試しください。';
+
+  @override
+  String get failedToUpdatePost => '投稿を更新できませんでした。もう一度お試しください。';
+
+  @override
+  String get postDeletedSuccessfully => '投稿を削除しました';
+
+  @override
+  String failedToDeletePost(String error) {
+    return '投稿を削除できませんでした: $error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars => 'アバターをアップロードする権限がありません';
+
+  @override
+  String get avatarUploadedSuccessfully => 'アバターをアップロードしました';
+
+  @override
+  String get unknownTopic => '不明なトピック';
+
+  @override
+  String get connectionTimeoutTitle => '接続タイムアウト';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return '$siteName への接続がタイムアウトしました。インターネット接続を確認して、もう一度お試しください。';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return '$siteName に接続できませんでした。フォーラムが利用可能で、プラグインがインストールされているか確認してください。';
+  }
+
+  @override
+  String get voteFailedTryAgain => '投票できませんでした。もう一度お試しください。';
+
+  @override
+  String get noUserSpecified => 'ユーザーが指定されていません';
+
+  @override
+  String get failedToLoadRecentPosts => '最近の投稿を読み込めませんでした';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return 'プレビューを読み込めませんでした: $error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 人が感謝',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => '感謝したメンバー';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return '添付できるファイルは最大$count件です';
+  }
+
+  @override
+  String get toLabel => '宛先';
+
+  @override
+  String get closeConversation => '会話を閉じる';
+
+  @override
+  String get openConversation => '会話を開く';
 }

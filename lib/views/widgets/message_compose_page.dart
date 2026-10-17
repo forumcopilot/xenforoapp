@@ -420,7 +420,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
         }
         return;
       }
@@ -498,7 +498,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               _cachedAttachmentsKey = '';
             });
             if (mounted) {
-              SnackbarHelper.showError(context, 'Failed to upload file. Please try again.');
+              SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFileTryAgain);
             }
           }
         } catch (e) {
@@ -515,13 +515,13 @@ class _MessageComposePageState extends State<MessageComposePage> {
             if (errorMessage.startsWith('Exception: ')) {
               errorMessage = errorMessage.substring(11);
             }
-            SnackbarHelper.showError(context, 'Failed to upload file: $errorMessage');
+            SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(errorMessage));
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Failed to pick file');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPickFile);
       }
     }
   }
@@ -536,7 +536,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
         }
         return;
       }
@@ -552,7 +552,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Limit to remaining slots if there's a limit
       if (remainingSlots != null && selectedImages.length > remainingSlots) {
         if (mounted) {
-          SnackbarHelper.showInfo(context, 'Only ${remainingSlots} more attachment(s) allowed. Processing first ${remainingSlots} image(s).');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).onlyMoreAttachmentsAllowed(remainingSlots));
         }
         selectedImages = selectedImages.take(remainingSlots).toList();
       }
@@ -566,7 +566,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
           // Check if we've reached the limit
           if (!canAddMoreAttachments(_attachments.length, constraints)) {
             if (mounted) {
-              SnackbarHelper.showInfo(context, 'Attachment limit reached. Skipping remaining images.');
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context).attachmentLimitReachedSkipping);
             }
             break;
           }
@@ -583,7 +583,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
             if (!validation.isValid) {
               if (mounted) {
-                SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}');
+                SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? AppLocalizations.of(context).imageValidationFailed}');
               }
               continue; // Skip this image and continue with next
             }
@@ -636,7 +636,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 _cachedAttachmentsKey = '';
               });
               if (mounted) {
-                SnackbarHelper.showError(context, '${imageToUpload.name}: Failed to upload image. Please try again.');
+                SnackbarHelper.showError(context, '${imageToUpload.name}: ${AppLocalizations.of(context).failedToUploadImageTryAgain}');
               }
             }
           } catch (e) {
@@ -653,14 +653,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
               if (errorMessage.startsWith('Exception: ')) {
                 errorMessage = errorMessage.substring(11);
               }
-              SnackbarHelper.showError(context, '${imageToUpload.name}: Failed to upload image: $errorMessage');
+              SnackbarHelper.showError(context, '${imageToUpload.name}: ${AppLocalizations.of(context).failedToUploadImage(errorMessage)}');
             }
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Failed to pick image');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPickImage);
       }
     }
   }
@@ -742,7 +742,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Failed to remove attachment: ${e.toString()}');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToRemoveAttachment('$e'));
       }
     } finally {
       if (mounted) {
@@ -771,7 +771,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
             Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
             SizedBox(width: DesignTokens.spacingS),
             Text(
-              'Attachments',
+              AppLocalizations.of(context).attachments,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: DesignTokens.fontWeightMedium,
@@ -1111,7 +1111,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
         Row(
           children: [
             Text(
-              'Prefix',
+              AppLocalizations.of(context).prefix,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: DesignTokens.fontWeightMedium,
@@ -1160,7 +1160,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 SizedBox(width: DesignTokens.spacingS),
                 Expanded(
                   child: Text(
-                    'Failed to load prefixes',
+                    AppLocalizations.of(context).failedToLoadPrefixes,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onErrorContainer,
                     ),
@@ -1352,7 +1352,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               if (widget.onFileUpload != null)
                 Semantics(
                   label: AppLocalizations.of(context).attachFile,
-                  hint: 'Attach a file to this message',
+                  hint: AppLocalizations.of(context).attachFileHint,
                   button: true,
                   child: IconButton(
                     icon: Icon(
@@ -1367,7 +1367,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               if (widget.onFileUpload != null)
                 Semantics(
                   label: AppLocalizations.of(context).uploadImage,
-                  hint: 'Upload an image to this message',
+                  hint: AppLocalizations.of(context).uploadImageHint,
                   button: true,
                   child: IconButton(
                     icon: Icon(
@@ -1381,7 +1381,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // BBCode button
               Semantics(
                 label: AppLocalizations.of(context).formatting,
-                hint: 'Open formatting options',
+                hint: AppLocalizations.of(context).openFormattingOptions,
                 button: true,
                 enabled: _isContentFieldFocused,
                 child: PopupMenuButton<String>(

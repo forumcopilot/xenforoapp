@@ -125,7 +125,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -143,7 +143,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Additional Information',
+          AppLocalizations.of(context).additionalInformation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -227,7 +227,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
               field: field,
               controller: widget.customFieldControllers[fieldId]!,
               focusNode: widget.customFieldFocusNodes[fieldId],
-              validator: (value) => CustomFieldValidator.validateField(field, value),
+              validator: (value) => CustomFieldValidator.validateField(field, value, AppLocalizations.of(context)),
               onFieldSubmitted: () {
                 if (index < widget.customFields.length - 1) {
                   final nextFieldId = widget.customFields[index + 1].identifier;
@@ -311,7 +311,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Date of Birth${requirement.required ? " *" : ""}',
+          '${AppLocalizations.of(context).dateOfBirth}${requirement.required ? " *" : ""}',
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -356,7 +356,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
                   child: Text(
                     _selectedDateOfBirth != null
                         ? DateFormat('yyyy-MM-dd').format(_selectedDateOfBirth!)
-                        : 'Select date of birth',
+                        : AppLocalizations.of(context).selectDateOfBirth,
                     style: TextStyle(
                       color: _selectedDateOfBirth != null
                           ? colorScheme.onSurface
@@ -373,7 +373,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
           Padding(
             padding: const EdgeInsets.only(top: DesignTokens.spacingS),
             child: Text(
-              'Minimum age: ${requirement.minimumAge} years',
+              AppLocalizations.of(context).minimumAge(requirement.minimumAge ?? 0),
               style: StyleBuilders.smallTextStyle(
                 colorScheme: colorScheme,
                 textTheme: textTheme,
@@ -392,7 +392,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Location${isRequired ? " *" : ""}',
+          '${AppLocalizations.of(context).location}${isRequired ? " *" : ""}',
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -413,7 +413,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
             final req = widget.registrationRequirements;
             if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
               if (value == null || value.trim().isEmpty) {
-                return 'Location is required';
+                return AppLocalizations.of(context).locationIsRequired;
               }
             }
             return null;
@@ -434,7 +434,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
   Widget _buildEmailChoiceField(ColorScheme colorScheme, TextTheme textTheme) {
     return CheckboxListTile(
       title: Text(
-        'Receive site mailings',
+        AppLocalizations.of(context).receiveSiteMailings,
         style: StyleBuilders.titleTextStyle(
           colorScheme: colorScheme,
           textTheme: textTheme,
@@ -453,6 +453,34 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     );
   }
 
+  /// "I accept the {document}", with the document as a link wherever the
+  /// translation puts it.
+  TextSpan _acceptSpan(String document, VoidCallback onTap, ColorScheme colorScheme, TextTheme textTheme) {
+    const marker = '\u0000';
+    final parts = AppLocalizations.of(context).iAcceptTheDocument(marker).split(marker);
+    return TextSpan(
+      text: parts.first,
+      style: StyleBuilders.bodyTextStyle(
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+      ),
+      children: [
+        TextSpan(
+          text: document,
+          style: StyleBuilders.bodyTextStyle(
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+            color: colorScheme.primary,
+          ).copyWith(
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: TapGestureRecognizer()..onTap = onTap,
+        ),
+        if (parts.length > 1) TextSpan(text: parts.sublist(1).join()),
+      ],
+    );
+  }
+
   Widget _buildPolicyAcceptanceFields(
     ColorScheme colorScheme,
     TextTheme textTheme,
@@ -464,26 +492,11 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
         if (req.termsOfService != null && req.termsOfService!.required)
           CheckboxListTile(
             title: Text.rich(
-              TextSpan(
-                text: 'I accept the ',
-                style: StyleBuilders.bodyTextStyle(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: StyleBuilders.bodyTextStyle(
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                      color: colorScheme.primary,
-                    ).copyWith(
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _openPolicyUrl(req.termsOfService!.url),
-                  ),
-                ],
+              _acceptSpan(
+                AppLocalizations.of(context).termsOfService,
+                () => _openPolicyUrl(req.termsOfService!.url),
+                colorScheme,
+                textTheme,
               ),
             ),
             value: _acceptTerms,
@@ -498,26 +511,11 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
         if (req.privacyPolicy != null && req.privacyPolicy!.required)
           CheckboxListTile(
             title: Text.rich(
-              TextSpan(
-                text: 'I accept the ',
-                style: StyleBuilders.bodyTextStyle(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: StyleBuilders.bodyTextStyle(
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                      color: colorScheme.primary,
-                    ).copyWith(
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _openPolicyUrl(req.privacyPolicy!.url),
-                  ),
-                ],
+              _acceptSpan(
+                AppLocalizations.of(context).privacyPolicy,
+                () => _openPolicyUrl(req.privacyPolicy!.url),
+                colorScheme,
+                textTheme,
               ),
             ),
             value: _acceptPrivacy,

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'cached_redirect_image.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// A carousel widget for displaying multiple image attachments
 class AttachmentImageCarousel extends StatefulWidget {
@@ -65,7 +66,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
               ),
               const SizedBox(width: 6),
               Text(
-                'Images (${widget.attachments.length})',
+                AppLocalizations.of(context).imagesCount(widget.attachments.length),
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

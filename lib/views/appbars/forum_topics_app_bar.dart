@@ -83,7 +83,7 @@ class ForumTopicsAppBar extends BaseForumAppBar {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      isSubscribed ? 'Unsubscribe' : 'Subscribe',
+                      isSubscribed ? AppLocalizations.of(context).unsubscribe : AppLocalizations.of(context).subscribe,
                       style: textTheme.bodyLarge,
                     ),
                   ],

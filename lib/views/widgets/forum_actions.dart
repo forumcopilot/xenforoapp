@@ -9,6 +9,7 @@ import 'package:forumcopilot_flutter/views/widgets/forum_password_dialog.dart';
 import 'package:forumcopilot_flutter/controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ForumActions {
   // Track if markAllAsRead is currently in progress to prevent concurrent calls
@@ -41,7 +42,7 @@ class ForumActions {
         // Double-check context is still valid before showing snackbar
         if (context.mounted) {
           try {
-            SnackbarHelper.showInfo(context, 'All forum topics have been marked as read');
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).allForumTopicsMarkedRead);
           } catch (e) {
             // Context became invalid between mounted check and usage
             // Silently ignore - the operation succeeded, just can't show UI feedback
@@ -130,7 +131,7 @@ class ForumActions {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Login Failed',
+          AppLocalizations.of(context).loginFailed,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -145,7 +146,7 @@ class ForumActions {
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'OK',
+              AppLocalizations.of(context).okButton,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

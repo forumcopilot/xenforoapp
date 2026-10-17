@@ -125,7 +125,7 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
             prefixIcon: Icons.arrow_drop_down_circle_outlined,
           ),
           hint: Text(
-            'Select an option',
+            AppLocalizations.of(context).selectAnOption,
             style: TextStyle(color: colorScheme.onSurfaceVariant),
           ),
           items: options.entries.map((entry) {
@@ -627,7 +627,7 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
                   child: Text(
                     selectedDate != null
                         ? DateFormat('yyyy-MM-dd').format(selectedDate)
-                        : 'Select date',
+                        : AppLocalizations.of(context).selectDate,
                     style: TextStyle(
                       color: selectedDate != null
                           ? colorScheme.onSurface
@@ -1057,35 +1057,35 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
 
 /// Validator helper class for custom fields
 class CustomFieldValidator {
-  static String? validateField(FCCustomFieldDefinition field, String? value) {
+  static String? validateField(FCCustomFieldDefinition field, String? value, AppLocalizations l10n) {
     // Check if field is required
     if (field.required && (value == null || value.trim().isEmpty)) {
-      return 'This field is required';
+      return l10n.thisFieldIsRequired;
     }
 
     if (value != null && value.trim().isNotEmpty) {
       switch (field.type.toLowerCase()) {
         case 'email':
           if (!GetUtils.isEmail(value.trim())) {
-            return 'Please enter a valid email address';
+            return l10n.pleaseEnterValidEmail;
           }
           break;
         case 'phone':
         case 'telephone':
           if (!GetUtils.isPhoneNumber(value.trim())) {
-            return 'Please enter a valid phone number';
+            return l10n.pleaseEnterValidPhoneNumber;
           }
           break;
         case 'url':
         case 'website':
           if (!GetUtils.isURL(value.trim())) {
-            return 'Please enter a valid URL';
+            return l10n.pleaseEnterValidUrl;
           }
           break;
         case 'number':
         case 'numeric':
           if (!GetUtils.isNum(value.trim())) {
-            return 'Please enter a valid number';
+            return l10n.pleaseEnterValidNumber;
           }
           break;
       }

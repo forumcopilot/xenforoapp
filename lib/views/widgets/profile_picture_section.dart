@@ -9,6 +9,7 @@ import 'dart:io';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ProfilePictureSection extends StatefulWidget {
   final SiteContext siteContext;
@@ -39,7 +40,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
     final canUploadAvatar = widget.siteContext.loginDataOutput?.canUploadAvatar ?? false;
     if (!canUploadAvatar) {
       if (context.mounted) {
-        SnackbarHelper.showError(context, 'You do not have permission to upload avatars');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).noPermissionToUploadAvatars);
       }
       return;
     }
@@ -80,7 +81,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
               });
             }
             if (context.mounted) {
-              SnackbarHelper.showInfo(context, 'Avatar uploaded successfully');
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context).avatarUploadedSuccessfully);
             }
           } else {
             throw Exception(uploadAttachmentResult.resultText);
@@ -103,7 +104,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
         });
       }
       if (context.mounted) {
-        SnackbarHelper.showError(context, 'Failed to pick image: $e');
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToPickImage}: $e');
       }
     }
   }

@@ -294,7 +294,7 @@ class _PostPageState extends State<PostPage> {
               // Handle any errors during refresh
               if (mounted) {
                 // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-                SnackbarHelper.showError(context, 'Refresh failed: $e');
+                SnackbarHelper.showError(context, AppLocalizations.of(context).refreshFailed('$e'));
               }
             } finally {
               if (mounted) {
@@ -346,7 +346,7 @@ class _PostPageState extends State<PostPage> {
                         const SizedBox(width: DesignTokens.spacingM),
                         Expanded(
                           child: Text(
-                            'This topic is deleted and hidden from other users',
+                            AppLocalizations.of(context).topicDeletedHidden,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onErrorContainer,
                                 ),
@@ -395,7 +395,7 @@ class _PostPageState extends State<PostPage> {
                         const SizedBox(width: DesignTokens.spacingM),
                         Expanded(
                           child: Text(
-                            'This topic is closed and no longer accepting replies',
+                            AppLocalizations.of(context).topicClosedNoReplies,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onTertiaryContainer,
                                 ),
@@ -493,7 +493,7 @@ class _PostPageState extends State<PostPage> {
                         const SizedBox(width: DesignTokens.spacingM),
                         Expanded(
                           child: Text(
-                            'You are subscribed to this topic',
+                            AppLocalizations.of(context).youAreSubscribedToTopic,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                                 ),
@@ -623,7 +623,7 @@ class _PostPageState extends State<PostPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Refreshing...',
+                      AppLocalizations.of(context).refreshing,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),

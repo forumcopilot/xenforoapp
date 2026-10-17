@@ -33,7 +33,7 @@ class ConversationListItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     // Get the last reply person's profile picture and username
-    String displayUsername = 'Unknown';
+    String displayUsername = AppLocalizations.of(context).unknown;
     String? displayAvatar;
 
     // Use the last user who posted in the conversation
@@ -97,7 +97,7 @@ class ConversationListItem extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                displayUsername.isNotEmpty ? displayUsername : "Unknown",
+                                displayUsername.isNotEmpty ? displayUsername : AppLocalizations.of(context).unknown,
                                 style: textTheme.titleMedium?.copyWith(
                                   color: hasNewPosts ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                                   fontWeight: hasNewPosts ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightMedium,

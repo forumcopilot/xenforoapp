@@ -92,7 +92,7 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
       AppLogger.debug('Error fetching metadata: $e');
       if (mounted) {
         setState(() {
-          _error = 'Failed to load preview: ${e.toString()}';
+          _error = AppLocalizations.of(context).failedToLoadPreview('$e');
           _isLoading = false;
           _shouldShow = false;
         });

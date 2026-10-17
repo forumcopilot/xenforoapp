@@ -180,7 +180,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         content: Text(
-          'Are you sure you want to delete this message?',
+          AppLocalizations.of(context).areYouSureYouWantToDeleteThisMessage,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         actions: [
@@ -239,7 +239,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading message: $_error',
+              AppLocalizations.of(context).errorLoadingMessage('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
@@ -256,7 +256,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
     if (_message == null) {
       return Center(
         child: Text(
-          'Message not found',
+          AppLocalizations.of(context).messageNotFound,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

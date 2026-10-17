@@ -25,6 +25,7 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'notification_router.dart';
 import 'package:forumcopilot_flutter/utils/url_utils.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -928,7 +929,7 @@ class NotificationService with ServiceErrorHandlingMixin {
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
                 child: Text(
-                  'OK',
+                  AppLocalizations.of(dialogContext).okButton,
                   style: textTheme.labelLarge?.copyWith(
                     color: colorScheme.primary,
                   ),

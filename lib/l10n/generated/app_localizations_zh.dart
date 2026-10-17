@@ -1678,4 +1678,688 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => '两次输入的密码不一致';
+
+  @override
+  String get connectionErrorTitle => '连接错误';
+
+  @override
+  String get authenticationErrorTitle => '身份验证错误';
+
+  @override
+  String get permissionErrorTitle => '权限错误';
+
+  @override
+  String get errorNoConnection => '没有网络连接。请检查您的网络设置。';
+
+  @override
+  String get errorTimeout => '请求超时。请重试。';
+
+  @override
+  String get errorServer => '服务器出错。请稍后重试。';
+
+  @override
+  String get errorNetwork => '网络出错。请重试。';
+
+  @override
+  String get errorInvalidCredentials => '用户名或密码无效。';
+
+  @override
+  String get errorSessionExpired => '您的会话已过期。请重新登录。';
+
+  @override
+  String get errorAccountLocked => '您的账户已被锁定。请联系支持人员。';
+
+  @override
+  String get errorAuthFailed => '身份验证失败。请重试。';
+
+  @override
+  String get errorForumNotFound => '未找到论坛。';
+
+  @override
+  String get errorForumAccessDenied => '您无权访问此论坛。';
+
+  @override
+  String get errorForumUnavailable => '论坛当前不可用。请稍后重试。';
+
+  @override
+  String get errorForumGeneric => '论坛出错。请重试。';
+
+  @override
+  String get errorDataNotFound => '未找到请求的数据。';
+
+  @override
+  String get errorDataCorrupted => '数据似乎已损坏。请刷新页面。';
+
+  @override
+  String get errorCache => '无法加载缓存数据。请重试。';
+
+  @override
+  String get errorInvalidInput => '您输入的内容无效。';
+
+  @override
+  String get errorRequiredField => '请填写所有必填字段。';
+
+  @override
+  String get errorPermissionDenied => '您无权执行此操作。';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return '此论坛不支持$feature。';
+  }
+
+  @override
+  String get errorStorageFull => '存储空间已满。请释放一些空间。';
+
+  @override
+  String get errorStorageAccessDenied => '存储访问被拒绝。请检查应用权限。';
+
+  @override
+  String get loginInfo => '登录信息';
+
+  @override
+  String get loginFailed => '登录失败';
+
+  @override
+  String get topicAnnouncement => '公告';
+
+  @override
+  String get topicPinned => '置顶';
+
+  @override
+  String get topicLocked => '已锁定';
+
+  @override
+  String get topicPoll => '投票';
+
+  @override
+  String get deletedBadge => '已删除';
+
+  @override
+  String get protectedBadge => '受保护';
+
+  @override
+  String get lockTopic => '锁定主题';
+
+  @override
+  String get unlockTopic => '解锁主题';
+
+  @override
+  String get lockTopicConfirm => '确定要锁定此主题吗？其他用户将无法回复或互动。';
+
+  @override
+  String get unlockTopicConfirm => '确定要解锁此主题吗？其他用户将可以再次回复和互动。';
+
+  @override
+  String get stickTopic => '置顶主题';
+
+  @override
+  String get unstickTopic => '取消置顶';
+
+  @override
+  String get stickTopicConfirm => '确定要置顶此主题吗？它将对所有用户显示在论坛顶部。';
+
+  @override
+  String get unstickTopicConfirm => '确定要取消置顶此主题吗？它将不再显示在论坛顶部。';
+
+  @override
+  String get undeleteTopic => '恢复主题';
+
+  @override
+  String get undeleteTopicConfirm => '确定要恢复此主题吗？其他用户将可以再次看到它。';
+
+  @override
+  String get additionalInformation => '附加信息';
+
+  @override
+  String get dateOfBirth => '出生日期';
+
+  @override
+  String get selectDateOfBirth => '选择出生日期';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: '最低年龄：$age 岁',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => '位置为必填项';
+
+  @override
+  String get receiveSiteMailings => '接收站点邮件';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return '我接受$document';
+  }
+
+  @override
+  String get termsOfService => '服务条款';
+
+  @override
+  String get privacyPolicy => '隐私政策';
+
+  @override
+  String get imageExceedsUploadLimits => '此图片超出上传限制，需要优化：';
+
+  @override
+  String get originalSize => '原始大小';
+
+  @override
+  String get originalDimensions => '原始尺寸';
+
+  @override
+  String get optimizationsToBeApplied => '将应用的优化：';
+
+  @override
+  String get resizeImage => '调整大小';
+
+  @override
+  String get convertFormat => '转换格式';
+
+  @override
+  String get smallerFileSize => '更小的文件';
+
+  @override
+  String get formatNotSupported => '格式不受支持';
+
+  @override
+  String get convertToJpgReason => '转换为 JPG（格式不受支持或为了减小文件）';
+
+  @override
+  String get compressImage => '压缩';
+
+  @override
+  String compressQuality(int quality) {
+    return '质量：$quality%，以满足大小限制';
+  }
+
+  @override
+  String get estimatedFinalSize => '预计最终大小';
+
+  @override
+  String sizeReduction(String percent) {
+    return '缩小：$percent%';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic => '请登录以创建新主题';
+
+  @override
+  String get pleaseLoginToSubscribeForums => '请登录以订阅论坛';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums => '请登录以取消订阅论坛';
+
+  @override
+  String errorLoadingContent(String error) {
+    return '加载内容时出错：$error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics => '您无权查看此子论坛中的主题。';
+
+  @override
+  String get noDiscussionsYet => '暂无讨论。';
+
+  @override
+  String get unableToLoadForums => '无法加载论坛';
+
+  @override
+  String get noForumsAvailable => '没有可用的论坛';
+
+  @override
+  String get noForumsToDisplay => '没有可显示的论坛。这可能与权限或论坛结构有关。';
+
+  @override
+  String get subscribedForums => '已订阅的论坛';
+
+  @override
+  String get allForumTopicsMarkedRead => '已将论坛中的所有主题标记为已读';
+
+  @override
+  String postsCountFormatted(String count) {
+    return '$count 个帖子';
+  }
+
+  @override
+  String get jumpToPost => '跳转到帖子';
+
+  @override
+  String get jump => '跳转';
+
+  @override
+  String get endOfDiscussion => '讨论到此结束';
+
+  @override
+  String refreshFailed(String error) {
+    return '刷新失败：$error';
+  }
+
+  @override
+  String get topicDeletedHidden => '此主题已删除，其他用户看不到';
+
+  @override
+  String get topicClosedNoReplies => '此主题已关闭，不再接受回复';
+
+  @override
+  String get youAreSubscribedToTopic => '您已订阅此主题';
+
+  @override
+  String get refreshing => '正在刷新...';
+
+  @override
+  String get unableToLoadForumsTryAgain => '无法加载论坛。请重试。';
+
+  @override
+  String get noPostableForums => '没有可发帖的论坛。';
+
+  @override
+  String get changeForumQuestion => '更换论坛？';
+
+  @override
+  String get changeForumRemovesAttachments => '更换论坛将移除已上传的附件，因为附件与所选论坛绑定。';
+
+  @override
+  String get changeForum => '更换论坛';
+
+  @override
+  String get chooseForumBeforePosting => '发帖前请选择论坛';
+
+  @override
+  String get accountCannotUploadAttachments => '您的账户无法在此站点上传附件。';
+
+  @override
+  String get forumNoAttachments => '此论坛不允许附件。';
+
+  @override
+  String get forumNoAttachmentsChooseAnother => '此论坛不允许附件。请选择其他论坛来上传共享的文件。';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      '此论坛不允许附件。在您选择其他论坛之前，共享的文件将保持待上传状态。';
+
+  @override
+  String get tapToChangeForum => '点按以更换论坛';
+
+  @override
+  String get chooseWhichForum => '选择要发帖的论坛';
+
+  @override
+  String get selectAForum => '选择论坛';
+
+  @override
+  String get unableToLoadForumsNow => '暂时无法加载论坛。';
+
+  @override
+  String get pickForumBeforeUploading => '上传附件或发帖前请先选择论坛。';
+
+  @override
+  String get uploadingSharedFiles => '正在上传共享的文件...';
+
+  @override
+  String get selectForum => '选择论坛';
+
+  @override
+  String get noForumsMatchSearch => '没有与搜索匹配的论坛。';
+
+  @override
+  String get unknown => '未知';
+
+  @override
+  String get closeConversationConfirm => '确定要关闭此对话吗？关闭后将无法发送新的回复。';
+
+  @override
+  String get openConversationConfirm => '确定要开启此对话吗？开启后可以发送新的回复。';
+
+  @override
+  String get leaveConversationConfirm => '确定要离开此对话吗？它将从您的收件箱中隐藏。';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get open => '开启';
+
+  @override
+  String get leave => '离开';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return '加载对话时出错：$error';
+  }
+
+  @override
+  String get conversationNotFound => '未找到对话';
+
+  @override
+  String get conversationClosedNoReplies => '此对话已关闭，不再接受回复';
+
+  @override
+  String get noMessagesFound => '未找到消息';
+
+  @override
+  String get endOfConversation => '对话到此结束';
+
+  @override
+  String get jumpToMessage => '跳转到消息';
+
+  @override
+  String get jumpToFirstMessage => '跳转到第一条消息';
+
+  @override
+  String get jumpToLastMessage => '跳转到最后一条消息';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return '第 $position 条，共 $total 条';
+  }
+
+  @override
+  String get tapToJumpToMessage => '点按以跳转到指定消息';
+
+  @override
+  String failedToReact(String error) {
+    return '回应失败：$error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 位参与者',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => '没有可显示的图片。';
+
+  @override
+  String get pleaseLoginToViewAttachment => '请登录以查看此附件';
+
+  @override
+  String get inbox => '收件箱';
+
+  @override
+  String get sent => '已发送';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return '加载消息时出错：$error';
+  }
+
+  @override
+  String get noInboxMessages => '收件箱中没有消息';
+
+  @override
+  String get noSentMessages => '没有已发送的消息';
+
+  @override
+  String get unknownDate => '日期未知';
+
+  @override
+  String get searchForTopics => '搜索主题';
+
+  @override
+  String get noTopicsFound => '未找到主题';
+
+  @override
+  String get noPostsFound => '未找到帖子';
+
+  @override
+  String get trySearchingDifferentKeywords => '请尝试使用其他关键词搜索';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return '加载设置时出错：$error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => '请输入有效的数字';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return '值不能小于 $min';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return '值不能大于 $max';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return '最多 $max 个字符';
+  }
+
+  @override
+  String get invalidFormat => '格式无效';
+
+  @override
+  String get shareToForumCopilot => '分享到 Forum Copilot';
+
+  @override
+  String get noSavedForumAccounts => '未找到已保存的论坛账户。';
+
+  @override
+  String get addForumAccountFirst => '请先在 Forum Copilot 中添加论坛账户，然后再分享。';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个文件可附加',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled => '共享的文本将预先填入';
+
+  @override
+  String errorSearchingForums(String error) {
+    return '搜索论坛时出错：$error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return '无法加载用户信息：$error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return '确定要解除对 $username 的封禁吗？';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments => '删除帖子、个人资料帖子和评论';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return '确定要清理 $username 的垃圾内容吗？';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return '已清理 $username 的垃圾内容';
+  }
+
+  @override
+  String get failedToCleanSpam => '清理垃圾内容失败';
+
+  @override
+  String imagesCount(int count) {
+    return '图片（$count）';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles => '请登录以查看用户资料。';
+
+  @override
+  String get tapToOpen => '点按以打开';
+
+  @override
+  String get imageNotAvailable => '图片不可用';
+
+  @override
+  String get tapToViewFullSizeImage => '点按查看原图';
+
+  @override
+  String get loadingImage => '正在加载图片...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return '正在从 $host 加载图片';
+  }
+
+  @override
+  String get tapToReveal => '（点按显示）';
+
+  @override
+  String get inlineAttachments => '内嵌附件';
+
+  @override
+  String get thisFieldIsRequired => '此字段为必填项';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => '请输入有效的电话号码';
+
+  @override
+  String get pleaseEnterValidUrl => '请输入有效的网址';
+
+  @override
+  String get permissionDeniedToSaveImage => '没有保存图片的权限';
+
+  @override
+  String get postNotFound => '未找到帖子。';
+
+  @override
+  String get failedToUploadFileTryAgain => '上传文件失败。请重试。';
+
+  @override
+  String get failedToPickFile => '选择文件失败';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '最多还能添加 $count 个附件，将使用前 $count 张图片。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping => '已达到附件上限，其余图片将被跳过。';
+
+  @override
+  String get imageValidationFailed => '图片验证失败';
+
+  @override
+  String get imageUploadFailed => '上传图片失败';
+
+  @override
+  String get failedToUploadImageTryAgain => '上传图片失败。请重试。';
+
+  @override
+  String get failedToPickImage => '选择图片失败';
+
+  @override
+  String get prefix => '前缀';
+
+  @override
+  String get failedToLoadPrefixes => '加载前缀失败';
+
+  @override
+  String get attachFileHint => '为此消息附加文件';
+
+  @override
+  String get uploadImageHint => '为此消息上传图片';
+
+  @override
+  String get openFormattingOptions => '打开格式选项';
+
+  @override
+  String get failedToPostReply => '发布回复失败。请重试。';
+
+  @override
+  String get failedToUpdatePost => '更新帖子失败。请重试。';
+
+  @override
+  String get postDeletedSuccessfully => '帖子已删除';
+
+  @override
+  String failedToDeletePost(String error) {
+    return '删除帖子失败：$error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars => '您无权上传头像';
+
+  @override
+  String get avatarUploadedSuccessfully => '头像已上传';
+
+  @override
+  String get unknownTopic => '未知主题';
+
+  @override
+  String get connectionTimeoutTitle => '连接超时';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return '连接 $siteName 超时。请检查网络连接后重试。';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return '无法连接到 $siteName。请检查论坛是否可用以及插件是否已安装。';
+  }
+
+  @override
+  String get voteFailedTryAgain => '投票失败。请重试。';
+
+  @override
+  String get noUserSpecified => '未指定用户';
+
+  @override
+  String get failedToLoadRecentPosts => '加载最近的帖子失败';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return '加载预览失败：$error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 人表示感谢',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => '感谢者';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return '最多允许 $count 个附件';
+  }
+
+  @override
+  String get toLabel => '收件人';
+
+  @override
+  String get closeConversation => '关闭对话';
+
+  @override
+  String get openConversation => '打开对话';
 }

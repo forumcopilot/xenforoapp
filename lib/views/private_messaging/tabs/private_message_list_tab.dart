@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../traditional/list/traditional_pm_list.dart';
 import '../conversation/list/conversation_list.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class PrivateMessageListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -106,9 +107,9 @@ class PrivateMessageListTabState extends FCStatefulWidget<PrivateMessageListTab>
             children: [
               TabBar(
                 controller: _tabController,
-                tabs: const [
-                  Tab(icon: Icon(Icons.inbox, size: 18), text: 'Inbox'),
-                  Tab(icon: Icon(Icons.send, size: 18), text: 'Sent'),
+                tabs: [
+                  Tab(icon: const Icon(Icons.inbox, size: 18), text: AppLocalizations.of(context).inbox),
+                  Tab(icon: const Icon(Icons.send, size: 18), text: AppLocalizations.of(context).sent),
                 ],
               ),
               Expanded(

@@ -127,7 +127,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }
@@ -378,7 +378,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRecipientField('To', _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
+              _buildRecipientField(AppLocalizations.of(context).toLabel, _toRecipients, (username) => setState(() => _toRecipients.add(username)), (username) => setState(() => _toRecipients.remove(username))),
               const SizedBox(height: 8),
               TextField(
                 controller: _titleController,
@@ -463,7 +463,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
                         Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                         SizedBox(width: DesignTokens.spacingS),
                         Text(
-                          'Attachments',
+                          AppLocalizations.of(context).attachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: DesignTokens.fontWeightMedium,
@@ -667,7 +667,7 @@ class _NewTraditionalPMPageState extends State<NewTraditionalPMPage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }

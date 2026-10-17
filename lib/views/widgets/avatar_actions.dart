@@ -44,13 +44,13 @@ class AvatarActions {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Login Required',
+          AppLocalizations.of(context).loginRequired,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          'Please login to view user profiles.',
+          AppLocalizations.of(context).pleaseLoginToViewProfiles,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface,
           ),

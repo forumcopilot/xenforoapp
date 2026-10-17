@@ -211,31 +211,90 @@ class ErrorHandler {
     dynamic error,
     String? context,
   ) async {
-    String message = 'An unexpected error occurred. Please try again.';
-    String title = 'Error';
+    // `context` above is the place the error came from, not a BuildContext.
+    final buildContext = Get.context;
+    final l10n = buildContext != null ? AppLocalizations.of(buildContext) : null;
+    String message = l10n?.unexpectedErrorOccurred ?? 'An unexpected error occurred. Please try again.';
+    String title = l10n?.errorTitle ?? 'Error';
     bool showRetry = true;
 
     if (error is AppException) {
-      message = error.message;
+      message = l10n != null ? _localizedMessage(error, l10n) : error.message;
 
       // Customize title and retry option based on error type
       if (error is NetworkException) {
-        title = 'Connection Error';
+        title = l10n?.connectionErrorTitle ?? 'Connection Error';
         showRetry = true;
       } else if (error is AuthenticationException) {
-        title = 'Authentication Error';
+        title = l10n?.authenticationErrorTitle ?? 'Authentication Error';
         showRetry = error.code != 'ACCOUNT_LOCKED';
       } else if (error is ForumException) {
-        title = 'Forum Error';
+        title = l10n?.forumError ?? 'Forum Error';
         showRetry = error.code != 'ACCESS_DENIED';
       } else if (error is PermissionException) {
-        title = 'Permission Error';
+        title = l10n?.permissionErrorTitle ?? 'Permission Error';
         showRetry = false;
       }
     }
 
     // Show error dialog
     await _showErrorDialog(title, message, showRetry: showRetry);
+  }
+
+  /// [error]'s message in the reader's language. Exceptions carry English for
+  /// the logs; a message the server wrote passes through as it is.
+  static String _localizedMessage(AppException error, AppLocalizations l10n) {
+    final code = error.code ?? '';
+    if (code.startsWith('SERVER_ERROR_')) {
+      return error.message == NetworkException.defaultServerErrorMessage ? l10n.errorServer : error.message;
+    }
+    switch (code) {
+      case 'UNKNOWN_ERROR':
+        return l10n.unexpectedErrorOccurred;
+      case 'NO_CONNECTION':
+        return l10n.errorNoConnection;
+      case 'TIMEOUT':
+        return l10n.errorTimeout;
+      case 'NETWORK_ERROR':
+        return l10n.errorNetwork;
+      case 'INVALID_CREDENTIALS':
+        return l10n.errorInvalidCredentials;
+      case 'SESSION_EXPIRED':
+        return l10n.errorSessionExpired;
+      case 'ACCOUNT_LOCKED':
+        return l10n.errorAccountLocked;
+      case 'AUTH_ERROR':
+        return l10n.errorAuthFailed;
+      case 'FORUM_NOT_FOUND':
+        return l10n.errorForumNotFound;
+      case 'ACCESS_DENIED':
+        return l10n.errorForumAccessDenied;
+      case 'FORUM_UNAVAILABLE':
+        return l10n.errorForumUnavailable;
+      case 'FORUM_ERROR':
+        return l10n.errorForumGeneric;
+      case 'DATA_NOT_FOUND':
+        return l10n.errorDataNotFound;
+      case 'DATA_CORRUPTED':
+        return l10n.errorDataCorrupted;
+      case 'CACHE_ERROR':
+        return l10n.errorCache;
+      case 'INVALID_INPUT':
+        return l10n.errorInvalidInput;
+      case 'REQUIRED_FIELD':
+        return l10n.errorRequiredField;
+      case 'PERMISSION_DENIED':
+        return l10n.errorPermissionDenied;
+      case 'FEATURE_NOT_AVAILABLE':
+        final feature = error is PermissionException ? error.feature : null;
+        return feature != null ? l10n.errorFeatureNotAvailable(feature) : error.message;
+      case 'STORAGE_FULL':
+        return l10n.errorStorageFull;
+      case 'STORAGE_ACCESS_DENIED':
+        return l10n.errorStorageAccessDenied;
+      default:
+        return error.message;
+    }
   }
 
   /// Show error dialog to user

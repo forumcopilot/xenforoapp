@@ -78,7 +78,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
       if (!hasPermission) {
         if (mounted) {
-          SnackbarHelper.showError(context, 'Permission denied to save image');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).permissionDeniedToSaveImage);
         }
         return;
       }

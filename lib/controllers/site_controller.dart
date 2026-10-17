@@ -16,6 +16,7 @@ import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'global_loader_controller.dart';
 import '../models/site_visit_history.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
@@ -467,7 +468,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
                 Navigator.of(dialogContext).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(dialogContext).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),

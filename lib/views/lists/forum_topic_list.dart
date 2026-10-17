@@ -232,7 +232,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
 
   Future<void> _handleNewTopic() async {
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, 'Please login to create a new topic');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToCreateTopic);
       return;
     }
 
@@ -254,7 +254,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, 'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums');
+      SnackbarHelper.showInfo(context, subscribe ? AppLocalizations.of(context).pleaseLoginToSubscribeForums : AppLocalizations.of(context).pleaseLoginToUnsubscribeForums);
       return;
     }
 
@@ -295,7 +295,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading content: $_error',
+              AppLocalizations.of(context).errorLoadingContent('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: colorScheme.error),
             ),
@@ -363,7 +363,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                     const SizedBox(width: DesignTokens.spacingM),
                     Expanded(
                       child: Text(
-                        'You do not have permission to view topics in this subforum.',
+                        AppLocalizations.of(context).noPermissionToViewSubforumTopics,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -379,7 +379,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               padding: DesignTokens.paddingXXL,
               child: Center(
                 child: Text(
-                  'No discussions yet.',
+                  AppLocalizations.of(context).noDiscussionsYet,
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),

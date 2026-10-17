@@ -16,6 +16,7 @@ import 'attachment_item_widget.dart';
 import 'user_avatar.dart';
 import 'broken_image_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Callback configuration for BBCode interactions
 class BBCodeCallbacks {
@@ -466,7 +467,7 @@ class ImgTag extends AdvancedTag {
               borderRadius: BorderRadius.circular(DesignTokens.radiusM),
               child: Semantics(
                 label: AccessibilityHelpers.getImageLabel(context),
-                hint: 'Tap to view full size image',
+                hint: AppLocalizations.of(context).tapToViewFullSizeImage,
                 image: true,
                 button: onImageTap != null,
                 child: GestureDetector(
@@ -514,7 +515,7 @@ class ImgTag extends AdvancedTag {
                           ),
                           const SizedBox(height: DesignTokens.spacingS),
                           Text(
-                            _getLoadingText(url),
+                            _getLoadingText(context, url),
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
@@ -544,22 +545,22 @@ class ImgTag extends AdvancedTag {
   }
 
   /// Helper method to generate loading text with domain name
-  String _getLoadingText(String? url) {
+  String _getLoadingText(BuildContext context, String? url) {
     if (url == null || url.isEmpty) {
-      return 'Loading image...';
+      return AppLocalizations.of(context).loadingImage;
     }
 
     try {
       final uri = Uri.parse(url);
       final host = uri.host;
       if (host.isNotEmpty) {
-        return 'Loading image from $host';
+        return AppLocalizations.of(context).loadingImageFrom(host);
       }
     } catch (e) {
       // If URL parsing fails, fall back to generic text
     }
 
-    return 'Loading image...';
+    return AppLocalizations.of(context).loadingImage;
   }
 }
 
@@ -1139,7 +1140,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Spoiler',
+                    AppLocalizations.of(context).spoiler,
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontStyle: FontStyle.italic,
@@ -1147,7 +1148,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '(tap to reveal)',
+                    AppLocalizations.of(context).tapToReveal,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       fontStyle: FontStyle.italic,
@@ -1690,7 +1691,7 @@ class InlineAttachmentTag extends AdvancedTag {
                                   ),
                                   const SizedBox(height: DesignTokens.spacingS),
                                   Text(
-                                    'Loading image...',
+                                    AppLocalizations.of(context).loadingImage,
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: colorScheme.onSurfaceVariant,
                                         ),
@@ -1770,7 +1771,7 @@ class InlineAttachmentTag extends AdvancedTag {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Inline Attachments',
+                          AppLocalizations.of(context).inlineAttachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),

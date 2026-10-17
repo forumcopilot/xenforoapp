@@ -58,7 +58,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error loading settings: ${e.toString()}';
+          _error = AppLocalizations.of(context).errorLoadingSettings('$e');
           _isLoading = false;
         });
         showErrorDialogFromException(e);

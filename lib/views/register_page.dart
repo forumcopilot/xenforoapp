@@ -1148,7 +1148,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         return const SiteHomePage();
       });
       if (serverMessage == null || serverMessage.isEmpty) {
-        SnackbarHelper.showSuccess(context, 'Please log in with your new account.');
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).pleaseLoginWithNewAccount);
       }
     }
   }

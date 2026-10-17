@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/new_topic_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/app_navigation.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class ForumTopicsPage extends StatefulWidget {
   final FCForum forum;
@@ -34,7 +35,7 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
 
   Future<void> _handleNewTopic() async {
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, 'Please login to create a new topic');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToCreateTopic);
       return;
     }
 
@@ -55,7 +56,7 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
 
   Future<void> _handleSubscribe() async {
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, 'Please login to subscribe to forums');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToSubscribeForums);
       return;
     }
 

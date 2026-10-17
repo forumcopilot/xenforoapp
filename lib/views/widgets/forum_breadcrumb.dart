@@ -254,7 +254,7 @@ class _ForumBreadcrumbLoaderState extends State<ForumBreadcrumbLoader> {
             ),
             const SizedBox(width: DesignTokens.spacingS),
             Text(
-              'Loading breadcrumb...',
+              AppLocalizations.of(context).loading,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),

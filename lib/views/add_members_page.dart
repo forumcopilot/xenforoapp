@@ -225,7 +225,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Invite:',
+              '${AppLocalizations.of(context).invite}:',
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,

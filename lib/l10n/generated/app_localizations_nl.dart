@@ -1755,4 +1755,745 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Wachtwoorden komen niet overeen';
+
+  @override
+  String get connectionErrorTitle => 'Verbindingsfout';
+
+  @override
+  String get authenticationErrorTitle => 'Authenticatiefout';
+
+  @override
+  String get permissionErrorTitle => 'Machtigingsfout';
+
+  @override
+  String get errorNoConnection =>
+      'Geen internetverbinding. Controleer uw netwerkinstellingen.';
+
+  @override
+  String get errorTimeout =>
+      'Er is een time-out opgetreden. Probeer het opnieuw.';
+
+  @override
+  String get errorServer =>
+      'Er is een serverfout opgetreden. Probeer het later opnieuw.';
+
+  @override
+  String get errorNetwork =>
+      'Er is een netwerkfout opgetreden. Probeer het opnieuw.';
+
+  @override
+  String get errorInvalidCredentials =>
+      'Ongeldige gebruikersnaam of wachtwoord.';
+
+  @override
+  String get errorSessionExpired => 'Uw sessie is verlopen. Log opnieuw in.';
+
+  @override
+  String get errorAccountLocked =>
+      'Uw account is vergrendeld. Neem contact op met de ondersteuning.';
+
+  @override
+  String get errorAuthFailed => 'Authenticatie mislukt. Probeer het opnieuw.';
+
+  @override
+  String get errorForumNotFound => 'Forum niet gevonden.';
+
+  @override
+  String get errorForumAccessDenied =>
+      'U hebt geen toestemming om dit forum te openen.';
+
+  @override
+  String get errorForumUnavailable =>
+      'Het forum is momenteel niet beschikbaar. Probeer het later opnieuw.';
+
+  @override
+  String get errorForumGeneric =>
+      'Er is een forumfout opgetreden. Probeer het opnieuw.';
+
+  @override
+  String get errorDataNotFound => 'De opgevraagde gegevens zijn niet gevonden.';
+
+  @override
+  String get errorDataCorrupted =>
+      'De gegevens lijken beschadigd. Vernieuw de pagina.';
+
+  @override
+  String get errorCache =>
+      'Kan opgeslagen gegevens niet laden. Probeer het opnieuw.';
+
+  @override
+  String get errorInvalidInput => 'Iets wat u hebt ingevoerd is ongeldig.';
+
+  @override
+  String get errorRequiredField => 'Vul alle verplichte velden in.';
+
+  @override
+  String get errorPermissionDenied => 'U hebt geen toestemming om dat te doen.';
+
+  @override
+  String errorFeatureNotAvailable(String feature) {
+    return '$feature is niet beschikbaar op dit forum.';
+  }
+
+  @override
+  String get errorStorageFull => 'De opslag is vol. Maak wat ruimte vrij.';
+
+  @override
+  String get errorStorageAccessDenied =>
+      'Toegang tot opslag geweigerd. Controleer de app-machtigingen.';
+
+  @override
+  String get loginInfo => 'Inloginformatie';
+
+  @override
+  String get loginFailed => 'Inloggen mislukt';
+
+  @override
+  String get topicAnnouncement => 'Aankondiging';
+
+  @override
+  String get topicPinned => 'Vastgezet';
+
+  @override
+  String get topicLocked => 'Gesloten';
+
+  @override
+  String get topicPoll => 'Peiling';
+
+  @override
+  String get deletedBadge => 'VERWIJDERD';
+
+  @override
+  String get protectedBadge => 'Beveiligd';
+
+  @override
+  String get lockTopic => 'Onderwerp sluiten';
+
+  @override
+  String get unlockTopic => 'Onderwerp heropenen';
+
+  @override
+  String get lockTopicConfirm =>
+      'Weet u zeker dat u dit onderwerp wilt sluiten? Andere gebruikers kunnen er dan niet meer op reageren.';
+
+  @override
+  String get unlockTopicConfirm =>
+      'Weet u zeker dat u dit onderwerp wilt heropenen? Andere gebruikers kunnen er dan weer op reageren.';
+
+  @override
+  String get stickTopic => 'Onderwerp vastzetten';
+
+  @override
+  String get unstickTopic => 'Onderwerp losmaken';
+
+  @override
+  String get stickTopicConfirm =>
+      'Weet u zeker dat u dit onderwerp wilt vastzetten? Het verschijnt bovenaan het forum voor alle gebruikers.';
+
+  @override
+  String get unstickTopicConfirm =>
+      'Weet u zeker dat u dit onderwerp wilt losmaken? Het verschijnt dan niet meer bovenaan het forum.';
+
+  @override
+  String get undeleteTopic => 'Onderwerp herstellen';
+
+  @override
+  String get undeleteTopicConfirm =>
+      'Weet u zeker dat u dit onderwerp wilt herstellen? Het is dan weer zichtbaar voor andere gebruikers.';
+
+  @override
+  String get additionalInformation => 'Aanvullende informatie';
+
+  @override
+  String get dateOfBirth => 'Geboortedatum';
+
+  @override
+  String get selectDateOfBirth => 'Kies uw geboortedatum';
+
+  @override
+  String minimumAge(int age) {
+    String _temp0 = intl.Intl.pluralLogic(
+      age,
+      locale: localeName,
+      other: 'Minimumleeftijd: $age jaar',
+      one: 'Minimumleeftijd: $age jaar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get locationIsRequired => 'Locatie is verplicht';
+
+  @override
+  String get receiveSiteMailings => 'E-mails van de site ontvangen';
+
+  @override
+  String iAcceptTheDocument(String document) {
+    return 'Ik ga akkoord met de $document';
+  }
+
+  @override
+  String get termsOfService => 'Gebruiksvoorwaarden';
+
+  @override
+  String get privacyPolicy => 'Privacybeleid';
+
+  @override
+  String get imageExceedsUploadLimits =>
+      'Deze afbeelding overschrijdt de uploadlimieten en moet worden geoptimaliseerd:';
+
+  @override
+  String get originalSize => 'Oorspronkelijke grootte';
+
+  @override
+  String get originalDimensions => 'Oorspronkelijke afmetingen';
+
+  @override
+  String get optimizationsToBeApplied => 'Toe te passen optimalisaties:';
+
+  @override
+  String get resizeImage => 'Formaat wijzigen';
+
+  @override
+  String get convertFormat => 'Formaat omzetten';
+
+  @override
+  String get smallerFileSize => 'kleiner bestand';
+
+  @override
+  String get formatNotSupported => 'formaat niet ondersteund';
+
+  @override
+  String get convertToJpgReason =>
+      'Omzetten naar JPG (formaat niet ondersteund of om te verkleinen)';
+
+  @override
+  String get compressImage => 'Comprimeren';
+
+  @override
+  String compressQuality(int quality) {
+    return 'Kwaliteit: $quality% om binnen de limiet te blijven';
+  }
+
+  @override
+  String get estimatedFinalSize => 'Geschatte uiteindelijke grootte';
+
+  @override
+  String sizeReduction(String percent) {
+    return 'Verkleining: $percent%';
+  }
+
+  @override
+  String get pleaseLoginToCreateTopic =>
+      'Log in om een nieuw onderwerp te maken';
+
+  @override
+  String get pleaseLoginToSubscribeForums =>
+      'Log in om u op forums te abonneren';
+
+  @override
+  String get pleaseLoginToUnsubscribeForums =>
+      'Log in om u af te melden voor forums';
+
+  @override
+  String errorLoadingContent(String error) {
+    return 'Fout bij laden van inhoud: $error';
+  }
+
+  @override
+  String get noPermissionToViewSubforumTopics =>
+      'U hebt geen toestemming om onderwerpen in dit subforum te bekijken.';
+
+  @override
+  String get noDiscussionsYet => 'Nog geen discussies.';
+
+  @override
+  String get unableToLoadForums => 'Kan forums niet laden';
+
+  @override
+  String get noForumsAvailable => 'Geen forums beschikbaar';
+
+  @override
+  String get noForumsToDisplay =>
+      'Er zijn geen forums om weer te geven. Dit kan aan machtigingen of de forumstructuur liggen.';
+
+  @override
+  String get subscribedForums => 'Geabonneerde forums';
+
+  @override
+  String get allForumTopicsMarkedRead =>
+      'Alle onderwerpen in het forum zijn als gelezen gemarkeerd';
+
+  @override
+  String postsCountFormatted(String count) {
+    return '$count berichten';
+  }
+
+  @override
+  String get jumpToPost => 'Naar bericht gaan';
+
+  @override
+  String get jump => 'Ga';
+
+  @override
+  String get endOfDiscussion => 'Einde van de discussie';
+
+  @override
+  String refreshFailed(String error) {
+    return 'Vernieuwen mislukt: $error';
+  }
+
+  @override
+  String get topicDeletedHidden =>
+      'Dit onderwerp is verwijderd en verborgen voor andere gebruikers';
+
+  @override
+  String get topicClosedNoReplies =>
+      'Dit onderwerp is gesloten en accepteert geen reacties meer';
+
+  @override
+  String get youAreSubscribedToTopic => 'U bent geabonneerd op dit onderwerp';
+
+  @override
+  String get refreshing => 'Vernieuwen...';
+
+  @override
+  String get unableToLoadForumsTryAgain =>
+      'Kan forums niet laden. Probeer het opnieuw.';
+
+  @override
+  String get noPostableForums => 'Er zijn geen forums waarin u kunt posten.';
+
+  @override
+  String get changeForumQuestion => 'Ander forum kiezen?';
+
+  @override
+  String get changeForumRemovesAttachments =>
+      'Als u een ander forum kiest, worden uw geüploade bijlagen verwijderd, omdat bijlagen aan het gekozen forum gekoppeld zijn.';
+
+  @override
+  String get changeForum => 'Ander forum';
+
+  @override
+  String get chooseForumBeforePosting => 'Kies een forum voordat u post';
+
+  @override
+  String get accountCannotUploadAttachments =>
+      'Uw account kan op deze site geen bijlagen uploaden.';
+
+  @override
+  String get forumNoAttachments => 'Dit forum staat geen bijlagen toe.';
+
+  @override
+  String get forumNoAttachmentsChooseAnother =>
+      'Dit forum staat geen bijlagen toe. Kies een ander forum om de gedeelde bestanden te uploaden.';
+
+  @override
+  String get forumNoAttachmentsSharedPending =>
+      'Dit forum staat geen bijlagen toe. Gedeelde bestanden blijven wachten tot u een ander forum kiest.';
+
+  @override
+  String get tapToChangeForum => 'Tik om een ander forum te kiezen';
+
+  @override
+  String get chooseWhichForum => 'Kies in welk forum u wilt posten';
+
+  @override
+  String get selectAForum => 'Kies een forum';
+
+  @override
+  String get unableToLoadForumsNow => 'Forums kunnen nu niet worden geladen.';
+
+  @override
+  String get pickForumBeforeUploading =>
+      'Kies een forum voordat u bijlagen uploadt of post.';
+
+  @override
+  String get uploadingSharedFiles => 'Gedeelde bestanden uploaden...';
+
+  @override
+  String get selectForum => 'Forum kiezen';
+
+  @override
+  String get noForumsMatchSearch =>
+      'Geen forums gevonden voor uw zoekopdracht.';
+
+  @override
+  String get unknown => 'Onbekend';
+
+  @override
+  String get closeConversationConfirm =>
+      'Weet u zeker dat u dit gesprek wilt sluiten? Er kunnen dan geen nieuwe reacties meer worden geplaatst.';
+
+  @override
+  String get openConversationConfirm =>
+      'Weet u zeker dat u dit gesprek wilt heropenen? Er kunnen dan weer nieuwe reacties worden geplaatst.';
+
+  @override
+  String get leaveConversationConfirm =>
+      'Weet u zeker dat u dit gesprek wilt verlaten? Het wordt dan verborgen in uw inbox.';
+
+  @override
+  String get close => 'Sluiten';
+
+  @override
+  String get open => 'Openen';
+
+  @override
+  String get leave => 'Verlaten';
+
+  @override
+  String errorLoadingConversation(String error) {
+    return 'Fout bij laden van gesprek: $error';
+  }
+
+  @override
+  String get conversationNotFound => 'Gesprek niet gevonden';
+
+  @override
+  String get conversationClosedNoReplies =>
+      'Dit gesprek is gesloten en accepteert geen reacties meer';
+
+  @override
+  String get noMessagesFound => 'Geen berichten gevonden';
+
+  @override
+  String get endOfConversation => 'Einde van het gesprek';
+
+  @override
+  String get jumpToMessage => 'Naar bericht gaan';
+
+  @override
+  String get jumpToFirstMessage => 'Naar eerste bericht gaan';
+
+  @override
+  String get jumpToLastMessage => 'Naar laatste bericht gaan';
+
+  @override
+  String messagePositionOf(int position, int total) {
+    return 'Bericht $position van $total';
+  }
+
+  @override
+  String get tapToJumpToMessage => 'Tik om naar een bepaald bericht te gaan';
+
+  @override
+  String failedToReact(String error) {
+    return 'Reageren mislukt: $error';
+  }
+
+  @override
+  String participantCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count deelnemers',
+      one: '$count deelnemer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noImagesToDisplay => 'Geen afbeeldingen om weer te geven.';
+
+  @override
+  String get pleaseLoginToViewAttachment =>
+      'Log in om deze bijlage te bekijken';
+
+  @override
+  String get inbox => 'Inbox';
+
+  @override
+  String get sent => 'Verzonden';
+
+  @override
+  String errorLoadingMessages(String error) {
+    return 'Fout bij laden van berichten: $error';
+  }
+
+  @override
+  String get noInboxMessages => 'Geen berichten in uw inbox';
+
+  @override
+  String get noSentMessages => 'Geen verzonden berichten';
+
+  @override
+  String get unknownDate => 'Onbekende datum';
+
+  @override
+  String get searchForTopics => 'Zoeken naar onderwerpen';
+
+  @override
+  String get noTopicsFound => 'Geen onderwerpen gevonden';
+
+  @override
+  String get noPostsFound => 'Geen berichten gevonden';
+
+  @override
+  String get trySearchingDifferentKeywords => 'Probeer andere zoekwoorden';
+
+  @override
+  String errorLoadingSettings(String error) {
+    return 'Fout bij laden van instellingen: $error';
+  }
+
+  @override
+  String get pleaseEnterValidNumber => 'Voer een geldig getal in';
+
+  @override
+  String valueMustBeAtLeast(String min) {
+    return 'De waarde moet minstens $min zijn';
+  }
+
+  @override
+  String valueMustBeAtMost(String max) {
+    return 'De waarde mag hoogstens $max zijn';
+  }
+
+  @override
+  String maximumLengthCharacters(int max) {
+    return 'De maximale lengte is $max tekens';
+  }
+
+  @override
+  String get invalidFormat => 'Ongeldige notatie';
+
+  @override
+  String get shareToForumCopilot => 'Delen met Forum Copilot';
+
+  @override
+  String get noSavedForumAccounts => 'Geen opgeslagen forumaccounts gevonden.';
+
+  @override
+  String get addForumAccountFirst =>
+      'Voeg eerst een forumaccount toe in Forum Copilot en probeer daarna opnieuw te delen.';
+
+  @override
+  String filesReadyToAttach(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bestanden klaar om bij te voegen',
+      one: '$count bestand klaar om bij te voegen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedTextWillBePrefilled =>
+      'Gedeelde tekst wordt vooraf ingevuld';
+
+  @override
+  String errorSearchingForums(String error) {
+    return 'Fout bij zoeken naar forums: $error';
+  }
+
+  @override
+  String failedToLoadUserInfo(String error) {
+    return 'Kan gebruikersgegevens niet laden: $error';
+  }
+
+  @override
+  String areYouSureUnban(String username) {
+    return 'Weet u zeker dat u de blokkering van $username wilt opheffen?';
+  }
+
+  @override
+  String get deletePostsProfilePostsComments =>
+      'Berichten, profielberichten en reacties verwijderen';
+
+  @override
+  String areYouSureSpamClean(String username) {
+    return 'Weet u zeker dat u de spam van $username wilt opruimen?';
+  }
+
+  @override
+  String successfullyCleanedSpamFor(String username) {
+    return 'De spam van $username is opgeruimd';
+  }
+
+  @override
+  String get failedToCleanSpam => 'Kan spam niet opruimen';
+
+  @override
+  String imagesCount(int count) {
+    return 'Afbeeldingen ($count)';
+  }
+
+  @override
+  String get pleaseLoginToViewProfiles =>
+      'Log in om gebruikersprofielen te bekijken.';
+
+  @override
+  String get tapToOpen => 'Tik om te openen';
+
+  @override
+  String get imageNotAvailable => 'Afbeelding niet beschikbaar';
+
+  @override
+  String get tapToViewFullSizeImage =>
+      'Tik om de afbeelding op volledige grootte te bekijken';
+
+  @override
+  String get loadingImage => 'Afbeelding laden...';
+
+  @override
+  String loadingImageFrom(String host) {
+    return 'Afbeelding laden van $host';
+  }
+
+  @override
+  String get tapToReveal => '(tik om te tonen)';
+
+  @override
+  String get inlineAttachments => 'Ingevoegde bijlagen';
+
+  @override
+  String get thisFieldIsRequired => 'Dit veld is verplicht';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => 'Voer een geldig telefoonnummer in';
+
+  @override
+  String get pleaseEnterValidUrl => 'Voer een geldige URL in';
+
+  @override
+  String get permissionDeniedToSaveImage =>
+      'Geen toestemming om de afbeelding op te slaan';
+
+  @override
+  String get postNotFound => 'Bericht niet gevonden.';
+
+  @override
+  String get failedToUploadFileTryAgain =>
+      'Kan bestand niet uploaden. Probeer het opnieuw.';
+
+  @override
+  String get failedToPickFile => 'Kan bestand niet kiezen';
+
+  @override
+  String onlyMoreAttachmentsAllowed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Nog maar $count bijlagen toegestaan. De eerste $count afbeeldingen worden gebruikt.',
+      one:
+          'Nog maar 1 bijlage toegestaan. De eerste afbeelding wordt gebruikt.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get attachmentLimitReachedSkipping =>
+      'Bijlagelimiet bereikt. De overige afbeeldingen worden overgeslagen.';
+
+  @override
+  String get imageValidationFailed => 'Afbeeldingscontrole mislukt';
+
+  @override
+  String get imageUploadFailed => 'Kan afbeelding niet uploaden';
+
+  @override
+  String get failedToUploadImageTryAgain =>
+      'Kan afbeelding niet uploaden. Probeer het opnieuw.';
+
+  @override
+  String get failedToPickImage => 'Kan afbeelding niet kiezen';
+
+  @override
+  String get prefix => 'Voorvoegsel';
+
+  @override
+  String get failedToLoadPrefixes => 'Kan voorvoegsels niet laden';
+
+  @override
+  String get attachFileHint => 'Een bestand aan dit bericht toevoegen';
+
+  @override
+  String get uploadImageHint => 'Een afbeelding aan dit bericht toevoegen';
+
+  @override
+  String get openFormattingOptions => 'Opmaakopties openen';
+
+  @override
+  String get failedToPostReply =>
+      'Kan reactie niet plaatsen. Probeer het opnieuw.';
+
+  @override
+  String get failedToUpdatePost =>
+      'Kan bericht niet bijwerken. Probeer het opnieuw.';
+
+  @override
+  String get postDeletedSuccessfully => 'Bericht verwijderd';
+
+  @override
+  String failedToDeletePost(String error) {
+    return 'Kan bericht niet verwijderen: $error';
+  }
+
+  @override
+  String get noPermissionToUploadAvatars =>
+      'U hebt geen toestemming om avatars te uploaden';
+
+  @override
+  String get avatarUploadedSuccessfully => 'Avatar geüpload';
+
+  @override
+  String get unknownTopic => 'Onbekend onderwerp';
+
+  @override
+  String get connectionTimeoutTitle => 'Verbindingstime-out';
+
+  @override
+  String connectionTimedOutTo(String siteName) {
+    return 'De verbinding met $siteName is verlopen. Controleer uw internetverbinding en probeer het opnieuw.';
+  }
+
+  @override
+  String failedToConnectCheckPlugin(String siteName) {
+    return 'Kan geen verbinding maken met $siteName. Controleer of het forum beschikbaar is en de plug-in is geïnstalleerd.';
+  }
+
+  @override
+  String get voteFailedTryAgain => 'Stemmen mislukt. Probeer het opnieuw.';
+
+  @override
+  String get noUserSpecified => 'Geen gebruiker opgegeven';
+
+  @override
+  String get failedToLoadRecentPosts => 'Kan recente berichten niet laden';
+
+  @override
+  String failedToLoadPreview(String error) {
+    return 'Kan voorbeeld niet laden: $error';
+  }
+
+  @override
+  String thanksCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bedankt door $count personen',
+      one: 'Bedankt door $count persoon',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thankedBy => 'Bedankt door';
+
+  @override
+  String maximumAttachmentsAllowed(int count) {
+    return 'Maximaal $count bijlage(n) toegestaan';
+  }
+
+  @override
+  String get toLabel => 'Aan';
+
+  @override
+  String get closeConversation => 'Gesprek sluiten';
+
+  @override
+  String get openConversation => 'Gesprek openen';
 }

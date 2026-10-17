@@ -145,7 +145,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
     // Check attachment count limit
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return null;
     }
@@ -517,7 +517,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                         Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                         SizedBox(width: DesignTokens.spacingS),
                         Text(
-                          'Attachments',
+                          AppLocalizations.of(context).attachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                             fontWeight: DesignTokens.fontWeightMedium,
@@ -721,7 +721,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        SnackbarHelper.showError(context, 'Maximum of ${constraints!.count} attachment(s) allowed');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }

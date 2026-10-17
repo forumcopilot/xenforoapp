@@ -803,10 +803,8 @@ class _PostListItemState extends State<PostListItem> {
                   const SizedBox(width: DesignTokens.spacingXS),
                   Text(
                     widget.isTranslating && widget.translatedContent == null
-                        ? (AppLocalizations.of(context)?.translating ??
-                            'Translating...')
-                        : (AppLocalizations.of(context)?.translated ??
-                            'Translated'),
+                        ? AppLocalizations.of(context).translating
+                        : AppLocalizations.of(context).translated,
                     style: textTheme.labelSmall?.copyWith(
                       color: widget.isTranslating &&
                               widget.translatedContent == null
@@ -869,7 +867,7 @@ class _PostListItemState extends State<PostListItem> {
               actions: widget.actions,
               context: context,
               isInline: false,
-              title: AppLocalizations.of(context)?.attachments ?? 'Attachments',
+              title: AppLocalizations.of(context).attachments,
             ),
           ],
           if (data.filteredInlineAttachments.isNotEmpty) ...[
@@ -958,7 +956,7 @@ class _PostListItemState extends State<PostListItem> {
     // The shared 48dp icon button with a ripple, in full-strength
     // onSurfaceVariant (at 40-50% it read as disabled).
     return AccessibilityHelpers.accessibleIconButton(
-      label: AppLocalizations.of(context)?.reply ?? 'Reply',
+      label: AppLocalizations.of(context).reply,
       context: context,
       onTap: () {
         showDialog(
@@ -969,7 +967,7 @@ class _PostListItemState extends State<PostListItem> {
                 borderRadius: BorderRadius.circular(DesignTokens.radiusL),
               ),
               title: Text(
-                AppLocalizations.of(context)?.replyOptions ?? 'Reply Options',
+                AppLocalizations.of(context).replyOptions,
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -981,7 +979,7 @@ class _PostListItemState extends State<PostListItem> {
                     leading:
                         Icon(Icons.reply_rounded, color: colorScheme.primary),
                     title: Text(
-                      AppLocalizations.of(context)?.reply ?? 'Reply',
+                      AppLocalizations.of(context).reply,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -995,8 +993,7 @@ class _PostListItemState extends State<PostListItem> {
                     leading: Icon(Icons.format_quote_rounded,
                         color: colorScheme.primary),
                     title: Text(
-                      AppLocalizations.of(context)?.replyWithQuote ??
-                          'Reply with Quote',
+                      AppLocalizations.of(context).replyWithQuote,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -1050,7 +1047,7 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
+              Text(AppLocalizations.of(context).edit),
             ],
           ),
         ),
@@ -1066,7 +1063,7 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.error),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+              Text(AppLocalizations.of(context).delete),
             ],
           ),
         ),
@@ -1082,7 +1079,7 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.secondary),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.report ?? 'Report'),
+              Text(AppLocalizations.of(context).report),
             ],
           ),
         ),

@@ -62,7 +62,7 @@ class ConversationAppBar extends BaseForumAppBar {
             Icons.people_rounded,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)?.participants(participantCount) ?? 'Participants ($participantCount)',
+          tooltip: AppLocalizations.of(context).participants(participantCount),
           onPressed: () {
             showParticipantsBottomSheet(
               context,
@@ -81,7 +81,7 @@ class ConversationAppBar extends BaseForumAppBar {
             Icons.mark_email_unread_rounded,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+          tooltip: AppLocalizations.of(context).markAsUnread,
           onPressed: onMarkUnread,
         ),
       // More options menu (Delete and Report)
@@ -90,7 +90,7 @@ class ConversationAppBar extends BaseForumAppBar {
           Icons.more_vert,
           color: colorScheme.onSurfaceVariant,
         ),
-        tooltip: AppLocalizations.of(context)?.moreOptions ?? 'More options',
+        tooltip: AppLocalizations.of(context).moreOptions,
         onSelected: (value) {
           switch (value) {
             case 'edit':
@@ -248,11 +248,11 @@ class ConversationAppBar extends BaseForumAppBar {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SheetTitle(
-                    AppLocalizations.of(context)?.participantsLabel ?? 'Participants',
+                    AppLocalizations.of(context).participantsLabel,
                     trailing: canInvite && conversationId != null
                         ? IconButton(
                             icon: const Icon(Icons.person_add_rounded),
-                            tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
+                            tooltip: AppLocalizations.of(context).invite,
                             onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
                           )
                         : null,
@@ -368,13 +368,13 @@ class ConversationAppBar extends BaseForumAppBar {
           onInviteSuccess?.call();
         } else {
           // Show error message
-          SnackbarHelper.showError(context, inviteResult.resultText ?? AppLocalizations.of(context)?.errorInvitingUser('') ?? 'Failed to invite user');
+          SnackbarHelper.showError(context, inviteResult.resultText ?? AppLocalizations.of(context).errorInvitingUser(''));
         }
       } catch (e) {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
 
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorInvitingUser(e.toString()) ?? 'Error inviting user: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorInvitingUser(e.toString()));
       }
     }
   }

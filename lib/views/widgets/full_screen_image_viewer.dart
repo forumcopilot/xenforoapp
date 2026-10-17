@@ -104,12 +104,12 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
       if (mounted) {
         SnackbarHelper.showError(context, result.isSuccess 
-                ? (AppLocalizations.of(context)?.imageSavedToGallery ?? 'Image saved to gallery!')
-                : (AppLocalizations.of(context)?.failedToSaveImage(result.errorMessage ?? "Unknown error") ?? 'Failed to save image: ${result.errorMessage ?? "Unknown error"}'));
+                ? AppLocalizations.of(context).imageSavedToGallery
+                : AppLocalizations.of(context).failedToSaveImage(result.errorMessage ?? "Unknown error"));
       }
     } catch (e) {
       if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToSaveImage(e.toString()) ?? 'Failed to save image: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSaveImage(e.toString()));
       }
     } finally {
       if (mounted) {

@@ -69,7 +69,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onMarkUnread,
-          tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+          tooltip: AppLocalizations.of(context).markAsUnread,
         ),
 
       // Reply buttons - only show if user can send PMs
@@ -88,7 +88,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onReplyAll,
-          tooltip: AppLocalizations.of(context)?.replyAll ?? 'Reply All',
+          tooltip: AppLocalizations.of(context).replyAll,
         ),
         IconButton(
           icon: Icon(
@@ -96,7 +96,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onForward,
-          tooltip: AppLocalizations.of(context)?.forward ?? 'Forward',
+          tooltip: AppLocalizations.of(context).forward,
         ),
       ],
 
@@ -106,7 +106,7 @@ class PrivateMessageAppBar extends BaseForumAppBar {
           Icons.more_vert,
           color: colorScheme.onSurfaceVariant,
         ),
-        tooltip: AppLocalizations.of(context)?.moreOptions ?? 'More options',
+        tooltip: AppLocalizations.of(context).moreOptions,
         onSelected: (value) {
           switch (value) {
             case 'delete':

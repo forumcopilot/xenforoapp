@@ -138,13 +138,13 @@ class ForumBreadcrumb extends StatelessWidget {
         AppLogger.debug('Forum not found in manager: ${forum.id}');
         // Show error message to user
         if (context.mounted) {
-          SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.forumNotFound(forum.name) ?? 'Forum not found: ${forum.name}');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).forumNotFound(forum.name));
         }
       }
     } catch (e) {
       AppLogger.debug('Error navigating to forum ${forum.id}: $e');
       if (context.mounted) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.failedToNavigateToForumName(forum.name) ?? 'Failed to navigate to ${forum.name}');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).failedToNavigateToForumName(forum.name));
       }
     }
   }

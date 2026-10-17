@@ -68,7 +68,7 @@ class _ReplyPageState extends State<ReplyPage> {
   /// The forum holds this post for a moderator: say so, or it seems to vanish.
   void _showAwaitingApproval() {
     if (!mounted) return;
-    SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.');
+    SnackbarHelper.showInfo(context, AppLocalizations.of(context).postAwaitingApproval);
   }
 
   Future<bool> _handleSubmit(String title, String content) async {
@@ -294,10 +294,10 @@ class _ReplyPageState extends State<ReplyPage> {
           Widget compose = MessageComposePage(
             key: ValueKey('reply_with_quote_${widget.postId}'),
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.reply ?? 'Reply',
+            title: AppLocalizations.of(context).reply,
             showTitleField: false,
             initialContent: quoteContent,
-            contentHint: AppLocalizations.of(context)?.writeYourReply ?? 'Write your reply...',
+            contentHint: AppLocalizations.of(context).writeYourReply,
             onSubmit: _handleSubmit,
             onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
             topicTitle: widget.topicTitle,
@@ -343,7 +343,7 @@ class _ReplyPageState extends State<ReplyPage> {
               children: [
                 compose,
                 ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
-                Center(child: Text(AppLocalizations.of(context)?.failedToLoadQuote(snapshot.error.toString()) ?? 'Failed to load quote: \n${snapshot.error}')),
+                Center(child: Text(AppLocalizations.of(context).failedToLoadQuote(snapshot.error.toString()))),
               ],
             );
           } else {
@@ -354,7 +354,7 @@ class _ReplyPageState extends State<ReplyPage> {
     } else {
       return MessageComposePage(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)?.reply ?? 'Reply',
+        title: AppLocalizations.of(context).reply,
         showTitleField: false,
         initialContent: _getInitialContent(),
         contentHint: 'Write your reply...',

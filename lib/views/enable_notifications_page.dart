@@ -93,7 +93,7 @@ class _EnableNotificationsPageState extends State<EnableNotificationsPage> with 
     final denied = _permission == NotificationPermissionState.denied;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n?.turnOnNotifications ?? 'Turn on notifications')),
+      appBar: AppBar(title: Text(l10n.turnOnNotifications)),
       // The explanation scrolls and the buttons stay at the bottom, so a large
       // text size or a short phone never overflows.
       body: SafeArea(
@@ -109,18 +109,18 @@ class _EnableNotificationsPageState extends State<EnableNotificationsPage> with 
                     _NotificationPreview(
                       forumName: forumName,
                       samples: [
-                        (l10n?.notificationPreviewNow ?? 'now', l10n?.notificationPreviewReply ?? 'Jane replied to you: Welcome aboard! Glad you found us.'),
-                        (l10n?.notificationPreviewEarlier ?? '5m ago', l10n?.notificationPreviewMessage ?? 'Sam sent you a message: Are you coming on Friday?'),
+                        (l10n.notificationPreviewNow, l10n.notificationPreviewReply),
+                        (l10n.notificationPreviewEarlier, l10n.notificationPreviewMessage),
                       ],
                     ),
                     const SizedBox(height: DesignTokens.spacingXL),
                     Text(
-                      l10n?.neverMissAReplyOn(forumName) ?? 'Never miss a reply on $forumName',
+                      l10n.neverMissAReplyOn(forumName),
                       style: textTheme.headlineSmall?.copyWith(color: colorScheme.onSurface),
                     ),
                     const SizedBox(height: DesignTokens.spacingS),
                     Text(
-                      l10n?.notificationsPitchForum ?? 'Replies, mentions and direct messages, on your lock screen as they happen.',
+                      l10n.notificationsPitchForum,
                       style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
                     if (denied) ...[
@@ -140,11 +140,11 @@ class _EnableNotificationsPageState extends State<EnableNotificationsPage> with 
                   if (!denied)
                     FilledButton(
                       onPressed: _asking || _permission == null ? null : _turnOn,
-                      child: Text(l10n?.turnOnNotifications ?? 'Turn on notifications'),
+                      child: Text(l10n.turnOnNotifications),
                     ),
                   TextButton(
                     onPressed: () => Navigator.of(context).maybePop(),
-                    child: Text(l10n?.notNow ?? 'Not now'),
+                    child: Text(l10n.notNow),
                   ),
                 ],
               ),
@@ -236,7 +236,7 @@ class _NotificationPreview extends StatelessWidget {
 class _OffBanner extends StatelessWidget {
   const _OffBanner({required this.l10n});
 
-  final AppLocalizations? l10n;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +258,7 @@ class _OffBanner extends StatelessWidget {
               const SizedBox(width: DesignTokens.spacingS),
               Expanded(
                 child: Text(
-                  l10n?.notificationsAreTurnedOffForThisApp ?? 'Notifications are turned off for this app',
+                  l10n.notificationsAreTurnedOffForThisApp,
                   style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurface),
                 ),
               ),
@@ -266,14 +266,14 @@ class _OffBanner extends StatelessWidget {
           ),
           const SizedBox(height: DesignTokens.spacingXS),
           Text(
-            l10n?.deviceWillNotShowAlertsUntilAllowedInSettings ?? 'Your device will not show alerts until you allow notifications in Settings.',
+            l10n.deviceWillNotShowAlertsUntilAllowedInSettings,
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
           if (NotificationPermission.canOpenSettings) ...[
             const SizedBox(height: DesignTokens.spacingS),
             FilledButton.tonal(
               onPressed: NotificationPermission.openSettings,
-              child: Text(l10n?.openSettings ?? 'Open Settings'),
+              child: Text(l10n.openSettings),
             ),
           ],
         ],

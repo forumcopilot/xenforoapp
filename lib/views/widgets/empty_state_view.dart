@@ -127,7 +127,7 @@ class EmptyStateView extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: Text(AppLocalizations.of(context)?.tryAgain ?? 'Try again'),
+              label: Text(AppLocalizations.of(context).tryAgain),
             ),
           ],
           if (actions != null && actions!.isNotEmpty) ...[

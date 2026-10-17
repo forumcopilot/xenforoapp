@@ -251,7 +251,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 setState(() {
                   _waitingForInitialization = false;
                 });
-                _showErrorAndGoBack(currentSite, AppLocalizations.of(context)!.failedToConnectToSite);
+                _showErrorAndGoBack(currentSite, AppLocalizations.of(context).failedToConnectToSite);
               }
             }
           });
@@ -453,7 +453,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            AppLocalizations.of(context)!.connectionFailed,
+            AppLocalizations.of(context).connectionFailed,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.error,
               fontWeight: DesignTokens.fontWeightSemiBold,
@@ -464,7 +464,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context)!.failedToConnectToSiteName(site.name),
+                AppLocalizations.of(context).failedToConnectToSiteName(site.name),
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -488,7 +488,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 Navigator.of(context).pop(); // Go back to previous page
               },
               child: Text(
-                AppLocalizations.of(context)!.okButton,
+                AppLocalizations.of(context).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -738,7 +738,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       // Return minimal error state while navigating back
       return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)?.errorTitle ?? 'Error'),
+          title: Text(AppLocalizations.of(context).errorTitle),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -829,7 +829,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           ? FloatingActionButton.extended(
               onPressed: _onNewMessagePressed,
               icon: const Icon(Icons.post_add_rounded),
-              label: Text(_siteContext?.configDataOutput?.conversation ?? false ? AppLocalizations.of(context)!.newConversation : AppLocalizations.of(context)!.newMessage),
+              label: Text(_siteContext?.configDataOutput?.conversation ?? false ? AppLocalizations.of(context).newConversation : AppLocalizations.of(context).newMessage),
             )
           : null,
       ),
@@ -892,32 +892,32 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           return NavigationDestination(
             selectedIcon: const Icon(Icons.chat_bubble),
             icon: const Icon(Icons.chat_bubble_outline),
-            label: l10n?.home ?? 'Home',
+            label: l10n.home,
           );
         case _forumsTab:
           return NavigationDestination(
             selectedIcon: const Icon(Icons.forum),
             icon: const Icon(Icons.forum_outlined),
-            label: l10n?.forums ?? 'Forums',
+            label: l10n.forums,
           );
         case _messagesTab:
           return NavigationDestination(
             selectedIcon: counted(_unreadConversationsCount, Icons.mail),
             icon: counted(_unreadConversationsCount, Icons.mail_outline),
-            label: l10n?.messages ?? 'Messages',
+            label: l10n.messages,
           );
         case _notificationsTab:
           return NavigationDestination(
             selectedIcon: counted(_unreadAlertsCount, Icons.notifications),
             icon: counted(_unreadAlertsCount, Icons.notifications_outlined),
-            label: l10n?.notificationsTab ?? 'Alerts',
-            tooltip: l10n?.notifications ?? 'Notifications',
+            label: l10n.notificationsTab,
+            tooltip: l10n.notifications,
           );
         case _profileTab:
           return NavigationDestination(
             selectedIcon: const Icon(Icons.person),
             icon: const Icon(Icons.person_outlined),
-            label: l10n?.profile ?? 'Profile',
+            label: l10n.profile,
           );
         default:
           throw ArgumentError('Unknown tab type: $tabType');

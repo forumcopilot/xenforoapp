@@ -58,7 +58,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
       final updated = await postProxy.votePollAsync(widget.topicId, _selectedIds.toList());
       if (updated != null && mounted) {
         widget.onVoteSuccess(updated);
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.vote);
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).vote);
       } else if (mounted) {
         _showError('Vote failed. Please try again.');
       }
@@ -78,7 +78,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final showResults = widget.poll.canViewResults &&
         widget.poll.voterCount != null &&
         widget.poll.voterCount! > 0;

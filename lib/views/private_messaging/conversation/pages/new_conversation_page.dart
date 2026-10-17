@@ -308,7 +308,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
                       final success = await _handleSubmit(title, content);
                       if (success && mounted) {
-                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationCreatedSuccessfully ?? 'Conversation created successfully');
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationCreatedSuccessfully);
 
                         // Dismiss keyboard before navigating
                         FocusScope.of(context).unfocus();
@@ -423,7 +423,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                             controller: _messageController,
                             focusNode: _messageFocusNode,
                             decoration: InputDecoration(
-                              hintText: AppLocalizations.of(context)?.writeYourMessage ?? 'Write your message...',
+                              hintText: AppLocalizations.of(context).writeYourMessage,
                               hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                               filled: true,
                               fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
@@ -577,9 +577,9 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                                 ),
                                           title: Text(attachment.name),
                                           subtitle: isUploading
-                                              ? Text(AppLocalizations.of(context)?.uploading ?? 'Uploading...', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                              ? Text(AppLocalizations.of(context).uploading, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                               : attachmentId != null
-                                                  ? Text(AppLocalizations.of(context)?.uploaded ?? 'Uploaded', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                                  ? Text(AppLocalizations.of(context).uploaded, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                                   : null,
                                           trailing: IconButton(
                                             icon: Icon(Icons.close),
@@ -855,7 +855,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
           _uploadingFiles.remove(file.path);
         });
         if (mounted) {
-          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file');
+          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context).failedToUploadFile(''));
         }
         return null;
       }
@@ -874,7 +874,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         _uploadingFiles.remove(file.path);
       });
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
       }
       return null;
     }
@@ -1054,7 +1054,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_bold, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bold ?? 'Bold', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bold, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1064,7 +1064,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_italic, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.italic ?? 'Italic', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).italic, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1074,7 +1074,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_underline, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.underline ?? 'Underline', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).underline, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1084,7 +1084,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.strikethrough_s, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.strikethrough ?? 'Strikethrough', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).strikethrough, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1096,7 +1096,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.link, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.link ?? 'Link', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).link, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1106,7 +1106,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.image, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.image ?? 'Image', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).image, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1116,7 +1116,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.videocam, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.video ?? 'Video', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).video, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1128,7 +1128,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_quote, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.quote ?? 'Quote', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).quote, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1138,7 +1138,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.code, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.code ?? 'Code', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).code, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1148,7 +1148,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.visibility_off, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.spoiler ?? 'Spoiler', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).spoiler, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1160,7 +1160,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_list_bulleted, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bulletList ?? 'Bullet List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bulletList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1170,7 +1170,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_list_numbered, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.numberedList ?? 'Numbered List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).numberedList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1180,7 +1180,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.subdirectory_arrow_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.listItem ?? 'List Item', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).listItem, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1192,7 +1192,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_left, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignLeft ?? 'Align Left', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignLeft, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1202,7 +1202,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_center, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignCenter ?? 'Align Center', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignCenter, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1212,7 +1212,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignRight ?? 'Align Right', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignRight, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),

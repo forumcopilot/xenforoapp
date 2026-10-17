@@ -350,20 +350,20 @@ class _MessageComposePageState extends State<MessageComposePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.insertImage ?? 'Insert Image'),
-          content: Text(AppLocalizations.of(context)?.howWouldYouLikeToInsertImage ?? 'How would you like to insert this image?'),
+          title: Text(AppLocalizations.of(context).insertImage),
+          content: Text(AppLocalizations.of(context).howWouldYouLikeToInsertImage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop('thumbnail'),
-              child: Text(AppLocalizations.of(context)?.thumbnail ?? 'Thumbnail'),
+              child: Text(AppLocalizations.of(context).thumbnail),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop('full'),
-              child: Text(AppLocalizations.of(context)?.fullSize ?? 'Full Size'),
+              child: Text(AppLocalizations.of(context).fullSize),
             ),
           ],
         );
@@ -704,21 +704,21 @@ class _MessageComposePageState extends State<MessageComposePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.removeAttachment ?? 'Remove Attachment'),
+          title: Text(AppLocalizations.of(context).removeAttachment),
           content: Text(
-            AppLocalizations.of(context)?.areYouSureYouWantToRemoveThisAttachment ?? 'Are you sure you want to remove this attachment?',
+            AppLocalizations.of(context).areYouSureYouWantToRemoveThisAttachment,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+              child: Text(AppLocalizations.of(context).delete),
             ),
           ],
         );
@@ -881,9 +881,9 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                                 const SizedBox(height: 2),
                                                 Text(
                                                   isUploading
-                                                      ? AppLocalizations.of(context)?.uploading ?? 'Uploading...'
+                                                      ? AppLocalizations.of(context).uploading
                                                       : attachmentId != null
-                                                          ? '$fileType • $fileSize • ${AppLocalizations.of(context)?.uploaded ?? 'Uploaded'}'
+                                                          ? '$fileType • $fileSize • ${AppLocalizations.of(context).uploaded}'
                                                           : '$fileType • $fileSize',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: isUploading ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -941,7 +941,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                         }
                         if (snapshot.hasError) {
                           debugPrint('   - Showing error: ${snapshot.error}');
-                          return Text('${AppLocalizations.of(context)?.error ?? 'Error'}: ${snapshot.error}');
+                          return Text('${AppLocalizations.of(context).error}: ${snapshot.error}');
                         }
                         debugPrint('   - Returning ${snapshot.data?.length ?? 0} attachment widgets');
                         return Column(
@@ -1177,7 +1177,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // "None" option if prefix is not required
               if (!widget.requirePrefix)
                 FilterChip(
-                  label: Text(AppLocalizations.of(context)?.none ?? 'None'),
+                  label: Text(AppLocalizations.of(context).none),
                   selected: widget.selectedPrefixId == null,
                   onSelected: (selected) {
                     if (widget.onPrefixChanged != null) {
@@ -1270,12 +1270,12 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
   Future<void> _submit() async {
     if (widget.showTitleField && widget.requireTitle && _titleController.text.trim().isEmpty) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterTitle ?? 'Please enter a title');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterTitle);
       return;
     }
 
     if (_contentController.text.trim().isEmpty) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterContent ?? 'Please enter some content');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterContent);
       return;
     }
 
@@ -1351,7 +1351,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // File attachment button - only show if onFileUpload is provided
               if (widget.onFileUpload != null)
                 Semantics(
-                  label: AppLocalizations.of(context)?.attachFile ?? 'Attach File',
+                  label: AppLocalizations.of(context).attachFile,
                   hint: 'Attach a file to this message',
                   button: true,
                   child: IconButton(
@@ -1359,14 +1359,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       Icons.attach_file,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    tooltip: AppLocalizations.of(context)?.attachFile ?? 'Attach File',
+                    tooltip: AppLocalizations.of(context).attachFile,
                     onPressed: _handleFileUpload,
                   ),
                 ),
               // Image upload button - only show if onFileUpload is provided
               if (widget.onFileUpload != null)
                 Semantics(
-                  label: AppLocalizations.of(context)?.uploadImage ?? 'Upload Image',
+                  label: AppLocalizations.of(context).uploadImage,
                   hint: 'Upload an image to this message',
                   button: true,
                   child: IconButton(
@@ -1374,20 +1374,20 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       Icons.image,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    tooltip: AppLocalizations.of(context)?.uploadImage ?? 'Upload Image',
+                    tooltip: AppLocalizations.of(context).uploadImage,
                     onPressed: _handleImageUpload,
                   ),
                 ),
               // BBCode button
               Semantics(
-                label: AppLocalizations.of(context)?.formatting ?? 'Formatting',
+                label: AppLocalizations.of(context).formatting,
                 hint: 'Open formatting options',
                 button: true,
                 enabled: _isContentFieldFocused,
                 child: PopupMenuButton<String>(
                   enabled: _isContentFieldFocused,
                   icon: Icon(Icons.format_bold, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
-                  tooltip: AppLocalizations.of(context)?.formatting ?? 'Formatting',
+                  tooltip: AppLocalizations.of(context).formatting,
                   onSelected: _insertBBCode,
                 itemBuilder: (context) => [
                   // Text formatting
@@ -1397,7 +1397,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_bold, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bold ?? 'Bold', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bold, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1407,7 +1407,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_italic, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.italic ?? 'Italic', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).italic, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1417,7 +1417,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_underline, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.underline ?? 'Underline', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).underline, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1427,7 +1427,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.strikethrough_s, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.strikethrough ?? 'Strikethrough', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).strikethrough, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1439,7 +1439,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.link, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.link ?? 'Link', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).link, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1449,7 +1449,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.image, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.image ?? 'Image', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).image, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1459,7 +1459,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.videocam, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.video ?? 'Video', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).video, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1471,7 +1471,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_quote, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.quote ?? 'Quote', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).quote, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1481,7 +1481,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.code, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.code ?? 'Code', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).code, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1491,7 +1491,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.visibility_off, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.spoiler ?? 'Spoiler', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).spoiler, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1503,7 +1503,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_list_bulleted, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bulletList ?? 'Bullet List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bulletList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1513,7 +1513,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_list_numbered, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.numberedList ?? 'Numbered List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).numberedList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1523,7 +1523,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.subdirectory_arrow_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.listItem ?? 'List Item', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).listItem, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1535,7 +1535,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_left, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignLeft ?? 'Align Left', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignLeft, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1545,7 +1545,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_center, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignCenter ?? 'Align Center', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignCenter, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1555,7 +1555,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignRight ?? 'Align Right', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignRight, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1565,7 +1565,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // Mention button
               IconButton(
                 icon: Icon(Icons.alternate_email, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
-                tooltip: AppLocalizations.of(context)?.mentionUser ?? 'Mention User',
+                tooltip: AppLocalizations.of(context).mentionUser,
                 onPressed: _isContentFieldFocused ? _handleMention : null,
               ),
             ],
@@ -1669,7 +1669,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)?.forum ?? 'Forum',
+                                    AppLocalizations.of(context).forum,
                                     style: textTheme.titleSmall?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
                                       fontWeight: DesignTokens.fontWeightMedium,
@@ -1758,7 +1758,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  AppLocalizations.of(context)?.content ?? 'Content',
+                                  AppLocalizations.of(context).content,
                                   style: textTheme.titleSmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontWeight: DesignTokens.fontWeightMedium,

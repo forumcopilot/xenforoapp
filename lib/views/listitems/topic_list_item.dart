@@ -109,7 +109,7 @@ class TopicListItem extends StatelessWidget {
                         top: DesignTokens.spacingM - DesignTokens.spacingXS,
                         right: DesignTokens.spacingS,
                       ),
-                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context)?.unread ?? 'Unread'),
+                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context).unread),
                     ),
                   ],
                   if (topic.isDeleted) ...[

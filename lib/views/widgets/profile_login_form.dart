@@ -106,10 +106,10 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Welcome Text
-                  Text(AppLocalizations.of(context)?.welcomeBack ?? 'Welcome Back',
+                  Text(AppLocalizations.of(context).welcomeBack,
                       style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   const SizedBox(height: 8),
-                  Text(AppLocalizations.of(context)?.signInToAccessYourProfile ?? 'Sign in to access your profile and manage your account',
+                  Text(AppLocalizations.of(context).signInToAccessYourProfile,
                       style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
                   const SizedBox(height: 32),
                   // Username field
@@ -121,7 +121,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     enableSuggestions: false,
                     decoration: InputDecoration(
                       labelText: 'Username',
-                      hintText: AppLocalizations.of(context)?.enterYourUsername ?? 'Enter your username',
+                      hintText: AppLocalizations.of(context).enterYourUsername,
                       prefixIcon: Icon(Icons.person_outline_rounded, color: colorScheme.onSurfaceVariant),
                       filled: true,
                       fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
@@ -149,7 +149,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      hintText: AppLocalizations.of(context)?.enterYourPassword ?? 'Enter your password',
+                      hintText: AppLocalizations.of(context).enterYourPassword,
                       prefixIcon: Icon(Icons.lock_outline_rounded, color: colorScheme.onSurfaceVariant),
                       suffixIcon: IconButton(
                         icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: colorScheme.onSurfaceVariant),
@@ -183,7 +183,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPasswordPage(siteContext: widget.siteContext)));
                       },
-                      child: Text(AppLocalizations.of(context)?.forgotPassword ?? 'Forgot password?', style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w500)),
+                      child: Text(AppLocalizations.of(context).forgotPassword, style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w500)),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -221,7 +221,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       ),
                       icon: Icon(Icons.key_rounded, color: colorScheme.primary),
                       label: Text(
-                        l10n?.signInWithPasskey ?? 'Sign in with Passkey',
+                        l10n.signInWithPasskey,
                         style: textTheme.titleMedium?.copyWith(
                           color: colorScheme.primary,
                           fontWeight: DesignTokens.fontWeightBold,
@@ -250,12 +250,12 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppLocalizations.of(context)?.dontHaveAnAccount ?? 'Don\'t have an account?', style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+                      Text(AppLocalizations.of(context).dontHaveAnAccount, style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
                       TextButton(
                         onPressed: () {
                           Get.to(() => RegisterPage(siteContext: widget.siteContext));
                         },
-                        child: Text(AppLocalizations.of(context)?.register ?? 'Register', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                        child: Text(AppLocalizations.of(context).register, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

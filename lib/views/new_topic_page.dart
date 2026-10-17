@@ -84,13 +84,13 @@ class _NewTopicPageState extends State<NewTopicPage> {
   /// The forum holds this topic for a moderator: say so, or it seems to vanish.
   void _showAwaitingApproval() {
     if (!mounted) return;
-    SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.');
+    SnackbarHelper.showInfo(context, AppLocalizations.of(context).postAwaitingApproval);
   }
 
   Future<bool> _handleSubmit(String title, String content) async {
     // Validate required prefix before submission
     if (_requirePrefix && (_selectedPrefixId == null || _selectedPrefixId!.isEmpty)) {
-      SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseSelectPrefix ?? 'Please select a prefix');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseSelectPrefix);
       return false;
     }
 
@@ -265,7 +265,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
   Widget build(BuildContext context) {
     return MessageComposePage(
       siteContext: widget.siteContext,
-      title: AppLocalizations.of(context)?.newTopic ?? 'New Topic',
+      title: AppLocalizations.of(context).newTopic,
       showTitleField: true,
       titleHint: 'Write your topic title...',
       contentHint: 'Write your topic content...',

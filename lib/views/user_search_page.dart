@@ -164,7 +164,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
             child: SearchTextField(
               controller: _searchController,
               focusNode: _searchFocusNode,
-              hintText: AppLocalizations.of(context)?.searchUsers ?? 'Search users...',
+              hintText: AppLocalizations.of(context).searchUsers,
               onSearch: _handleSearch,
               autoSearch: true,
               onClear: _handleClear,
@@ -181,7 +181,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
   Widget _buildContent(ColorScheme colorScheme, TextTheme textTheme) {
     if (_error != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.searchFailed ?? 'Search failed',
+        title: AppLocalizations.of(context).searchFailed,
         message: _error!,
       );
     }

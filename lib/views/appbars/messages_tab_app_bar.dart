@@ -25,7 +25,7 @@ class MessagesTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context)?.messages ?? 'Messages',
+        AppLocalizations.of(context).messages,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,
@@ -42,7 +42,7 @@ class MessagesTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildMembersButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.people_alt_rounded),
-      tooltip: AppLocalizations.of(context)?.members ?? 'Members',
+      tooltip: AppLocalizations.of(context).members,
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => MembersPage(siteContext: siteContext)),

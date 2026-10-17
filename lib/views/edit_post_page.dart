@@ -71,7 +71,7 @@ class _EditPostPageState extends State<EditPostPage> {
     // Handle case where topic had no prefix but now prefix is required
     if (_requirePrefix && _availablePrefixes.isNotEmpty && (_selectedPrefixId == null || _selectedPrefixId!.isEmpty)) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseSelectPrefix ?? 'Please select a prefix');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseSelectPrefix);
       }
       return false;
     }
@@ -374,7 +374,7 @@ class _EditPostPageState extends State<EditPostPage> {
                 children: [
                   Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
-                  Text(AppLocalizations.of(context)?.failedToLoadPost(snapshot.error.toString()) ?? 'Failed to load post: \n${snapshot.error}'),
+                  Text(AppLocalizations.of(context).failedToLoadPost(snapshot.error.toString())),
                 ],
               ),
             ),

@@ -221,19 +221,19 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
           // Call the callback to update the conversation state in the list
           widget.onMarkUnread?.call();
 
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationMarkedAsUnread ?? 'Conversation marked as unread');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationMarkedAsUnread);
           // Pop back to the conversation list
           Navigator.pop(context);
         } else {
           // API call returned false - show error message
           final errorMessage =
-              result.resultText?.isNotEmpty == true ? result.resultText! : AppLocalizations.of(context)?.failedToMarkConversationAsUnread('') ?? 'Failed to mark conversation as unread';
+              result.resultText?.isNotEmpty == true ? result.resultText! : AppLocalizations.of(context).failedToMarkConversationAsUnread('');
           SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToMarkConversationAsUnread(e.toString()) ?? 'Failed to mark conversation as unread: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToMarkConversationAsUnread(e.toString()));
       }
     }
   }
@@ -643,7 +643,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
@@ -665,16 +665,16 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
       if (mounted) {
         if (result.result) {
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationClosed ?? 'Conversation closed');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationClosed);
           // Refresh conversation to update state
           await _loadConversation();
         } else {
-          SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context)?.failedToCloseConversation('') ?? 'Failed to close conversation');
+          SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context).failedToCloseConversation(''));
         }
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToCloseConversation(e.toString()) ?? 'Failed to close conversation: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToCloseConversation(e.toString()));
       }
     }
   }
@@ -702,7 +702,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
@@ -724,7 +724,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
       if (mounted) {
         if (result.result) {
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationOpened ?? 'Conversation opened');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationOpened);
           // Refresh conversation to update state
           await _loadConversation();
         } else {
@@ -733,7 +733,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToOpenConversation(e.toString()) ?? 'Failed to open conversation: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToOpenConversation(e.toString()));
       }
     }
   }
@@ -746,7 +746,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          AppLocalizations.of(context)?.leaveConversation ?? 'Leave conversation',
+          AppLocalizations.of(context).leaveConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -761,7 +761,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
@@ -785,11 +785,11 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         Navigator.of(context).pop(true);
       } else {
         // The page used to close as if the conversation had been left.
-        SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation');
+        SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context).failedToLeaveConversation(''));
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToLeaveConversation(e.toString()));
       }
     }
   }
@@ -853,7 +853,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadConversation,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -966,7 +966,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                           child: OutlinedButton.icon(
                             onPressed: () => _loadOlderMessages(),
                             icon: const Icon(Icons.arrow_upward),
-                            label: Text(AppLocalizations.of(context)?.loadEarlierMessages ?? 'Load Earlier Messages'),
+                            label: Text(AppLocalizations.of(context).loadEarlierMessages),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                             ),
@@ -1290,7 +1290,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                    AppLocalizations.of(context).cancel,
                     style: TextStyle(color: colorScheme.primary),
                   ),
                 ),
@@ -1413,7 +1413,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToJumpToMessage(e.toString()) ?? 'Failed to jump to message: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToJumpToMessage(e.toString()));
       }
     }
   }
@@ -1445,23 +1445,23 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
             child: Row(
               children: [
                 Semantics(
-                  label: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
+                  label: AppLocalizations.of(context).goToTop,
                   hint: 'Jump to first message',
                   button: true,
                   child: IconButton(
                     icon: const Icon(Icons.arrow_upward),
                     onPressed: _jumpToFirstMessage,
-                    tooltip: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
+                    tooltip: AppLocalizations.of(context).goToTop,
                   ),
                 ),
                 Semantics(
-                  label: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
+                  label: AppLocalizations.of(context).goToBottom,
                   hint: 'Jump to last message',
                   button: true,
                   child: IconButton(
                     icon: const Icon(Icons.arrow_downward),
                     onPressed: _jumpToLastMessage,
-                    tooltip: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
+                    tooltip: AppLocalizations.of(context).goToBottom,
                   ),
                 ),
                 SizedBox(width: DesignTokens.spacingS),
@@ -1487,7 +1487,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     child: FilledButton.icon(
                       onPressed: _onReplyPressed,
                       icon: const Icon(Icons.reply),
-                      label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
+                      label: Text(AppLocalizations.of(context).reply),
                     ),
                   ),
               ],
@@ -1536,7 +1536,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
   Future<void> _onLikeMessage(FCConversationMessage message) async {
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showError(context, AppLocalizations.of(context)?.pleaseLoginToLikeMessages ?? 'Please login to like messages');
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
       return;
     }
 
@@ -1666,8 +1666,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
       if (mounted) {
         SnackbarHelper.showError(context, AppLocalizations.of(context)
-                    ?.failedToLikeOrUnlikeMessage(wasLiked ? (AppLocalizations.of(context)?.unlike ?? 'unlike') : (AppLocalizations.of(context)?.like ?? 'like'), e.toString()) ??
-                'Failed to ${wasLiked ? 'unlike' : 'like'} message: $e');
+                    .failedToLikeOrUnlikeMessage(wasLiked ? AppLocalizations.of(context).unlike : AppLocalizations.of(context).like, e.toString()));
       }
     }
   }

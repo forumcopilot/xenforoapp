@@ -24,7 +24,7 @@ class ErrorStateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateView.error(
       icon: icon,
-      message: title ?? (AppLocalizations.of(context)?.errorTitle ?? 'Error'),
+      message: title ?? AppLocalizations.of(context).errorTitle,
       hint: message,
     );
   }

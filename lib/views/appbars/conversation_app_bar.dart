@@ -299,7 +299,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
               Icons.people_rounded,
               color: colorScheme.onSurfaceVariant,
             ),
-            tooltip: AppLocalizations.of(context)?.participants(participantCount) ?? 'Participants ($participantCount)',
+            tooltip: AppLocalizations.of(context).participants(participantCount),
             onPressed: () {
               showParticipantsBottomSheet(
                 context,
@@ -325,7 +325,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
               Icons.mark_email_unread_rounded,
               color: colorScheme.onSurfaceVariant,
             ),
-            tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+            tooltip: AppLocalizations.of(context).markAsUnread,
             onPressed: onMarkUnread,
           ),
         ),
@@ -341,7 +341,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
             Icons.more_vert,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)!.moreOptions,
+          tooltip: AppLocalizations.of(context).moreOptions,
           onSelected: (value) {
             switch (value) {
               case 'leave':
@@ -366,7 +366,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      AppLocalizations.of(context)!.leaveConversation,
+                      AppLocalizations.of(context).leaveConversation,
                       style: TextStyle(
                         color: colorScheme.error,
                       ),
@@ -387,7 +387,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      AppLocalizations.of(context)!.reportConversation,
+                      AppLocalizations.of(context).reportConversation,
                       style: TextStyle(
                         color: colorScheme.error,
                       ),
@@ -427,11 +427,11 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SheetTitle(
-                    AppLocalizations.of(context)!.participants(participants.length),
+                    AppLocalizations.of(context).participants(participants.length),
                     trailing: canInvite && conversationId != null
                         ? IconButton(
                             icon: const Icon(Icons.person_add_rounded),
-                            tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
+                            tooltip: AppLocalizations.of(context).invite,
                             onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
                           )
                         : null,
@@ -541,7 +541,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           Navigator.pop(context);
           
           // Show success message
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)!.usernameHasBeenInvited(username));
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).usernameHasBeenInvited(username));
 
           // Refresh conversation data
           onInviteSuccess?.call();
@@ -553,7 +553,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
         
-        SnackbarHelper.showError(context, AppLocalizations.of(context)!.errorInvitingUser(e.toString()));
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorInvitingUser(e.toString()));
       }
     }
   }

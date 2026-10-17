@@ -378,7 +378,7 @@ class _ForumSettingsCategoryPageState extends State<ForumSettingsCategoryPage> {
               FilledButton.icon(
                 onPressed: _loadSettings,
                 icon: Icon(Icons.refresh),
-                label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+                label: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),
@@ -392,7 +392,7 @@ class _ForumSettingsCategoryPageState extends State<ForumSettingsCategoryPage> {
         child: Padding(
           padding: DesignTokens.paddingScreen,
           child: Text(
-            AppLocalizations.of(context)?.noSettingsAvailable ?? 'No settings available',
+            AppLocalizations.of(context).noSettingsAvailable,
             style: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),

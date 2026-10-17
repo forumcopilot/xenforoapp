@@ -265,11 +265,11 @@ class ErrorHandler {
                   Get.back();
                   // Could trigger a retry mechanism here
                 },
-                child: Text(AppLocalizations.of(Get.context!)?.retryButton ?? 'Retry'),
+                child: Text(AppLocalizations.of(Get.context!).retryButton),
               ),
             TextButton(
               onPressed: () => Get.back(),
-              child: Text(AppLocalizations.of(Get.context!)?.okButton ?? 'OK'),
+              child: Text(AppLocalizations.of(Get.context!).okButton),
             ),
           ],
         ),

@@ -158,7 +158,7 @@ class ProfileInfoSection extends StatelessWidget {
                     _buildInfoTile(
                       context,
                       icon: Icons.cake,
-                      title: AppLocalizations.of(context)?.birthday ?? 'Birthday',
+                      title: AppLocalizations.of(context).birthday,
                       subtitle: formatted,
                     ),
                   ];
@@ -174,7 +174,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.post_add,
-                  title: AppLocalizations.of(context)?.posts ?? 'Posts',
+                  title: AppLocalizations.of(context).posts,
                   subtitle: formatNumber(context, userInfo.postCount),
                 ),
               // Likes Received and Likes Given
@@ -206,14 +206,14 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.people_outline,
-                  title: AppLocalizations.of(context)?.following ?? 'Following',
+                  title: AppLocalizations.of(context).following,
                   subtitle: userInfo.followingCount.toString(),
                 ),
               if (userInfo.follower != null && userInfo.follower != 0)
                 _buildInfoTile(
                   context,
                   icon: Icons.people,
-                  title: AppLocalizations.of(context)?.followers ?? 'Followers',
+                  title: AppLocalizations.of(context).followers,
                   subtitle: userInfo.follower.toString(),
                 ),
               // About field (from direct API field)
@@ -221,7 +221,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.person_outline,
-                  title: AppLocalizations.of(context)?.about ?? 'About',
+                  title: AppLocalizations.of(context).about,
                   subtitle: userInfo.bio!,
                 ),
               // Location field (from direct API field)
@@ -229,7 +229,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.location_on,
-                  title: AppLocalizations.of(context)?.location ?? 'Location',
+                  title: AppLocalizations.of(context).location,
                   subtitle: userInfo.location!,
                 ),
               // Website field (clickable)
@@ -237,7 +237,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildInfoTile(
                   context,
                   icon: Icons.language,
-                  title: AppLocalizations.of(context)?.website ?? 'Website',
+                  title: AppLocalizations.of(context).website,
                   subtitle: userInfo.website!,
                   onTap: () async {
                     final url = userInfo.website!;
@@ -252,7 +252,7 @@ class ProfileInfoSection extends StatelessWidget {
                 _buildSignatureTile(
                   context,
                   icon: Icons.edit_note,
-                  title: AppLocalizations.of(context)?.signature ?? 'Signature',
+                  title: AppLocalizations.of(context).signature,
                   signature: userInfo.signature!,
                 ),
               // Location field from customFields (fallback for older data)
@@ -278,7 +278,7 @@ class ProfileInfoSection extends StatelessWidget {
                     _buildSignatureTile(
                       context,
                       icon: Icons.edit_note,
-                      title: AppLocalizations.of(context)?.signature ?? 'Signature',
+                      title: AppLocalizations.of(context).signature,
                       signature: signatureField.first.value,
                     ),
                   ];

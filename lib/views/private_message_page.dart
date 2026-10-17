@@ -126,13 +126,13 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
         // Call the callback to update the message state in the list
         widget.onMarkUnread?.call();
 
-        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread');
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).messageMarkedAsUnread);
         // Pop back to the message list
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToMarkAsUnread(e.toString()));
       }
     }
   }
@@ -176,7 +176,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          AppLocalizations.of(context)?.deleteMessage ?? 'Delete Message',
+          AppLocalizations.of(context).deleteMessage,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         content: Text(
@@ -186,11 +186,11 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+            child: Text(AppLocalizations.of(context).delete),
           ),
         ],
       ),
@@ -204,7 +204,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToDeleteMessage(e.toString()));
       }
     }
   }
@@ -246,7 +246,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadMessage,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),

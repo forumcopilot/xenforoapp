@@ -113,7 +113,7 @@ class PostListItemSocial extends StatelessWidget {
                     label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount),
                     hint: onLongPressLike == null
                         ? null
-                        : (AppLocalizations.of(context)?.reactionHoldHint ?? 'Long press for more reactions'),
+                        : AppLocalizations.of(context).reactionHoldHint,
                     isSelected: isLiked,
                     context: context,
                   );

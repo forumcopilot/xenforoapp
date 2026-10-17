@@ -87,7 +87,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
         }
         // Remove ANSI color codes if present
         errorMessage = errorMessage.replaceAll(RegExp(r'\[\d+m'), '');
-        showErrorDialog(AppLocalizations.of(context)?.errorAddingMembers(errorMessage) ?? 'Error adding members: $errorMessage');
+        showErrorDialog(AppLocalizations.of(context).errorAddingMembers(errorMessage));
       }
       return false;
     }
@@ -131,7 +131,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
             color: colorScheme.primary,
           ),
           label: Text(
-            AppLocalizations.of(context)?.add ?? 'Add',
+            AppLocalizations.of(context).add,
             style: TextStyle(
               color: colorScheme.primary,
             ),
@@ -177,7 +177,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.addMembers ?? 'Add Members',
+          AppLocalizations.of(context).addMembers,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
@@ -205,7 +205,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
                       final content = _messageController.text;
                       final success = await _handleSubmit(content);
                       if (success && mounted) {
-                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.membersAddedSuccessfully ?? 'Members added successfully');
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).membersAddedSuccessfully);
                         Navigator.of(context).pop(true);
                       }
                     } finally {
@@ -244,8 +244,8 @@ class _AddMembersPageState extends State<AddMembersPage> {
             TextField(
               controller: _messageController,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)?.inviteMessageOptional ?? 'Invite Message (optional)',
-                hintText: AppLocalizations.of(context)?.iWouldLikeToAddYouToThisConversation ?? 'I would like to add you to this conversation.',
+                labelText: AppLocalizations.of(context).inviteMessageOptional,
+                hintText: AppLocalizations.of(context).iWouldLikeToAddYouToThisConversation,
                 labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                 floatingLabelStyle: TextStyle(color: colorScheme.primary),
                 filled: true,

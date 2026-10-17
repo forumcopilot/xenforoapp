@@ -41,14 +41,14 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
     setState(() => _saving = false);
     if (!result.result) {
       final reason = result.resultText?.trim();
-      SnackbarHelper.showError(context, (reason != null && reason.isNotEmpty) ? reason : (l10n?.somethingWentWrong ?? 'Something went wrong'));
+      SnackbarHelper.showError(context, (reason != null && reason.isNotEmpty) ? reason : l10n.somethingWentWrong);
       return;
     }
     SnackbarHelper.showSuccess(
       context,
       result.confirmationRequired
-          ? (l10n?.emailChangeConfirm ?? 'Check your inbox: the new address takes effect once you confirm it.')
-          : (l10n?.emailChanged ?? 'Email address changed'),
+          ? l10n.emailChangeConfirm
+          : l10n.emailChanged,
     );
     Navigator.of(context).pop(true);
   }
@@ -58,11 +58,11 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.changeEmail ?? 'Change email'),
+        title: Text(l10n.changeEmail),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
-            child: Text(l10n?.save ?? 'Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -80,11 +80,11 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                 enableSuggestions: false,
                 autofillHints: const [AutofillHints.email],
                 textInputAction: TextInputAction.next,
-                decoration: InputDecoration(labelText: l10n?.newEmailAddress ?? 'New email address'),
+                decoration: InputDecoration(labelText: l10n.newEmailAddress),
                 validator: (v) {
                   final value = v?.trim() ?? '';
-                  if (value.isEmpty) return l10n?.pleaseEnterEmail ?? 'Please enter your email';
-                  if (!GetUtils.isEmail(value)) return l10n?.pleaseEnterValidEmail ?? 'Please enter a valid email';
+                  if (value.isEmpty) return l10n.pleaseEnterEmail;
+                  if (!GetUtils.isEmail(value)) return l10n.pleaseEnterValidEmail;
                   return null;
                 },
               ),
@@ -96,13 +96,13 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _save(),
                 decoration: InputDecoration(
-                  labelText: l10n?.currentPassword ?? 'Current password',
+                  labelText: l10n.currentPassword,
                   suffixIcon: IconButton(
                     icon: Icon(_visible ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _visible = !_visible),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? (l10n?.pleaseEnterPassword ?? 'Please enter your password') : null,
+                validator: (v) => (v == null || v.isEmpty) ? l10n.pleaseEnterPassword : null,
               ),
             ],
           ),

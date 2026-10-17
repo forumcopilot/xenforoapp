@@ -46,7 +46,7 @@ class ForumTopicsAppBar extends BaseForumAppBar {
       actions.add(
         PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert_rounded),
-          tooltip: AppLocalizations.of(context)!.moreOptions,
+          tooltip: AppLocalizations.of(context).moreOptions,
           onSelected: (value) {
             switch (value) {
               case 'new_topic':
@@ -68,7 +68,7 @@ class ForumTopicsAppBar extends BaseForumAppBar {
                   children: [
                     Icon(Icons.post_add_rounded, color: colorScheme.onSurfaceVariant),
                     const SizedBox(width: 12),
-                    Text(AppLocalizations.of(context)!.newTopic, style: textTheme.bodyLarge),
+                    Text(AppLocalizations.of(context).newTopic, style: textTheme.bodyLarge),
                   ],
                 ),
               ),
@@ -96,7 +96,7 @@ class ForumTopicsAppBar extends BaseForumAppBar {
                   children: [
                     Icon(Icons.visibility_off_rounded, color: colorScheme.onSurfaceVariant),
                     const SizedBox(width: 12),
-                    Text(AppLocalizations.of(context)!.markRead, style: textTheme.bodyLarge),
+                    Text(AppLocalizations.of(context).markRead, style: textTheme.bodyLarge),
                   ],
                 ),
               ),

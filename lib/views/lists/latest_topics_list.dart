@@ -289,7 +289,7 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noLatestTopics,
+              AppLocalizations.of(context).noLatestTopics,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -299,7 +299,7 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noRecentTopicsToDisplay,
+              AppLocalizations.of(context).noRecentTopicsToDisplay,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -330,8 +330,8 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
         if (!widget.siteContext.isLoggedIn) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)!.signInToViewLatestTopics,
-            message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewLatestTopics ?? resultText,
+            title: AppLocalizations.of(context).signInToViewLatestTopics,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewLatestTopics,
             icon: Icons.lock_outline_rounded,
           );
         }

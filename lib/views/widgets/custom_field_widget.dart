@@ -121,7 +121,7 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
           decoration: StyleBuilders.inputDecoration(
             colorScheme: colorScheme,
             labelText: null, // Remove floating label since we have explicit label above
-            hintText: AppLocalizations.of(context)?.selectAnOption ?? 'Select an option',
+            hintText: AppLocalizations.of(context).selectAnOption,
             prefixIcon: Icons.arrow_drop_down_circle_outlined,
           ),
           hint: Text(
@@ -721,7 +721,7 @@ class _CustomFieldWidgetState extends State<CustomFieldWidget> {
           decoration: StyleBuilders.inputDecoration(
             colorScheme: colorScheme,
             labelText: null,
-            hintText: field.description.isNotEmpty ? field.description : AppLocalizations.of(context)?.enterANumber ?? 'Enter a number',
+            hintText: field.description.isNotEmpty ? field.description : AppLocalizations.of(context).enterANumber,
             prefixIcon: Icons.numbers,
           ).copyWith(
             filled: false,

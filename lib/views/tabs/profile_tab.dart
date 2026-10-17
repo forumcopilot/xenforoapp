@@ -296,7 +296,7 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
                                   context,
                                   UserProfilePage(siteContext: widget.siteContext, userName: username),
                                 ),
-                                child: Text(AppLocalizations.of(context)?.viewProfile ?? 'View profile'),
+                                child: Text(AppLocalizations.of(context).viewProfile),
                               ),
                             ),
                             const SizedBox(width: DesignTokens.spacingS),
@@ -306,7 +306,7 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
                                   context,
                                   ForumSettingsPage(siteContext: widget.siteContext),
                                 ),
-                                child: Text(AppLocalizations.of(context)?.settings ?? 'Settings'),
+                                child: Text(AppLocalizations.of(context).settings),
                               ),
                             ),
                           ],
@@ -398,18 +398,18 @@ class _AccountSection extends StatelessWidget {
           child: Semantics(
             header: true,
             child: Text(
-              l10n?.account ?? 'Account',
+              l10n.account,
               style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurfaceVariant),
             ),
           ),
         ),
-        row(Icons.alternate_email_rounded, l10n?.changeEmail ?? 'Change email',
+        row(Icons.alternate_email_rounded, l10n.changeEmail,
             () => AppNavigation.pushForm<void>(context, ChangeEmailPage(siteContext: siteContext))),
-        row(Icons.password_rounded, l10n?.changePassword ?? 'Change password',
+        row(Icons.password_rounded, l10n.changePassword,
             () => AppNavigation.pushForm<void>(context, ChangePasswordPage(siteContext: siteContext))),
-        row(Icons.tune_rounded, l10n?.appSettings ?? 'App Settings',
+        row(Icons.tune_rounded, l10n.appSettings,
             () => AppNavigation.push<void>(context, const AppSettingsPage())),
-        row(Icons.logout_rounded, l10n?.signOut ?? 'Sign out', () => _confirmSignOut(context), color: colorScheme.error),
+        row(Icons.logout_rounded, l10n.signOut, () => _confirmSignOut(context), color: colorScheme.error),
       ],
     );
   }
@@ -420,17 +420,17 @@ class _AccountSection extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialog) => AlertDialog(
-        title: Text(l10n?.signOut ?? 'Sign out'),
-        content: Text(l10n?.areYouSureYouWantToLogout ?? 'Are you sure you want to logout?'),
+        title: Text(l10n.signOut),
+        content: Text(l10n.areYouSureYouWantToLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialog).pop(false),
-            child: Text(l10n?.cancel ?? 'Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialog).pop(true),
             style: TextButton.styleFrom(foregroundColor: colorScheme.error),
-            child: Text(l10n?.signOut ?? 'Sign out'),
+            child: Text(l10n.signOut),
           ),
         ],
       ),

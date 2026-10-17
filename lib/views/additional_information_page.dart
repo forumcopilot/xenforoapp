@@ -592,7 +592,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Date of Birth if required
     if (req.dateOfBirth != null && (req.dateOfBirth!.required || req.dateOfBirth!.requireDob == true)) {
       if (_selectedDateOfBirth == null) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseSelectDateOfBirth ?? 'Please select your date of birth');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseSelectDateOfBirth);
         return;
       }
     }
@@ -600,7 +600,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Location if required
     if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
       if (widget.locationController.text.trim().isEmpty) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseEnterLocation ?? 'Please enter your location');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterLocation);
         return;
       }
     }
@@ -608,18 +608,18 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Email Choice if required
     if (req.emailChoice != null && (req.emailChoice!.required || req.emailChoice!.requireEmailChoice == true)) {
       if (_emailChoice == null || _emailChoice == false) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseIndicateEmailPreference ?? 'Please indicate your email preference');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseIndicateEmailPreference);
         return;
       }
     }
     
     // Validate policies if required
     if (req.termsOfService?.required == true && !_acceptTerms) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseAcceptTermsOfService ?? 'Please accept the Terms of Service');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptTermsOfService);
       return;
     }
     if (req.privacyPolicy?.required == true && !_acceptPrivacy) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.pleaseAcceptPrivacyPolicy ?? 'Please accept the Privacy Policy');
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptPrivacyPolicy);
       return;
     }
 

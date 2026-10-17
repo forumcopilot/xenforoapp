@@ -41,11 +41,11 @@ class NotSignedInView extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () => Get.to(() => LoginPage(siteContext: siteContext)),
-          child: Text(AppLocalizations.of(context)?.loginButton ?? 'Login'),
+          child: Text(AppLocalizations.of(context).loginButton),
         ),
         OutlinedButton(
           onPressed: () => Get.to(() => RegisterPage(siteContext: siteContext)),
-          child: Text(AppLocalizations.of(context)?.register ?? 'Register'),
+          child: Text(AppLocalizations.of(context).register),
         ),
       ],
     );

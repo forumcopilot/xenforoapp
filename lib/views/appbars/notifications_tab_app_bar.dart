@@ -24,7 +24,7 @@ class NotificationsTabAppBar extends StatelessWidget implements PreferredSizeWid
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context)?.notifications ?? 'Notifications',
+        AppLocalizations.of(context).notifications,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,

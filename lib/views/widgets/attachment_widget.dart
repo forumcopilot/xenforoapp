@@ -351,7 +351,7 @@ class AttachmentWidget extends StatelessWidget {
         
         // On iOS, filePath will be empty after sharing
         if (filePath.isEmpty) {
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.openingShareSheet(filename) ?? 'Opening share sheet for $filename');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).openingShareSheet(filename));
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
           final isInDownloads = filePath.contains('/Downloads/') || 
@@ -365,7 +365,7 @@ class AttachmentWidget extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorDownloading(filename, e.toString()) ?? 'Error downloading $filename: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorDownloading(filename, e.toString()));
       }
     }
   }

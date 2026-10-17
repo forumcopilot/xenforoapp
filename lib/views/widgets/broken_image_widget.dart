@@ -124,7 +124,7 @@ class BrokenImageWidget extends StatelessWidget {
                             }
                           } catch (e) {
                             if (context.mounted) {
-                              SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.couldNotOpenLink(e.toString()) ?? 'Could not open link: ${e.toString()}');
+                              SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenLink(e.toString()));
                             }
                           }
                         },

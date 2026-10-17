@@ -154,7 +154,7 @@ class NotificationListItem extends StatelessWidget {
                     SizedBox(width: DesignTokens.spacingS),
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context)?.unread ?? 'Unread'),
+                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context).unread),
                     ),
                   ],
                 ],

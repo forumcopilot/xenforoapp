@@ -50,7 +50,7 @@ class PostActionsHandler {
     // Add check for can_reply
     if (!(data?.topic.canReply ?? false)) {
       if (!context.mounted) return;
-      SnackbarHelper.showError(context, AppLocalizations.of(context)!.youCannotReplyToThisThread);
+      SnackbarHelper.showError(context, AppLocalizations.of(context).youCannotReplyToThisThread);
       return;
     }
 
@@ -58,7 +58,7 @@ class PostActionsHandler {
     final forumId = data?.topic.forumId ?? (fallbackForumId != null && fallbackForumId!.isNotEmpty ? fallbackForumId : null);
     if (forumId == null || forumId.isEmpty) {
       if (!context.mounted) return;
-      SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
       return;
     }
 
@@ -74,7 +74,7 @@ class PostActionsHandler {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
         if (!context.mounted) return;
-        SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
+        SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
         return;
       }
     } else {
@@ -82,7 +82,7 @@ class PostActionsHandler {
       actualTopicId = topicId;
       if (actualTopicId.isEmpty) {
         if (!context.mounted) return;
-        SnackbarHelper.showError(context, AppLocalizations.of(context)!.pleaseWaitForThreadToLoad);
+        SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
         return;
       }
     }
@@ -299,7 +299,7 @@ class PostActionsHandler {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(AppLocalizations.of(context)?.deletePost ?? 'Delete Post'),
+              title: Text(AppLocalizations.of(context).deletePost),
               content: Form(
                 key: formKey,
                 child: Column(
@@ -318,13 +318,13 @@ class PostActionsHandler {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                         RadioListTile<int>(
-                          title: Text(AppLocalizations.of(context)!.softDelete),
-                          subtitle: Text(AppLocalizations.of(context)!.postCanBeRestoredLater),
+                          title: Text(AppLocalizations.of(context).softDelete),
+                          subtitle: Text(AppLocalizations.of(context).postCanBeRestoredLater),
                           value: 1,
                         ),
                         RadioListTile<int>(
-                          title: Text(AppLocalizations.of(context)!.hardDelete),
-                          subtitle: Text(AppLocalizations.of(context)!.postWillBePermanentlyDeleted),
+                          title: Text(AppLocalizations.of(context).hardDelete),
+                          subtitle: Text(AppLocalizations.of(context).postWillBePermanentlyDeleted),
                           value: 2,
                         ),
                         ],
@@ -334,14 +334,14 @@ class PostActionsHandler {
                     TextFormField(
                       controller: reasonController,
                       decoration: InputDecoration(
-                        labelText: AppLocalizations.of(context)!.reasonForDeletion,
-                        hintText: AppLocalizations.of(context)!.enterReasonForDeletingPost,
+                        labelText: AppLocalizations.of(context).reasonForDeletion,
+                        hintText: AppLocalizations.of(context).enterReasonForDeletingPost,
                         border: OutlineInputBorder(),
                       ),
                       maxLines: 3,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return AppLocalizations.of(context)!.pleaseEnterReasonForDeletion;
+                          return AppLocalizations.of(context).pleaseEnterReasonForDeletion;
                         }
                         return null;
                       },
@@ -352,7 +352,7 @@ class PostActionsHandler {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(null),
-                  child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+                  child: Text(AppLocalizations.of(context).cancel),
                 ),
                 FilledButton(
                   onPressed: () {
@@ -367,7 +367,7 @@ class PostActionsHandler {
                     backgroundColor: Theme.of(context).colorScheme.error,
                     foregroundColor: Theme.of(context).colorScheme.onError,
                   ),
-                  child: Text(AppLocalizations.of(context)?.deletePost ?? 'Delete Post'),
+                  child: Text(AppLocalizations.of(context).deletePost),
                 ),
               ],
             );
@@ -392,7 +392,7 @@ class PostActionsHandler {
               ),
               const SizedBox(width: DesignTokens.spacingM),
               Text(
-                AppLocalizations.of(context)?.deletingPost ?? 'Deleting post...',
+                AppLocalizations.of(context).deletingPost,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
@@ -450,7 +450,7 @@ class PostActionsHandler {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.reportPost ?? 'Report Post'),
+          title: Text(AppLocalizations.of(context).reportPost),
           content: Form(
             key: formKey,
             child: Column(
@@ -458,21 +458,21 @@ class PostActionsHandler {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.pleaseProvideReasonForReporting,
+                  AppLocalizations.of(context).pleaseProvideReasonForReporting,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: reasonController,
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.reason,
-                    hintText: AppLocalizations.of(context)!.enterReasonForReportingPost,
+                    labelText: AppLocalizations.of(context).reason,
+                    hintText: AppLocalizations.of(context).enterReasonForReportingPost,
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 3,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return AppLocalizations.of(context)!.pleaseEnterReason;
+                      return AppLocalizations.of(context).pleaseEnterReason;
                     }
                     return null;
                   },
@@ -483,7 +483,7 @@ class PostActionsHandler {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(null),
-              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             FilledButton(
               onPressed: () {
@@ -491,7 +491,7 @@ class PostActionsHandler {
                   Navigator.of(context).pop(reasonController.text.trim());
                 }
               },
-              child: Text(AppLocalizations.of(context)!.submitReport),
+              child: Text(AppLocalizations.of(context).submitReport),
             ),
           ],
         );
@@ -637,8 +637,8 @@ class PostActionsHandler {
       // Removed onRefresh() call - local state updates are sufficient for like actions
       if (context.mounted) {
         SnackbarHelper.showInfo(context, wasLiked 
-            ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike post: $e')
-            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like post: $e'));
+            ? AppLocalizations.of(context).failedToUnlikePost(e.toString())
+            : AppLocalizations.of(context).failedToLikePost(e.toString()));
       }
     }
   }
@@ -804,8 +804,8 @@ class PostActionsHandler {
       setLikeCount(message.likesInfo.length);
       if (context.mounted) {
         SnackbarHelper.showInfo(context, wasLiked 
-            ? (AppLocalizations.of(context)?.failedToUnlikePost(e.toString()) ?? 'Failed to unlike message: $e')
-            : (AppLocalizations.of(context)?.failedToLikePost(e.toString()) ?? 'Failed to like message: $e'));
+            ? AppLocalizations.of(context).failedToUnlikePost(e.toString())
+            : AppLocalizations.of(context).failedToLikePost(e.toString()));
       }
     }
   }
@@ -828,7 +828,7 @@ class PostActionsHandler {
           ),
         ),
         content: Text(
-          AppLocalizations.of(context)?.pleaseLoginToAccessContent ?? 'Please login to access this content and interact with posts.',
+          AppLocalizations.of(context).pleaseLoginToAccessContent,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface,
           ),

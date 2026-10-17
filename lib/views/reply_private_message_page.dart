@@ -271,7 +271,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                     color: colorScheme.primary,
                   ),
                   label: Text(
-                    AppLocalizations.of(context)?.add ?? 'Add',
+                    AppLocalizations.of(context).add,
                     style: TextStyle(
                       color: colorScheme.primary,
                     ),
@@ -334,7 +334,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
               children: [
                 compose,
                 ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
-                Center(child: Text(AppLocalizations.of(context)?.failedToLoadQuote(snapshot.error.toString()) ?? "Failed to load quote: \n${snapshot.error.toString()}")),
+                Center(child: Text(AppLocalizations.of(context).failedToLoadQuote(snapshot.error.toString()))),
               ],
             );
           } else {
@@ -382,7 +382,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                     try {
                       final success = await _handleSubmit(_titleController.text, _messageController.text);
                       if (success && mounted) {
-                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.replySentSuccessfully ?? 'Reply sent successfully');
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).replySentSuccessfully);
                         Navigator.of(context).pop(true);
                       }
                     } finally {
@@ -408,7 +408,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                   children: [
                     Icon(Icons.attach_file, color: colorScheme.onSurface),
                     const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context)?.attachFile ?? 'Attach File', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                    Text(AppLocalizations.of(context).attachFile, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                   ],
                 ),
               ),
@@ -418,7 +418,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                   children: [
                     Icon(Icons.image, color: colorScheme.onSurface),
                     const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context)?.uploadImage ?? 'Attach Image', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                    Text(AppLocalizations.of(context).uploadImage, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                   ],
                 ),
               ),
@@ -438,7 +438,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                 controller: _titleController,
                 decoration: InputDecoration(
                   labelText: 'Subject',
-                  hintText: AppLocalizations.of(context)?.enterSubject ?? 'Enter subject',
+                  hintText: AppLocalizations.of(context).enterSubject,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
@@ -474,7 +474,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                 focusNode: _messageFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Message',
-                  hintText: AppLocalizations.of(context)?.typeYourMessageHere ?? 'Type your message here',
+                  hintText: AppLocalizations.of(context).typeYourMessageHere,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
@@ -626,9 +626,9 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
                                         ),
                                   title: Text(attachment.name),
                                   subtitle: isUploading
-                                      ? Text(AppLocalizations.of(context)?.uploading ?? 'Uploading...', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                      ? Text(AppLocalizations.of(context).uploading, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                       : attachmentId != null
-                                          ? Text(AppLocalizations.of(context)?.uploaded ?? 'Uploaded', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                          ? Text(AppLocalizations.of(context).uploaded, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                           : null,
                                   trailing: IconButton(
                                     icon: Icon(Icons.close),
@@ -708,7 +708,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
         });
         // Show error to user
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
         }
       }
     }
@@ -765,7 +765,7 @@ class _ReplyPrivateMessagePageState extends State<ReplyPrivateMessagePage> {
         });
         // Show error to user
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadImage(e.toString()) ?? 'Failed to upload image: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadImage(e.toString()));
         }
       }
     }

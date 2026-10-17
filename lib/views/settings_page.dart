@@ -74,7 +74,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.forumSettings ?? 'Forum Settings',
+          AppLocalizations.of(context).forumSettings,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -119,7 +119,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
               FilledButton.icon(
                 onPressed: _loadCategories,
                 icon: Icon(Icons.refresh),
-                label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+                label: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),
@@ -143,14 +143,14 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
                 ),
                 SizedBox(height: DesignTokens.spacingL),
                 Text(
-                  AppLocalizations.of(context)?.noSettingsAvailable ?? 'No settings available',
+                  AppLocalizations.of(context).noSettingsAvailable,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 SizedBox(height: DesignTokens.spacingS),
                 Text(
-                  AppLocalizations.of(context)?.settingsCategoriesWillAppearHere ?? 'Settings categories will appear here when available.',
+                  AppLocalizations.of(context).settingsCategoriesWillAppearHere,
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -326,7 +326,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
-                AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),

@@ -117,13 +117,13 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
       } else {
         AppLogger.debug('DEBUG: LinkPreview forum not found or widget unmounted');
         if (mounted) {
-          SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.forumNotFoundById(forumId) ?? 'Forum not found: $forumId');
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).forumNotFoundById(forumId));
         }
       }
     } catch (e) {
       AppLogger.debug('DEBUG: LinkPreview error navigating to forum $forumId: $e');
       if (mounted) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context)?.failedToNavigateToForum ?? 'Failed to navigate to forum');
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).failedToNavigateToForum);
       }
     }
   }

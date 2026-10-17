@@ -227,7 +227,7 @@ class SubforumHeaderWidget extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onNewTopic,
                       icon: const Icon(Icons.post_add_rounded),
-                      label: Text(AppLocalizations.of(context)?.newTopic ?? 'New Topic'),
+                      label: Text(AppLocalizations.of(context).newTopic),
                     ),
                   ],
                 ],

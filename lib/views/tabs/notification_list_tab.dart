@@ -375,7 +375,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            AppLocalizations.of(context)?.errorTitle ?? 'Error',
+            AppLocalizations.of(context).errorTitle,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightSemiBold,

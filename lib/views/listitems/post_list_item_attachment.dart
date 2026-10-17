@@ -118,8 +118,7 @@ class PostListItemAttachment extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(AppLocalizations.of(context)?.downloading(filename) ??
-                  'Downloading $filename...'),
+              child: Text(AppLocalizations.of(context).downloading(filename)),
             ),
           ],
         ),
@@ -136,18 +135,15 @@ class PostListItemAttachment extends StatelessWidget {
 
         // On iOS, filePath will be empty after sharing
         if (filePath.isEmpty) {
-          SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.openingShareSheet(filename) ??
-                    'Opening share sheet for $filename');
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).openingShareSheet(filename));
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
           final isInDownloads = filePath.contains('/Downloads/') ||
               (filePath.contains('Downloads') &&
                   !filePath.contains('Containers'));
           final locationMessage = isInDownloads
-              ? (AppLocalizations.of(context)?.fileSavedToDownloads(filename) ??
-                  'File saved to Downloads: $filename')
-              : (AppLocalizations.of(context)?.fileSavedToDocuments(filename) ??
-                  'File saved to Documents: $filename');
+              ? AppLocalizations.of(context).fileSavedToDownloads(filename)
+              : AppLocalizations.of(context).fileSavedToDocuments(filename);
 
           SnackbarHelper.showSuccess(context, locationMessage);
         }
@@ -155,8 +151,7 @@ class PostListItemAttachment extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         SnackbarHelper.showError(context, AppLocalizations.of(context)
-                    ?.errorDownloading(filename, e.toString()) ??
-                'Error downloading $filename: $e');
+                    .errorDownloading(filename, e.toString()));
       }
     }
   }

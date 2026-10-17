@@ -57,12 +57,12 @@ class _DiscardChangesScopeState extends State<DiscardChangesScope> {
         // on top, as Material 3 stacks a dialog's buttons.
         actionsOverflowDirection: VerticalDirection.up,
         content: Text(widget.isEdit
-            ? (l10n?.discardChangesQuestion ?? 'Do you want to discard your changes?')
-            : (l10n?.discardPostQuestion ?? 'Do you want to discard your post?')),
+            ? l10n.discardChangesQuestion
+            : l10n.discardPostQuestion),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialog, false),
-            child: Text(l10n?.cancel ?? 'Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -71,8 +71,8 @@ class _DiscardChangesScopeState extends State<DiscardChangesScope> {
             ),
             onPressed: () => Navigator.pop(dialog, true),
             child: Text(widget.isEdit
-                ? (l10n?.discardChanges ?? 'Discard changes')
-                : (l10n?.discard ?? 'Discard')),
+                ? l10n.discardChanges
+                : l10n.discard),
           ),
         ],
       ),

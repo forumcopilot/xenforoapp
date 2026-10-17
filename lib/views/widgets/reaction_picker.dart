@@ -8,10 +8,9 @@ import '../../l10n/generated/app_localizations.dart';
 String reactionCountLabel(BuildContext context, int count) {
   final l10n = AppLocalizations.of(context);
   if (ReactionRegistry.instance.isAvailable) {
-    return l10n?.reactionsCount(count) ??
-        (count == 1 ? '1 Reaction' : '$count Reactions');
+    return l10n.reactionsCount(count);
   }
-  return l10n?.likesCount(count) ?? (count == 1 ? '1 Like' : '$count Likes');
+  return l10n.likesCount(count);
 }
 
 

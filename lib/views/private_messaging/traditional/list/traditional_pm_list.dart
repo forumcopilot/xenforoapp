@@ -200,7 +200,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToDeleteMessage(e.toString()));
       }
     }
   }
@@ -256,7 +256,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
         if (!isLoggedIn) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.signInToViewMessages ?? 'Sign in to view messages',
+            title: AppLocalizations.of(context).signInToViewMessages,
             message: 'You need to be signed in to view your private messages.',
             icon: Icons.mail_outline_rounded,
           );
@@ -266,7 +266,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
         if (!canPM) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.privateMessagesNotAvailable ?? 'Private messages not available',
+            title: AppLocalizations.of(context).privateMessagesNotAvailable,
             message: 'You do not have permission to use private messaging.',
             icon: Icons.mail_outline_rounded,
           );
@@ -295,7 +295,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
             const SizedBox(height: DesignTokens.spacingL),
             FilledButton(
               onPressed: loadMessages,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -380,7 +380,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       await _loadMorePrivateMessages();
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorLoadingMoreMessages(e.toString()) ?? 'Error loading more messages: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorLoadingMoreMessages(e.toString()));
       }
     } finally {
       if (mounted) {

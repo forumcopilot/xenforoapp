@@ -29,8 +29,8 @@ class _MembersPageState extends State<MembersPage> {
   int _selectedFilterIndex = 0;
   List<String> _getFilterLabels(BuildContext context) {
     return [
-      AppLocalizations.of(context)?.allMembers ?? 'All Members',
-      AppLocalizations.of(context)?.online ?? 'Online',
+      AppLocalizations.of(context).allMembers,
+      AppLocalizations.of(context).online,
     ];
   }
 
@@ -238,7 +238,7 @@ class _MembersPageState extends State<MembersPage> {
   Widget _buildSearchResults(ColorScheme colorScheme, TextTheme textTheme) {
     if (_searchError != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.searchFailed ?? 'Search failed',
+        title: AppLocalizations.of(context).searchFailed,
         message: _searchError!,
       );
     }
@@ -252,16 +252,16 @@ class _MembersPageState extends State<MembersPage> {
     if (_searchResults.isEmpty && _hasSearched) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: AppLocalizations.of(context)?.noMembersFound ?? 'No members found',
-        description: AppLocalizations.of(context)?.trySearchingWithDifferentUsername ?? 'Try searching with a different username',
+        title: AppLocalizations.of(context).noMembersFound,
+        description: AppLocalizations.of(context).trySearchingWithDifferentUsername,
       );
     }
 
     if (_searchResults.isEmpty && !_hasSearched) {
       return EmptyStateWidget(
         icon: Icons.people_alt_outlined,
-        title: AppLocalizations.of(context)?.searchForMembers ?? 'Search for members',
-        description: AppLocalizations.of(context)?.enterUsernameToFindMembers ?? 'Enter a username to find forum members',
+        title: AppLocalizations.of(context).searchForMembers,
+        description: AppLocalizations.of(context).enterUsernameToFindMembers,
       );
     }
 
@@ -311,7 +311,7 @@ class _MembersPageState extends State<MembersPage> {
   Widget _buildOnlineUsers(ColorScheme colorScheme, TextTheme textTheme) {
     if (_onlineError != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.failedToLoadOnlineUsers ?? 'Failed to load online users',
+        title: AppLocalizations.of(context).failedToLoadOnlineUsers,
         message: _onlineError!,
       );
     }
@@ -325,8 +325,8 @@ class _MembersPageState extends State<MembersPage> {
     if (_onlineUsers.isEmpty && !_onlineIsLoading) {
       return EmptyStateWidget(
         icon: Icons.people_outline_rounded,
-        title: AppLocalizations.of(context)?.noUsersOnline ?? 'No users online',
-        description: AppLocalizations.of(context)?.noMembersOnline ?? 'No members are currently online',
+        title: AppLocalizations.of(context).noUsersOnline,
+        description: AppLocalizations.of(context).noMembersOnline,
       );
     }
 
@@ -445,7 +445,7 @@ class _MembersPageState extends State<MembersPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.members ?? 'Members',
+          AppLocalizations.of(context).members,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -477,7 +477,7 @@ class _MembersPageState extends State<MembersPage> {
               child: SearchTextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
-                hintText: AppLocalizations.of(context)?.enterUsernameToSearch ?? 'Enter username to search...',
+                hintText: AppLocalizations.of(context).enterUsernameToSearch,
                 onSearch: _handleSearch,
                 autoSearch: true,
                 onClear: _handleClear,

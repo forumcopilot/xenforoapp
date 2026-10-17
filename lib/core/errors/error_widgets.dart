@@ -31,11 +31,11 @@ class ErrorWidgets {
                     OutlinedButton.icon(
                       onPressed: onRetry,
                       icon: const Icon(Icons.refresh),
-                      label: Text(retryText ?? (AppLocalizations.of(context)?.tryAgain ?? 'Try again')),
+                      label: Text(retryText ?? AppLocalizations.of(context).tryAgain),
                     ),
                   TextButton(
                     onPressed: onHelp,
-                    child: Text(helpText ?? (AppLocalizations.of(context)?.getHelp ?? 'Get Help')),
+                    child: Text(helpText ?? AppLocalizations.of(context).getHelp),
                   ),
                 ],
               ),
@@ -160,7 +160,7 @@ class ErrorWidgets {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: Text(AppLocalizations.of(context)?.retryButton ?? 'Retry'),
+              label: Text(AppLocalizations.of(context).retryButton),
             ),
           ],
         ],
@@ -176,9 +176,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.noInternetConnection ?? 'No Internet Connection',
-      message: l10n?.checkInternetConnection ?? 'Please check your internet connection and try again.',
-      retryText: l10n?.retryButton ?? 'Retry',
+      title: l10n.noInternetConnection,
+      message: l10n.checkInternetConnection,
+      retryText: l10n.retryButton,
       onRetry: onRetry,
     );
   }
@@ -192,9 +192,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.authenticationRequired ?? 'Authentication Required',
-      message: l10n?.pleaseLoginToContinue ?? 'Please log in to continue.',
-      retryText: l10n?.logIn ?? 'Log In',
+      title: l10n.authenticationRequired,
+      message: l10n.pleaseLoginToContinue,
+      retryText: l10n.logIn,
       onRetry: onLogin,
     );
   }
@@ -208,9 +208,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.forumError ?? 'Forum Error',
+      title: l10n.forumError,
       message: message,
-      retryText: l10n?.tryAgain ?? 'Try Again',
+      retryText: l10n.tryAgain,
       onRetry: onRetry,
     );
   }
@@ -241,11 +241,11 @@ class ErrorOrChild extends StatelessWidget {
 
     final l10n = AppLocalizations.of(context);
     if (customErrorBuilder != null) {
-      return customErrorBuilder!(errorMessage ?? (l10n?.anErrorOccurred ?? 'An error occurred'), onRetry);
+      return customErrorBuilder!(errorMessage ?? l10n.anErrorOccurred, onRetry);
     }
 
     return ErrorWidgets.compactError(
-      message: errorMessage ?? (l10n?.anErrorOccurred ?? 'An error occurred'),
+      message: errorMessage ?? l10n.anErrorOccurred,
       onRetry: onRetry,
     );
   }
@@ -309,8 +309,8 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       final l10n = AppLocalizations.of(context);
       return ErrorWidgets.fullScreenError(
         context: context,
-        title: l10n?.somethingWentWrong ?? 'Something went wrong',
-        message: l10n?.unexpectedErrorOccurred ?? 'An unexpected error occurred. Please try again.',
+        title: l10n.somethingWentWrong,
+        message: l10n.unexpectedErrorOccurred,
         onRetry: () {
           setState(() {
             _error = null;

@@ -61,7 +61,7 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppLocalizations.of(context)?.deleteTopic ?? 'Delete Topic'),
+      title: Text(AppLocalizations.of(context).deleteTopic),
       content: Form(
         key: _formKey,
         child: Column(
@@ -80,13 +80,13 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                 RadioListTile<bool>(
-                  title: Text(AppLocalizations.of(context)?.softDelete ?? 'Soft Delete'),
-                  subtitle: Text(AppLocalizations.of(context)?.topicCanBeRestoredLater ?? 'Topic can be restored later'),
+                  title: Text(AppLocalizations.of(context).softDelete),
+                  subtitle: Text(AppLocalizations.of(context).topicCanBeRestoredLater),
                   value: false,
                 ),
                 RadioListTile<bool>(
-                  title: Text(AppLocalizations.of(context)?.hardDelete ?? 'Hard Delete'),
-                  subtitle: Text(AppLocalizations.of(context)?.topicWillBePermanentlyDeleted ?? 'Topic will be permanently deleted'),
+                  title: Text(AppLocalizations.of(context).hardDelete),
+                  subtitle: Text(AppLocalizations.of(context).topicWillBePermanentlyDeleted),
                   value: true,
                 ),
                 ],
@@ -96,14 +96,14 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
             TextFormField(
               controller: _reasonController,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)?.reasonForDeletion ?? 'Reason for deletion',
-                hintText: AppLocalizations.of(context)?.enterReasonForDeletingTopic ?? 'Enter the reason for deleting this topic',
+                labelText: AppLocalizations.of(context).reasonForDeletion,
+                hintText: AppLocalizations.of(context).enterReasonForDeletingTopic,
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return AppLocalizations.of(context)?.pleaseEnterReasonForDeletion ?? 'Please enter a reason for deletion';
+                  return AppLocalizations.of(context).pleaseEnterReasonForDeletion;
                 }
                 return null;
               },
@@ -114,7 +114,7 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(null),
-          child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: _handleSubmit,
@@ -122,7 +122,7 @@ class _DeleteTopicDialogState extends State<DeleteTopicDialog> {
             backgroundColor: Theme.of(context).colorScheme.error,
             foregroundColor: Theme.of(context).colorScheme.onError,
           ),
-          child: Text(AppLocalizations.of(context)?.deleteTopic ?? 'Delete Topic'),
+          child: Text(AppLocalizations.of(context).deleteTopic),
         ),
       ],
     );

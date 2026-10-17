@@ -104,7 +104,7 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
   late final VoidCallback _authStateListener;
 
   List<String> _getFilterLabels(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return [
       l10n.latest,
       l10n.unread,

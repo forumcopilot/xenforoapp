@@ -104,7 +104,7 @@ class _PostPageState extends State<PostPage> {
       // If sharing fails, show an error message
       if (mounted) {
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        SnackbarHelper.showError(context, AppLocalizations.of(context)!.failedToShareTopic(e.toString()));
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToShareTopic(e.toString()));
       }
     }
   }
@@ -120,7 +120,7 @@ class _PostPageState extends State<PostPage> {
   void _handleSubscribe() async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context)!.pleaseLoginToSubscribe(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo));
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToSubscribe(_isSubscribed ? AppLocalizations.of(context).unsubscribeFrom : AppLocalizations.of(context).subscribeTo));
       return;
     }
 
@@ -141,7 +141,7 @@ class _PostPageState extends State<PostPage> {
       if (mounted) {
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
         // Hide any existing SnackBar before showing a new one
-        SnackbarHelper.showError(context, AppLocalizations.of(context)!.failedToSubscribeToThread(_isSubscribed ? AppLocalizations.of(context)!.unsubscribeFrom : AppLocalizations.of(context)!.subscribeTo));
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSubscribeToThread(_isSubscribed ? AppLocalizations.of(context).unsubscribeFrom : AppLocalizations.of(context).subscribeTo));
       }
     }
   }
@@ -158,7 +158,7 @@ class _PostPageState extends State<PostPage> {
           _isClosed = !_isClosed;
         });
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        SnackbarHelper.showInfo(context, _isClosed ? AppLocalizations.of(context)!.topicClosed : AppLocalizations.of(context)!.topicOpened);
+        SnackbarHelper.showInfo(context, _isClosed ? AppLocalizations.of(context).topicClosed : AppLocalizations.of(context).topicOpened);
         _refreshCallback?.call();
       }
     } catch (e) {
@@ -178,7 +178,7 @@ class _PostPageState extends State<PostPage> {
           _isSticky = !_isSticky;
         });
         // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        SnackbarHelper.showInfo(context, _isSticky ? AppLocalizations.of(context)!.topicStickied : AppLocalizations.of(context)!.topicUnstickied);
+        SnackbarHelper.showInfo(context, _isSticky ? AppLocalizations.of(context).topicStickied : AppLocalizations.of(context).topicUnstickied);
         _refreshCallback?.call();
       }
     } catch (e) {
@@ -264,7 +264,7 @@ class _PostPageState extends State<PostPage> {
   void _showFailure(Object error) {
     if (!mounted) return;
     final reason = error is _ActionFailed ? error.message?.trim() : null;
-    SnackbarHelper.showError(context, reason != null && reason.isNotEmpty ? reason : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'));
+    SnackbarHelper.showError(context, reason != null && reason.isNotEmpty ? reason : AppLocalizations.of(context).somethingWentWrong);
   }
 
   @override

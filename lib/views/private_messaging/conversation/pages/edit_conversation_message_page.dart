@@ -70,7 +70,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       }
 
       if (mounted) {
-        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageUpdatedSuccessfully ?? 'Message updated successfully');
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).messageUpdatedSuccessfully);
         // Dismiss keyboard before navigating back
         FocusScope.of(context).unfocus();
         Navigator.of(context).pop(true); // Return true to indicate success
@@ -79,7 +79,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       return true;
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, '${AppLocalizations.of(context)?.error ?? 'Error'}: ${e.toString()}');
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).error}: ${e.toString()}');
       }
       return false;
     }
@@ -118,7 +118,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToRemoveAttachment(e.toString()) ?? 'Failed to remove attachment: ${e.toString()}');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToRemoveAttachment(e.toString()));
       }
       return false;
     }
@@ -269,7 +269,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
                 children: [
                   Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
-                  Text(AppLocalizations.of(context)?.failedToLoadMessage(snapshot.error.toString()) ?? 'Failed to load message: \n${snapshot.error}'),
+                  Text(AppLocalizations.of(context).failedToLoadMessage(snapshot.error.toString())),
                 ],
               ),
             ),
@@ -284,7 +284,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
                 children: [
                   Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
-                  Text(AppLocalizations.of(context)!.cannotEditMessage(snapshot.data?.resultText ?? AppLocalizations.of(context)!.anErrorOccurred)),
+                  Text(AppLocalizations.of(context).cannotEditMessage(snapshot.data?.resultText ?? AppLocalizations.of(context).anErrorOccurred)),
                 ],
               ),
             ),
@@ -297,7 +297,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
           isEditing: true,
           key: const ValueKey('edit_conversation_message_compose'),
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.editMessage ?? 'Edit Message',
+          title: AppLocalizations.of(context).editMessage,
           showTitleField: false, // Messages don't have titles
           requireTitle: false,
           contentController: _contentController,

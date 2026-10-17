@@ -132,7 +132,7 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.lookupMembers ?? 'Lookup Members',
+          AppLocalizations.of(context).lookupMembers,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -160,7 +160,7 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
             child: SearchTextField(
               controller: _searchController,
               focusNode: _searchFocusNode,
-              hintText: AppLocalizations.of(context)?.enterUsernameToSearch ?? 'Enter username to search...',
+              hintText: AppLocalizations.of(context).enterUsernameToSearch,
               onSearch: _handleSearch,
               autoSearch: true,
               onClear: _handleClear,
@@ -177,7 +177,7 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
   Widget _buildSearchResults(ColorScheme colorScheme, TextTheme textTheme) {
     if (_error != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.searchFailed ?? 'Search failed',
+        title: AppLocalizations.of(context).searchFailed,
         message: _error!,
       );
     }
@@ -191,16 +191,16 @@ class _MemberSearchPageState extends State<MemberSearchPage> {
     if (_searchResults.isEmpty && _hasSearched) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: AppLocalizations.of(context)?.noMembersFound ?? 'No members found',
-        description: AppLocalizations.of(context)?.trySearchingWithDifferentUsername ?? 'Try searching with a different username',
+        title: AppLocalizations.of(context).noMembersFound,
+        description: AppLocalizations.of(context).trySearchingWithDifferentUsername,
       );
     }
 
     if (_searchResults.isEmpty && !_hasSearched) {
       return EmptyStateWidget(
         icon: Icons.people_alt_outlined,
-        title: AppLocalizations.of(context)?.searchForMembers ?? 'Search for members',
-        description: AppLocalizations.of(context)?.enterUsernameToFindMembers ?? 'Enter a username to find forum members',
+        title: AppLocalizations.of(context).searchForMembers,
+        description: AppLocalizations.of(context).enterUsernameToFindMembers,
       );
     }
 

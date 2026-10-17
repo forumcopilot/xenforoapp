@@ -109,7 +109,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
       } else {
         // Wrap other exceptions
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToSendMessage(e.toString()) ?? 'Failed to send message: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSendMessage(e.toString()));
         }
         return false;
       }
@@ -255,7 +255,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                     color: colorScheme.primary,
                   ),
                   label: Text(
-                    AppLocalizations.of(context)?.add ?? 'Add',
+                    AppLocalizations.of(context).add,
                     style: TextStyle(
                       color: colorScheme.primary,
                     ),
@@ -301,7 +301,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)?.newMessage ?? 'New Message', style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
+        title: Text(AppLocalizations.of(context).newMessage, style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500)),
         backgroundColor: colorScheme.surface,
         elevation: 3,
         shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
@@ -328,7 +328,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                     try {
                       final success = await _handleSubmit(_titleController.text, _messageController.text);
                       if (success && mounted) {
-                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.messageSentSuccessfully ?? 'Message sent successfully');
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).messageSentSuccessfully);
                         // Dismiss keyboard before navigating back
                         FocusScope.of(context).unfocus();
                         Navigator.of(context).pop(true);
@@ -356,7 +356,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                   children: [
                     Icon(Icons.attach_file, color: colorScheme.onSurface),
                     const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context)?.attachFile ?? 'Attach File', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                    Text(AppLocalizations.of(context).attachFile, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                   ],
                 ),
               ),
@@ -366,7 +366,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                   children: [
                     Icon(Icons.image, color: colorScheme.onSurface),
                     const SizedBox(width: 8),
-                    Text(AppLocalizations.of(context)?.uploadImage ?? 'Attach Image', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
+                    Text(AppLocalizations.of(context).uploadImage, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface)),
                   ],
                 ),
               ),
@@ -385,7 +385,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
               TextField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.subject ?? 'Subject',
+                  labelText: AppLocalizations.of(context).subject,
                   hintText: 'Enter subject',
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
@@ -421,8 +421,8 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                 controller: _messageController,
                 focusNode: _messageFocusNode,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.message ?? 'Message',
-                  hintText: AppLocalizations.of(context)?.typeYourMessageHere ?? 'Type your message here',
+                  labelText: AppLocalizations.of(context).message,
+                  hintText: AppLocalizations.of(context).typeYourMessageHere,
                   labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                   floatingLabelStyle: TextStyle(color: colorScheme.primary),
                   filled: true,
@@ -574,9 +574,9 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
                                         ),
                                   title: Text(attachment.name),
                                   subtitle: isUploading
-                                      ? Text(AppLocalizations.of(context)?.uploading ?? 'Uploading...', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                      ? Text(AppLocalizations.of(context).uploading, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                       : attachmentId != null
-                                          ? Text(AppLocalizations.of(context)?.uploaded ?? 'Uploaded', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                          ? Text(AppLocalizations.of(context).uploaded, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                           : null,
                                   trailing: IconButton(
                                     icon: Icon(Icons.close),
@@ -656,7 +656,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
         });
         // Show error to user
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
         }
       }
     }
@@ -713,7 +713,7 @@ class _NewPrivateMessagePageState extends State<NewPrivateMessagePage> {
         });
         // Show error to user
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadImage(e.toString()) ?? 'Failed to upload image: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadImage(e.toString()));
         }
       }
     }

@@ -279,7 +279,7 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noParticipatedTopics,
+              AppLocalizations.of(context).noParticipatedTopics,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -289,7 +289,7 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.topicsYouParticipatedIn,
+              AppLocalizations.of(context).topicsYouParticipatedIn,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -307,8 +307,8 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewParticipatedTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewParticipatedTopics,
+        title: AppLocalizations.of(context).signInToViewParticipatedTopics,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewParticipatedTopics,
         icon: Icons.chat_bubble_outline_rounded,
       );
     }
@@ -317,8 +317,8 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
       if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
         return NotSignedInView(
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewParticipatedTopics ?? 'Sign in to view participated topics',
-          message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewParticipatedTopics ?? 'You need to be signed in to view topics you have participated in.',
+          title: AppLocalizations.of(context).signInToViewParticipatedTopics,
+          message: AppLocalizations.of(context).youNeedToBeSignedInToViewParticipatedTopics,
           icon: Icons.chat_bubble_outline_rounded,
         );
       }

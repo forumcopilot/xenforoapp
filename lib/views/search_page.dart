@@ -33,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
   String? _currentQuery;
   int _selectedFilterIndex = 0; // 0 = All (Posts), 1 = Topics Only, 2 = Titles Only
   List<String> _getFilterLabels(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return [l10n.all, l10n.topicsOnly, l10n.titlesOnly];
   }
 
@@ -325,7 +325,7 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.search ?? 'Search',
+          AppLocalizations.of(context).search,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -355,7 +355,7 @@ class _SearchPageState extends State<SearchPage> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)?.enterKeywordsToSearchTopics ?? 'Enter keywords to search topics...',
+                hintText: AppLocalizations.of(context).enterKeywordsToSearchTopics,
                 hintStyle: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -442,7 +442,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             const SizedBox(height: DesignTokens.spacingS),
             Text(
-              AppLocalizations.of(context)?.enterKeywordsToFindTopicsAndPosts ?? 'Enter keywords to find topics and posts',
+              AppLocalizations.of(context).enterKeywordsToFindTopicsAndPosts,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),

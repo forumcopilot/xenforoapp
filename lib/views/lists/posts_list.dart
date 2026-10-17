@@ -1225,12 +1225,12 @@ class _PostsState extends State<PostsList> {
                 IconButton(
                   icon: const Icon(Icons.arrow_upward),
                   onPressed: _jumpToFirstPost,
-                  tooltip: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
+                  tooltip: AppLocalizations.of(context).goToTop,
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_downward),
                   onPressed: _jumpToLastPost,
-                  tooltip: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
+                  tooltip: AppLocalizations.of(context).goToBottom,
                 ),
                 SizedBox(width: DesignTokens.spacingS),
                 GestureDetector(
@@ -1252,7 +1252,7 @@ class _PostsState extends State<PostsList> {
                       _postActionsHandler.handleReply(context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost);
                     },
                     icon: const Icon(Icons.reply),
-                    label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
+                    label: Text(AppLocalizations.of(context).reply),
                   ),
               ],
             ),

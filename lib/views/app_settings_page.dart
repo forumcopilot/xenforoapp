@@ -22,7 +22,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.appSettings ?? 'App Settings',
+          AppLocalizations.of(context).appSettings,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -77,7 +77,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           Padding(
             padding: EdgeInsets.all(DesignTokens.spacingL),
             child: Text(
-              AppLocalizations.of(context)?.language ?? 'Language',
+              AppLocalizations.of(context).language,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightSemiBold,
@@ -98,13 +98,13 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               children: [
                 RadioListTile<Locale?>(
                   title: Text(
-                    AppLocalizations.of(context)?.systemDefault ?? 'System Default',
+                    AppLocalizations.of(context).systemDefault,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface,
                     ),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context)?.followSystemLanguage ?? 'Follow system language',
+                    AppLocalizations.of(context).followSystemLanguage,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -151,7 +151,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           Padding(
             padding: EdgeInsets.all(DesignTokens.spacingL),
             child: Text(
-              AppLocalizations.of(context)?.appearance ?? 'Appearance',
+              AppLocalizations.of(context).appearance,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightSemiBold,
@@ -173,13 +173,13 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               children: [
                 RadioListTile<ThemeMode>(
                   title: Text(
-                    AppLocalizations.of(context)?.systemDefault ?? 'System Default',
+                    AppLocalizations.of(context).systemDefault,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface,
                     ),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context)?.followSystemTheme ?? 'Follow system theme',
+                    AppLocalizations.of(context).followSystemTheme,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -188,7 +188,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 ),
                 RadioListTile<ThemeMode>(
                   title: Text(
-                    AppLocalizations.of(context)?.light ?? 'Light',
+                    AppLocalizations.of(context).light,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -197,7 +197,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                 ),
                 RadioListTile<ThemeMode>(
                   title: Text(
-                    AppLocalizations.of(context)?.dark ?? 'Dark',
+                    AppLocalizations.of(context).dark,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -229,7 +229,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL),
             child: Text(
-              AppLocalizations.of(context)?.version(version, buildNumber) ?? 'version $version ($buildNumber)',
+              AppLocalizations.of(context).version(version, buildNumber),
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

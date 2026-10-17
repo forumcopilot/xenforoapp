@@ -56,7 +56,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
   Future<bool> _handleSubmit() async {
     if (_titleController.text.trim().isEmpty) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.titleCannotBeEmpty ?? 'Title cannot be empty');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).titleCannotBeEmpty);
       }
       return false;
     }
@@ -76,13 +76,13 @@ class _EditConversationPageState extends State<EditConversationPage> {
       if (!result.result) {
         final errorMessage = result.resultText?.trim();
         if (mounted) {
-          SnackbarHelper.showError(context, errorMessage ?? AppLocalizations.of(context)?.failedToSaveConversation ?? 'Failed to save conversation');
+          SnackbarHelper.showError(context, errorMessage ?? AppLocalizations.of(context).failedToSaveConversation);
         }
         return false;
       }
 
       if (mounted) {
-        SnackbarHelper.showSuccess(context, AppLocalizations.of(context)?.conversationUpdatedSuccessfully ?? 'Conversation updated successfully');
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationUpdatedSuccessfully);
         Navigator.of(context).pop(true); // Return true to indicate success
       }
 
@@ -177,7 +177,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(AppLocalizations.of(context)?.goBack ?? 'Go Back'),
+                      child: Text(AppLocalizations.of(context).goBack),
                     ),
                   ],
                 ),
@@ -217,7 +217,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(AppLocalizations.of(context)?.goBack ?? 'Go Back'),
+                      child: Text(AppLocalizations.of(context).goBack),
                     ),
                   ],
                 ),
@@ -262,7 +262,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)?.enterConversationTitle ?? 'Enter conversation title',
+                    hintText: AppLocalizations.of(context).enterConversationTitle,
                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                     filled: true,
                     fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),

@@ -26,7 +26,7 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context)?.forums ?? 'Forums',
+        AppLocalizations.of(context).forums,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,
@@ -44,7 +44,7 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildSearchButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.manage_search_rounded),
-      tooltip: AppLocalizations.of(context)?.search ?? 'Search',
+      tooltip: AppLocalizations.of(context).search,
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => SearchPage(siteContext: siteContext)),
@@ -55,7 +55,7 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildMarkReadButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.done_all_rounded),
-      tooltip: AppLocalizations.of(context)?.markForumRead ?? 'Mark Forum Read',
+      tooltip: AppLocalizations.of(context).markForumRead,
       onPressed: () => _showMarkReadConfirmation(context),
     );
   }
@@ -68,13 +68,13 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          AppLocalizations.of(context)?.markAllForumsAsRead ?? 'Mark All Forums as Read?',
+          AppLocalizations.of(context).markAllForumsAsRead,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          AppLocalizations.of(context)?.markAllForumsAsReadMessage ?? 'This will mark all forums and topics as read. This action cannot be undone.',
+          AppLocalizations.of(context).markAllForumsAsReadMessage,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -83,7 +83,7 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.onSurfaceVariant),
             ),
           ),
@@ -93,7 +93,7 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
               ForumActions().markAllAsRead(context, '0');
             },
             child: Text(
-              AppLocalizations.of(context)?.markAsRead ?? 'Mark as Read',
+              AppLocalizations.of(context).markAsRead,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

@@ -144,7 +144,7 @@ class ForumHeaderWidget extends StatelessWidget {
     return Obx(() {
       final site = siteController.currentSite.value;
       final logoUrl = site?.logoUrl;
-      final siteName = site?.name ?? (AppLocalizations.of(context)?.forum ?? 'Forum');
+      final siteName = site?.name ?? AppLocalizations.of(context).forum;
       final domain = _getDomain(site?.url);
 
       // Calculate padding based on whether it should extend under app bar
@@ -340,7 +340,7 @@ class ForumHeaderWidget extends StatelessWidget {
                             SizedBox(height: DesignTokens.spacingXS / 2),
                           if ((boardStats?.total_members ?? 0) > 0)
                             Text(
-                              AppLocalizations.of(context)?.membersCount(boardStats?.total_members ?? 0) ?? '${formatNumber(context, boardStats?.total_members ?? 0)} Members',
+                              AppLocalizations.of(context).membersCount(boardStats?.total_members ?? 0),
                               style: TextStyle(
                                 color: colorScheme.onSurface.withValues(alpha: DesignTokens.opacityHigh),
                                 fontWeight: DesignTokens.fontWeightMedium,

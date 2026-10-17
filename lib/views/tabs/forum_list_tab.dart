@@ -304,7 +304,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
             FilledButton.icon(
               onPressed: _loadForums,
               icon: const Icon(Icons.refresh_rounded),
-              label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              label: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),

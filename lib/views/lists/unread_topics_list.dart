@@ -351,7 +351,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.youAreAllCaughtUp,
+              AppLocalizations.of(context).youAreAllCaughtUp,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -361,7 +361,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.thereAreNoUnreadTopics,
+              AppLocalizations.of(context).thereAreNoUnreadTopics,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -379,8 +379,8 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewUnreadTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewUnreadTopics,
+        title: AppLocalizations.of(context).signInToViewUnreadTopics,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewUnreadTopics,
         icon: Icons.lock_outline_rounded,
       );
     }
@@ -389,7 +389,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
       if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
         return NotSignedInView(
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewUnreadTopics ?? 'Sign in to view unread topics',
+          title: AppLocalizations.of(context).signInToViewUnreadTopics,
           message: 'You need to be signed in to view topics your unread topics.',
           icon: Icons.lock_outline_rounded,
         );

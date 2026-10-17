@@ -202,7 +202,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
       }
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToLeaveConversation(e.toString()));
       }
     }
   }
@@ -229,7 +229,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
         builder: (context) => ConversationPage(
           siteContext: widget.siteContext,
           conversationId: conversation.conv_id ?? '',
-          subject: conversation.subject ?? (AppLocalizations.of(context)?.noSubject ?? 'No subject'),
+          subject: conversation.subject ?? AppLocalizations.of(context).noSubject,
           initialStartNum: lastPageStartNum,
           anchorMessageId: conversation.messageId, // Use messageId to navigate to specific message
           onMarkUnread: () {
@@ -302,8 +302,8 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
         if (!isLoggedIn) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.signInToViewMessages ?? 'Sign in to view messages',
-            message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewConversations ?? 'You need to be signed in to view your conversations.',
+            title: AppLocalizations.of(context).signInToViewMessages,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewConversations,
             icon: Icons.mail_outline_rounded,
           );
         }
@@ -324,14 +324,14 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              AppLocalizations.of(context)?.errorLoadingConversations(_error ?? 'Unknown error') ?? 'Error loading conversations: $_error',
+              AppLocalizations.of(context).errorLoadingConversations(_error ?? 'Unknown error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             FilledButton(
               onPressed: loadConversations,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -367,7 +367,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
                         ),
                         const SizedBox(height: DesignTokens.spacingXL),
                         Text(
-                          AppLocalizations.of(context)?.noConversations ?? "No conversations",
+                          AppLocalizations.of(context).noConversations,
                           style: textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -376,7 +376,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
                         ),
                         const SizedBox(height: DesignTokens.spacingS),
                         Text(
-                          AppLocalizations.of(context)?.noConversationsMessage ?? 'You have no conversations yet. Start a new conversation to begin messaging.',
+                          AppLocalizations.of(context).noConversationsMessage,
                           style: textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -445,7 +445,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
       await _loadMoreConversations();
     } catch (e) {
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.errorLoadingMoreConversations(e.toString()) ?? 'Error loading more conversations: $e');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorLoadingMoreConversations(e.toString()));
       }
     } finally {
       if (mounted) {

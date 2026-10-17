@@ -314,7 +314,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                 ),
                 elevation: DesignTokens.elevationMedium,
               ),
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),

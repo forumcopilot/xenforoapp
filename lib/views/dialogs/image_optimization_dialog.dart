@@ -20,7 +20,7 @@ Future<bool> showImageOptimizationDialog(
           children: [
             const Icon(Icons.image, color: Colors.orange),
             const SizedBox(width: 8),
-            Text(AppLocalizations.of(context)?.optimizeImage ?? 'Optimize Image'),
+            Text(AppLocalizations.of(context).optimizeImage),
           ],
         ),
         content: SingleChildScrollView(
@@ -100,11 +100,11 @@ Future<bool> showImageOptimizationDialog(
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(AppLocalizations.of(context)?.optimizeAndUpload ?? 'Optimize and Upload'),
+            child: Text(AppLocalizations.of(context).optimizeAndUpload),
           ),
         ],
       );

@@ -113,7 +113,7 @@ class ConversationListItem extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: UnreadBadge(
                                   count: conversation.unreadMessageCount ?? 0,
-                                  semanticLabel: AppLocalizations.of(context)?.unread ?? 'Unread',
+                                  semanticLabel: AppLocalizations.of(context).unread,
                                 ),
                               ),
                             ],

@@ -44,13 +44,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     setState(() => _saving = false);
     if (!result.result) {
       final reason = result.resultText?.trim();
-      SnackbarHelper.showError(context, (reason != null && reason.isNotEmpty) ? reason : (l10n?.somethingWentWrong ?? 'Something went wrong'));
+      SnackbarHelper.showError(context, (reason != null && reason.isNotEmpty) ? reason : l10n.somethingWentWrong);
       return;
     }
     if (!Get.isRegistered<LoginController>()) Get.put(LoginController());
     await Get.find<LoginController>().rememberNewPassword(widget.siteContext, _new.text);
     if (!mounted) return;
-    SnackbarHelper.showSuccess(context, l10n?.passwordChanged ?? 'Password changed');
+    SnackbarHelper.showSuccess(context, l10n.passwordChanged);
     Navigator.of(context).pop(true);
   }
 
@@ -66,11 +66,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         );
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.changePassword ?? 'Change password'),
+        title: Text(l10n.changePassword),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
-            child: Text(l10n?.save ?? 'Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -86,8 +86,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 obscureText: !_visible,
                 autofillHints: const [AutofillHints.password],
                 textInputAction: TextInputAction.next,
-                decoration: field(l10n?.currentPassword ?? 'Current password'),
-                validator: (v) => (v == null || v.isEmpty) ? (l10n?.pleaseEnterPassword ?? 'Please enter your password') : null,
+                decoration: field(l10n.currentPassword),
+                validator: (v) => (v == null || v.isEmpty) ? l10n.pleaseEnterPassword : null,
               ),
               const SizedBox(height: DesignTokens.spacingL),
               TextFormField(
@@ -95,8 +95,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 obscureText: !_visible,
                 autofillHints: const [AutofillHints.newPassword],
                 textInputAction: TextInputAction.next,
-                decoration: field(l10n?.newPassword ?? 'New password'),
-                validator: (v) => (v == null || v.isEmpty) ? (l10n?.pleaseEnterPassword ?? 'Please enter your password') : null,
+                decoration: field(l10n.newPassword),
+                validator: (v) => (v == null || v.isEmpty) ? l10n.pleaseEnterPassword : null,
               ),
               const SizedBox(height: DesignTokens.spacingL),
               TextFormField(
@@ -105,8 +105,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 autofillHints: const [AutofillHints.newPassword],
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _save(),
-                decoration: field(l10n?.confirmNewPassword ?? 'Confirm new password'),
-                validator: (v) => v != _new.text ? (l10n?.passwordsDoNotMatch ?? 'Passwords do not match') : null,
+                decoration: field(l10n.confirmNewPassword),
+                validator: (v) => v != _new.text ? l10n.passwordsDoNotMatch : null,
               ),
             ],
           ),

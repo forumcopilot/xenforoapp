@@ -94,7 +94,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       } else {
         // Wrap other exceptions
         if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToSendReply(e.toString()) ?? 'Failed to send reply: ${e.toString()}');
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSendReply(e.toString()));
         }
         return false;
       }
@@ -119,14 +119,14 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
           Widget compose = MessageComposePage(
             key: ValueKey('reply_with_quote_${widget.quotedMessageId}'),
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.reply ?? 'Reply',
+            title: AppLocalizations.of(context).reply,
             onSubmit: _handleSubmit,
             onFileUpload:
                 (widget.canUpload ?? false) ? _handleFileUpload : null,
             onRemoveAttachment: _handleRemoveAttachment,
             showTitleField: false,
             initialContent: quoteContent,
-            contentHint: AppLocalizations.of(context)?.writeYourReply ?? 'Write your reply...',
+            contentHint: AppLocalizations.of(context).writeYourReply,
             topicTitle: widget.subject,
             onSuccess: (success) {
               // Return true to indicate reply was successful
@@ -151,7 +151,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      AppLocalizations.of(context)?.failedToLoadQuote(snapshot.error.toString()) ?? "Failed to load quote:\n${snapshot.error.toString()}",
+                      AppLocalizations.of(context).failedToLoadQuote(snapshot.error.toString()),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.error,
@@ -169,13 +169,13 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
     } else {
       return MessageComposePage(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)?.reply ?? 'Reply',
+        title: AppLocalizations.of(context).reply,
         onSubmit: _handleSubmit,
         onFileUpload:
             (widget.canUpload ?? false) ? _handleFileUpload : null,
         onRemoveAttachment: _handleRemoveAttachment,
         showTitleField: false,
-        contentHint: AppLocalizations.of(context)?.writeYourReply ?? 'Write your reply...',
+        contentHint: AppLocalizations.of(context).writeYourReply,
         topicTitle: widget.subject,
         // A plain reply keeps a draft on this device, per forum and
         // conversation (a reply with a quote opens with the quote instead).
@@ -346,7 +346,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       } else {
         debugPrint('❌ [REPLY_CONVERSATION] File upload failed: ${uploadAttachmentResult.resultText}');
         if (mounted) {
-          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file');
+          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context).failedToUploadFile(''));
         }
         return null;
       }
@@ -354,7 +354,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       debugPrint('❌ [REPLY_CONVERSATION] Exception in _handleFileUpload: $e');
       debugPrint('❌ [REPLY_CONVERSATION] Stack trace: $stackTrace');
       if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}');
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
       }
       return null;
     } finally {

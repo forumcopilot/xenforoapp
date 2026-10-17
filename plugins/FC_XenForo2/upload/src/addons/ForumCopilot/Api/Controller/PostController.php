@@ -1053,7 +1053,10 @@ class PostController extends AbstractController
                 true,
                 null,
                 (string)$post->post_id,
-                $thread->canView() ? 0 : 1, // state: 0 = visible, 1 = needs moderation
+                // 1 = held for moderator approval. This was $thread->canView(),
+                // which is true for the author's own moderated reply, so the
+                // app never heard that it was waiting for approval.
+                $post->message_state === 'moderated' ? 1 : 0,
                 $postContent,
                 $post->canEdit(),
                 $post->canDelete(),

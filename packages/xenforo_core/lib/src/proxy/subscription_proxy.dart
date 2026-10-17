@@ -4,6 +4,7 @@ import 'package:forumcopilot_sdk/models/results/fc_subscription_result.dart';
 import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_notification_level.dart';
 import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCSubscriptionProxy
 /// Handles subscription operations for XenForo forums
@@ -12,7 +13,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCSubscribedForumResult> getSubscribedForumAsync() async {
-    print('✅ [XENFORO_SUBSCRIPTION] getSubscribedForumAsync called via plugin API');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] getSubscribedForumAsync called via plugin API');
 
     try {
       final response = await callPluginApi('getSubscribedForum', {});
@@ -42,7 +43,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         forums: forumList,
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] getSubscribedForumAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] getSubscribedForumAsync error: $e');
       return FCSubscribedForumResult(
         result: false,
         resultText: 'Error getting subscribed forums: $e',
@@ -53,8 +54,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCSubscribeForumResult> subscribeForumAsync(String forumId, int subscribeMode) async {
-    print('✅ [XENFORO_SUBSCRIPTION] subscribeForumAsync called via plugin API');
-    print('   📋 Parameters: forumId=$forumId, subscribeMode=$subscribeMode');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] subscribeForumAsync called via plugin API');
+    xfDebug('   📋 Parameters: forumId=$forumId, subscribeMode=$subscribeMode');
 
     try {
       final response = await callPluginApi('subscribeForum', {
@@ -67,7 +68,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] subscribeForumAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] subscribeForumAsync error: $e');
       return FCSubscribeForumResult(
         result: false,
         resultText: 'Error subscribing to forum: $e',
@@ -77,8 +78,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCUnsubscribeForumResult> unsubscribeForumAsync(String forumId) async {
-    print('✅ [XENFORO_SUBSCRIPTION] unsubscribeForumAsync called via plugin API');
-    print('   📋 Parameters: forumId=$forumId');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] unsubscribeForumAsync called via plugin API');
+    xfDebug('   📋 Parameters: forumId=$forumId');
 
     try {
       final response = await callPluginApi('unsubscribeForum', {
@@ -90,7 +91,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] unsubscribeForumAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] unsubscribeForumAsync error: $e');
       return FCUnsubscribeForumResult(
         result: false,
         resultText: 'Error unsubscribing from forum: $e',
@@ -100,8 +101,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCSubscribedTopicResult> getSubscribedTopicAsync(int startNum, int lastNum) async {
-    print('✅ [XENFORO_SUBSCRIPTION] getSubscribedTopicAsync called via plugin API');
-    print('   📋 Parameters: startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] getSubscribedTopicAsync called via plugin API');
+    xfDebug('   📋 Parameters: startNum=$startNum, lastNum=$lastNum');
 
     try {
       final response = await callPluginApi('getSubscribedTopic', {
@@ -148,7 +149,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         topics: topicList,
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] getSubscribedTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] getSubscribedTopicAsync error: $e');
       return FCSubscribedTopicResult(
         result: false,
         resultText: 'Error getting subscribed topics: $e',
@@ -160,8 +161,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCSubscribeTopicResult> subscribeTopicAsync(String topicId, int subscribeMode) async {
-    print('✅ [XENFORO_SUBSCRIPTION] subscribeTopicAsync called via plugin API');
-    print('   📋 Parameters: topicId=$topicId, subscribeMode=$subscribeMode');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] subscribeTopicAsync called via plugin API');
+    xfDebug('   📋 Parameters: topicId=$topicId, subscribeMode=$subscribeMode');
 
     try {
       final response = await callPluginApi('subscribeTopic', {
@@ -174,7 +175,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] subscribeTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] subscribeTopicAsync error: $e');
       return FCSubscribeTopicResult(
         result: false,
         resultText: 'Error subscribing to topic: $e',
@@ -184,8 +185,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
 
   @override
   Future<FCUnsubscribeTopicResult> unsubscribeTopicAsync(String topicId) async {
-    print('✅ [XENFORO_SUBSCRIPTION] unsubscribeTopicAsync called via plugin API');
-    print('   📋 Parameters: topicId=$topicId');
+    xfDebug('✅ [XENFORO_SUBSCRIPTION] unsubscribeTopicAsync called via plugin API');
+    xfDebug('   📋 Parameters: topicId=$topicId');
 
     try {
       final response = await callPluginApi('unsubscribeTopic', {
@@ -197,7 +198,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_SUBSCRIPTION] unsubscribeTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_SUBSCRIPTION] unsubscribeTopicAsync error: $e');
       return FCUnsubscribeTopicResult(
         result: false,
         resultText: 'Error unsubscribing from topic: $e',

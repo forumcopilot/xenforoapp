@@ -3,6 +3,7 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_forum_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCForumProxy
 /// Handles forum structure and navigation for XenForo forums
@@ -12,8 +13,8 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
   @override
   Future<FCForumDataResult> getForumAsync(
       bool returnDescription, String forumId, bool forceRefresh) async {
-    print('✅ [XENFORO_FORUM] getForum called via plugin API');
-    print(
+    xfDebug('✅ [XENFORO_FORUM] getForum called via plugin API');
+    xfDebug(
         '   📋 Parameters: returnDescription=$returnDescription, forumId=$forumId, forceRefresh=$forceRefresh');
 
     try {
@@ -24,24 +25,24 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         'forceRefresh': forceRefresh,
       });
 
-      print('✅ [XENFORO_FORUM] getForum response received');
-      print('   📋 Response keys: ${response.keys.toList()}');
-      print('   📋 result: ${response['result']}');
-      print('   📋 resultText: ${response['resultText']}');
-      print('   📋 forums type: ${response['forums'].runtimeType}');
+      xfDebug('✅ [XENFORO_FORUM] getForum response received');
+      xfDebug('   📋 Response keys: ${response.keys.toList()}');
+      xfDebug('   📋 result: ${response['result']}');
+      xfDebug('   📋 resultText: ${response['resultText']}');
+      xfDebug('   📋 forums type: ${response['forums'].runtimeType}');
 
       // Convert dynamic list to FCForum objects recursively
       final forumsList = response['forums'] as List<dynamic>? ?? [];
-      print('   📋 forumsList length: ${forumsList.length}');
+      xfDebug('   📋 forumsList length: ${forumsList.length}');
 
       final forums = forumsList.map((forumData) {
         return _convertForumData(forumData);
       }).toList();
 
-      print(
+      xfDebug(
           '✅ [XENFORO_FORUM] getForum completed: ${forums.length} forums converted');
       if (forums.isEmpty && (response['result'] == true)) {
-        print(
+        xfDebug(
             '⚠️ [XENFORO_FORUM] Warning: result is true but forums list is empty');
       }
 
@@ -51,8 +52,8 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         forums: forums,
       );
     } catch (e, stackTrace) {
-      print('❌ [XENFORO_FORUM] getForum error: $e');
-      print('❌ [XENFORO_FORUM] Stack trace: $stackTrace');
+      xfDebug('❌ [XENFORO_FORUM] getForum error: $e');
+      xfDebug('❌ [XENFORO_FORUM] Stack trace: $stackTrace');
       return FCForumDataResult(
         result: false,
         resultText: 'Error getting forum: $e',
@@ -72,8 +73,8 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
 
   @override
   Future<FCMarkAllAsReadResult> markAllAsRead(String forumId) async {
-    print('✅ [XENFORO_FORUM] markAllAsRead called via plugin API');
-    print('   📋 Parameters: forumId=$forumId');
+    xfDebug('✅ [XENFORO_FORUM] markAllAsRead called via plugin API');
+    xfDebug('   📋 Parameters: forumId=$forumId');
 
     try {
       // Call plugin API with markAllAsRead method
@@ -86,7 +87,7 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_FORUM] markAllAsRead error: $e');
+      xfDebug('❌ [XENFORO_FORUM] markAllAsRead error: $e');
       return FCMarkAllAsReadResult(
         result: false,
         resultText: 'Error marking forum as read: $e',
@@ -96,8 +97,8 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
 
   @override
   Future<FCLoginForumResult> loginForum(String forumId, String password) async {
-    print('✅ [XENFORO_FORUM] loginForum called via plugin API');
-    print('   📋 Parameters: forumId=$forumId');
+    xfDebug('✅ [XENFORO_FORUM] loginForum called via plugin API');
+    xfDebug('   📋 Parameters: forumId=$forumId');
 
     try {
       final response = await callPluginApi('loginForum', {
@@ -111,7 +112,7 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         cookies: null, // Cookies handled by session
       );
     } catch (e) {
-      print('❌ [XENFORO_FORUM] loginForum error: $e');
+      xfDebug('❌ [XENFORO_FORUM] loginForum error: $e');
       return FCLoginForumResult(
         result: false,
         resultText: 'Error logging into forum: $e',
@@ -143,7 +144,7 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
 
   @override
   Future<FCBoardStatResult> getBoardStatAsync() async {
-    print('✅ [XENFORO_FORUM] getBoardStatAsync called via plugin API');
+    xfDebug('✅ [XENFORO_FORUM] getBoardStatAsync called via plugin API');
 
     try {
       final response = await callPluginApi('getBoardStat', {});
@@ -159,7 +160,7 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
         guestOnline: response['guestOnline'] ?? 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_FORUM] getBoardStatAsync error: $e');
+      xfDebug('❌ [XENFORO_FORUM] getBoardStatAsync error: $e');
       return FCBoardStatResult(
         result: false,
         resultText: 'Error getting board stats: $e',

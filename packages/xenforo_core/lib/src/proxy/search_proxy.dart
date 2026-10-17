@@ -4,6 +4,7 @@ import 'package:forumcopilot_sdk/models/results/fc_search_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCSearchProxy
 /// Handles search operations for XenForo forums
@@ -12,8 +13,8 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
 
   @override
   Future<FCSearchTopicResult> searchTopicAsync(String searchString, int startNum, int lastNum, String? searchId) async {
-    print('✅ [XENFORO_SEARCH] searchTopic called - IMPLEMENTED');
-    print('   📋 Parameters: searchString=$searchString, startNum=$startNum, lastNum=$lastNum, searchId=$searchId');
+    xfDebug('✅ [XENFORO_SEARCH] searchTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: searchString=$searchString, startNum=$startNum, lastNum=$lastNum, searchId=$searchId');
 
     try {
       return await callPluginApiTyped<FCSearchTopicResult>('searchTopic', {
@@ -32,7 +33,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_SEARCH] searchTopic error: $e');
+      xfDebug('❌ [XENFORO_SEARCH] searchTopic error: $e');
       return FCSearchTopicResult(
         result: false,
         resultText: 'Error searching topics: $e',
@@ -44,8 +45,8 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
 
   @override
   Future<FCSearchPostResult> searchPostAsync(String searchString, int startNum, int lastNum, String? searchId) async {
-    print('✅ [XENFORO_SEARCH] searchPost called - IMPLEMENTED');
-    print('   📋 Parameters: searchString=$searchString, startNum=$startNum, lastNum=$lastNum, searchId=$searchId');
+    xfDebug('✅ [XENFORO_SEARCH] searchPost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: searchString=$searchString, startNum=$startNum, lastNum=$lastNum, searchId=$searchId');
 
     try {
       return await callPluginApiTyped<FCSearchPostResult>('searchPost', {
@@ -65,7 +66,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_SEARCH] searchPost error: $e');
+      xfDebug('❌ [XENFORO_SEARCH] searchPost error: $e');
       return FCSearchPostResult(
         result: false,
         resultText: 'Error searching posts: $e',
@@ -90,8 +91,8 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
     List<String>? notIn,
     bool startedBy,
   ) async {
-    print('✅ [XENFORO_SEARCH] advanceSearchPostAsync called via plugin API');
-    print('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
+    xfDebug('✅ [XENFORO_SEARCH] advanceSearchPostAsync called via plugin API');
+    xfDebug('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
 
     try {
       final params = <String, dynamic>{
@@ -147,7 +148,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
         posts: postList,
       );
     } catch (e) {
-      print('❌ [XENFORO_SEARCH] advanceSearchPostAsync error: $e');
+      xfDebug('❌ [XENFORO_SEARCH] advanceSearchPostAsync error: $e');
       return FCSearchDataResultPost(
         result: false,
         resultText: 'Error in advanced search: $e',
@@ -173,8 +174,8 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
     bool startedBy,
     int? searchTime,
   ) async {
-    print('✅ [XENFORO_SEARCH] advanceSearchTopicAsync called via plugin API');
-    print('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
+    xfDebug('✅ [XENFORO_SEARCH] advanceSearchTopicAsync called via plugin API');
+    xfDebug('   📋 Parameters: keywords=$keywords, page=$page, perpage=$perpage');
 
     try {
       final params = <String, dynamic>{
@@ -233,7 +234,7 @@ class XenForoSearchProxy extends BaseXenForoProxy implements IFCSearchProxy {
         topics: topicList,
       );
     } catch (e) {
-      print('❌ [XENFORO_SEARCH] advanceSearchTopicAsync error: $e');
+      xfDebug('❌ [XENFORO_SEARCH] advanceSearchTopicAsync error: $e');
       return FCSearchDataResultTopic(
         result: false,
         resultText: 'Error in advanced search: $e',

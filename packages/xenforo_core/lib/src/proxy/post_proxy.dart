@@ -9,6 +9,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post_vote.dart';
 import 'package:forumcopilot_sdk/models/results/fc_reaction_result.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCPostProxy
 /// Handles post operations for XenForo forums
@@ -17,16 +18,16 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCQuotePostResult> getQuotePostAsync(String postId) async {
-    print('✅ [XENFORO_POST] getQuotePost called - IMPLEMENTED');
-    print('   📋 Parameters: postId=$postId');
+    xfDebug('✅ [XENFORO_POST] getQuotePost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: postId=$postId');
 
     try {
       final response = await callPluginApi('getQuotePost', {
         'postId': postId,
       });
 
-      print('   📥 [XENFORO_POST] getQuotePost response keys: ${response.keys.toList()}');
-      print('   📥 [XENFORO_POST] getQuotePost quoteContent: ${response['quoteContent']}');
+      xfDebug('   📥 [XENFORO_POST] getQuotePost response keys: ${response.keys.toList()}');
+      xfDebug('   📥 [XENFORO_POST] getQuotePost quoteContent: ${response['quoteContent']}');
 
       return FCQuotePostResult(
         result: response['result'] ?? false,
@@ -34,7 +35,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         quoteContent: response['quoteContent']?.toString(),
       );
     } catch (e) {
-      print('❌ [XENFORO_POST] getQuotePost error: $e');
+      xfDebug('❌ [XENFORO_POST] getQuotePost error: $e');
       return FCQuotePostResult(
         result: false,
         resultText: 'Error getting quote post: $e',
@@ -44,8 +45,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCRawPostResult> getRawPostAsync(String postId) async {
-    print('✅ [XENFORO_POST] getRawPost called - IMPLEMENTED');
-    print('   📋 Parameters: postId=$postId');
+    xfDebug('✅ [XENFORO_POST] getRawPost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: postId=$postId');
 
     try {
       final response = await callPluginApi('getRawPost', {
@@ -146,13 +147,13 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         }).toList();
       }
 
-      print('🔍 [XENFORO_POST] Parsed attachments: ${attachments?.length ?? 0}');
-      print('🔍 [XENFORO_POST] Attachment data hash: ${attachmentData?.hash}');
-      print('🔍 [XENFORO_POST] Can edit title: ${response['canEditTitle']}');
-      print('🔍 [XENFORO_POST] Forum ID: ${response['forumId']}');
-      print('🔍 [XENFORO_POST] Prefix ID: $prefixId');
-      print('🔍 [XENFORO_POST] Require prefix: $requirePrefix');
-      print('🔍 [XENFORO_POST] Available prefixes: ${prefixes.length}');
+      xfDebug('🔍 [XENFORO_POST] Parsed attachments: ${attachments?.length ?? 0}');
+      xfDebug('🔍 [XENFORO_POST] Attachment data hash: ${attachmentData?.hash}');
+      xfDebug('🔍 [XENFORO_POST] Can edit title: ${response['canEditTitle']}');
+      xfDebug('🔍 [XENFORO_POST] Forum ID: ${response['forumId']}');
+      xfDebug('🔍 [XENFORO_POST] Prefix ID: $prefixId');
+      xfDebug('🔍 [XENFORO_POST] Require prefix: $requirePrefix');
+      xfDebug('🔍 [XENFORO_POST] Available prefixes: ${prefixes.length}');
 
       return FCRawPostResult(
         result: response['result'] ?? false,
@@ -168,8 +169,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         prefixes: prefixes,
       );
     } catch (e, stackTrace) {
-      print('❌ [XENFORO_POST] getRawPost error: $e');
-      print('❌ [XENFORO_POST] Stack trace: $stackTrace');
+      xfDebug('❌ [XENFORO_POST] getRawPost error: $e');
+      xfDebug('❌ [XENFORO_POST] Stack trace: $stackTrace');
       return FCRawPostResult(
         result: false,
         resultText: 'Error getting raw post: $e',
@@ -186,8 +187,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCThreadResult> getThreadAsync(String topicId, int startNum, int lastNum, bool returnHtml) async {
-    print('✅ [XENFORO_POST] getThread called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId, startNum=$startNum, lastNum=$lastNum, returnHtml=$returnHtml');
+    xfDebug('✅ [XENFORO_POST] getThread called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId, startNum=$startNum, lastNum=$lastNum, returnHtml=$returnHtml');
 
     try {
       return await callPluginApiTyped<FCThreadResult>('getThread', {
@@ -202,7 +203,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
           // If missing, try to get from posts length or set default
           final postsList = responseMap['posts'] as List?;
           responseMap['totalPostNum'] = postsList?.length ?? 0;
-          print('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
+          xfDebug('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
         }
 
         // Map posts - convert 'position' to 'postNumber' for Flutter model
@@ -218,10 +219,10 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
             final attachments = postMap['attachments'] as List;
             for (var i = 0; i < attachments.length && i < 2; i++) {
               final att = attachments[i] as Map<String, dynamic>;
-              print('   🔍 [XENFORO_POST] Attachment[$i] before mapping:');
-              print('      id: ${att['id']}, fileName: ${att['fileName']}');
-              print('      canViewThumbnailUrl (raw): ${att['canViewThumbnailUrl']} (type: ${att['canViewThumbnailUrl'].runtimeType})');
-              print('      thumbnailUrl: ${att['thumbnailUrl']}');
+              xfDebug('   🔍 [XENFORO_POST] Attachment[$i] before mapping:');
+              xfDebug('      id: ${att['id']}, fileName: ${att['fileName']}');
+              xfDebug('      canViewThumbnailUrl (raw): ${att['canViewThumbnailUrl']} (type: ${att['canViewThumbnailUrl'].runtimeType})');
+              xfDebug('      thumbnailUrl: ${att['thumbnailUrl']}');
             }
           }
 
@@ -231,10 +232,10 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
           if (fcPost.attachments.isNotEmpty) {
             for (var i = 0; i < fcPost.attachments.length && i < 2; i++) {
               final att = fcPost.attachments[i];
-              print('   🔍 [XENFORO_POST] Attachment[$i] after mapping:');
-              print('      id: ${att.id}, filename: ${att.filename}');
-              print('      canViewThumbnailUrl: ${att.canViewThumbnailUrl}');
-              print('      thumbnailUrl: ${att.thumbnailUrl}');
+              xfDebug('   🔍 [XENFORO_POST] Attachment[$i] after mapping:');
+              xfDebug('      id: ${att.id}, filename: ${att.filename}');
+              xfDebug('      canViewThumbnailUrl: ${att.canViewThumbnailUrl}');
+              xfDebug('      thumbnailUrl: ${att.thumbnailUrl}');
             }
           }
 
@@ -245,7 +246,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         return FCThreadResultMapper.fromMap(responseMap)..posts = fcPosts;
       });
     } catch (e) {
-      print('❌ [XENFORO_POST] getThread error: $e');
+      xfDebug('❌ [XENFORO_POST] getThread error: $e');
       // Return minimal error result
       final now = DateTime.now();
       return FCThreadResult(
@@ -267,8 +268,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCThreadByPostResult> getThreadByPostAsync(String postId, int postsPerRequest, bool returnHtml) async {
-    print('✅ [XENFORO_POST] getThreadByPost called - IMPLEMENTED');
-    print('   📋 Parameters: postId=$postId, postsPerRequest=$postsPerRequest, returnHtml=$returnHtml');
+    xfDebug('✅ [XENFORO_POST] getThreadByPost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: postId=$postId, postsPerRequest=$postsPerRequest, returnHtml=$returnHtml');
 
     try {
       return await callPluginApiTyped<FCThreadByPostResult>('getThreadByPost', {
@@ -282,12 +283,12 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
           // If missing, try to get from posts length or set default
           final postsList = responseMap['posts'] as List?;
           responseMap['totalPostNum'] = postsList?.length ?? 0;
-          print('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
+          xfDebug('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
         }
         if (!responseMap.containsKey('position')) {
           // Position is required for FCThreadByPostResult - default to 1 if missing
           responseMap['position'] = 1;
-          print('   ⚠️ [XENFORO_POST] position missing from response, using default: ${responseMap['position']}');
+          xfDebug('   ⚠️ [XENFORO_POST] position missing from response, using default: ${responseMap['position']}');
         }
 
         // Map posts - convert 'position' to 'postNumber' for Flutter model
@@ -304,7 +305,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         return FCThreadByPostResultMapper.fromMap(responseMap)..posts = fcPosts;
       });
     } catch (e) {
-      print('❌ [XENFORO_POST] getThreadByPost error: $e');
+      xfDebug('❌ [XENFORO_POST] getThreadByPost error: $e');
       // Return minimal error result
       final now = DateTime.now();
       return FCThreadByPostResult(
@@ -327,8 +328,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCThreadByUnreadResult> getThreadByUnreadAsync(String topicId, int postsPerRequest, bool returnHtml) async {
-    print('✅ [XENFORO_POST] getThreadByUnread called - IMPLEMENTED');
-    print('   📋 Parameters: topicId=$topicId, postsPerRequest=$postsPerRequest, returnHtml=$returnHtml');
+    xfDebug('✅ [XENFORO_POST] getThreadByUnread called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicId=$topicId, postsPerRequest=$postsPerRequest, returnHtml=$returnHtml');
 
     try {
       return await callPluginApiTyped<FCThreadByUnreadResult>('getThreadByUnread', {
@@ -342,12 +343,12 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
           // If missing, try to get from posts length or set default
           final postsList = responseMap['posts'] as List?;
           responseMap['totalPostNum'] = postsList?.length ?? 0;
-          print('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
+          xfDebug('   ⚠️ [XENFORO_POST] totalPostNum missing from response, using default: ${responseMap['totalPostNum']}');
         }
         if (!responseMap.containsKey('position')) {
           // Position is required for FCThreadByUnreadResult - default to 1 if missing
           responseMap['position'] = 1;
-          print('   ⚠️ [XENFORO_POST] position missing from response, using default: ${responseMap['position']}');
+          xfDebug('   ⚠️ [XENFORO_POST] position missing from response, using default: ${responseMap['position']}');
         }
 
         // Map posts - convert 'position' to 'postNumber' for Flutter model
@@ -364,7 +365,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         return FCThreadByUnreadResultMapper.fromMap(responseMap)..posts = fcPosts;
       });
     } catch (e) {
-      print('❌ [XENFORO_POST] getThreadByUnread error: $e');
+      xfDebug('❌ [XENFORO_POST] getThreadByUnread error: $e');
       // Return minimal error result
       final now = DateTime.now();
       return FCThreadByUnreadResult(
@@ -387,8 +388,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCReplyPostResult> replyPostAsync(String forumId, String topicId, String subject, String textBody, List<String>? attachmentIds, String? groupId, bool returnHtml) async {
-    print('✅ [XENFORO_POST] replyPost called - IMPLEMENTED');
-    print('   📋 Parameters: forumId=$forumId, topicId=$topicId, subject=$subject, textBody=${textBody.length} chars, attachmentIds=$attachmentIds, groupId=$groupId, returnHtml=$returnHtml');
+    xfDebug('✅ [XENFORO_POST] replyPost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: forumId=$forumId, topicId=$topicId, subject=$subject, textBody=${textBody.length} chars, attachmentIds=$attachmentIds, groupId=$groupId, returnHtml=$returnHtml');
 
     try {
       final response = await callPluginApi('replyPost', {
@@ -412,7 +413,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         canReport: response['canReport'] ?? false,
       );
     } catch (e) {
-      print('❌ [XENFORO_POST] replyPost error: $e');
+      xfDebug('❌ [XENFORO_POST] replyPost error: $e');
       return FCReplyPostResult(
         result: false,
         resultText: 'Error replying to post: $e',
@@ -422,8 +423,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
 
   @override
   Future<FCReportPostResult> reportPostAsync(String postId, String reason) async {
-    print('✅ [XENFORO_POST] reportPost called - IMPLEMENTED');
-    print('   📋 Parameters: postId=$postId, reason=$reason');
+    xfDebug('✅ [XENFORO_POST] reportPost called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: postId=$postId, reason=$reason');
 
     try {
       final response = await callPluginApi('reportPost', {
@@ -436,7 +437,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_POST] reportPost error: $e');
+      xfDebug('❌ [XENFORO_POST] reportPost error: $e');
       return FCReportPostResult(
         result: false,
         resultText: 'Error reporting post: $e',
@@ -447,8 +448,8 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
   @override
   Future<FCSaveRawPostResult> saveRawPostAsync(
       String postId, String postTitle, String postContent, bool returnHtml, String? reason, List<String>? attachmentIds, String? groupId, String? prefix) async {
-    print('✅ [XENFORO_POST] saveRawPost called - IMPLEMENTED');
-    print(
+    xfDebug('✅ [XENFORO_POST] saveRawPost called - IMPLEMENTED');
+    xfDebug(
         '   📋 Parameters: postId=$postId, postTitle=$postTitle, postContent=${postContent.length} chars, returnHtml=$returnHtml, reason=$reason, attachmentIds=$attachmentIds, groupId=$groupId, prefix=$prefix');
 
     try {
@@ -474,7 +475,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_POST] saveRawPost error: $e');
+      xfDebug('❌ [XENFORO_POST] saveRawPost error: $e');
       return FCSaveRawPostResult(
         result: false,
         resultText: 'Error saving raw post: $e',

@@ -3,6 +3,7 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_topic_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import '../base_xenforo_proxy.dart';
+import '../xf_debug.dart';
 
 /// XenForo implementation of IFCTopicProxy
 /// Handles thread/topic operations for XenForo forums
@@ -11,8 +12,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCTopicDataResult> getAnnTopicAsync(String forumId, int startNum, int lastNum) async {
-    print('✅ [XENFORO_TOPIC] getAnnTopic called - IMPLEMENTED');
-    print('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_TOPIC] getAnnTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
 
     try {
       return await callPluginApiTyped<FCTopicDataResult>('getAnnTopic', {
@@ -40,7 +41,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
                 // Prefix API now returns { id, title }
                 final prefixId = map['id'] ?? '';
                 final prefixDisplayName = map['title'] ?? '';
-                print('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
+                xfDebug('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
                 return FCPrefix(
                   prefixId: prefixId,
                   prefixDisplayName: prefixDisplayName,
@@ -51,7 +52,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getAnnTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getAnnTopic error: $e');
       return FCTopicDataResult(
         result: false,
         resultText: 'Error getting announcement topics: $e',
@@ -63,8 +64,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCLatestTopicResult> getLatestTopicAsync(int startNum, int lastNum, {String? searchId, List<String>? filters}) async {
-    print('✅ [XENFORO_TOPIC] getLatestTopic called - IMPLEMENTED');
-    print('   📋 Parameters: startNum=$startNum, lastNum=$lastNum, searchId=$searchId, filters=$filters');
+    xfDebug('✅ [XENFORO_TOPIC] getLatestTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: startNum=$startNum, lastNum=$lastNum, searchId=$searchId, filters=$filters');
 
     try {
       return await callPluginApiTyped<FCLatestTopicResult>('getLatestTopic', {
@@ -83,7 +84,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getLatestTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getLatestTopic error: $e');
       return FCLatestTopicResult(
         result: false,
         resultText: 'Error getting latest topics: $e',
@@ -101,8 +102,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCParticipatedTopicResult> getParticipatedTopicAsync(String username, int startNum, int lastNum, {String? searchId, String? userId}) async {
-    print('✅ [XENFORO_TOPIC] getParticipatedTopic called - IMPLEMENTED');
-    print('   📋 Parameters: username=$username, startNum=$startNum, lastNum=$lastNum, searchId=$searchId, userId=$userId');
+    xfDebug('✅ [XENFORO_TOPIC] getParticipatedTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: username=$username, startNum=$startNum, lastNum=$lastNum, searchId=$searchId, userId=$userId');
 
     try {
       return await callPluginApiTyped<FCParticipatedTopicResult>('getParticipatedTopic', {
@@ -123,7 +124,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getParticipatedTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getParticipatedTopic error: $e');
       return FCParticipatedTopicResult(
         result: false,
         resultText: 'Error getting participated topics: $e',
@@ -135,8 +136,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCTopicDataResult> getTopTopicAsync(String forumId, int startNum, int lastNum) async {
-    print('✅ [XENFORO_TOPIC] getTopTopic called - IMPLEMENTED');
-    print('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_TOPIC] getTopTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
 
     try {
       return await callPluginApiTyped<FCTopicDataResult>('getTopTopic', {
@@ -164,7 +165,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
                 // Prefix API now returns { id, title }
                 final prefixId = map['id'] ?? '';
                 final prefixDisplayName = map['title'] ?? '';
-                print('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
+                xfDebug('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
                 return FCPrefix(
                   prefixId: prefixId,
                   prefixDisplayName: prefixDisplayName,
@@ -175,7 +176,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getTopTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getTopTopic error: $e');
       return FCTopicDataResult(
         result: false,
         resultText: 'Error getting top topics: $e',
@@ -187,8 +188,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCTopicDataResult> getTopicAsync(String forumId, int startNum, int lastNum) async {
-    print('✅ [XENFORO_TOPIC] getTopic called - IMPLEMENTED');
-    print('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
+    xfDebug('✅ [XENFORO_TOPIC] getTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
 
     try {
       return await callPluginApiTyped<FCTopicDataResult>('getTopic', {
@@ -216,7 +217,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
                 // Prefix API now returns { id, title }
                 final prefixId = map['id'] ?? '';
                 final prefixDisplayName = map['title'] ?? '';
-                print('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
+                xfDebug('🔍 [XENFORO_TOPIC] Prefix mapping: id=$prefixId, displayName=$prefixDisplayName, rawMap=$map');
                 return FCPrefix(
                   prefixId: prefixId,
                   prefixDisplayName: prefixDisplayName,
@@ -227,7 +228,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getTopic error: $e');
       return FCTopicDataResult(
         result: false,
         resultText: 'Error getting topics: $e',
@@ -239,8 +240,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCTopicByIdsResult> getTopicByIds(List<String> topicIds) async {
-    print('✅ [XENFORO_TOPIC] getTopicByIds called - IMPLEMENTED');
-    print('   📋 Parameters: topicIds=$topicIds');
+    xfDebug('✅ [XENFORO_TOPIC] getTopicByIds called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicIds=$topicIds');
 
     try {
       return await callPluginApiTyped<FCTopicByIdsResult>('getTopicByIds', {
@@ -255,7 +256,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getTopicByIds error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getTopicByIds error: $e');
       return FCTopicByIdsResult(
         result: false,
         resultText: 'Error getting topics by IDs: $e',
@@ -272,8 +273,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCUnreadTopicResult> getUnreadTopicAsync(int startNum, int lastNum, {String? searchId, List<String>? filters}) async {
-    print('✅ [XENFORO_TOPIC] getUnreadTopic called - IMPLEMENTED');
-    print('   📋 Parameters: startNum=$startNum, lastNum=$lastNum, searchId=$searchId, filters=$filters');
+    xfDebug('✅ [XENFORO_TOPIC] getUnreadTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: startNum=$startNum, lastNum=$lastNum, searchId=$searchId, filters=$filters');
 
     try {
       return await callPluginApiTyped<FCUnreadTopicResult>('getUnreadTopic', {
@@ -292,7 +293,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         );
       });
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] getUnreadTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] getUnreadTopic error: $e');
       return FCUnreadTopicResult(
         result: false,
         resultText: 'Error getting unread topics: $e',
@@ -304,8 +305,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCMarkTopicReadResult> markTopicReadAsync(List<String> topicIds) async {
-    print('✅ [XENFORO_TOPIC] markTopicRead called - IMPLEMENTED');
-    print('   📋 Parameters: topicIds=$topicIds');
+    xfDebug('✅ [XENFORO_TOPIC] markTopicRead called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: topicIds=$topicIds');
 
     try {
       final response = await callPluginApi('markTopicRead', {
@@ -317,7 +318,7 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         resultText: response['resultText']?.toString() ?? '',
       );
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] markTopicRead error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] markTopicRead error: $e');
       return FCMarkTopicReadResult(
         result: false,
         resultText: 'Error marking topics as read: $e',
@@ -327,8 +328,8 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
 
   @override
   Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId, List<String>? tags}) async {
-    print('✅ [XENFORO_TOPIC] newTopic called - IMPLEMENTED');
-    print('   📋 Parameters: forumId=$forumId, subject=$subject, textBody=${textBody.length} chars, prefixId=$prefixId, attachmentIds=$attachmentIds, groupId=$groupId');
+    xfDebug('✅ [XENFORO_TOPIC] newTopic called - IMPLEMENTED');
+    xfDebug('   📋 Parameters: forumId=$forumId, subject=$subject, textBody=${textBody.length} chars, prefixId=$prefixId, attachmentIds=$attachmentIds, groupId=$groupId');
 
     try {
       final response = await callPluginApi('newTopic', {
@@ -344,9 +345,11 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         result: response['result'] ?? false,
         resultText: response['resultText']?.toString() ?? '',
         topicId: response['topicId'] ?? '',
+        // 1 = held for moderator approval (add-on 1.8.12 reports it).
+        state: response['state'] is int ? response['state'] as int : 0,
       );
     } catch (e) {
-      print('❌ [XENFORO_TOPIC] newTopic error: $e');
+      xfDebug('❌ [XENFORO_TOPIC] newTopic error: $e');
       return FCNewTopicResult(
         result: false,
         resultText: 'Error creating new topic: $e',

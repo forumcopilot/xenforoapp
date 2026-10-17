@@ -177,6 +177,9 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
         showTitleField: false,
         contentHint: AppLocalizations.of(context)?.writeYourReply ?? 'Write your reply...',
         topicTitle: widget.subject,
+        // A plain reply keeps a draft on this device, per forum and
+        // conversation (a reply with a quote opens with the quote instead).
+        draftKey: 'dm_reply_draft:${widget.siteContext.site.pluginUrl}:${widget.conversationId}',
         onSuccess: (success) {
           // Return true to indicate reply was successful
           return true;

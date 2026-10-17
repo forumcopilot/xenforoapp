@@ -21,6 +21,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
+import '../../../../services/notification_service.dart';
 
 class ConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -44,7 +45,7 @@ class ConversationPage extends StatefulWidget {
   State<ConversationPage> createState() => _ConversationPageState();
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _ConversationPageState extends State<ConversationPage> with WidgetsBindingObserver {
   FCConversationResult? _conversation;
   String? _error;
   bool _isLoading = true;
@@ -61,12 +62,108 @@ class _ConversationPageState extends State<ConversationPage> {
   // at) until the user replies; after that, loads show the newest messages.
   bool _anchored = true;
   Timer? _highlightTimer; // Timer to clear highlight after a few seconds
+  // Whether the reader is at the newest message: content that grows under it
+  // (images loading) keeps it there.
+  bool _atBottom = true;
+  bool _refreshingNewest = false;
+  StreamSubscription<String>? _activitySub;
 
   @override
   void initState() {
     super.initState();
     _attemptAutoLoginAndLoad();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addObserver(this);
+    NotificationService.openConversationId = widget.conversationId;
+    // A push for this conversation while it is open brings the message in.
+    _activitySub = NotificationService.conversationActivity.listen((id) {
+      if (id == widget.conversationId || id == _conversation?.convId) _refreshNewest();
+    });
+  }
+
+  // Back in the app: anything that arrived meanwhile.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshNewest();
+  }
+
+  /// Brings in the messages newer than the last one loaded, without the
+  /// full-screen spinner: after a reply, when the app comes back, on a push
+  /// for this conversation. A reply used to reload the whole conversation
+  /// behind a spinner.
+  Future<void> _refreshNewest({bool scrollToEnd = false}) async {
+    final current = _conversation;
+    if (_refreshingNewest || _isLoading || current == null) return;
+    _refreshingNewest = true;
+    final stayAtEnd = scrollToEnd || _atBottom;
+    try {
+      final proxy = SiteProxyFactory.getPrivateConversationProxy();
+      final id = current.convId;
+      final meta = await proxy.getConversationAsync(id, 1, 1, false);
+      if (!mounted || !meta.result) return;
+      final total = meta.totalMessageNum ?? 0;
+      final missing = total - _currentLastNum;
+      if (missing <= 0) return;
+      if (missing <= _pageSize) {
+        final page = await proxy.getConversationAsync(id, _currentLastNum + 1, total, false);
+        if (!mounted || !page.result || _conversation != current) return;
+        final known = {for (final m in current.messages) m.messageId};
+        final added = page.messages.where((m) => !known.contains(m.messageId)).toList();
+        setState(() {
+          _conversation = _withMessages(page, [...current.messages, ...added]);
+          _currentLastNum = total;
+          _hasMoreMessages = _currentStartNum > 1;
+        });
+      } else {
+        // Too far behind to append: the newest page, as opening it shows.
+        final start = math.max(1, total - _pageSize + 1);
+        final page = await proxy.getConversationAsync(id, start, total, false);
+        if (!mounted || !page.result || _conversation != current) return;
+        setState(() {
+          _conversation = page;
+          _currentStartNum = start;
+          _currentLastNum = total;
+          _hasMoreMessages = start > 1;
+        });
+      }
+      if (stayAtEnd) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('ConversationPage: refreshing the newest messages failed: $e');
+    } finally {
+      _refreshingNewest = false;
+    }
+  }
+
+  /// [base]'s conversation details with [messages].
+  FCConversationResult _withMessages(FCConversationResult base, List<FCConversationMessage> messages) {
+    return FCConversationResult(
+      result: base.result,
+      resultText: base.resultText,
+      convId: base.convId,
+      subject: base.subject,
+      convTitle: base.convTitle,
+      messages: messages,
+      participants: base.participants,
+      participantCount: base.participantCount,
+      canReply: base.canReply,
+      canInvite: base.canInvite,
+      canEdit: base.canEdit,
+      canClose: base.canClose,
+      isClosed: base.isClosed,
+      totalMessageNum: base.totalMessageNum,
+      canUpload: base.canUpload,
+      position: base.position,
+    );
   }
 
   void _attemptAutoLoginAndLoad() {
@@ -510,45 +607,16 @@ class _ConversationPageState extends State<ConversationPage> {
     _highlightMessage(messageId);
   }
 
-  /// Refresh the conversation and scroll to the last message, highlighting it
+  /// After a reply: bring it in (with any other new messages) at the end of
+  /// the list, scroll to it and highlight it. A conversation opened at a
+  /// message (from a push) used to reload around that message, so the reply
+  /// just sent was not shown; and the whole conversation reloaded behind a
+  /// spinner.
   Future<void> _refreshAndScrollToLast() async {
-    try {
-      // Reset highlight before loading
-      setState(() {
-        _highlightedMessageId = null;
-      });
-
-      // Fully refresh the conversation by calling _loadConversation
-      // This will automatically load the last page and scroll to bottom.
-      // A conversation opened at a message (from a push) used to reload
-      // around that message, so the reply just sent was not shown.
-      _anchored = false;
-      await _loadConversation();
-
-      if (mounted && _conversation != null && _conversation!.list.isNotEmpty) {
-        // Highlight the last message (the one user just posted)
-        final lastMessage = _conversation!.list.last;
-        _highlightMessage(lastMessage.messageId);
-
-        // Ensure we scroll to the very bottom after UI is rendered
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients && mounted) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
+    _anchored = false;
+    await _refreshNewest(scrollToEnd: true);
+    if (mounted && _conversation != null && _conversation!.list.isNotEmpty) {
+      _highlightMessage(_conversation!.list.last.messageId);
     }
   }
 
@@ -860,7 +928,22 @@ class _ConversationPageState extends State<ConversationPage> {
             children: [
               RefreshIndicator(
                 onRefresh: _loadConversation,
-                child: SingleChildScrollView(
+                // Content that grows while the reader is at the newest message
+                // (images loading, reactions) keeps the newest message in view;
+                // late images used to push it off screen.
+                child: NotificationListener<ScrollMetricsNotification>(
+                  onNotification: (notification) {
+                    final metrics = notification.metrics;
+                    if (_atBottom && metrics.pixels < metrics.maxScrollExtent - 1) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted && _scrollController.hasClients) {
+                          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        }
+                      });
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
@@ -971,6 +1054,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     ],
                   ),
                 ),
+                ),
               ),
               _buildBottomBar(context),
             ],
@@ -985,6 +1069,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
     final position = _scrollController.position;
     final isNearBottom = position.pixels >= position.maxScrollExtent - 200;
+    _atBottom = position.pixels >= position.maxScrollExtent - 48;
 
     // Only auto-load newer messages when scrolling to the bottom
     // Older messages require manual button click
@@ -1697,6 +1782,11 @@ class _ConversationPageState extends State<ConversationPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _activitySub?.cancel();
+    if (NotificationService.openConversationId == widget.conversationId) {
+      NotificationService.openConversationId = null;
+    }
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _highlightTimer?.cancel(); // Cancel timer on dispose

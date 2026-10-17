@@ -29,6 +29,16 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
+
+  /// Conversation ids that a foreground push just reported activity in. The
+  /// open conversation listens and brings in the new message; it used to
+  /// show a banner and leave the page as it was.
+  static final StreamController<String> _conversationActivity = StreamController<String>.broadcast();
+  static Stream<String> get conversationActivity => _conversationActivity.stream;
+
+  /// The conversation on screen, whose own pushes need no banner on Android
+  /// (the page refreshes instead).
+  static String? openConversationId;
   NotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -349,9 +359,19 @@ class NotificationService with ServiceErrorHandlingMixin {
     AppLogger.debug('Body: ${message.notification?.body}');
     AppLogger.debug('Data: ${message.data}');
 
+    final conversationId = message.data['content_type'] == 'conversation_message'
+        ? message.data['conversation_id']?.toString()
+        : null;
+    if (conversationId != null && conversationId.isNotEmpty) {
+      _conversationActivity.add(conversationId);
+    }
+
     // iOS and macOS already show the push (see _configureForegroundPresentation);
     // a local copy would appear twice.
     if ((Platform.isIOS || Platform.isMacOS) && message.notification != null) return;
+
+    // The conversation it is about is on screen and refreshes itself.
+    if (conversationId != null && conversationId == openConversationId) return;
 
     // Show local notification when app is in foreground
     await _showLocalNotification(message);

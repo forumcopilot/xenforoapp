@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../../config/app_forum_config.dart';
@@ -17,6 +18,7 @@ import 'dart:io';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/snackbar_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MessageComposePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -65,6 +67,12 @@ class MessageComposePage extends StatefulWidget {
   /// asks "discard your changes?" rather than "discard your post?".
   final bool isEditing;
 
+  /// Where this form keeps a local draft of its text (per device), or null
+  /// for none. The draft is saved about 2 s after typing stops and when the
+  /// form closes, restored when it opens again, and cleared once sent; with
+  /// one, closing loses nothing, so it doesn't ask before discarding.
+  final String? draftKey;
+
   const MessageComposePage({
     super.key,
     required this.siteContext,
@@ -96,6 +104,7 @@ class MessageComposePage extends StatefulWidget {
     this.submitIcon,
     this.showSignatureToggle = false,
     this.isEditing = false,
+    this.draftKey,
   });
 
   @override
@@ -177,6 +186,62 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     _baselineTitle = _titleController.text;
     _baselineContent = _contentController.text;
+
+    if (widget.draftKey != null) {
+      _restoreDraft();
+      _contentController.addListener(_scheduleDraftSave);
+    }
+  }
+
+  Timer? _draftTimer;
+  bool _sent = false;
+
+  // Never over text already typed or put there by the page (a quote).
+  Future<void> _restoreDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final draft = prefs.getString(widget.draftKey!);
+      if (!mounted || draft == null || draft.trim().isEmpty) return;
+      if (_contentController.text.trim().isNotEmpty) return;
+      _contentController.text = draft;
+      _contentController.selection = TextSelection.collapsed(offset: draft.length);
+    } catch (e) {
+      debugPrint('MessageComposePage: restoring the draft failed: $e');
+    }
+  }
+
+  void _scheduleDraftSave() {
+    _draftTimer?.cancel();
+    _draftTimer = Timer(const Duration(seconds: 2), _saveDraft);
+  }
+
+  Future<void> _saveDraft() async {
+    final key = widget.draftKey;
+    if (key == null || _sent) return;
+    final text = _contentController.text;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (text.trim().isEmpty) {
+        await prefs.remove(key);
+      } else {
+        await prefs.setString(key, text);
+      }
+    } catch (e) {
+      debugPrint('MessageComposePage: saving the draft failed: $e');
+    }
+  }
+
+  Future<void> _clearDraft() async {
+    final key = widget.draftKey;
+    if (key == null) return;
+    _sent = true;
+    _draftTimer?.cancel();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+    } catch (e) {
+      debugPrint('MessageComposePage: clearing the draft failed: $e');
+    }
   }
 
   /// Whether closing now would lose something the writer added.
@@ -206,6 +271,12 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
   @override
   void dispose() {
+    if (widget.draftKey != null) {
+      _draftTimer?.cancel();
+      _contentController.removeListener(_scheduleDraftSave);
+      // Closed without sending: keep what was typed.
+      if (!_sent) _saveDraft();
+    }
     // Only dispose controllers if we own them
     if (_ownsTitleController) {
       _titleController.dispose();
@@ -1226,6 +1297,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
       );
 
       if (mounted && success) {
+        await _clearDraft();
+        if (!mounted) return;
         // Dismiss keyboard before navigating back
         FocusScope.of(context).unfocus();
         if (widget.onSuccess != null) {
@@ -1518,7 +1591,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     return DiscardChangesScope(
       listenable: Listenable.merge([_titleController, _contentController]),
-      hasChanges: _hasUnsavedChanges,
+      // With a draft, closing keeps the text: nothing to ask about.
+      hasChanges: widget.draftKey == null ? _hasUnsavedChanges : () => false,
       isEdit: widget.isEditing,
       busy: _isSubmitting,
       child: PopScope(

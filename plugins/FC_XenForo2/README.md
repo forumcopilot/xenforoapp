@@ -58,8 +58,9 @@ PY
 ## Installing on a forum
 
 See the top-level [README](../../README.md#install-the-xenforo-add-on-required-for-both-paths):
-download the ZIP from the [forumcopilot.com console](https://forumcopilot.com/console)
-or zip `upload/` yourself, then **Admin CP → Add-ons → Install/upgrade from
+download the ZIP attached to the newest `addon-v…` release on
+[GitHub Releases](https://github.com/forumcopilot/xenforoapp/releases) or zip
+`upload/` yourself, then **Admin CP → Add-ons → Install/upgrade from
 archive**, then open **Options → ForumCopilot Options** once.
 
 For development, `../../deploy_plugin.sh` rsyncs `upload/src/addons/ForumCopilot`

@@ -44,6 +44,7 @@ class ForumCopilotPubApp extends PubApp
      */
     protected const SIGN_IN_METHODS = [
         'getConfig', 'login', 'register', 'prefetchAccount', 'forgotPassword', 'getPasskeyChallenge',
+        'completeBrowserLogin',
     ];
 
     /**
@@ -134,6 +135,7 @@ class ForumCopilotPubApp extends PubApp
             'updatePassword' => 'AccountController@actionUpdatePassword',
             'updateEmail' => 'AccountController@actionUpdateEmail',
             'deleteAccount' => 'AccountController@actionDeleteAccount',
+            'completeBrowserLogin' => 'AccountController@actionCompleteBrowserLogin',
 
             // Drafts (XenForo's own, shared with the web editor)
             'getDraft' => 'DraftController@actionGetDraft',

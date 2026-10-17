@@ -92,4 +92,19 @@
 		})();
 	</script>
 </xf:formrow>]]></template>
+  <template type="public" title="fc_app_login_confirm" version_id="1081200" version_string="1.8.12"><![CDATA[<xf:title>{{ phrase('fc_app_login_title') }}</xf:title>
+
+<xf:form action="{{ link('forumcopilot-app-login') }}" class="block">
+	<div class="block-container">
+		<div class="block-body">
+			<xf:inforow rowtype="confirm">
+				{{ phrase('fc_app_login_confirm', {'name': $xf.visitor.username, 'board': $xf.options.boardTitle}) }}
+			</xf:inforow>
+		</div>
+		<xf:submitrow submit="{{ phrase('fc_app_login_continue') }}" icon="login" />
+	</div>
+	<xf:hiddenval name="scheme">{$scheme}</xf:hiddenval>
+	<xf:hiddenval name="state">{$state}</xf:hiddenval>
+	<xf:hiddenval name="challenge">{$challenge}</xf:hiddenval>
+</xf:form>]]></template>
 </templates>

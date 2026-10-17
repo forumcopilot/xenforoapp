@@ -75,68 +75,7 @@ class AccountController extends AbstractController
                 // Mark user as having app installed
                 $this->markUserHasApp($user->user_id);
                 
-                // Build and return success response (same as password login)
-                $canSendPM = $user->canStartConversation();
-                
-                $fcUser = new FCUser([
-                    'id' => (string)$user->user_id,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'userType' => (string)$user->user_group_id,
-                    'iconUrl' => $this->getAbsoluteUrl($user->getAvatarUrl('m')),
-                    'postCount' => $user->message_count,
-                    'registrationTime' => $user->register_date * 1000,
-                    'lastActivityTime' => $user->last_activity * 1000,
-                    'isOnline' => true,
-                    'acceptsPM' => $user->canReceiveConversation(),
-                    'canSendPM' => $canSendPM,
-                    'canModerate' => $user->is_moderator,
-                    'canSearch' => $user->canSearch(),
-                    'userState' => $user->user_state,
-                ]);
-                
-                $canWhosonline = $user->canViewMemberList();
-                $canProfile = $user->canViewFullProfile();
-                $canUploadAvatar = $user->canUploadAvatar();
-                $canUploadAttachment = $user->canUploadAndManageAttachments('forum');
-                $canUploadConversationAttachment = $user->canUploadAndManageAttachments('conversation');
-                
-                $options = $this->app()->options();
-                $maxAttachment = (int)$options->attachmentMaxPerMessage;
-                $maxFileSize = (int)$options->attachmentMaxFileSize * 1024;
-                $maxPngSize = $maxFileSize;
-                $maxJpgSize = $maxFileSize;
-                $maxAttachmentSize = $maxFileSize;
-                
-                $attachmentExtensions = trim($options->attachmentExtensions);
-                $allowedFileExtensions = !empty($attachmentExtensions) 
-                    ? preg_split('/\s+/', $attachmentExtensions, -1, PREG_SPLIT_NO_EMPTY)
-                    : [];
-                
-                $maxImageWidth = !empty($options->attachmentMaxDimensions['width']) 
-                    ? (int)$options->attachmentMaxDimensions['width'] 
-                    : 0;
-                $maxImageHeight = !empty($options->attachmentMaxDimensions['height']) 
-                    ? (int)$options->attachmentMaxDimensions['height'] 
-                    : 0;
-                
-                $result = new FCLoginResult(
-                    true,
-                    '',
-                    $fcUser,
-                    $canWhosonline,
-                    $canProfile,
-                    $canUploadAvatar,
-                    $maxAttachment,
-                    $maxPngSize,
-                    $maxJpgSize,
-                    $canUploadAttachment,
-                    $canUploadConversationAttachment,
-                    $maxAttachmentSize,
-                    $allowedFileExtensions,
-                    $maxImageWidth,
-                    $maxImageHeight
-                );
+                $result = $this->loginSuccessResult($user);
                 
                 return $this->apiSuccess($result);
                 
@@ -387,77 +326,7 @@ class AccountController extends AbstractController
             // Note: Session cookies are automatically applied to response in App::complete()
             // No need to call applyToResponse() manually here
 
-            // Check if user can start conversations (send PMs)
-            $canSendPM = $user->canStartConversation();
-
-            // Create FC user entity
-            $fcUser = new FCUser([
-                'id' => (string)$user->user_id,
-                'username' => $user->username,
-                'email' => $user->email,
-                'userType' => (string)$user->user_group_id,
-                'iconUrl' => $this->getAbsoluteUrl($user->getAvatarUrl('m')),
-                'postCount' => $user->message_count,
-                'registrationTime' => $user->register_date * 1000, // Convert to milliseconds
-                'lastActivityTime' => $user->last_activity * 1000,
-                'isOnline' => true,
-                'acceptsPM' => $user->canReceiveConversation(), // Check if user can receive conversations
-                'canSendPM' => $canSendPM,
-                'canModerate' => $user->is_moderator,
-                'canSearch' => $user->canSearch(),
-                'userState' => $user->user_state, // Include user state so app can show appropriate message
-            ]);
-
-            // Get user permissions from XenForo
-            $canWhosonline = $user->canViewMemberList();
-            $canProfile = $user->canViewFullProfile();
-            $canUploadAvatar = $user->canUploadAvatar();
-
-            // Get attachment permissions (user-specific)
-            $canUploadAttachment = $user->canUploadAndManageAttachments('forum');
-            $canUploadConversationAttachment = $user->canUploadAndManageAttachments('conversation');
-
-            // Get attachment constraints from XenForo options (global settings)
-            $options = $this->app()->options();
-            $maxAttachment = (int)$options->attachmentMaxPerMessage;
-            // XenForo uses a single max file size (in KB), convert to bytes
-            // Use same value for both PNG and JPG since XenForo doesn't differentiate
-            $maxFileSize = (int)$options->attachmentMaxFileSize * 1024; // Convert KB to bytes
-            $maxPngSize = $maxFileSize;
-            $maxJpgSize = $maxFileSize;
-            $maxAttachmentSize = $maxFileSize;
-
-            // Get allowed file extensions
-            $attachmentExtensions = trim($options->attachmentExtensions);
-            $allowedFileExtensions = !empty($attachmentExtensions) 
-                ? preg_split('/\s+/', $attachmentExtensions, -1, PREG_SPLIT_NO_EMPTY)
-                : [];
-
-            // Get max image dimensions
-            $maxImageWidth = !empty($options->attachmentMaxDimensions['width']) 
-                ? (int)$options->attachmentMaxDimensions['width'] 
-                : 0;
-            $maxImageHeight = !empty($options->attachmentMaxDimensions['height']) 
-                ? (int)$options->attachmentMaxDimensions['height'] 
-                : 0;
-
-            $result = new FCLoginResult(
-                true,
-                '', // resultText only for errors, empty for success
-                $fcUser,
-                $canWhosonline,
-                $canProfile,
-                $canUploadAvatar,
-                $maxAttachment,
-                $maxPngSize,
-                $maxJpgSize,
-                $canUploadAttachment,
-                $canUploadConversationAttachment,
-                $maxAttachmentSize,
-                $allowedFileExtensions,
-                $maxImageWidth,
-                $maxImageHeight
-            );
+            $result = $this->loginSuccessResult($user);
 
             // Return the FCResult object directly - apiSuccess will handle it
             return $this->apiSuccess($result);
@@ -504,6 +373,85 @@ class AccountController extends AbstractController
     protected function supportsPasskeys(): bool
     {
         return class_exists(\XF\Entity\Passkey::class);
+    }
+
+    /**
+     * The reply to a successful sign-in, whichever way it was made (password,
+     * passkey, browser): the member and what they may do.
+     */
+    protected function loginSuccessResult(\XF\Entity\User $user): FCLoginResult
+    {
+        // Check if user can start conversations (send PMs)
+        $canSendPM = $user->canStartConversation();
+
+        // Create FC user entity
+        $fcUser = new FCUser([
+            'id' => (string)$user->user_id,
+            'username' => $user->username,
+            'email' => $user->email,
+            'userType' => (string)$user->user_group_id,
+            'iconUrl' => $this->getAbsoluteUrl($user->getAvatarUrl('m')),
+            'postCount' => $user->message_count,
+            'registrationTime' => $user->register_date * 1000, // Convert to milliseconds
+            'lastActivityTime' => $user->last_activity * 1000,
+            'isOnline' => true,
+            'acceptsPM' => $user->canReceiveConversation(), // Check if user can receive conversations
+            'canSendPM' => $canSendPM,
+            'canModerate' => $user->is_moderator,
+            'canSearch' => $user->canSearch(),
+            'userState' => $user->user_state, // Include user state so app can show appropriate message
+        ]);
+
+        // Get user permissions from XenForo
+        $canWhosonline = $user->canViewMemberList();
+        $canProfile = $user->canViewFullProfile();
+        $canUploadAvatar = $user->canUploadAvatar();
+
+        // Get attachment permissions (user-specific)
+        $canUploadAttachment = $user->canUploadAndManageAttachments('forum');
+        $canUploadConversationAttachment = $user->canUploadAndManageAttachments('conversation');
+
+        // Get attachment constraints from XenForo options (global settings)
+        $options = $this->app()->options();
+        $maxAttachment = (int)$options->attachmentMaxPerMessage;
+        // XenForo uses a single max file size (in KB), convert to bytes
+        // Use same value for both PNG and JPG since XenForo doesn't differentiate
+        $maxFileSize = (int)$options->attachmentMaxFileSize * 1024; // Convert KB to bytes
+        $maxPngSize = $maxFileSize;
+        $maxJpgSize = $maxFileSize;
+        $maxAttachmentSize = $maxFileSize;
+
+        // Get allowed file extensions
+        $attachmentExtensions = trim($options->attachmentExtensions);
+        $allowedFileExtensions = !empty($attachmentExtensions) 
+            ? preg_split('/\s+/', $attachmentExtensions, -1, PREG_SPLIT_NO_EMPTY)
+            : [];
+
+        // Get max image dimensions
+        $maxImageWidth = !empty($options->attachmentMaxDimensions['width']) 
+            ? (int)$options->attachmentMaxDimensions['width'] 
+            : 0;
+        $maxImageHeight = !empty($options->attachmentMaxDimensions['height']) 
+            ? (int)$options->attachmentMaxDimensions['height'] 
+            : 0;
+
+        return new FCLoginResult(
+            true,
+            '', // resultText only for errors, empty for success
+            $fcUser,
+            $canWhosonline,
+            $canProfile,
+            $canUploadAvatar,
+            $maxAttachment,
+            $maxPngSize,
+            $maxJpgSize,
+            $canUploadAttachment,
+            $canUploadConversationAttachment,
+            $maxAttachmentSize,
+            $allowedFileExtensions,
+            $maxImageWidth,
+            $maxImageHeight
+        );
     }
 
     protected function getLoginService($login, string $ip)
@@ -787,6 +735,48 @@ class AccountController extends AbstractController
 
         } catch (\Exception $e) {
             return $this->apiError('Password update failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Completes signing the app in through the forum's website: redeems the
+     * one-time code the website handed to the app (Pub\Controller\AppLogin)
+     * with the PKCE verifier, and signs this session in as that member,
+     * remembered, as a password sign-in does.
+     */
+    public function actionCompleteBrowserLogin(ParameterBag $params)
+    {
+        $code = (string)$params->get('code', '');
+        $verifier = (string)$params->get('verifier', '');
+        if ($code === '' || $verifier === '') {
+            return $this->apiError('The sign-in was not completed. Please try again.');
+        }
+
+        $userId = \ForumCopilot\Service\AppLoginCode::redeem($code, $verifier);
+        /** @var \XF\Entity\User|null $user */
+        $user = $userId ? $this->em()->find('XF:User', $userId) : null;
+        if (!$user) {
+            return $this->apiError('The sign-in has expired. Please try again.');
+        }
+        if ($user->is_banned) {
+            return $this->apiError('Account is banned');
+        }
+        if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
+            return $this->apiError('Account is not available');
+        }
+        if ($user->security_lock) {
+            return $this->apiError('Your account is currently security locked');
+        }
+        if (!$user->hasPermission('general', 'view')) {
+            return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
+        }
+
+        try {
+            $this->getLoginPlugin()->completeLogin($user, true);
+            $this->markUserHasApp($user->user_id);
+            return $this->apiSuccess($this->loginSuccessResult($user));
+        } catch (\Exception $e) {
+            return $this->apiError('Login failed: ' . $e->getMessage());
         }
     }
 

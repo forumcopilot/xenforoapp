@@ -119,6 +119,8 @@ class ConfigController extends AbstractController
             'style' => $this->getStyleInfo(),
             // Members can delete their account from the app (deleteAccount).
             'accountDeletion' => (bool)$options->fc_account_deletion,
+            // Members can sign the app in through the website (Pub\Controller\AppLogin).
+            'browserLoginSchemes' => array_values(preg_split('/[\s,]+/', strtolower((string)$options->fc_app_login_schemes), -1, PREG_SPLIT_NO_EMPTY)),
         ];
 
         // Create FCConfigResult object and return it

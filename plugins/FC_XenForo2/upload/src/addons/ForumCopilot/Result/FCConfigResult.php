@@ -62,6 +62,9 @@ class FCConfigResult
     /** @var bool Members can delete their account from the app (deleteAccount) */
     public $accountDeletion = false;
 
+    /** @var string[] App schemes the website may hand a browser sign-in to; empty when it is off */
+    public $browserLoginSchemes = [];
+
     public function __construct($data = [])
     {
         // Set all properties from data array

@@ -23,6 +23,9 @@ import '../views/private_messaging/conversation/pages/conversation_page.dart';
 import '../views/user_profile_page.dart';
 import '../core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import 'notification_router.dart';
+import 'package:forumcopilot_flutter/utils/url_utils.dart';
+import 'package:forumcopilot_sdk/context/site_context.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -507,44 +510,40 @@ class NotificationService with ServiceErrorHandlingMixin {
       final currentSite = siteController?.currentSite.value;
       final isSameSite = currentSite?.id != null && currentSite!.id == siteId;
       final isAlreadyInitialized = siteController?.isInitialized.value == true && siteController?.currentSiteContext.value != null;
-      if (!(isSameSite && isAlreadyInitialized)) {
+      final sameSiteAlreadyInitialized = isSameSite && isAlreadyInitialized;
+      if (!sameSiteAlreadyInitialized) {
         await _resetToHomeIfNeeded();
       }
 
-      // Handle different content types based on new payload format
-      if (contentType == 'post') {
-        // New unified format: all post-related notifications (mention, like, reply, newtopic)
-        // content_id is the post ID
-        if (!data.containsKey('content_id')) {
-          AppLogger.debug('⚠️ [NotificationService] Missing content_id for post notification - opening app without navigation');
-          _showNotificationError('Unable to open notification', 'Missing post information (content_id).');
-          _openAppWithoutNavigation();
-          return;
-        }
-        await _handlePostNotification(data, siteId, siteIdStr);
-      } else if (contentType == 'conversation_message') {
-        // New format: conversation messages use conversation_id
-        if (!data.containsKey('conversation_id')) {
-          AppLogger.debug('⚠️ [NotificationService] Missing conversation_id for conversation_message notification - opening app without navigation');
-          _showNotificationError('Unable to open notification', 'Missing conversation information (conversation_id).');
-          _openAppWithoutNavigation();
-          return;
-        }
-        await _handleConversationNotification(data, siteId, siteIdStr);
-      } else if (contentType == 'user') {
-        // User-related notifications (e.g., following)
-        // sender_id contains the user ID to open
-        if (!data.containsKey('sender_id')) {
-          AppLogger.debug('⚠️ [NotificationService] Missing sender_id for user notification - opening app without navigation');
-          _showNotificationError('Unable to open notification', 'Missing user information (sender_id).');
-          _openAppWithoutNavigation();
-          return;
-        }
-        await _handleUserNotification(data, siteId, siteIdStr);
-      } else {
-        AppLogger.debug('🔔 [NotificationService] Unknown content type: $contentType - opening app without navigation');
-        _showNotificationError('Unable to open notification', 'Unsupported notification type.');
-        _openAppWithoutNavigation();
+      // One mapping for pushes and the Alerts tab (NotificationRouter). Types
+      // it has no page for open their link, or the forum's Alerts tab; they
+      // used to show "Unsupported notification type" (thread alerts too).
+      final destination = NotificationRouter.forPush(data);
+      switch (destination) {
+        case PostDestination():
+          await _handlePostNotification(data, siteId, siteIdStr);
+        case ConversationDestination():
+          await _handleConversationNotification(data, siteId, siteIdStr);
+        case ProfileDestination():
+          await _handleUserNotification(data, siteId, siteIdStr);
+        case TopicDestination(:final topicId):
+          await _openInForum(
+            siteId,
+            page: (siteContext) => PostPage(
+              siteContext: siteContext,
+              topicId: topicId,
+              title: '',
+              mode: siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal,
+              forumId: siteIdStr,
+            ),
+          );
+        case LinkDestination(:final url):
+          await _openInForum(siteId, afterOpen: () => UrlUtils.openUrl(url));
+        case AlertsDestination():
+          if (!(sameSiteAlreadyInitialized && SiteHomePage.showTab(SiteHomePage.alertsTab))) {
+            SiteHomePage.requestedTab.value = SiteHomePage.alertsTab;
+            await _openInForum(siteId);
+          }
       }
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error navigating from notification: $e - opening app without navigation');
@@ -884,6 +883,36 @@ class NotificationService with ServiceErrorHandlingMixin {
           preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling user notification: $e');
+      _showNotificationError('Unable to open notification', e.toString());
+      _openAppWithoutNavigation();
+    }
+  }
+
+  /// Opens the forum [siteId] (initializing it if needed), then [page] over
+  /// it, or runs [afterOpen].
+  Future<void> _openInForum(
+    int siteId, {
+    Widget Function(SiteContext siteContext)? page,
+    FutureOr<void> Function()? afterOpen,
+  }) async {
+    try {
+      final Site? targetForum = await _findForumBySiteId(siteId);
+      if (targetForum == null) {
+        _showNotificationError('Unable to open notification', 'Forum not found for this site.');
+        _openAppWithoutNavigation();
+        return;
+      }
+      final siteController = await _initializeSiteAndWait(targetForum);
+      final siteContext = siteController?.currentSiteContext.value;
+      if (siteContext == null) {
+        _showNotificationError('Unable to open notification', 'Failed to initialize the forum.');
+        _openAppWithoutNavigation();
+        return;
+      }
+      if (page != null) Get.to(() => page(siteContext), preventDuplicates: false);
+      if (afterOpen != null) await afterOpen();
+    } catch (e) {
+      AppLogger.debug('❌ [NotificationService] Error opening notification: $e');
       _showNotificationError('Unable to open notification', e.toString());
       _openAppWithoutNavigation();
     }

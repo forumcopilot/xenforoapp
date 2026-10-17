@@ -14,6 +14,8 @@ import '../user_profile_page.dart';
 import '../../utils/url_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../services/notification_router.dart';
+import '../../utils/snackbar_helper.dart';
 
 class NotificationListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -272,107 +274,82 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     AppLogger.debug('Timestamp: ${alert.timestamp}');
     AppLogger.debug('==================');
 
-    // Handle navigation based on content type
-    final contentType = alert.content_type?.toLowerCase() ?? '';
-
-    if (contentType == 'post') {
-      // For post type: use getThreadByPost with the post_id
-      if (alert.postId == null || alert.postId!.isEmpty) {
-        _showErrorDialog(context, 'Post ID is missing. Cannot navigate to the post.');
-        return;
-      }
-
-      // topicId is now always provided by the API for post alerts
-      if (alert.topicId == null || alert.topicId!.isEmpty) {
-        _showErrorDialog(context, 'Topic ID is missing. Cannot navigate to the post.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PostPage(
-            siteContext: widget.siteContext,
-            topicId: alert.topicId!,
-            title: _extractTopicTitleFromMessage(alert.message),
-            mode: PostsListMode.thread_by_post,
-            anchorPostId: alert.postId,
-            forumId: '', // Forum ID may not be available
+    // The same mapping pushes use (NotificationRouter).
+    final destination = NotificationRouter.destinationFor(
+      contentType: alert.contentType,
+      contentId: alert.contentId,
+      postId: alert.postId,
+      topicId: alert.topicId,
+      conversationId: alert.conversationId,
+      username: alert.fromUsername ?? alert.username,
+      url: alert.actionUrl,
+    );
+    switch (destination) {
+      case PostDestination(:final postId, :final topicId):
+        if (topicId == null) {
+          _showErrorDialog(
+            context,
+            'Topic ID is missing. Cannot navigate to the post.',
+          );
+          return;
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostPage(
+              siteContext: widget.siteContext,
+              topicId: topicId,
+              title: _extractTopicTitleFromMessage(alert.message),
+              mode: PostsListMode.thread_by_post,
+              anchorPostId: postId,
+              forumId: '', // Forum ID may not be available
+            ),
           ),
-        ),
-      );
-    } else if (contentType == 'thread') {
-      // For thread type: open the topic
-      final topicId = alert.topic_id ?? alert.content_id;
-      if (topicId == null || topicId.isEmpty) {
-        _showErrorDialog(context, 'Topic ID is missing. Cannot open the topic.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PostPage(
-            siteContext: widget.siteContext,
-            topicId: topicId,
-            title: _extractTopicTitleFromMessage(alert.message),
-            mode: PostsListMode.first_unread,
-            forumId: '', // Forum ID may not be available
+        );
+      case TopicDestination(:final topicId):
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostPage(
+              siteContext: widget.siteContext,
+              topicId: topicId,
+              title: _extractTopicTitleFromMessage(alert.message),
+              mode: PostsListMode.first_unread,
+              forumId: '', // Forum ID may not be available
+            ),
           ),
-        ),
-      );
-    } else if (contentType == 'conversation_message') {
-      // For conversation_message type: open the conversation
-      final conversationId = alert.conversationId ?? alert.content_id;
-      if (conversationId == null || conversationId.isEmpty) {
-        _showErrorDialog(context, 'Conversation ID is missing. Cannot open the conversation.');
-        return;
-      }
-
-      // For conversation_message type, contentId is the message ID
-      // Use it to navigate to the specific message in the conversation
-      final messageId = alert.content_id?.isNotEmpty == true ? alert.content_id : null;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConversationPage(
-            siteContext: widget.siteContext,
-            conversationId: conversationId,
-            subject: _extractSubjectFromMessage(alert.message),
-            anchorMessageId: messageId,
+        );
+      case ConversationDestination(:final conversationId, :final messageId):
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConversationPage(
+              siteContext: widget.siteContext,
+              conversationId: conversationId,
+              subject: _extractSubjectFromMessage(alert.message),
+              anchorMessageId: messageId,
+            ),
           ),
-        ),
-      );
-    } else if (contentType == 'user') {
-      // For user type: open user profile page
-      final username = alert.fromUsername ?? alert.username;
-      if (username.isEmpty) {
-        _showErrorDialog(context, 'Username is missing. Cannot open user profile.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UserProfilePage(
-            siteContext: widget.siteContext,
-            userName: username,
-            profilePictureUrl: alert.icon_url,
+        );
+      case ProfileDestination(:final userId, :final username):
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserProfilePage(
+              siteContext: widget.siteContext,
+              userId: userId,
+              userName: username,
+              profilePictureUrl: alert.icon_url,
+            ),
           ),
-        ),
-      );
-    } else {
-      // For all other types: use actionUrl to open in external browser
-      final actionUrl = alert.actionUrl;
-      if (actionUrl == null || actionUrl.isEmpty) {
-        AppLogger.debug('Content type "${alert.content_type}" has no actionUrl. Cannot navigate.');
-        _showErrorDialog(context, 'No action URL available for this notification type.');
-        return;
-      }
-
-      // Open URL in external browser
-      await UrlUtils.openUrl(actionUrl);
+        );
+      case LinkDestination(:final url):
+        await UrlUtils.openUrl(url);
+      case AlertsDestination():
+        SnackbarHelper.showInfo(
+          context,
+          'No action URL available for this notification type.',
+        );
     }
   }
 

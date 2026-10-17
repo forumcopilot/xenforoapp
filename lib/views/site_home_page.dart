@@ -43,6 +43,30 @@ class SiteHomePage extends StatefulWidget {
   // Static flag to trigger autoShowLogin in ProfileTab after registration
   static bool triggerProfileAutoLogin = false;
 
+  /// The Alerts tab's id, for [requestedTab].
+  static const String alertsTab = 'notifications';
+
+  /// A tab another part of the app wants shown: a push with nothing more
+  /// specific opens the forum on its Alerts tab. The forum home switches to
+  /// it once the tab is there, and clears it.
+  static final ValueNotifier<String?> requestedTab = ValueNotifier<String?>(null);
+
+  // The open forum home's route, so [showTab] can bring it to the front
+  // whichever way it was opened (Get.to names its route, MaterialPageRoute
+  // doesn't).
+  static ModalRoute<dynamic>? _homeRoute;
+
+  /// Brings the open forum home to the front on [tab], closing the pages
+  /// over it. False when no forum home is open.
+  static bool showTab(String tab) {
+    final route = _homeRoute;
+    final navigator = route?.navigator;
+    if (route == null || navigator == null || !route.isActive) return false;
+    requestedTab.value = tab;
+    navigator.popUntil((r) => r == route);
+    return true;
+  }
+
   @override
   State<SiteHomePage> createState() => _SiteHomePageState();
 }
@@ -99,6 +123,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     _tabController = TabController(length: _tabCount, vsync: this);
     _previousTabIndex = _tabController.index; // Initialize to match initial index
     _tabController.addListener(_onTabChanged);
+    SiteHomePage.requestedTab.addListener(_onTabRequested);
 
     // If siteToInitialize is null, site was already initialized in bootstrap flow.
     // Do not set context, listener, or load here when site is initialized: the block
@@ -601,6 +626,28 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     return tabs;
   }
 
+  ModalRoute<dynamic>? _route;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _route = ModalRoute.of(context);
+    SiteHomePage._homeRoute = _route;
+  }
+
+  /// Shows [SiteHomePage.requestedTab] once it is one of this forum's tabs.
+  void _onTabRequested() {
+    final tab = SiteHomePage.requestedTab.value;
+    if (tab == null || !mounted || _siteContext == null) return;
+    final index = _enabledTabs.indexOf(tab);
+    if (index < 0 || index >= _tabController.length) return;
+    SiteHomePage.requestedTab.value = null;
+    setState(() {
+      _tabController.index = index;
+      _previousTabIndex = index;
+    });
+  }
+
   // Helper methods to get tab indices
   int _getTabIndex(String tabType) => _enabledTabs.indexOf(tabType);
   bool _isCurrentTab(String tabType) => _tabController.index == _getTabIndex(tabType);
@@ -707,6 +754,12 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       AppLogger.debug('🔍 [SITE_HOME] Current TabController index: ${_tabController.index}');
       _lastLoggedTabCount = enabledTabs.length;
       _lastLoggedTabIndex = _tabController.index;
+    }
+
+    // A requested tab (a push opened the forum for its Alerts) is shown as
+    // soon as the forum's tabs are in place.
+    if (SiteHomePage.requestedTab.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onTabRequested());
     }
 
     // Check if TabController needs to be recreated due to tab count change
@@ -947,6 +1000,8 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     _loginStateDebounceTimer?.cancel();
     _loginStateDebounceTimer = null;
 
+    SiteHomePage.requestedTab.removeListener(_onTabRequested);
+    if (SiteHomePage._homeRoute == _route) SiteHomePage._homeRoute = null;
     // Remove tab controller listener
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();

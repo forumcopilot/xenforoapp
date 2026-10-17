@@ -151,7 +151,9 @@ class SiteInitializationService {
           Get.put(LoginController());
         }
         final loginController = Get.find<LoginController>();
-        final loginResult = await loginController.attemptAutomaticLogin(siteContext);
+        // The getConfig above, on this same SiteContext, already said whether
+        // the session is signed in.
+        final loginResult = await loginController.attemptAutomaticLogin(siteContext, sessionCheckedByConfig: true);
 
         if (loginResult.success) {
           AppLogger.info('🔍 [INIT_SERVICE] ✅ Automatic login successful');
@@ -177,13 +179,15 @@ class SiteInitializationService {
 
       siteContext.updateLoginState();
       siteController.isInitialized.value = true;
+      siteController.lastInitializedAt = DateTime.now();
       siteController.currentSiteContext.value = siteContext;
       siteController.attachReloginHandler(siteContext);
 
       // Record this visit in the history
       AppLogger.debug('Recording visit for site: ${site.name}');
-      await SiteVisitTracker.instance.recordVisit(site);
-      AppLogger.debug('Visit recorded successfully');
+      unawaited(SiteVisitTracker.instance.recordVisit(site).catchError((Object e) {
+        AppLogger.debug('Recording the visit failed: $e');
+      }));
 
       AppLogger.info('SiteInitializationService: Site initialization completed successfully for ${site.name}');
 

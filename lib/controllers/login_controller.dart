@@ -506,9 +506,14 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   ///
   /// When [silentRelogin] is true (e.g. from proxy session-expired handler), only cookies and
   /// password are tried; passkey is never used so we don't show the system auth UI from background.
+  ///
+  /// When [sessionCheckedByConfig] is true, the forum's config was fetched for
+  /// [siteContext] a moment ago (opening the forum), and its fc_is_login
+  /// answers whether the cookie session is valid: no second getConfig.
   Future<AutoLoginResult> attemptAutomaticLogin(
     SiteContext siteContext, {
     bool silentRelogin = false,
+    bool sessionCheckedByConfig = false,
   }) async {
     try {
       // Step 1: Check if we have valid cookies and session first
@@ -532,13 +537,17 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             // return stale data from a previous SiteContext, leaving lastGetConfigFcIsLogin
             // null on the fresh context and causing the check below to silently fail.
             try {
-              final configProxy = SiteProxyService.getConfigProxy();
-              await configProxy.getConfig(pluginUrl, forceRefresh: true);
+              final bool isLoggedIn;
+              if (sessionCheckedByConfig && siteContext.lastGetConfigFcIsLogin != null) {
+                isLoggedIn = siteContext.lastGetConfigFcIsLogin!;
+              } else {
+                final configProxy = SiteProxyService.getConfigProxy();
+                await configProxy.getConfig(pluginUrl, forceRefresh: true);
 
-              // Prefer fc_is_login from this getConfig response. lastCallFcIsLogin reflects
-              // the last API call on SiteContext and can race when other proxies run in parallel.
-              final isLoggedIn =
-                  siteContext.lastGetConfigFcIsLogin ?? siteContext.lastCallFcIsLogin;
+                // Prefer fc_is_login from this getConfig response. lastCallFcIsLogin reflects
+                // the last API call on SiteContext and can race when other proxies run in parallel.
+                isLoggedIn = siteContext.lastGetConfigFcIsLogin ?? siteContext.lastCallFcIsLogin;
+              }
 
               if (isLoggedIn) {
                 AppLogger.info(

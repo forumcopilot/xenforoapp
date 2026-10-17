@@ -15,11 +15,22 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'global_loader_controller.dart';
 import '../models/site_visit_history.dart';
+import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
   // Observable state to track initialization
   var isInitialized = false.obs;
+
+  /// When the current site last finished initializing (its config fetched).
+  /// SiteHomePage skips its own reachability getConfig right after one.
+  DateTime? lastInitializedAt;
+
+  /// Whether the current site was initialized within [window].
+  bool initializedWithin(Duration window) {
+    final at = lastInitializedAt;
+    return at != null && DateTime.now().difference(at) < window;
+  }
   var hasError = false.obs;
   var errorMessage = ''.obs;
   var currentSite = Rxn<Site>(); // Make currentSite reactive
@@ -231,9 +242,13 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     AppLogger.info('Fetching forum configuration...');
     var configProxy = SiteProxyService.getConfigProxy();
     FCConfigResult configData;
+    bool? sessionFromConfig;
     try {
       configData = await configProxy.getConfig(initialSiteUrl, forceRefresh: true);
       AppLogger.info('Forum configuration retrieved successfully');
+      // Whether the cookie session is signed in, from this getConfig (written
+      // on the context the proxy used), for the automatic sign-in below.
+      sessionFromConfig = SiteProxyFactory.context?.lastGetConfigFcIsLogin;
     } catch (e) {
       AppLogger.error('Failed to get forum configuration: $e');
       throw Exception('Failed to connect to forum: Unable to retrieve configuration. Please check if the forum plugin is installed and the server is running.');
@@ -255,6 +270,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       siteContext.configDataOutput = configData;
     }
     _attachReloginHandler(siteContext);
+    siteContext.lastGetConfigFcIsLogin = sessionFromConfig;
 
     // Verify that the plugin URL is properly set after initialization
     final pluginUrl = siteContext.site.pluginUrl;
@@ -275,7 +291,12 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     AppLogger.debug('Password before auto-login: ${siteContext.password != null ? "[PRESENT]" : "[NULL]"}');
 
     final loginController = Get.find<LoginController>();
-    final loginResult = await loginController.attemptAutomaticLogin(siteContext);
+    // The getConfig above already said whether the session is signed in:
+    // opening a forum fetched its config twice.
+    final loginResult = await loginController.attemptAutomaticLogin(
+      siteContext,
+      sessionCheckedByConfig: sessionFromConfig != null,
+    );
 
     if (loginResult.success) {
       AppLogger.info('Automatic login successful');
@@ -295,13 +316,15 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
 
     siteContext.updateLoginState();
     isInitialized.value = true;
+    lastInitializedAt = DateTime.now();
 
     AppLogger.debug('Recording visit for site: ${site.name}');
     AppLogger.debug('Site details - ID: ${site.id}, URL: ${site.url}');
 
-    // Record this visit in the history
-    await SiteVisitTracker.instance.recordVisit(site);
-    AppLogger.debug('Visit recorded successfully');
+    // Record this visit in the history, without holding up the forum.
+    unawaited(SiteVisitTracker.instance.recordVisit(site).catchError((Object e) {
+      AppLogger.debug('Recording the visit failed: $e');
+    }));
 
     // Note: Site is automatically tracked in visit history, no need for separate My Forums tracking
     AppLogger.debug('Site visit tracking completed');

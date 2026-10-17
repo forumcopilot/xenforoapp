@@ -155,7 +155,20 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         final currentContext = siteController.currentSiteContext.value;
         final currentSite = siteController.currentSite.value;
 
-        if (currentContext != null && currentSite != null) {
+        if (currentContext != null &&
+            currentSite != null &&
+            siteController.initializedWithin(const Duration(minutes: 1))) {
+          // Just initialized (the forum list opened it a moment ago, with its
+          // config fetched): no second getConfig to check it is reachable.
+          _siteContext = currentContext;
+          _setupLoginStateListener();
+          _loadBoardStats();
+          if (currentContext.isLoggedIn) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _fetchInboxStat();
+            });
+          }
+        } else if (currentContext != null && currentSite != null) {
           // Show loading state while verifying
           setState(() {
             _waitingForInitialization = true;

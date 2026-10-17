@@ -10,6 +10,7 @@ import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../utils/snackbar_helper.dart';
+import '../../../widgets/sheet_title.dart';
 
 class ConversationAppBar extends BaseForumAppBar {
   final SiteContext siteContext;
@@ -232,9 +233,6 @@ class ConversationAppBar extends BaseForumAppBar {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -243,30 +241,22 @@ class ConversationAppBar extends BaseForumAppBar {
           expand: false,
           builder: (context, scrollController) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
+              // The theme's drag handle sits above; rows line up with the title.
+              padding: EdgeInsets.only(bottom: DesignTokens.spacingL),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.people_rounded, color: Theme.of(context).colorScheme.primary),
-                      SizedBox(width: DesignTokens.spacingS),
-                      Text(AppLocalizations.of(context)?.participantsLabel ?? 'Participants', style: Theme.of(context).textTheme.titleMedium),
-                      const Spacer(),
-                      if (canInvite && conversationId != null)
-                        IconButton(
-                          icon: Icon(Icons.person_add_rounded, color: Theme.of(context).colorScheme.primary),
-                          tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
-                          onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+                  SheetTitle(
+                    AppLocalizations.of(context)?.participantsLabel ?? 'Participants',
+                    trailing: canInvite && conversationId != null
+                        ? IconButton(
+                            icon: const Icon(Icons.person_add_rounded),
+                            tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
+                            onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
+                          )
+                        : null,
                   ),
-                  SizedBox(height: DesignTokens.spacingL),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,

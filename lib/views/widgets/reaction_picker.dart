@@ -34,11 +34,7 @@ Future<FCReaction?> showReactionPicker(
     // when there are many reactions; capped below so it never fills the whole
     // screen. Content wraps to multiple rows AND scrolls if it still overflows.
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
     builder: (ctx) {
-      final colorScheme = Theme.of(ctx).colorScheme;
       // Cap the sheet at 70% of screen height; the reaction grid scrolls
       // within that if the wrapped rows are taller.
       final maxSheetHeight = MediaQuery.of(ctx).size.height * 0.7;
@@ -46,20 +42,11 @@ Future<FCReaction?> showReactionPicker(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: maxSheetHeight),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 16, 12, 20),
+            // The theme draws the drag handle above.
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // drag handle
-                Container(
-                  width: 36,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
                 // Flexible + scroll view: the grid wraps to multiple rows and,
                 // if those rows exceed the capped height, scrolls vertically.
                 Flexible(

@@ -13,6 +13,7 @@ import 'post_page.dart';
 import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 import 'login_page.dart';
+import 'widgets/filter_chip_bar.dart';
 
 class SearchPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -505,45 +506,16 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildFilterChips(ColorScheme colorScheme, TextTheme textTheme) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.spacingL,
-        vertical: DesignTokens.spacingM,
-      ),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                setState(() {
-                  _selectedFilterIndex = index;
-                });
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        setState(() {
+          _selectedFilterIndex = index;
+        });
+      },
     );
   }
 

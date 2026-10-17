@@ -11,6 +11,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_user.dart';
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import '../theme/design_tokens.dart';
 import '../utils/number_utils.dart';
+import 'widgets/filter_chip_bar.dart';
 
 class MembersPage extends StatefulWidget {
   const MembersPage({
@@ -212,46 +213,15 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Widget _buildFilterChips() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.spacingL,
-        vertical: DesignTokens.spacingM,
-      ),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                _handleFilterChange(index);
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        _handleFilterChange(index);
+      },
     );
   }
 

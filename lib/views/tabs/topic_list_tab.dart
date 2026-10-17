@@ -6,10 +6,10 @@ import 'package:forumcopilot_flutter/views/lists/unread_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/participated_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/subscribed_topics_list.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
-import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../widgets/filter_chip_bar.dart';
 
 /// Reactive widget that observes controller changes and rebuilds topic items
 class _ReactiveTopicItems extends StatefulWidget {
@@ -265,45 +265,17 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
   }
 
   Widget _buildFilterChips() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingM),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                setState(() {
-                  _selectedFilterIndex = index;
-                });
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        setState(() {
+          _selectedFilterIndex = index;
+        });
+      },
     );
   }
 

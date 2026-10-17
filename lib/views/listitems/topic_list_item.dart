@@ -6,6 +6,8 @@ import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../widgets/unread_badge.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Widget para representar un ítem de la lista de foros
 class TopicListItem extends StatelessWidget {
@@ -102,17 +104,12 @@ class TopicListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (topic.hasNewPosts) ...[
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: EdgeInsets.only(
+                    Padding(
+                      padding: EdgeInsets.only(
                         top: DesignTokens.spacingM - DesignTokens.spacingXS,
                         right: DesignTokens.spacingS,
                       ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        shape: BoxShape.circle,
-                      ),
+                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context)?.unread ?? 'Unread'),
                     ),
                   ],
                   if (topic.isDeleted) ...[

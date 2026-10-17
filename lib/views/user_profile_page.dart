@@ -46,6 +46,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _userRepliedPostsKey = GlobalKey();
   bool _didAttemptAutoLogin = false;
+  bool _followBusy = false;
 
   @override
   void initState() {
@@ -98,6 +99,45 @@ class _UserProfilePageState extends State<UserProfilePage> {
               _scrollController.position.maxScrollExtent,
             );
       }
+    }
+  }
+
+  /// Follows or unfollows this member. The button was hidden with a TODO;
+  /// the add-on has supported follow and unfollow all along.
+  Future<void> _toggleFollow() async {
+    final info = _userInfo;
+    if (info == null || _followBusy) return;
+    setState(() => _followBusy = true);
+    final wasFollowing = info.isFollowing;
+    String? failure;
+    try {
+      final social = SiteProxyService.getSocialProxy();
+      final response = wasFollowing ? await social.unfollowAsync(info.id) : await social.followAsync(info.id);
+      if (response.result) {
+        info.isFollowing = !wasFollowing;
+      } else {
+        failure = response.resultText ?? '';
+      }
+    } catch (e) {
+      AppLogger.debug('Follow toggle failed: $e');
+      failure = '';
+    }
+    if (!mounted) return;
+    setState(() => _followBusy = false);
+    if (failure != null) {
+      final colorScheme = Theme.of(context).colorScheme;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(
+            failure.isNotEmpty ? failure : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'),
+            style: TextStyle(color: colorScheme.onErrorContainer),
+          ),
+          backgroundColor: colorScheme.errorContainer,
+          behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+          closeIconColor: colorScheme.onErrorContainer,
+        ));
     }
   }
 
@@ -423,33 +463,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (widget.siteContext.loginDataOutput?.user?.id != _userInfo!.id) ...[
-                                  // HIDE FOLLOW/UNFOLLOW BUTTONS FOR NOW
-                                  // if (_userInfo!.accept_follow) ...[
-                                  //   if (_userInfo!.i_follow_u)
-                                  //     OutlinedButton.icon(
-                                  //       onPressed: () {
-                                  //         // TODO: Implement unfollow action
-                                  //       },
-                                  //       icon: Icon(Icons.person_remove, size: DesignTokens.iconSizeL),
-                                  //       label: Text('Unfollow', style: textTheme.labelLarge?.copyWith(fontSize: DesignTokens.fontSizeM)),
-                                  //       style: OutlinedButton.styleFrom(
-                                  //         padding: DesignTokens.paddingHorizontalL.copyWith(top: DesignTokens.spacingS, bottom: DesignTokens.spacingS),
-                                  //         minimumSize: Size(100, DesignTokens.spacingXXXL),
-                                  //       ),
-                                  //     )
-                                  //   else
-                                  //     OutlinedButton.icon(
-                                  //       onPressed: () {
-                                  //         // TODO: Implement follow action
-                                  //       },
-                                  //       icon: Icon(Icons.person_add, size: DesignTokens.iconSizeM),
-                                  //       label: Text('Follow', style: textTheme.labelLarge?.copyWith(fontSize: DesignTokens.fontSizeS)),
-                                  //       style: OutlinedButton.styleFrom(
-                                  //         padding: DesignTokens.paddingHorizontalL.copyWith(top: DesignTokens.spacingS, bottom: DesignTokens.spacingS),
-                                  //         minimumSize: Size(100, DesignTokens.spacingXXXL),
-                                  //       ),
-                                  //     ),
-                                  // ],
+                                  if (_userInfo!.isFollowing || _userInfo!.acceptsFollowers)
+                                    _userInfo!.isFollowing
+                                        ? OutlinedButton.icon(
+                                            onPressed: _followBusy ? null : _toggleFollow,
+                                            icon: const Icon(Icons.person_remove_outlined),
+                                            label: Text(AppLocalizations.of(context)?.unfollow ?? 'Unfollow'),
+                                          )
+                                        : FilledButton.tonalIcon(
+                                            onPressed: _followBusy ? null : _toggleFollow,
+                                            icon: const Icon(Icons.person_add_outlined),
+                                            label: Text(AppLocalizations.of(context)?.follow ?? 'Follow'),
+                                          ),
                                   if (_userInfo!.acceptsPM) ...[
                                     SizedBox(width: DesignTokens.spacingM),
                                     FilledButton.icon(

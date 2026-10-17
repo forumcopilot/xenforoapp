@@ -2525,4 +2525,131 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get openConversation => 'Unterhaltung öffnen';
+
+  @override
+  String get loginSucceeded => 'Anmeldung erfolgreich';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Bei der Bestätigung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'Die Anmeldung mit Passkey konnte nicht gestartet werden.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Dieses Forum ist für die Anmeldung mit Passkey in dieser App noch nicht eingerichtet. Bitte melden Sie sich mit Benutzername und Passwort an.';
+
+  @override
+  String get noPasskeyForForum =>
+      'Für dieses Forum wurde kein Passkey gefunden. Melden Sie sich mit Ihrem Passwort an oder erstellen Sie zuerst einen Passkey auf der Website des Forums.';
+
+  @override
+  String get pushNotificationsNotReady =>
+      'Push-Benachrichtigungen sind noch nicht bereit';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Push-Benachrichtigungen für $siteName aktiviert';
+  }
+
+  @override
+  String get failedToEnablePush =>
+      'Push-Benachrichtigungen konnten nicht aktiviert werden';
+
+  @override
+  String get failedToRegisterPush =>
+      'Registrierung für Push-Benachrichtigungen fehlgeschlagen';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Übersetzt aus $source in $target';
+  }
+
+  @override
+  String get unableToOpenNotification =>
+      'Benachrichtigung kann nicht geöffnet werden';
+
+  @override
+  String get notificationMissingInfo =>
+      'Dieser Benachrichtigung fehlen Angaben.';
+
+  @override
+  String get couldNotOpenForum => 'Das Forum konnte nicht geöffnet werden.';
+
+  @override
+  String get notificationChannelName => 'Forum Copilot-Benachrichtigungen';
+
+  @override
+  String get notificationChannelDescription =>
+      'Benachrichtigungen der Forum Copilot-App';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'Der Dateityp .$extension ist nicht erlaubt. Erlaubte Typen: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'Die Dateigröße ($size) überschreitet das Maximum von $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeText => 'Text';
+
+  @override
+  String get fileTypeArchive => 'Archiv';
+
+  @override
+  String get fileTypeFile => 'Datei';
+
+  @override
+  String get imageFileNotFound =>
+      'Bilddatei nicht gefunden. Die Datei wurde möglicherweise verschoben oder gelöscht.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Zugriff verweigert. Die Bilddatei kann nicht gelesen werden.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'Nicht genügend Speicherplatz, um das Bild zu optimieren.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'Auf die Bilddatei kann nicht zugegriffen werden: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'Das Bildformat ist beschädigt oder wird nicht unterstützt. Bitte versuchen Sie ein anderes Bild.';
+
+  @override
+  String get failedToResizeImage =>
+      'Die Bildgröße konnte nicht geändert werden. Das Bild ist möglicherweise beschädigt oder hat ein nicht unterstütztes Format.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'Das Bild konnte nicht in JPG umgewandelt werden. Es ist möglicherweise beschädigt.';
+
+  @override
+  String get failedToCompressImage =>
+      'Das Bild konnte nicht komprimiert werden. Möglicherweise fehlt Speicherplatz oder das Bild ist beschädigt.';
+
+  @override
+  String get cannotDecodeImage =>
+      'Das Bild kann nicht gelesen werden. Die Datei ist möglicherweise beschädigt oder hat ein nicht unterstütztes Format.';
+
+  @override
+  String get cannotReadImageFile =>
+      'Die Bilddatei kann nicht gelesen werden. Sie wurde möglicherweise verschoben oder gelöscht.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'Bild konnte nicht optimiert werden: $error';
+  }
 }

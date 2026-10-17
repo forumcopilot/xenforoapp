@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
+import 'package:forumcopilot_flutter/utils/l10n_now.dart';
+import 'package:get/get.dart';
 
 /// Messages with counts and names render in every language: plural rules
 /// (Russian has one/few/many) pick a form, and no placeholder is left as
@@ -26,6 +28,12 @@ void main() {
         l10n.compressQuality(85),
         l10n.sizeReduction('42.0'),
         l10n.postsCountFormatted('12.3K'),
+        l10n.translatedFromTo('Deutsch', '日本語'),
+        l10n.pushEnabledFor('Test Forum'),
+        l10n.fileTypeNotAllowed('heic', 'jpg, png'),
+        l10n.fileSizeExceedsMaximum('12 MB', '5 MB'),
+        l10n.cannotAccessImageFile('EACCES'),
+        l10n.failedToOptimizeImage('bad data'),
       ];
       for (final text in rendered) {
         expect(text, isNot(contains('{')), reason: text);
@@ -35,6 +43,20 @@ void main() {
       expect(l10n.iAcceptTheDocument(l10n.termsOfService), contains(l10n.termsOfService));
     });
   }
+
+  group('l10nNow (code without a BuildContext)', () {
+    tearDown(() => Get.locale = null);
+
+    test('follows the app language', () {
+      Get.locale = const Locale('de');
+      expect(l10nNow().unableToOpenNotification, lookupAppLocalizations(const Locale('de')).unableToOpenNotification);
+    });
+
+    test('falls back to English for a language the app does not have', () {
+      Get.locale = const Locale('sv');
+      expect(l10nNow().unableToOpenNotification, 'Unable to open notification');
+    });
+  });
 
   test('the document link can sit anywhere in the sentence', () {
     // Japanese puts it first, English last; the page splits around it.

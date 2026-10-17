@@ -2496,4 +2496,127 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get openConversation => 'Gesprek openen';
+
+  @override
+  String get loginSucceeded => 'Ingelogd';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Er is een fout opgetreden bij de verificatie. Probeer het opnieuw.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'Inloggen met passkey kon niet worden gestart.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Dit forum is nog niet ingesteld voor passkeys in deze app. Log in met uw gebruikersnaam en wachtwoord.';
+
+  @override
+  String get noPasskeyForForum =>
+      'Geen passkey gevonden voor dit forum. Log in met uw wachtwoord of maak eerst een passkey aan op de website van het forum.';
+
+  @override
+  String get pushNotificationsNotReady => 'Pushmeldingen zijn nog niet klaar';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Pushmeldingen ingeschakeld voor $siteName';
+  }
+
+  @override
+  String get failedToEnablePush => 'Kan pushmeldingen niet inschakelen';
+
+  @override
+  String get failedToRegisterPush => 'Aanmelden voor pushmeldingen mislukt';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Vertaald uit $source naar $target';
+  }
+
+  @override
+  String get unableToOpenNotification => 'Kan melding niet openen';
+
+  @override
+  String get notificationMissingInfo =>
+      'Er ontbreekt informatie in deze melding.';
+
+  @override
+  String get couldNotOpenForum => 'Kan het forum niet openen.';
+
+  @override
+  String get notificationChannelName => 'Forum Copilot-meldingen';
+
+  @override
+  String get notificationChannelDescription =>
+      'Meldingen van de Forum Copilot-app';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'Bestandstype .$extension is niet toegestaan. Toegestane types: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'Bestandsgrootte ($size) is groter dan het maximum van $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeText => 'Tekst';
+
+  @override
+  String get fileTypeArchive => 'Archief';
+
+  @override
+  String get fileTypeFile => 'Bestand';
+
+  @override
+  String get imageFileNotFound =>
+      'Afbeeldingsbestand niet gevonden. Het is mogelijk verplaatst of verwijderd.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Geen toestemming. Kan het afbeeldingsbestand niet lezen.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'Onvoldoende schijfruimte om de afbeelding te optimaliseren.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'Kan afbeeldingsbestand niet openen: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'Het afbeeldingsformaat is beschadigd of wordt niet ondersteund. Probeer een andere afbeelding.';
+
+  @override
+  String get failedToResizeImage =>
+      'Kan het formaat van de afbeelding niet wijzigen. De afbeelding is mogelijk beschadigd of heeft een niet-ondersteund formaat.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'Kan de afbeelding niet naar JPG omzetten. De afbeelding is mogelijk beschadigd.';
+
+  @override
+  String get failedToCompressImage =>
+      'Kan de afbeelding niet comprimeren. Er is mogelijk te weinig ruimte of de afbeelding is beschadigd.';
+
+  @override
+  String get cannotDecodeImage =>
+      'Kan de afbeelding niet decoderen. Het bestand is mogelijk beschadigd of heeft een niet-ondersteund formaat.';
+
+  @override
+  String get cannotReadImageFile =>
+      'Kan het afbeeldingsbestand niet lezen. Het is mogelijk verplaatst of verwijderd.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'Kan afbeelding niet optimaliseren: $error';
+  }
 }

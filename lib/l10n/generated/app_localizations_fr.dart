@@ -2526,4 +2526,130 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get openConversation => 'Ouvrir la conversation';
+
+  @override
+  String get loginSucceeded => 'Connexion réussie';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Une erreur s\'est produite lors de la vérification. Veuillez réessayer.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'Impossible de lancer la connexion par clé d’accès.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Ce forum n\'est pas encore configuré pour les clés d’accès dans cette app. Veuillez vous connecter avec votre nom d\'utilisateur et votre mot de passe.';
+
+  @override
+  String get noPasskeyForForum =>
+      'Aucune clé d’accès trouvée pour ce forum. Connectez-vous avec votre mot de passe ou créez d\'abord une clé d’accès sur le site du forum.';
+
+  @override
+  String get pushNotificationsNotReady =>
+      'Les notifications push ne sont pas encore prêtes';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Notifications push activées pour $siteName';
+  }
+
+  @override
+  String get failedToEnablePush =>
+      'Impossible d\'activer les notifications push';
+
+  @override
+  String get failedToRegisterPush =>
+      'Impossible de s\'inscrire aux notifications push';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Traduit de $source vers $target';
+  }
+
+  @override
+  String get unableToOpenNotification => 'Impossible d\'ouvrir la notification';
+
+  @override
+  String get notificationMissingInfo =>
+      'Il manque des informations à cette notification.';
+
+  @override
+  String get couldNotOpenForum => 'Impossible d\'ouvrir le forum.';
+
+  @override
+  String get notificationChannelName => 'Notifications Forum Copilot';
+
+  @override
+  String get notificationChannelDescription =>
+      'Notifications de l\'app Forum Copilot';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'Le type de fichier .$extension n’est pas autorisé. Types autorisés : $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'La taille du fichier ($size) dépasse le maximum de $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeText => 'Texte';
+
+  @override
+  String get fileTypeArchive => 'Archive';
+
+  @override
+  String get fileTypeFile => 'Fichier';
+
+  @override
+  String get imageFileNotFound =>
+      'Fichier image introuvable. Il a peut-être été déplacé ou supprimé.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Autorisation refusée. Impossible de lire le fichier image.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'Espace disque insuffisant pour optimiser l\'image.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'Impossible d\'accéder au fichier image : $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'Le format de l\'image est corrompu ou non pris en charge. Veuillez essayer une autre image.';
+
+  @override
+  String get failedToResizeImage =>
+      'Impossible de redimensionner l\'image. Elle est peut-être corrompue ou dans un format non pris en charge.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'Impossible de convertir l\'image en JPG. Elle est peut-être corrompue.';
+
+  @override
+  String get failedToCompressImage =>
+      'Impossible de compresser l\'image. L\'espace disque est peut-être insuffisant ou l\'image corrompue.';
+
+  @override
+  String get cannotDecodeImage =>
+      'Impossible de décoder l\'image. Le fichier est peut-être corrompu ou dans un format non pris en charge.';
+
+  @override
+  String get cannotReadImageFile =>
+      'Impossible de lire le fichier image. Il a peut-être été déplacé ou supprimé.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'Impossible d\'optimiser l\'image : $error';
+  }
 }

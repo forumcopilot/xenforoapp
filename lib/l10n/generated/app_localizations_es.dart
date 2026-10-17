@@ -2514,4 +2514,130 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get openConversation => 'Abrir conversación';
+
+  @override
+  String get loginSucceeded => 'Sesión iniciada';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Se produjo un error durante la verificación. Inténtalo de nuevo.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'No se pudo iniciar el acceso con llave de acceso.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Este foro aún no admite llaves de acceso en esta app. Inicia sesión con tu usuario y contraseña.';
+
+  @override
+  String get noPasskeyForForum =>
+      'No hay ninguna llave de acceso para este foro. Inicia sesión con tu contraseña o crea primero una llave de acceso en la web del foro.';
+
+  @override
+  String get pushNotificationsNotReady =>
+      'Las notificaciones push aún no están listas';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Notificaciones push activadas para $siteName';
+  }
+
+  @override
+  String get failedToEnablePush =>
+      'No se pudieron activar las notificaciones push';
+
+  @override
+  String get failedToRegisterPush =>
+      'No se pudo registrar para notificaciones push';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Traducido de $source a $target';
+  }
+
+  @override
+  String get unableToOpenNotification => 'No se puede abrir la notificación';
+
+  @override
+  String get notificationMissingInfo =>
+      'A esta notificación le falta información.';
+
+  @override
+  String get couldNotOpenForum => 'No se pudo abrir el foro.';
+
+  @override
+  String get notificationChannelName => 'Notificaciones de Forum Copilot';
+
+  @override
+  String get notificationChannelDescription =>
+      'Notificaciones de la app Forum Copilot';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'El tipo de archivo .$extension no está permitido. Tipos permitidos: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'El tamaño del archivo ($size) supera el máximo de $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeText => 'Texto';
+
+  @override
+  String get fileTypeArchive => 'Archivo comprimido';
+
+  @override
+  String get fileTypeFile => 'Archivo';
+
+  @override
+  String get imageFileNotFound =>
+      'No se encontró el archivo de imagen. Puede que se haya movido o eliminado.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Permiso denegado. No se puede leer el archivo de imagen.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'No hay espacio suficiente para optimizar la imagen.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'No se puede acceder al archivo de imagen: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'El formato de la imagen está dañado o no es compatible. Prueba con otra imagen.';
+
+  @override
+  String get failedToResizeImage =>
+      'No se pudo redimensionar la imagen. Puede estar dañada o en un formato no compatible.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'No se pudo convertir la imagen a JPG. Puede estar dañada.';
+
+  @override
+  String get failedToCompressImage =>
+      'No se pudo comprimir la imagen. Puede que falte espacio o que la imagen esté dañada.';
+
+  @override
+  String get cannotDecodeImage =>
+      'No se puede decodificar la imagen. El archivo puede estar dañado o en un formato no compatible.';
+
+  @override
+  String get cannotReadImageFile =>
+      'No se puede leer el archivo de imagen. Puede que se haya movido o eliminado.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'No se pudo optimizar la imagen: $error';
+  }
 }

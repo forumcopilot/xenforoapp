@@ -5,6 +5,7 @@ import 'package:forumcopilot_sdk/services/fc_http_client.dart';
 import 'package:dio/dio.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'l10n_now.dart';
 
 /// Returns a human-readable file type for a given filename or extension.
 String getFileType(String filename) {
@@ -20,7 +21,7 @@ String getFileType(String filename) {
     case 'svg':
     case 'heic':
     case 'heif':
-      return 'Image';
+      return l10nNow().image;
 
     // Media
     case 'mp4':
@@ -30,13 +31,13 @@ String getFileType(String filename) {
     case 'flv':
     case 'mkv':
     case 'webm':
-      return 'Video';
+      return l10nNow().video;
     case 'mp3':
     case 'wav':
     case 'ogg':
     case 'm4a':
     case 'flac':
-      return 'Audio';
+      return l10nNow().fileTypeAudio;
 
     // Documents
     case 'pdf':
@@ -51,7 +52,7 @@ String getFileType(String filename) {
     case 'pptx':
       return 'PowerPoint';
     case 'txt':
-      return 'Text';
+      return l10nNow().fileTypeText;
 
     // Archives
     case 'zip':
@@ -59,14 +60,14 @@ String getFileType(String filename) {
     case '7z':
     case 'tar':
     case 'gz':
-      return 'Archive';
+      return l10nNow().fileTypeArchive;
 
     default:
       // For unknown, return the extension in uppercase or 'File'
       if (extension.length <= 5) {
         return extension.toUpperCase();
       }
-      return 'File';
+      return l10nNow().fileTypeFile;
   }
 }
 

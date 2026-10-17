@@ -2516,4 +2516,127 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get openConversation => 'Открыть разговор';
+
+  @override
+  String get loginSucceeded => 'Вход выполнен';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Ошибка при проверке. Попробуйте ещё раз.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'Не удалось начать вход по ключу доступа.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Этот форум пока не поддерживает вход по ключу доступа в приложении. Войдите с именем пользователя и паролем.';
+
+  @override
+  String get noPasskeyForForum =>
+      'Для этого форума нет ключа доступа. Войдите с паролем или сначала создайте ключ доступа на сайте форума.';
+
+  @override
+  String get pushNotificationsNotReady => 'Push-уведомления ещё не готовы';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Push-уведомления для $siteName включены';
+  }
+
+  @override
+  String get failedToEnablePush => 'Не удалось включить push-уведомления';
+
+  @override
+  String get failedToRegisterPush =>
+      'Не удалось подписаться на push-уведомления';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Переведено: $source → $target';
+  }
+
+  @override
+  String get unableToOpenNotification => 'Не удалось открыть уведомление';
+
+  @override
+  String get notificationMissingInfo => 'В уведомлении не хватает данных.';
+
+  @override
+  String get couldNotOpenForum => 'Не удалось открыть форум.';
+
+  @override
+  String get notificationChannelName => 'Уведомления Forum Copilot';
+
+  @override
+  String get notificationChannelDescription =>
+      'Уведомления приложения Forum Copilot';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'Тип файла .$extension не разрешён. Разрешены: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'Размер файла ($size) превышает максимум $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Аудио';
+
+  @override
+  String get fileTypeText => 'Текст';
+
+  @override
+  String get fileTypeArchive => 'Архив';
+
+  @override
+  String get fileTypeFile => 'Файл';
+
+  @override
+  String get imageFileNotFound =>
+      'Файл изображения не найден. Возможно, он перемещён или удалён.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Нет доступа. Не удаётся прочитать файл изображения.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'Недостаточно места для оптимизации изображения.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'Нет доступа к файлу изображения: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'Формат изображения повреждён или не поддерживается. Попробуйте другое изображение.';
+
+  @override
+  String get failedToResizeImage =>
+      'Не удалось изменить размер изображения. Возможно, оно повреждено или в неподдерживаемом формате.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'Не удалось преобразовать изображение в JPG. Возможно, оно повреждено.';
+
+  @override
+  String get failedToCompressImage =>
+      'Не удалось сжать изображение. Возможно, мало места или изображение повреждено.';
+
+  @override
+  String get cannotDecodeImage =>
+      'Не удаётся декодировать изображение. Возможно, файл повреждён или в неподдерживаемом формате.';
+
+  @override
+  String get cannotReadImageFile =>
+      'Не удаётся прочитать файл изображения. Возможно, он перемещён или удалён.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'Не удалось оптимизировать изображение: $error';
+  }
 }

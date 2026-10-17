@@ -26,6 +26,7 @@ import 'notification_router.dart';
 import 'package:forumcopilot_flutter/utils/url_utils.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/l10n_now.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -199,10 +200,10 @@ class NotificationService with ServiceErrorHandlingMixin {
   Future<void> _createAndroidNotificationChannel() async {
     if (!Platform.isAndroid) return;
 
-    const channel = AndroidNotificationChannel(
+    final channel = AndroidNotificationChannel(
       'forum_copilot_channel',
-      'Forum Copilot Notifications',
-      description: 'Notifications for Forum Copilot app',
+      l10nNow().notificationChannelName,
+      description: l10nNow().notificationChannelDescription,
       importance: Importance.high,
     );
 
@@ -396,10 +397,10 @@ class NotificationService with ServiceErrorHandlingMixin {
 
   // Show local notification
   Future<void> _showLocalNotification(RemoteMessage message) async {
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'forum_copilot_channel',
-      'Forum Copilot Notifications',
-      channelDescription: 'Notifications for Forum Copilot app',
+      l10nNow().notificationChannelName,
+      channelDescription: l10nNow().notificationChannelDescription,
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
@@ -411,7 +412,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       presentSound: true,
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
       macOS: darwinDetails, // macOS requires separate notification details
@@ -466,7 +467,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       // Validate required fields
       if (rawSiteId == null) {
         AppLogger.debug('⚠️ [NotificationService] Missing site_id in payload - opening app without navigation');
-        _showNotificationError('Unable to open notification', 'Missing site information (site_id).');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().notificationMissingInfo);
         _openAppWithoutNavigation();
         return;
       }
@@ -479,7 +480,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       final int? siteId = int.tryParse(siteIdStr);
       if (siteId == null) {
         AppLogger.debug('⚠️ [NotificationService] Unable to parse site_id: $rawSiteId - opening app without navigation');
-        _showNotificationError('Unable to open notification', 'Invalid site information (site_id).');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().notificationMissingInfo);
         _openAppWithoutNavigation();
         return;
       }
@@ -525,7 +526,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       }
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error navigating from notification: $e - opening app without navigation');
-      _showNotificationError('Unable to open notification', e.toString());
+      _showNotificationError(l10nNow().unableToOpenNotification, e.toString());
       _openAppWithoutNavigation();
     }
   }
@@ -653,7 +654,7 @@ class NotificationService with ServiceErrorHandlingMixin {
 
       if (targetForum == null) {
         AppLogger.debug('❌ [NotificationService] Forum not found for site_id: $siteId');
-        _showNotificationError('Unable to open notification', 'Forum not found for this site.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().errorForumNotFound);
         _openAppWithoutNavigation();
         return;
       }
@@ -664,7 +665,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       final siteController = await _initializeSiteAndWait(targetForum);
       if (siteController == null || siteController.currentSiteContext.value == null) {
         AppLogger.debug('⚠️ [NotificationService] Failed to initialize site');
-        _showNotificationError('Unable to open notification', 'Failed to initialize the forum.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().couldNotOpenForum);
         _openAppWithoutNavigation();
         return;
       }
@@ -697,7 +698,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       // content_id is the post ID used for getThreadByPost API call
       if (!data.containsKey('topic_id')) {
         AppLogger.debug('⚠️ [NotificationService] Topic ID missing from push notification payload - required for thread actions');
-        _showNotificationError('Unable to open notification', 'Missing thread information (topic_id).');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().notificationMissingInfo);
         _openAppWithoutNavigation();
         return;
       }
@@ -728,7 +729,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       Get.to(postPageBuilder, preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling post notification: $e');
-      _showNotificationError('Unable to open notification', e.toString());
+      _showNotificationError(l10nNow().unableToOpenNotification, e.toString());
       _openAppWithoutNavigation();
     }
   }
@@ -773,7 +774,7 @@ class NotificationService with ServiceErrorHandlingMixin {
 
       if (targetForum == null) {
         AppLogger.debug('❌ [NotificationService] Forum not found for site_id: $siteId');
-        _showNotificationError('Unable to open notification', 'Forum not found for this site.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().errorForumNotFound);
         _openAppWithoutNavigation();
         return;
       }
@@ -784,7 +785,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       final siteController = await _initializeSiteAndWait(targetForum);
       if (siteController == null || siteController.currentSiteContext.value == null) {
         AppLogger.debug('⚠️ [NotificationService] Failed to initialize site');
-        _showNotificationError('Unable to open notification', 'Failed to initialize the forum.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().couldNotOpenForum);
         _openAppWithoutNavigation();
         return;
       }
@@ -805,7 +806,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       Get.to(conversationPageBuilder, preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling conversation notification: $e');
-      _showNotificationError('Unable to open notification', e.toString());
+      _showNotificationError(l10nNow().unableToOpenNotification, e.toString());
       _openAppWithoutNavigation();
     }
   }
@@ -834,7 +835,7 @@ class NotificationService with ServiceErrorHandlingMixin {
 
       if (targetForum == null) {
         AppLogger.debug('❌ [NotificationService] Forum not found for site_id: $siteId');
-        _showNotificationError('Unable to open notification', 'Forum not found for this site.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().errorForumNotFound);
         _openAppWithoutNavigation();
         return;
       }
@@ -845,7 +846,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       final siteController = await _initializeSiteAndWait(targetForum);
       if (siteController == null || siteController.currentSiteContext.value == null) {
         AppLogger.debug('⚠️ [NotificationService] Failed to initialize site');
-        _showNotificationError('Unable to open notification', 'Failed to initialize the forum.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().couldNotOpenForum);
         _openAppWithoutNavigation();
         return;
       }
@@ -861,7 +862,7 @@ class NotificationService with ServiceErrorHandlingMixin {
           preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling user notification: $e');
-      _showNotificationError('Unable to open notification', e.toString());
+      _showNotificationError(l10nNow().unableToOpenNotification, e.toString());
       _openAppWithoutNavigation();
     }
   }
@@ -876,14 +877,14 @@ class NotificationService with ServiceErrorHandlingMixin {
     try {
       final Site? targetForum = await _findForumBySiteId(siteId);
       if (targetForum == null) {
-        _showNotificationError('Unable to open notification', 'Forum not found for this site.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().errorForumNotFound);
         _openAppWithoutNavigation();
         return;
       }
       final siteController = await _initializeSiteAndWait(targetForum);
       final siteContext = siteController?.currentSiteContext.value;
       if (siteContext == null) {
-        _showNotificationError('Unable to open notification', 'Failed to initialize the forum.');
+        _showNotificationError(l10nNow().unableToOpenNotification, l10nNow().couldNotOpenForum);
         _openAppWithoutNavigation();
         return;
       }
@@ -891,7 +892,7 @@ class NotificationService with ServiceErrorHandlingMixin {
       if (afterOpen != null) await afterOpen();
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error opening notification: $e');
-      _showNotificationError('Unable to open notification', e.toString());
+      _showNotificationError(l10nNow().unableToOpenNotification, e.toString());
       _openAppWithoutNavigation();
     }
   }

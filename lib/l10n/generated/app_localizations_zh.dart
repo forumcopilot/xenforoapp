@@ -2362,4 +2362,112 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get openConversation => '打开对话';
+
+  @override
+  String get loginSucceeded => '登录成功';
+
+  @override
+  String get verificationErrorTryAgain => '验证时出错。请重试。';
+
+  @override
+  String get passkeyChallengeFailed => '无法开始通行密钥登录。';
+
+  @override
+  String get passkeyNotSetUp => '此论坛尚未在本应用中启用通行密钥。请使用用户名和密码登录。';
+
+  @override
+  String get noPasskeyForForum => '未找到此论坛的通行密钥。请使用密码登录，或先在论坛网站上创建通行密钥。';
+
+  @override
+  String get pushNotificationsNotReady => '推送通知尚未就绪';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return '已为 $siteName 开启推送通知';
+  }
+
+  @override
+  String get failedToEnablePush => '开启推送通知失败';
+
+  @override
+  String get failedToRegisterPush => '注册推送通知失败';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return '已从 $source 翻译为 $target';
+  }
+
+  @override
+  String get unableToOpenNotification => '无法打开通知';
+
+  @override
+  String get notificationMissingInfo => '此通知缺少信息。';
+
+  @override
+  String get couldNotOpenForum => '无法打开论坛。';
+
+  @override
+  String get notificationChannelName => 'Forum Copilot 通知';
+
+  @override
+  String get notificationChannelDescription => 'Forum Copilot 应用的通知';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return '不允许 .$extension 类型的文件。允许的类型：$allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return '文件大小（$size）超过上限 $max';
+  }
+
+  @override
+  String get fileTypeAudio => '音频';
+
+  @override
+  String get fileTypeText => '文本';
+
+  @override
+  String get fileTypeArchive => '压缩包';
+
+  @override
+  String get fileTypeFile => '文件';
+
+  @override
+  String get imageFileNotFound => '未找到图片文件。文件可能已被移动或删除。';
+
+  @override
+  String get imagePermissionDenied => '没有权限，无法读取图片文件。';
+
+  @override
+  String get imageInsufficientSpace => '磁盘空间不足，无法优化图片。';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return '无法访问图片文件：$error';
+  }
+
+  @override
+  String get imageFormatUnsupported => '图片格式已损坏或不受支持。请换一张图片。';
+
+  @override
+  String get failedToResizeImage => '调整图片大小失败。图片可能已损坏或格式不受支持。';
+
+  @override
+  String get failedToConvertImageToJpg => '无法将图片转换为 JPG。图片可能已损坏。';
+
+  @override
+  String get failedToCompressImage => '压缩图片失败。可能是磁盘空间不足或图片已损坏。';
+
+  @override
+  String get cannotDecodeImage => '无法解码图片。文件可能已损坏或格式不受支持。';
+
+  @override
+  String get cannotReadImageFile => '无法读取图片文件。文件可能已被移动或删除。';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return '优化图片失败：$error';
+  }
 }

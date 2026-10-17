@@ -2387,4 +2387,119 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get openConversation => '대화 열기';
+
+  @override
+  String get loginSucceeded => '로그인했습니다';
+
+  @override
+  String get verificationErrorTryAgain => '인증 중 오류가 발생했습니다. 다시 시도하세요.';
+
+  @override
+  String get passkeyChallengeFailed => '패스키 로그인을 시작할 수 없습니다.';
+
+  @override
+  String get passkeyNotSetUp =>
+      '이 포럼은 아직 이 앱에서 패스키를 지원하지 않습니다. 사용자 이름과 비밀번호로 로그인하세요.';
+
+  @override
+  String get noPasskeyForForum =>
+      '이 포럼의 패스키가 없습니다. 비밀번호로 로그인하거나 먼저 포럼 웹사이트에서 패스키를 만드세요.';
+
+  @override
+  String get pushNotificationsNotReady => '푸시 알림이 아직 준비되지 않았습니다';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return '$siteName의 푸시 알림을 켰습니다';
+  }
+
+  @override
+  String get failedToEnablePush => '푸시 알림을 켜지 못했습니다';
+
+  @override
+  String get failedToRegisterPush => '푸시 알림 등록에 실패했습니다';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return '$source에서 $target(으)로 번역됨';
+  }
+
+  @override
+  String get unableToOpenNotification => '알림을 열 수 없습니다';
+
+  @override
+  String get notificationMissingInfo => '이 알림에 필요한 정보가 없습니다.';
+
+  @override
+  String get couldNotOpenForum => '포럼을 열 수 없습니다.';
+
+  @override
+  String get notificationChannelName => 'Forum Copilot 알림';
+
+  @override
+  String get notificationChannelDescription => 'Forum Copilot 앱 알림';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return '.$extension 파일 형식은 허용되지 않습니다. 허용 형식: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return '파일 크기($size)가 최대 $max를 초과합니다';
+  }
+
+  @override
+  String get fileTypeAudio => '오디오';
+
+  @override
+  String get fileTypeText => '텍스트';
+
+  @override
+  String get fileTypeArchive => '압축 파일';
+
+  @override
+  String get fileTypeFile => '파일';
+
+  @override
+  String get imageFileNotFound => '이미지 파일을 찾을 수 없습니다. 이동되었거나 삭제되었을 수 있습니다.';
+
+  @override
+  String get imagePermissionDenied => '권한이 없습니다. 이미지 파일을 읽을 수 없습니다.';
+
+  @override
+  String get imageInsufficientSpace => '이미지를 최적화할 저장 공간이 부족합니다.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return '이미지 파일에 접근할 수 없습니다: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      '이미지 형식이 손상되었거나 지원되지 않습니다. 다른 이미지를 사용해 보세요.';
+
+  @override
+  String get failedToResizeImage =>
+      '이미지 크기를 조정하지 못했습니다. 이미지가 손상되었거나 지원되지 않는 형식일 수 있습니다.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      '이미지를 JPG로 변환하지 못했습니다. 이미지가 손상되었을 수 있습니다.';
+
+  @override
+  String get failedToCompressImage =>
+      '이미지를 압축하지 못했습니다. 저장 공간이 부족하거나 이미지가 손상되었을 수 있습니다.';
+
+  @override
+  String get cannotDecodeImage =>
+      '이미지를 디코딩할 수 없습니다. 파일이 손상되었거나 지원되지 않는 형식일 수 있습니다.';
+
+  @override
+  String get cannotReadImageFile => '이미지 파일을 읽을 수 없습니다. 이동되었거나 삭제되었을 수 있습니다.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return '이미지를 최적화하지 못했습니다: $error';
+  }
 }

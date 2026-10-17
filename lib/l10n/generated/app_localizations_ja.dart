@@ -2395,4 +2395,118 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get openConversation => '会話を開く';
+
+  @override
+  String get loginSucceeded => 'ログインしました';
+
+  @override
+  String get verificationErrorTryAgain => '確認中にエラーが発生しました。もう一度お試しください。';
+
+  @override
+  String get passkeyChallengeFailed => 'パスキーでのログインを開始できませんでした。';
+
+  @override
+  String get passkeyNotSetUp =>
+      'このフォーラムはまだこのアプリでのパスキーに対応していません。ユーザー名とパスワードでログインしてください。';
+
+  @override
+  String get noPasskeyForForum =>
+      'このフォーラムのパスキーが見つかりません。パスワードでログインするか、先にフォーラムのウェブサイトでパスキーを作成してください。';
+
+  @override
+  String get pushNotificationsNotReady => 'プッシュ通知の準備ができていません';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return '$siteName のプッシュ通知をオンにしました';
+  }
+
+  @override
+  String get failedToEnablePush => 'プッシュ通知をオンにできませんでした';
+
+  @override
+  String get failedToRegisterPush => 'プッシュ通知の登録に失敗しました';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return '$source から $target に翻訳';
+  }
+
+  @override
+  String get unableToOpenNotification => '通知を開けません';
+
+  @override
+  String get notificationMissingInfo => 'この通知には必要な情報がありません。';
+
+  @override
+  String get couldNotOpenForum => 'フォーラムを開けませんでした。';
+
+  @override
+  String get notificationChannelName => 'Forum Copilot の通知';
+
+  @override
+  String get notificationChannelDescription => 'Forum Copilot アプリの通知';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'ファイル形式 .$extension は使用できません。使用できる形式: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'ファイルサイズ ($size) が上限の $max を超えています';
+  }
+
+  @override
+  String get fileTypeAudio => '音声';
+
+  @override
+  String get fileTypeText => 'テキスト';
+
+  @override
+  String get fileTypeArchive => 'アーカイブ';
+
+  @override
+  String get fileTypeFile => 'ファイル';
+
+  @override
+  String get imageFileNotFound => '画像ファイルが見つかりません。移動または削除された可能性があります。';
+
+  @override
+  String get imagePermissionDenied => '権限がありません。画像ファイルを読み取れません。';
+
+  @override
+  String get imageInsufficientSpace => '画像を最適化するための空き容量が足りません。';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return '画像ファイルにアクセスできません: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported => '画像形式が破損しているか、対応していません。別の画像をお試しください。';
+
+  @override
+  String get failedToResizeImage =>
+      '画像のサイズを変更できませんでした。画像が破損しているか、対応していない形式の可能性があります。';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      '画像を JPG に変換できませんでした。画像が破損している可能性があります。';
+
+  @override
+  String get failedToCompressImage =>
+      '画像を圧縮できませんでした。空き容量が不足しているか、画像が破損している可能性があります。';
+
+  @override
+  String get cannotDecodeImage =>
+      '画像をデコードできません。ファイルが破損しているか、対応していない形式の可能性があります。';
+
+  @override
+  String get cannotReadImageFile => '画像ファイルを読み取れません。移動または削除された可能性があります。';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return '画像を最適化できませんでした: $error';
+  }
 }

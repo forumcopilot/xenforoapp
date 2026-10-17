@@ -4351,6 +4351,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open conversation'**
   String get openConversation;
+
+  /// No description provided for @loginSucceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Login succeeded'**
+  String get loginSucceeded;
+
+  /// No description provided for @verificationErrorTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during verification. Please try again.'**
+  String get verificationErrorTryAgain;
+
+  /// No description provided for @passkeyChallengeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Passkey sign-in could not be started.'**
+  String get passkeyChallengeFailed;
+
+  /// No description provided for @passkeyNotSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.'**
+  String get passkeyNotSetUp;
+
+  /// No description provided for @noPasskeyForForum.
+  ///
+  /// In en, this message translates to:
+  /// **'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.'**
+  String get noPasskeyForForum;
+
+  /// No description provided for @pushNotificationsNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications are not ready yet'**
+  String get pushNotificationsNotReady;
+
+  /// No description provided for @pushEnabledFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications enabled for {siteName}'**
+  String pushEnabledFor(String siteName);
+
+  /// No description provided for @failedToEnablePush.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to enable push notifications'**
+  String get failedToEnablePush;
+
+  /// No description provided for @failedToRegisterPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register for push notifications'**
+  String get failedToRegisterPush;
+
+  /// Language names are shown in their own language, e.g. Deutsch, 日本語
+  ///
+  /// In en, this message translates to:
+  /// **'Translated from {source} to {target}'**
+  String translatedFromTo(String source, String target);
+
+  /// No description provided for @unableToOpenNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open notification'**
+  String get unableToOpenNotification;
+
+  /// No description provided for @notificationMissingInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This notification is missing information.'**
+  String get notificationMissingInfo;
+
+  /// No description provided for @couldNotOpenForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the forum.'**
+  String get couldNotOpenForum;
+
+  /// Android notification channel name, shown in the system settings
+  ///
+  /// In en, this message translates to:
+  /// **'Forum Copilot Notifications'**
+  String get notificationChannelName;
+
+  /// No description provided for @notificationChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications for Forum Copilot app'**
+  String get notificationChannelDescription;
+
+  /// No description provided for @fileTypeNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'File type .{extension} is not allowed. Allowed types: {allowed}'**
+  String fileTypeNotAllowed(String extension, String allowed);
+
+  /// No description provided for @fileSizeExceedsMaximum.
+  ///
+  /// In en, this message translates to:
+  /// **'File size ({size}) exceeds the maximum of {max}'**
+  String fileSizeExceedsMaximum(String size, String max);
+
+  /// File type label next to an attachment
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get fileTypeAudio;
+
+  /// File type label next to an attachment
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get fileTypeText;
+
+  /// File type label next to an attachment
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get fileTypeArchive;
+
+  /// File type label next to an attachment
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get fileTypeFile;
+
+  /// No description provided for @imageFileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Image file not found. The file may have been moved or deleted.'**
+  String get imageFileNotFound;
+
+  /// No description provided for @imagePermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied. Cannot read the image file.'**
+  String get imagePermissionDenied;
+
+  /// No description provided for @imageInsufficientSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient disk space to optimize the image.'**
+  String get imageInsufficientSpace;
+
+  /// No description provided for @cannotAccessImageFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot access image file: {error}'**
+  String cannotAccessImageFile(String error);
+
+  /// No description provided for @imageFormatUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Image format is corrupted or not supported. Please try a different image.'**
+  String get imageFormatUnsupported;
+
+  /// No description provided for @failedToResizeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to resize image. The image may be corrupted or in an unsupported format.'**
+  String get failedToResizeImage;
+
+  /// No description provided for @failedToConvertImageToJpg.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to convert image to JPG format. The image may be corrupted.'**
+  String get failedToConvertImageToJpg;
+
+  /// No description provided for @failedToCompressImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to compress image. There may be insufficient disk space or the image is corrupted.'**
+  String get failedToCompressImage;
+
+  /// No description provided for @cannotDecodeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot decode image. The file may be corrupted or in an unsupported format.'**
+  String get cannotDecodeImage;
+
+  /// No description provided for @cannotReadImageFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot read image file. The file may have been moved or deleted.'**
+  String get cannotReadImageFile;
+
+  /// No description provided for @failedToOptimizeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to optimize image: {error}'**
+  String failedToOptimizeImage(String error);
 }
 
 class _AppLocalizationsDelegate

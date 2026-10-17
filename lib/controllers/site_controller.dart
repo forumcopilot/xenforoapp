@@ -389,8 +389,9 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     if (context != null) {
       // Determine if this is a timeout error
       final isTimeoutError = error.toLowerCase().contains('timeout') || error.toLowerCase().contains('timed out');
-      final title = isTimeoutError ? 'Connection Timeout' : 'Connection Failed';
-      final message = isTimeoutError ? 'The connection to ${site.name} timed out. Please check your internet connection and try again.' : 'Failed to connect to ${site.name}';
+      final l10n = AppLocalizations.of(context);
+      final title = isTimeoutError ? l10n.connectionTimeoutTitle : l10n.connectionFailed;
+      final message = isTimeoutError ? l10n.connectionTimedOutTo(site.name) : l10n.failedToConnectToSiteName(site.name);
 
       // For non-timeout errors, only show detailed error in debug mode to avoid exposing technical details
       final showDetailedError = kDebugMode && !isTimeoutError;

@@ -25,6 +25,7 @@ import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
 import '../l10n/generated/app_localizations.dart';
+import '../utils/l10n_now.dart';
 
 /// Stable reason codes for push/login diagnostics.
 abstract class PushLoginReasonCode {
@@ -106,7 +107,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -166,8 +167,8 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 tfaLoginResult.resultText?.trim().isNotEmpty == true
                     ? tfaLoginResult.resultText!
                     : (tfaLoginResult.result
-                        ? 'Login succeeded'
-                        : 'Login failed');
+                        ? l10nNow().loginSucceeded
+                        : l10nNow().loginFailed);
             if (!tfaLoginResult.result) {
               _showLoginFailureSnackbar(tfaResultMessage);
             }
@@ -209,7 +210,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               GlobalLoaderController.to.hide();
             }
             errorMessage =
-                'An error occurred during verification. Please try again.';
+                l10nNow().verificationErrorTryAgain;
             // Loop will continue to show dialog again with error message
           }
         }
@@ -275,7 +276,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           GlobalLoaderController.to.hide();
         }
 
-        String errorMessage = 'Login failed';
+        String errorMessage = l10nNow().loginFailed;
         if (loginResult.resultText != null &&
             loginResult.resultText!.trim().isNotEmpty) {
           errorMessage = loginResult.resultText!;
@@ -342,7 +343,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         }
         final message = challengeResult.resultText?.trim().isNotEmpty == true
             ? challengeResult.resultText!
-            : 'Passkey challenge could not be created';
+            : l10nNow().passkeyChallengeFailed;
         await _showLoginErrorDialog(message, Get.theme.colorScheme);
         return false;
       }
@@ -360,7 +361,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -417,7 +418,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         if (showLoader) {
           GlobalLoaderController.to.hide();
         }
-        String errorMessage = 'Login failed';
+        String errorMessage = l10nNow().loginFailed;
         if (loginResult.resultText != null &&
             loginResult.resultText!.trim().isNotEmpty) {
           errorMessage = loginResult.resultText!;
@@ -450,7 +451,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         GlobalLoaderController.to.hide();
       }
       await _showLoginErrorDialog(
-        'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+        l10nNow().passkeyNotSetUp,
         Get.theme.colorScheme,
       );
       return false;
@@ -459,7 +460,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         GlobalLoaderController.to.hide();
       }
       await _showLoginErrorDialog(
-        'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.',
+        l10nNow().noPasskeyForForum,
         Get.theme.colorScheme,
       );
       return false;
@@ -473,7 +474,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         if (msg.contains('webcredentials') ||
             msg.contains('verify') && msg.contains('association')) {
           await _showLoginErrorDialog(
-            'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+            l10nNow().passkeyNotSetUp,
             Get.theme.colorScheme,
           );
           return false;
@@ -485,7 +486,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       if (errStr.contains('rp id cannot be validated') ||
           errStr.contains('get_public_key_credential_dom_exception')) {
         await _showLoginErrorDialog(
-          'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+          l10nNow().passkeyNotSetUp,
           Get.theme.colorScheme,
         );
         return false;
@@ -682,7 +683,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -740,8 +741,8 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 tfaLoginResult.resultText?.trim().isNotEmpty == true
                     ? tfaLoginResult.resultText!
                     : (tfaLoginResult.result
-                        ? 'Login succeeded'
-                        : 'Login failed');
+                        ? l10nNow().loginSucceeded
+                        : l10nNow().loginFailed);
             if (!tfaLoginResult.result) {
               _showLoginFailureSnackbar(tfaResultMessage);
             }
@@ -777,7 +778,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             }
           } catch (e) {
             errorMessage =
-                'An error occurred during verification. Please try again.';
+                l10nNow().verificationErrorTryAgain;
             // Loop will continue to show dialog again with error message
           }
         }
@@ -948,7 +949,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           challengeResult.rpId == null) {
         final message = challengeResult.resultText?.trim().isNotEmpty == true
             ? challengeResult.resultText!
-            : 'Passkey challenge could not be created';
+            : l10nNow().passkeyChallengeFailed;
         siteContext.loginDataOutput = null;
         await siteContext.saveToDevice();
         siteContext.updateLoginState();

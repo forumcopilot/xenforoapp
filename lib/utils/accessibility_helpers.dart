@@ -101,9 +101,9 @@ class AccessibilityHelpers {
   /// Creates an accessibility label for like button.
   static String getLikeButtonLabel(BuildContext context, bool isLiked, int? count) {
     if (isLiked) {
-      return 'Unlike post';
+      return AppLocalizations.of(context).unlikePost;
     } else {
-      return 'Like post';
+      return AppLocalizations.of(context).likePost;
     }
   }
 

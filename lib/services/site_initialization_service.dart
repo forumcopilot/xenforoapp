@@ -10,6 +10,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
+import '../utils/l10n_now.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {
@@ -44,7 +45,7 @@ class SiteInitializationService {
 
       // Get domain name for progress message
       final domainName = Uri.tryParse(site.url)?.host ?? site.url;
-      onProgress('Connecting to $domainName...');
+      onProgress(l10nNow().connectingTo(domainName));
 
       // Get SiteController
       if (!Get.isRegistered<SiteController>()) {

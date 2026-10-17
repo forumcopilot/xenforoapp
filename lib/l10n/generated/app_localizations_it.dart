@@ -2502,4 +2502,129 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get openConversation => 'Apri conversazione';
+
+  @override
+  String get loginSucceeded => 'Accesso riuscito';
+
+  @override
+  String get verificationErrorTryAgain =>
+      'Si è verificato un errore durante la verifica. Riprova.';
+
+  @override
+  String get passkeyChallengeFailed =>
+      'Impossibile avviare l\'accesso con passkey.';
+
+  @override
+  String get passkeyNotSetUp =>
+      'Questo forum non è ancora configurato per l\'accesso con passkey in questa app. Accedi con nome utente e password.';
+
+  @override
+  String get noPasskeyForForum =>
+      'Nessuna passkey trovata per questo forum. Accedi con la password oppure crea prima una passkey sul sito del forum.';
+
+  @override
+  String get pushNotificationsNotReady =>
+      'Le notifiche push non sono ancora pronte';
+
+  @override
+  String pushEnabledFor(String siteName) {
+    return 'Notifiche push attivate per $siteName';
+  }
+
+  @override
+  String get failedToEnablePush => 'Impossibile attivare le notifiche push';
+
+  @override
+  String get failedToRegisterPush =>
+      'Impossibile registrarsi alle notifiche push';
+
+  @override
+  String translatedFromTo(String source, String target) {
+    return 'Tradotto da $source a $target';
+  }
+
+  @override
+  String get unableToOpenNotification => 'Impossibile aprire la notifica';
+
+  @override
+  String get notificationMissingInfo =>
+      'In questa notifica mancano delle informazioni.';
+
+  @override
+  String get couldNotOpenForum => 'Impossibile aprire il forum.';
+
+  @override
+  String get notificationChannelName => 'Notifiche di Forum Copilot';
+
+  @override
+  String get notificationChannelDescription =>
+      'Notifiche dell\'app Forum Copilot';
+
+  @override
+  String fileTypeNotAllowed(String extension, String allowed) {
+    return 'Il tipo di file .$extension non è consentito. Tipi consentiti: $allowed';
+  }
+
+  @override
+  String fileSizeExceedsMaximum(String size, String max) {
+    return 'La dimensione del file ($size) supera il massimo di $max';
+  }
+
+  @override
+  String get fileTypeAudio => 'Audio';
+
+  @override
+  String get fileTypeText => 'Testo';
+
+  @override
+  String get fileTypeArchive => 'Archivio';
+
+  @override
+  String get fileTypeFile => 'File';
+
+  @override
+  String get imageFileNotFound =>
+      'File immagine non trovato. Potrebbe essere stato spostato o eliminato.';
+
+  @override
+  String get imagePermissionDenied =>
+      'Permesso negato. Impossibile leggere il file dell\'immagine.';
+
+  @override
+  String get imageInsufficientSpace =>
+      'Spazio su disco insufficiente per ottimizzare l\'immagine.';
+
+  @override
+  String cannotAccessImageFile(String error) {
+    return 'Impossibile accedere al file dell\'immagine: $error';
+  }
+
+  @override
+  String get imageFormatUnsupported =>
+      'Il formato dell\'immagine è danneggiato o non supportato. Prova con un\'altra immagine.';
+
+  @override
+  String get failedToResizeImage =>
+      'Impossibile ridimensionare l\'immagine. Potrebbe essere danneggiata o in un formato non supportato.';
+
+  @override
+  String get failedToConvertImageToJpg =>
+      'Impossibile convertire l\'immagine in JPG. Potrebbe essere danneggiata.';
+
+  @override
+  String get failedToCompressImage =>
+      'Impossibile comprimere l\'immagine. Lo spazio potrebbe essere insufficiente o l\'immagine danneggiata.';
+
+  @override
+  String get cannotDecodeImage =>
+      'Impossibile decodificare l\'immagine. Il file potrebbe essere danneggiato o in un formato non supportato.';
+
+  @override
+  String get cannotReadImageFile =>
+      'Impossibile leggere il file dell\'immagine. Potrebbe essere stato spostato o eliminato.';
+
+  @override
+  String failedToOptimizeImage(String error) {
+    return 'Impossibile ottimizzare l\'immagine: $error';
+  }
 }

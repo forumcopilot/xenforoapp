@@ -5,6 +5,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:forumcopilot_sdk/models/entities/fc_attachment_data.dart';
+import 'l10n_now.dart';
 
 /// Hard ceiling on the raw (pre-encode) byte size of an image we will upload.
 ///
@@ -182,46 +183,39 @@ Future<XFile> optimizeImage(
     debugPrint('Error optimizing image (file system): $e');
     if (e.osError != null) {
       if (e.osError!.errorCode == 2) {
-        throw Exception(
-            'Image file not found. The file may have been moved or deleted.');
+        throw Exception(l10nNow().imageFileNotFound);
       } else if (e.osError!.errorCode == 13) {
-        throw Exception('Permission denied. Cannot read the image file.');
+        throw Exception(l10nNow().imagePermissionDenied);
       } else if (e.osError!.errorCode == 28) {
-        throw Exception('Insufficient disk space to optimize the image.');
+        throw Exception(l10nNow().imageInsufficientSpace);
       }
     }
-    throw Exception('Cannot access image file: ${e.message}');
+    throw Exception(l10nNow().cannotAccessImageFile(e.message));
   } on FormatException catch (e) {
     debugPrint('Error optimizing image (format): $e');
-    throw Exception(
-        'Image format is corrupted or not supported. Please try a different image.');
+    throw Exception(l10nNow().imageFormatUnsupported);
   } catch (e) {
     debugPrint('Error optimizing image: $e');
     final errorMessage = e.toString();
 
     // Provide user-friendly messages for common errors
     if (errorMessage.contains('Failed to resize image')) {
-      throw Exception(
-          'Failed to resize image. The image may be corrupted or in an unsupported format.');
+      throw Exception(l10nNow().failedToResizeImage);
     } else if (errorMessage.contains('Failed to convert image to JPG')) {
-      throw Exception(
-          'Failed to convert image to JPG format. The image may be corrupted.');
+      throw Exception(l10nNow().failedToConvertImageToJpg);
     } else if (errorMessage.contains('Failed to compress image')) {
-      throw Exception(
-          'Failed to compress image. There may be insufficient disk space or the image is corrupted.');
+      throw Exception(l10nNow().failedToCompressImage);
     } else if (errorMessage.contains('instantiateImageCodec')) {
-      throw Exception(
-          'Cannot decode image. The file may be corrupted or in an unsupported format.');
+      throw Exception(l10nNow().cannotDecodeImage);
     } else if (errorMessage.contains('readAsBytes')) {
-      throw Exception(
-          'Cannot read image file. The file may have been moved or deleted.');
+      throw Exception(l10nNow().cannotReadImageFile);
     } else {
       // Extract clean error message
       String cleanMessage = errorMessage;
       if (cleanMessage.startsWith('Exception: ')) {
         cleanMessage = cleanMessage.substring(11);
       }
-      throw Exception('Failed to optimize image: $cleanMessage');
+      throw Exception(l10nNow().failedToOptimizeImage(cleanMessage));
     }
   }
 }

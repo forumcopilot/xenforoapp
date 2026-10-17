@@ -1222,7 +1222,15 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   /// Handles logout process
   Future<bool> handleLogout(SiteContext siteContext) async {
     try {
-      // Get site context before clearing login data
+      // Stop this account's pushes first, while still signed in: the add-on
+      // removes a device only for its signed-in owner. Best effort; signing
+      // out goes ahead either way.
+      try {
+        final stopped = await PushNotificationController.unregisterDirectForSignOut();
+        if (!stopped) AppLogger.warning('Direct push unregister failed at sign-out');
+      } catch (e) {
+        AppLogger.warning('Direct push unregister failed at sign-out: $e');
+      }
 
       // Call server logout
       final userProxy = SiteProxyService.getUserProxy();

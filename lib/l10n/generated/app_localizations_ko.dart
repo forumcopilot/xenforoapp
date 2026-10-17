@@ -1587,4 +1587,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return '파일이 문서에 저장되었습니다: $filename';
   }
+
+  @override
+  String get discardPostQuestion => '게시물을 버리시겠습니까?';
+
+  @override
+  String get discardChangesQuestion => '변경 사항을 버리시겠습니까?';
+
+  @override
+  String get discard => '버리기';
+
+  @override
+  String get discardChanges => '변경 사항 버리기';
+
+  @override
+  String get notificationsTab => '알림';
+
+  @override
+  String get postAwaitingApproval => '운영자가 승인하면 게시물이 표시됩니다.';
 }

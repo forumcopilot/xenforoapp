@@ -1653,4 +1653,23 @@ class AppLocalizationsIt extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'File salvato in Documenti: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Vuoi eliminare il tuo messaggio?';
+
+  @override
+  String get discardChangesQuestion => 'Vuoi annullare le modifiche?';
+
+  @override
+  String get discard => 'Scarta';
+
+  @override
+  String get discardChanges => 'Annulla modifiche';
+
+  @override
+  String get notificationsTab => 'Avvisi';
+
+  @override
+  String get postAwaitingApproval =>
+      'Il tuo messaggio apparirà quando un moderatore lo avrà approvato.';
 }

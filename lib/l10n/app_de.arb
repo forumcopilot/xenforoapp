@@ -964,5 +964,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Willst du deinen Beitrag verwerfen?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Möchtest du deine Änderungen verwerfen?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Verwerfen",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Änderungen verwerfen",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "Mitteilungen",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "Dein Beitrag erscheint, sobald ein Moderator ihn freigegeben hat.",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

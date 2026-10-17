@@ -245,10 +245,13 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
                     if (canVote && !widget.poll.hasVoted)
                       Padding(
                         padding: EdgeInsets.only(right: DesignTokens.spacingS),
+                        // Radio buttons for one choice, checkboxes for several
+                        // (maxVotes 0 is unlimited, not one). An unticked box
+                        // is check_box_outline_blank: check_box_outlined has a tick.
                         child: Icon(
-                          widget.poll.maxVotes <= 1
+                          _maxSelections == 1
                               ? (isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked)
-                              : (isSelected ? Icons.check_box : Icons.check_box_outlined),
+                              : (isSelected ? Icons.check_box : Icons.check_box_outline_blank),
                           size: DesignTokens.iconSizeM,
                           color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                         ),

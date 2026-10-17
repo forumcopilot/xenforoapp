@@ -988,5 +988,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "是否要放弃您的帖子？",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "您确定要放弃所做的更改吗？",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "放弃",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "舍弃更改",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "通知",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "您的帖子将在版主批准后显示。",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

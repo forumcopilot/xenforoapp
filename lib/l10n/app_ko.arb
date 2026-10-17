@@ -988,5 +988,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "게시물을 버리시겠습니까?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "변경 사항을 버리시겠습니까?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "버리기",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "변경 사항 버리기",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "알림",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "운영자가 승인하면 게시물이 표시됩니다.",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

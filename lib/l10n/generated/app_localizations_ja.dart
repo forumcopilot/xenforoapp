@@ -1594,4 +1594,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'ファイルをドキュメントに保存しました: $filename';
   }
+
+  @override
+  String get discardPostQuestion => '投稿を破棄しますか？';
+
+  @override
+  String get discardChangesQuestion => '変更を破棄しますか？';
+
+  @override
+  String get discard => '破棄';
+
+  @override
+  String get discardChanges => '変更を破棄';
+
+  @override
+  String get notificationsTab => '通知';
+
+  @override
+  String get postAwaitingApproval => 'モデレーターが承認すると、投稿が表示されます。';
 }

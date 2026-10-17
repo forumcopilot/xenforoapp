@@ -14,7 +14,6 @@ class NetworkUtils {
       debugPrint('NetworkUtils.resolveRedirects: Checking URL $url');
       final statusCode = response.statusCode ?? 0;
       debugPrint('NetworkUtils.resolveRedirects: Status code $statusCode');
-      debugPrint('NetworkUtils.resolveRedirects: Headers ${response.headers.map}');
 
       if ((statusCode >= 300 && statusCode < 400) || statusCode == 404) {
         final String? redirectUrl = response.headers.value('location');

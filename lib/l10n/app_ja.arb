@@ -964,5 +964,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "投稿を破棄しますか？",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "変更を破棄しますか？",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "破棄",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "変更を破棄",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "通知",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "モデレーターが承認すると、投稿が表示されます。",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

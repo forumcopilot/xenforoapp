@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import '../../../../utils/bbcode_processor.dart';
 import '../../../widgets/custom_bb_stylesheet.dart';
+import '../../../widgets/full_screen_image_viewer.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import '../../../../utils/time_utils.dart';
 import '../../../../utils/url_utils.dart';
@@ -56,7 +57,14 @@ class TraditionalPMItem extends StatelessWidget {
           ),
         );
       },
-      // You can add onImageTap/onVideoTap if needed
+      // An inline [IMG] picture (tapping it used to do nothing).
+      onImageTap: (url, _, heroTag) => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FullScreenImageViewer(imageUrls: [url], heroTag: heroTag),
+        ),
+      ),
+      onVideoTap: (url) => UrlUtils.handleUrlTap(url, context),
     );
 
     final stylesheet = CustomBBStylesheet(

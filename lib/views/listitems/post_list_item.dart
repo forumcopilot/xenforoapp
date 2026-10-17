@@ -545,26 +545,9 @@ class _PostListItemState extends State<PostListItem> {
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) {
         AppLogger.debug('BBCode URL tapped: $url');
-        // Check if URL might be a mention link (contains user profile path)
-        // This is a fallback in case CustomUrlTag didn't catch it
-        final mentionMatch = RegExp(r'@(\w+)').firstMatch(url);
-        if (mentionMatch != null) {
-          final username = mentionMatch.group(1);
-          AppLogger.debug(
-              'BBCode URL contains mention pattern, username: $username');
-          if (username != null && username.isNotEmpty) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserProfilePage(
-                  siteContext: widget.siteContext,
-                  userName: username,
-                ),
-              ),
-            );
-            return;
-          }
-        }
+        // Links go where they point. An "@word" anywhere in a URL (an email
+        // address, a social media handle) used to open a forum profile instead;
+        // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
         final site = widget.siteContext.site;
         final forumUrl = site.pluginUrl;

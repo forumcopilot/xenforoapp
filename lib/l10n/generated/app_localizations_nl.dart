@@ -1641,4 +1641,23 @@ class AppLocalizationsNl extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Bestand opgeslagen in Documenten: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Wil je je bericht weggooien?';
+
+  @override
+  String get discardChangesQuestion => 'Wil je je wijzigingen negeren?';
+
+  @override
+  String get discard => 'Verwerpen';
+
+  @override
+  String get discardChanges => 'Wijzigingen negeren';
+
+  @override
+  String get notificationsTab => 'Meldingen';
+
+  @override
+  String get postAwaitingApproval =>
+      'Je bericht verschijnt zodra een moderator het heeft goedgekeurd.';
 }

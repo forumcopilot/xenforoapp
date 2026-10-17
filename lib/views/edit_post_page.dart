@@ -446,6 +446,7 @@ class _EditPostPageState extends State<EditPostPage> {
         // Only create compose page when data is ready
         // Use a stable key to preserve MessageComposePage state across rebuilds
         Widget compose = MessageComposePage(
+          isEditing: true,
           key: const ValueKey('edit_post_compose'),
           siteContext: widget.siteContext,
           title: 'Edit Post',
@@ -555,13 +556,10 @@ class _EditPostPageState extends State<EditPostPage> {
                   margin: DesignTokens.paddingS,
                   padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
                   duration: const Duration(seconds: 4),
-                  action: SnackBarAction(
-                    label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                    textColor: Theme.of(context).colorScheme.onErrorContainer,
-                    onPressed: () {
-                      scaffoldMessenger.hideCurrentSnackBar();
-                    },
-                  ),
+                  // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+                  // with an action stays until tapped and queues later messages behind it.
+                  showCloseIcon: true,
+                  closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
                 ),
               );
             }

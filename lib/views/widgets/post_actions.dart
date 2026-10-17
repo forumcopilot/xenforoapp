@@ -228,12 +228,6 @@ class PostActionsHandler {
           if (context.mounted) onRefresh();
         });
       }
-    } else if (result == null && context.mounted) {
-      // If result is null, refresh to show the new post.
-      // Defer to next frame to avoid setState/markNeedsBuild while widget tree is locked after pop.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) onRefresh();
-      });
     } else if (result == false && context.mounted) {
       // Show error message
       // Capture ScaffoldMessengerState to ensure dismiss button works correctly
@@ -265,13 +259,10 @@ class PostActionsHandler {
           margin: DesignTokens.paddingS,
           padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
           duration: const Duration(seconds: 4),
-          action: SnackBarAction(
-            label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-            textColor: Theme.of(context).colorScheme.onErrorContainer,
-            onPressed: () {
-              scaffoldMessenger.hideCurrentSnackBar();
-            },
-          ),
+          // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+          // with an action stays until tapped and queues later messages behind it.
+          showCloseIcon: true,
+          closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
         ),
       );
     }
@@ -401,11 +392,10 @@ class PostActionsHandler {
           if (context.mounted) onRefresh();
         });
       }
-    } else if (result == null && context.mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) onRefresh();
-      });
     }
+    // null = the composer was closed without posting (Back, or Discard):
+    // nothing changed, so the thread keeps its place. Reloading here made
+    // Reply with Quote followed by Back jump the thread.
   }
 
   Future<void> handleEdit(BuildContext context, String postId, String currentText, String topicTitle, String topicId, String? forumId, VoidCallback onRefresh) async {
@@ -491,13 +481,10 @@ class PostActionsHandler {
           margin: DesignTokens.paddingS,
           padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
           duration: const Duration(seconds: 4),
-          action: SnackBarAction(
-            label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-            textColor: Theme.of(context).colorScheme.onErrorContainer,
-            onPressed: () {
-              scaffoldMessenger.hideCurrentSnackBar();
-            },
-          ),
+          // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+          // with an action stays until tapped and queues later messages behind it.
+          showCloseIcon: true,
+          closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
         ),
       );
     }
@@ -702,13 +689,10 @@ class PostActionsHandler {
               margin: const EdgeInsets.all(8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                textColor: Theme.of(context).colorScheme.onErrorContainer,
-                onPressed: () {
-                  scaffoldMessenger.hideCurrentSnackBar();
-                },
-              ),
+              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+              // with an action stays until tapped and queues later messages behind it.
+              showCloseIcon: true,
+              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
             ),
           );
         }
@@ -884,13 +868,10 @@ class PostActionsHandler {
                 margin: const EdgeInsets.all(8),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 duration: const Duration(seconds: 4),
-                action: SnackBarAction(
-                  label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                  textColor: Theme.of(context).colorScheme.onErrorContainer,
-                  onPressed: () {
-                    scaffoldMessenger.hideCurrentSnackBar();
-                  },
-                ),
+                // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+                // with an action stays until tapped and queues later messages behind it.
+                showCloseIcon: true,
+                closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
               ),
             );
           }
@@ -931,13 +912,10 @@ class PostActionsHandler {
               margin: const EdgeInsets.all(8),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                textColor: Theme.of(context).colorScheme.onErrorContainer,
-                onPressed: () {
-                  scaffoldMessenger.hideCurrentSnackBar();
-                },
-              ),
+              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+              // with an action stays until tapped and queues later messages behind it.
+              showCloseIcon: true,
+              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
             ),
           );
         }

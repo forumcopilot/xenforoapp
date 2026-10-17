@@ -81,6 +81,18 @@ class _NewTopicPageState extends State<NewTopicPage> {
     }
   }
 
+  /// The forum holds this topic for a moderator: say so, or it seems to vanish.
+  void _showAwaitingApproval() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 6),
+      ),
+    );
+  }
+
   Future<bool> _handleSubmit(String title, String content) async {
     // Validate required prefix before submission
     if (_requirePrefix && (_selectedPrefixId == null || _selectedPrefixId!.isEmpty)) {
@@ -134,6 +146,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
       debugPrint('   - groupId passed: "$_groupId"');
 
       if (result.result) {
+        if (result.state == 1) _showAwaitingApproval();
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -396,13 +409,10 @@ class _NewTopicPageState extends State<NewTopicPage> {
               margin: DesignTokens.paddingS,
               padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
               duration: const Duration(seconds: 4),
-              action: SnackBarAction(
-                label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                textColor: Theme.of(context).colorScheme.onErrorContainer,
-                onPressed: () {
-                  scaffoldMessenger.hideCurrentSnackBar();
-                },
-              ),
+              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+              // with an action stays until tapped and queues later messages behind it.
+              showCloseIcon: true,
+              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
             ),
           );
         }

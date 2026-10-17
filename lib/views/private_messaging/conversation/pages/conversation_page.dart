@@ -56,6 +56,9 @@ class _ConversationPageState extends State<ConversationPage> {
   int _currentLastNum = 0; // Track the end of loaded range for proper pagination
   final int _pageSize = 20;
   String? _highlightedMessageId; // ID of message to highlight
+  // Load around widget.anchorMessageId (the message a push or alert pointed
+  // at) until the user replies; after that, loads show the newest messages.
+  bool _anchored = true;
   Timer? _highlightTimer; // Timer to clear highlight after a few seconds
 
   @override
@@ -184,7 +187,7 @@ class _ConversationPageState extends State<ConversationPage> {
       FCConversationResult conversation;
 
       // If anchorMessageId is provided and this is the initial load, use getConversationByMessageAsync
-      if (!loadMore && widget.anchorMessageId != null && widget.anchorMessageId!.isNotEmpty) {
+      if (!loadMore && _anchored && widget.anchorMessageId != null && widget.anchorMessageId!.isNotEmpty) {
         conversation = await conversationProxy.getConversationByMessageAsync(
           widget.anchorMessageId!,
           messagesPerRequest: _pageSize,
@@ -530,7 +533,10 @@ class _ConversationPageState extends State<ConversationPage> {
       });
 
       // Fully refresh the conversation by calling _loadConversation
-      // This will automatically load the last page and scroll to bottom
+      // This will automatically load the last page and scroll to bottom.
+      // A conversation opened at a message (from a push) used to reload
+      // around that message, so the reply just sent was not shown.
+      _anchored = false;
       await _loadConversation();
 
       if (mounted && _conversation != null && _conversation!.list.isNotEmpty) {
@@ -716,7 +722,7 @@ class _ConversationPageState extends State<ConversationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Leave Conversation',
+          AppLocalizations.of(context)?.leaveConversation ?? 'Leave conversation',
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -749,9 +755,18 @@ class _ConversationPageState extends State<ConversationPage> {
 
     try {
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
-      await conversationProxy.leaveConversationAsync(widget.conversationId, 1); // 1 = soft leave
-      if (mounted) {
+      final result = await conversationProxy.leaveConversationAsync(widget.conversationId, 1); // 1 = soft leave
+      if (!mounted) return;
+      if (result.result) {
         Navigator.of(context).pop(true);
+      } else {
+        // The page used to close as if the conversation had been left.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {

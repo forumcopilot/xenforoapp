@@ -170,13 +170,36 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
     }
   }
 
+  /// Stops direct-mode pushes for the account that is signing out. Call it
+  /// before the forum sign-out: the add-on removes a device only for its
+  /// signed-in owner. Works before push has started (no controller yet).
+  ///
+  /// Nothing called [unregisterDirect] before, so after signing out the
+  /// forum kept pushing that account's notifications to this phone.
+  static Future<bool> unregisterDirectForSignOut() async {
+    if (AppForumConfig.pushSource != 'direct') return true;
+    if (Get.isRegistered<PushNotificationController>()) {
+      return Get.find<PushNotificationController>().unregisterDirect();
+    }
+    try {
+      final deviceId = await DeviceService().getDeviceId();
+      final r = await SiteProxyService.getDeviceProxy().unregisterDeviceAsync(deviceId);
+      AppLogger.debug('[DirectPush] Sign-out unregister (no controller): ${r.result}');
+      return r.result;
+    } catch (e) {
+      AppLogger.debug('[DirectPush] Sign-out unregister error: $e');
+      return false;
+    }
+  }
+
   /// Unregister this device from direct-mode push (BYO Firebase). Call on
   /// logout so the server stops dispatching to this token after the user
   /// signs out.
   Future<bool> unregisterDirect() async {
     if (AppForumConfig.pushSource != 'direct') return true;
-    if (_deviceId == null) return true;
-    if (!_hasDirectRegistered) return true;
+    // Not only when this run registered: the forum keeps the device from an
+    // earlier run too. Unregistering an unknown device is harmless.
+    _deviceId ??= await _deviceService.getDeviceId();
 
     try {
       final proxy = SiteProxyService.getDeviceProxy();

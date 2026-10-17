@@ -119,13 +119,10 @@ class _PostPageState extends State<PostPage> {
               borderRadius: BorderRadius.circular(DesignTokens.radiusS),
             ),
             duration: const Duration(seconds: 3),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.onErrorContainer,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
+            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+            // with an action stays until tapped and queues later messages behind it.
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
           ),
         );
       }
@@ -166,11 +163,10 @@ class _PostPageState extends State<PostPage> {
     try {
       final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
 
-      if (_isSubscribed) {
-        await subscriptionProxy.unsubscribeTopicAsync(widget.topicId);
-      } else {
-        await subscriptionProxy.subscribeTopicAsync(widget.topicId, 1); // mode 1 for subscribe
-      }
+      final response = _isSubscribed
+          ? await subscriptionProxy.unsubscribeTopicAsync(widget.topicId)
+          : await subscriptionProxy.subscribeTopicAsync(widget.topicId, 1); // mode 1 for subscribe
+      if (!response.result) throw _ActionFailed(response.resultText);
 
       if (mounted) {
         setState(() {
@@ -199,13 +195,10 @@ class _PostPageState extends State<PostPage> {
             margin: DesignTokens.paddingS,
             padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
             duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.onErrorContainer,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
+            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+            // with an action stays until tapped and queues later messages behind it.
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
           ),
         );
       }
@@ -215,11 +208,10 @@ class _PostPageState extends State<PostPage> {
   void _handleClose() async {
     final moderationProxy = SiteProxyFactory.getModerationProxy();
     try {
-      if (_isClosed) {
-        await moderationProxy.uncloseTopicAsync(widget.topicId);
-      } else {
-        await moderationProxy.closeTopicAsync(widget.topicId);
-      }
+      final response = _isClosed
+          ? await moderationProxy.uncloseTopicAsync(widget.topicId)
+          : await moderationProxy.closeTopicAsync(widget.topicId);
+      if (!response.result) throw _ActionFailed(response.resultText);
       if (mounted) {
         setState(() {
           _isClosed = !_isClosed;
@@ -242,58 +234,26 @@ class _PostPageState extends State<PostPage> {
             margin: DesignTokens.paddingS,
             padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
             duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.inversePrimary,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
+            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+            // with an action stays until tapped and queues later messages behind it.
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).colorScheme.inversePrimary,
           ),
         );
         _refreshCallback?.call();
       }
     } catch (e) {
-      if (mounted) {
-        // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to ${_isClosed ? 'open' : 'close'} topic: $e',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.onErrorContainer,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
-          ),
-        );
-      }
+      _showFailure(e);
     }
   }
 
   void _handleSticky() async {
     final moderationProxy = SiteProxyFactory.getModerationProxy();
     try {
-      if (_isSticky) {
-        await moderationProxy.unstickTopicAsync(widget.topicId);
-      } else {
-        await moderationProxy.stickTopicAsync(widget.topicId);
-      }
+      final response = _isSticky
+          ? await moderationProxy.unstickTopicAsync(widget.topicId)
+          : await moderationProxy.stickTopicAsync(widget.topicId);
+      if (!response.result) throw _ActionFailed(response.resultText);
       if (mounted) {
         setState(() {
           _isSticky = !_isSticky;
@@ -316,47 +276,16 @@ class _PostPageState extends State<PostPage> {
             margin: DesignTokens.paddingS,
             padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
             duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.inversePrimary,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
+            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+            // with an action stays until tapped and queues later messages behind it.
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).colorScheme.inversePrimary,
           ),
         );
         _refreshCallback?.call();
       }
     } catch (e) {
-      if (mounted) {
-        // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to ${_isSticky ? 'unstick' : 'stick'} topic: $e',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-              textColor: Theme.of(context).colorScheme.onErrorContainer,
-              onPressed: () {
-                scaffoldMessenger.hideCurrentSnackBar();
-              },
-            ),
-          ),
-        );
-      }
+      _showFailure(e);
     }
   }
 
@@ -366,7 +295,8 @@ class _PostPageState extends State<PostPage> {
     // Handle undelete with simple confirmation (already handled in app bar)
     if (_isDeleted) {
       try {
-        await moderationProxy.undeleteTopicAsync(widget.topicId, '');
+        final response = await moderationProxy.undeleteTopicAsync(widget.topicId, '');
+        if (!response.result) throw _ActionFailed(response.resultText);
         if (mounted) {
           setState(() {
             _isDeleted = false;
@@ -374,7 +304,7 @@ class _PostPageState extends State<PostPage> {
           _refreshCallback?.call();
         }
       } catch (e) {
-        // Error handling - no toast message
+        _showFailure(e);
       }
       return;
     }
@@ -412,9 +342,7 @@ class _PostPageState extends State<PostPage> {
         deleteResult = await moderationProxy.deleteTopicAsync(widget.topicId, mode, reason);
       }
 
-      if (!deleteResult.result) {
-        throw Exception(deleteResult.resultText ?? 'Failed to delete topic');
-      }
+      if (!deleteResult.result) throw _ActionFailed(deleteResult.resultText);
 
       if (mounted) {
         setState(() {
@@ -428,8 +356,38 @@ class _PostPageState extends State<PostPage> {
         }
       }
     } catch (e) {
-      // Error handling - no toast message
+      _showFailure(e);
     }
+  }
+
+  /// Says that a close, stick, delete or undelete didn't happen: the forum's
+  /// reason when it gave one (in the forum's language), else a generic line.
+  /// These used to report success whatever the forum answered, and delete
+  /// failures said nothing at all.
+  void _showFailure(Object error) {
+    if (!mounted) return;
+    final reason = error is _ActionFailed ? error.message?.trim() : null;
+    final colorScheme = Theme.of(context).colorScheme;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    scaffoldMessenger.hideCurrentSnackBar();
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          reason != null && reason.isNotEmpty ? reason : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.onErrorContainer),
+        ),
+        backgroundColor: colorScheme.errorContainer,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
+        ),
+        margin: DesignTokens.paddingS,
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
+        duration: const Duration(seconds: 4),
+        showCloseIcon: true,
+        closeIconColor: colorScheme.onErrorContainer,
+      ),
+    );
   }
 
   @override
@@ -476,13 +434,10 @@ class _PostPageState extends State<PostPage> {
                     margin: DesignTokens.paddingS,
                     padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
                     duration: const Duration(seconds: 4),
-                    action: SnackBarAction(
-                      label: AppLocalizations.of(context)?.dismiss ?? 'Dismiss',
-                      textColor: Theme.of(context).colorScheme.onErrorContainer,
-                      onPressed: () {
-                        scaffoldMessenger.hideCurrentSnackBar();
-                      },
-                    ),
+                    // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+                    // with an action stays until tapped and queues later messages behind it.
+                    showCloseIcon: true,
+                    closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
                   ),
                 );
               }
@@ -827,4 +782,14 @@ class _PostPageState extends State<PostPage> {
       ),
     );
   }
+}
+
+/// A thread action the forum refused; [message] is its reason, if it gave one.
+class _ActionFailed implements Exception {
+  _ActionFailed(this.message);
+
+  final String? message;
+
+  @override
+  String toString() => message ?? 'The forum refused the action';
 }

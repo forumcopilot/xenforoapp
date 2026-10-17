@@ -1662,4 +1662,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Fichier enregistré dans Documents : $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Voulez-vous abandonner votre message ?';
+
+  @override
+  String get discardChangesQuestion =>
+      'Voulez-vous annuler vos modifications ?';
+
+  @override
+  String get discard => 'Abandonner';
+
+  @override
+  String get discardChanges => 'Annuler les modifications';
+
+  @override
+  String get notificationsTab => 'Alertes';
+
+  @override
+  String get postAwaitingApproval =>
+      'Votre message apparaîtra dès qu’un modérateur l’aura approuvé.';
 }

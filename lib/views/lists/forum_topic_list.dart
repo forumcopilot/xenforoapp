@@ -7,6 +7,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/utils/forum_navigation.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
+import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import 'package:forumcopilot_flutter/views/new_topic_page.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
@@ -468,7 +469,8 @@ class _ForumTopicListState extends State<ForumTopicList> {
                         await Get.to(() => LoginPage(siteContext: widget.siteContext));
                       }
                     }
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title));
+                    // At the first unread post, as the Latest list opens topics (signed in only).
+                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
                   },
                 )),
           ],
@@ -488,7 +490,8 @@ class _ForumTopicListState extends State<ForumTopicList> {
                         await Get.to(() => LoginPage(siteContext: widget.siteContext));
                       }
                     }
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title));
+                    // At the first unread post, as the Latest list opens topics (signed in only).
+                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
                   },
                 )),
           ],

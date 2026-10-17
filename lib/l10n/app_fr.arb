@@ -964,5 +964,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "discardPostQuestion": "Voulez-vous abandonner votre message ?",
+  "@discardPostQuestion": {"description": "Asked when a composer with unsent text is closed"},
+  "discardChangesQuestion": "Voulez-vous annuler vos modifications ?",
+  "@discardChangesQuestion": {"description": "Asked when an edit form with unsaved changes is closed"},
+  "discard": "Abandonner",
+  "@discard": {"description": "Button that closes a composer and throws away what was typed"},
+  "discardChanges": "Annuler les modifications",
+  "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "notificationsTab": "Alertes",
+  "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
+  "postAwaitingApproval": "Votre message apparaîtra dès qu’un modérateur l’aura approuvé.",
+  "@postAwaitingApproval": {"description": "Shown after posting a reply or a new topic that the forum holds for moderator approval"}
 }

@@ -1656,4 +1656,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Archivo guardado en Documentos: $filename';
   }
+
+  @override
+  String get discardPostQuestion => '¿Quieres descartar tu publicación?';
+
+  @override
+  String get discardChangesQuestion => '¿Quieres descartar tus cambios?';
+
+  @override
+  String get discard => 'Descartar';
+
+  @override
+  String get discardChanges => 'Descartar cambios';
+
+  @override
+  String get notificationsTab => 'Avisos';
+
+  @override
+  String get postAwaitingApproval =>
+      'Tu publicación aparecerá cuando un moderador la apruebe.';
 }

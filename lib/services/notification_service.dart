@@ -338,6 +338,25 @@ class NotificationService with ServiceErrorHandlingMixin {
     // Handle messages when app is opened from background
     FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpenedApp);
 
+    // A notification the app drew itself (Android shows foreground pushes as
+    // local notifications) that is tapped after the app was closed starts the
+    // app cold. That tap never reaches _onNotificationTapped; it is only
+    // available as the launch details, so route it the same way.
+    _localNotifications.getNotificationAppLaunchDetails().then((details) {
+      final payload = details?.notificationResponse?.payload;
+      if (details?.didNotificationLaunchApp == true && payload != null && payload.isNotEmpty) {
+        AppLogger.debug('🔔 [NotificationService] App launched from a local notification');
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _onNotificationTapped(NotificationResponse(
+            notificationResponseType: NotificationResponseType.selectedNotification,
+            payload: payload,
+          ));
+        });
+      }
+    }).catchError((Object e) {
+      AppLogger.debug('⚠️ [NotificationService] Reading notification launch details failed: $e');
+    });
+
     // Handle messages when app is opened from terminated state
     // Note: On Android, this is checked early in main.dart to avoid timing issues.
     // On iOS, we still check here as a fallback.
@@ -725,11 +744,11 @@ class NotificationService with ServiceErrorHandlingMixin {
             anchorPostId: postId, // Used by getThreadByPost API
             forumId: forumId,
           );
-      if (Get.currentRoute == '/PostPage') {
-        Get.off(postPageBuilder);
-      } else {
-        Get.to(postPageBuilder);
-      }
+      // Opened over whatever is showing, so Back returns to it.
+      // preventDuplicates: false because GetX otherwise drops the navigation
+      // when a page of the same type is on top, which is exactly when a push
+      // for another topic or conversation is tapped while reading one.
+      Get.to(postPageBuilder, preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling post notification: $e');
       _showNotificationError('Unable to open notification', e.toString());
@@ -802,11 +821,11 @@ class NotificationService with ServiceErrorHandlingMixin {
             subject: subject,
             anchorMessageId: messageId,
           );
-      if (Get.currentRoute == '/ConversationPage') {
-        Get.off(conversationPageBuilder);
-      } else {
-        Get.to(conversationPageBuilder);
-      }
+      // Opened over whatever is showing, so Back returns to it.
+      // preventDuplicates: false because GetX otherwise drops the navigation
+      // when a page of the same type is on top, which is exactly when a push
+      // for another topic or conversation is tapped while reading one.
+      Get.to(conversationPageBuilder, preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling conversation notification: $e');
       _showNotificationError('Unable to open notification', e.toString());
@@ -857,10 +876,12 @@ class NotificationService with ServiceErrorHandlingMixin {
       AppLogger.debug('✅ [NotificationService] Navigating to user profile: $userId');
 
       // Navigate to the user profile
-      Get.to(() => UserProfilePage(
-            siteContext: siteController.currentSiteContext.value!,
-            userId: userId,
-          ));
+      Get.to(
+          () => UserProfilePage(
+                siteContext: siteController.currentSiteContext.value!,
+                userId: userId,
+              ),
+          preventDuplicates: false);
     } catch (e) {
       AppLogger.debug('❌ [NotificationService] Error handling user notification: $e');
       _showNotificationError('Unable to open notification', e.toString());

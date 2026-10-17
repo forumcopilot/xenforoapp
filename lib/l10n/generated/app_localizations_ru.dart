@@ -1653,4 +1653,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String fileSavedToDocuments(String filename) {
     return 'Файл сохранен в Документы: $filename';
   }
+
+  @override
+  String get discardPostQuestion => 'Отказаться от сообщения?';
+
+  @override
+  String get discardChangesQuestion => 'Отменить изменения?';
+
+  @override
+  String get discard => 'Отменить';
+
+  @override
+  String get discardChanges => 'Отменить изменения';
+
+  @override
+  String get notificationsTab => 'Оповещения';
+
+  @override
+  String get postAwaitingApproval =>
+      'Сообщение появится после одобрения модератором.';
 }

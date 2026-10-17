@@ -66,6 +66,8 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
   // Track if we need to wait for initialization
   bool _waitingForInitialization = false;
+  // Set once this page has asked to close after a failed start.
+  bool _leaving = false;
 
   // Track unread conversations count for badge
   int _unreadConversationsCount = 0;
@@ -654,8 +656,15 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       if (widget.siteToInitialize != null) {
         // Error dialog should have already been shown by _initializeSite or SiteController
         // But ensure we navigate back after a delay to allow dialog to be shown
+        // Once, and only while this page is on top: every rebuild queued
+        // another pop, and the error dialog's OK closes this page as well,
+        // so the page underneath could be closed too.
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted && _siteContext == null) {
+          if (mounted &&
+              _siteContext == null &&
+              !_leaving &&
+              (ModalRoute.of(context)?.isCurrent ?? false)) {
+            _leaving = true;
             Navigator.of(context).pop();
           }
         });
@@ -705,13 +714,30 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       _lastLoggedShouldShowFAB = shouldShowFAB;
     }
 
-    return Scaffold(
+    // Back from another tab goes to the first tab, as Material bottom
+    // navigation does; from the first tab it leaves the forum.
+    return PopScope(
+      canPop: _tabController.index == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop || !mounted) return;
+        setState(() {
+          _tabController.index = 0;
+          _previousTabIndex = 0;
+        });
+      },
+      child: Scaffold(
       appBar: _buildAppBarForCurrentTab(isLoggedIn, canSendPM),
       body: IndexedStack(
         index: _tabController.index,
         children: _buildTabWidgets(),
       ),
-      bottomNavigationBar: NavigationBar(
+      // One line per label, ellipsized, as in the Discourse app: a long word
+      // would otherwise break mid-word onto a second line.
+      bottomNavigationBar: DefaultTextStyle.merge(
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
+        child: NavigationBar(
         onDestinationSelected: (int index) {
           AppLogger.debug('🎯 [SITE_HOME] NavigationBar onDestinationSelected: index=$index, TabController.length=${_tabController.length}');
           setState(() {
@@ -724,8 +750,9 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           }
         },
         selectedIndex: _tabController.index,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: _buildNavigationDestinations(),
+        ),
       ),
       floatingActionButton: shouldShowFAB
           ? FloatingActionButton.extended(
@@ -734,6 +761,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
               label: Text(_siteContext?.configDataOutput?.conversation ?? false ? AppLocalizations.of(context)!.newConversation : AppLocalizations.of(context)!.newMessage),
             )
           : null,
+      ),
     );
   }
 
@@ -776,47 +804,49 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     }).toList();
   }
 
-  // Build navigation destinations based on enabled tabs
+  // Build navigation destinations based on enabled tabs. Labelled, as
+  // Material 3 shows them: three of the icons are speech bubbles or
+  // envelopes, and an empty label left screen readers with nothing to say.
   List<NavigationDestination> _buildNavigationDestinations() {
+    final l10n = AppLocalizations.of(context);
+    // The unread count stays on the tab while it's selected.
+    Widget counted(int count, IconData icon) => Badge.count(
+          count: count,
+          isLabelVisible: count > 0,
+          child: Icon(icon),
+        );
     return _enabledTabs.map((tabType) {
       switch (tabType) {
         case _topicsTab:
-          return const NavigationDestination(
-            selectedIcon: Icon(Icons.chat_bubble),
-            icon: Icon(Icons.chat_bubble_outline),
-            label: '',
+          return NavigationDestination(
+            selectedIcon: const Icon(Icons.chat_bubble),
+            icon: const Icon(Icons.chat_bubble_outline),
+            label: l10n?.home ?? 'Home',
           );
         case _forumsTab:
-          return const NavigationDestination(
-            selectedIcon: Icon(Icons.forum),
-            icon: Icon(Icons.forum_outlined),
-            label: '',
+          return NavigationDestination(
+            selectedIcon: const Icon(Icons.forum),
+            icon: const Icon(Icons.forum_outlined),
+            label: l10n?.forums ?? 'Forums',
           );
         case _messagesTab:
           return NavigationDestination(
-            selectedIcon: const Icon(Icons.mail),
-            icon: Badge(
-              label: Text('$_unreadConversationsCount'),
-              isLabelVisible: _unreadConversationsCount > 0,
-              child: const Icon(Icons.mail_outline),
-            ),
-            label: '',
+            selectedIcon: counted(_unreadConversationsCount, Icons.mail),
+            icon: counted(_unreadConversationsCount, Icons.mail_outline),
+            label: l10n?.messages ?? 'Messages',
           );
         case _notificationsTab:
           return NavigationDestination(
-            selectedIcon: const Icon(Icons.notifications),
-            icon: Badge(
-              label: Text('$_unreadAlertsCount'),
-              isLabelVisible: _unreadAlertsCount > 0,
-              child: const Icon(Icons.notifications_outlined),
-            ),
-            label: '',
+            selectedIcon: counted(_unreadAlertsCount, Icons.notifications),
+            icon: counted(_unreadAlertsCount, Icons.notifications_outlined),
+            label: l10n?.notificationsTab ?? 'Alerts',
+            tooltip: l10n?.notifications ?? 'Notifications',
           );
         case _profileTab:
-          return const NavigationDestination(
-            selectedIcon: Icon(Icons.person),
-            icon: Icon(Icons.person_outlined),
-            label: '',
+          return NavigationDestination(
+            selectedIcon: const Icon(Icons.person),
+            icon: const Icon(Icons.person_outlined),
+            label: l10n?.profile ?? 'Profile',
           );
         default:
           throw ArgumentError('Unknown tab type: $tabType');

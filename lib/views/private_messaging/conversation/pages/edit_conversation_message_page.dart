@@ -359,6 +359,7 @@ class _EditConversationMessagePageState extends State<EditConversationMessagePag
         // Only create compose page when data is ready
         // Use a stable key to preserve MessageComposePage state across rebuilds
         return MessageComposePage(
+          isEditing: true,
           key: const ValueKey('edit_conversation_message_compose'),
           siteContext: widget.siteContext,
           title: AppLocalizations.of(context)?.editMessage ?? 'Edit Message',

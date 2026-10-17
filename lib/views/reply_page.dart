@@ -65,6 +65,18 @@ class _ReplyPageState extends State<ReplyPage> {
     return null;
   }
 
+  /// The forum holds this post for a moderator: say so, or it seems to vanish.
+  void _showAwaitingApproval() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 6),
+      ),
+    );
+  }
+
   Future<bool> _handleSubmit(String title, String content) async {
     try {
       AppLogger.debug('🟢 [REPLY_PAGE] _handleSubmit called');
@@ -106,6 +118,7 @@ class _ReplyPageState extends State<ReplyPage> {
         if (result.state == 1) {
           // Don't store postId if post needs moderation - it won't be visible yet
           _createdPostId = null;
+          _showAwaitingApproval();
           debugPrint('🔍 [REPLY] Post submitted but needs moderation, postId not stored');
         } else {
           // Store the postId synchronously for immediate use in onSuccess callback
@@ -355,7 +368,8 @@ class _ReplyPageState extends State<ReplyPage> {
               }
             },
             onSuccess: (success) {
-              return _createdPostId;
+              // Never null on success: the caller reads null as "closed without posting".
+              return _createdPostId ?? true;
             },
           );
           if (isLoading) {
@@ -414,7 +428,8 @@ class _ReplyPageState extends State<ReplyPage> {
           }
         },
         onSuccess: (success) {
-          return _createdPostId;
+          // Never null on success: the caller reads null as "closed without posting".
+          return _createdPostId ?? true;
         },
         onError: (error) {
           if (context.mounted) {
@@ -459,13 +474,10 @@ class _ReplyPageState extends State<ReplyPage> {
                 margin: DesignTokens.paddingS,
                 padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
                 duration: const Duration(seconds: 4),
-                action: SnackBarAction(
-                  label: 'Dismiss',
-                  textColor: colorScheme.onErrorContainer,
-                  onPressed: () {
-                    scaffoldMessenger.hideCurrentSnackBar();
-                  },
-                ),
+                // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
+                // with an action stays until tapped and queues later messages behind it.
+                showCloseIcon: true,
+                closeIconColor: colorScheme.onErrorContainer,
               ),
             );
           }

@@ -11,12 +11,12 @@ import '../post_page.dart';
 import '../lists/posts_list.dart';
 import '../private_messaging/conversation/pages/conversation_page.dart';
 import '../user_profile_page.dart';
-import '../../utils/url_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../services/notification_router.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
 
 class NotificationListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -230,7 +230,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           _isLoading = false;
           _isLoadingMore = false;
           _error = null;
-          _hasMore = topics.length >= _perPage;
+          // Rows without text are dropped above, so count what the server sent.
+          _hasMore = alertData.hasMore ?? alertData.items.length >= _perPage;
           if (_hasMore) _page += 1;
         });
         _hasLoaded = true; // Mark as loaded after successful load
@@ -325,7 +326,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
               profilePictureUrl: alert.icon_url,
             ));
       case LinkDestination(:final url):
-        await UrlUtils.openUrl(url);
+        await ForumLinks.open(context, url, widget.siteContext);
       case AlertsDestination():
         SnackbarHelper.showInfo(
           context,

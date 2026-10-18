@@ -3,12 +3,9 @@ import '../l10n/generated/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
-import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import '../utils/snackbar_helper.dart';
+import '../services/attachment_uploader.dart';
 
 class EditPostPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -29,10 +26,14 @@ class EditPostPage extends StatefulWidget {
 }
 
 class _EditPostPageState extends State<EditPostPage> {
+  // The post's own attachments that stay; new ones are the uploader's.
   final List<String> _attachmentIds = [];
   String? _groupId;
   List<FCAttachment>? _existingAttachments;
   String? _forumId; // Store forum ID from attachmentData
+  // Bound to this forum, node and edit session once the post has loaded.
+  AttachmentUploader? _uploader;
+  bool _sent = false;
 
   // Controllers created once and reused
   late final TextEditingController _titleController;
@@ -61,6 +62,8 @@ class _EditPostPageState extends State<EditPostPage> {
 
   @override
   void dispose() {
+    // Closed without saving: new uploads are removed from the forum.
+    _uploader?.close(sent: _sent);
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
@@ -88,7 +91,7 @@ class _EditPostPageState extends State<EditPostPage> {
 
       // Send empty array instead of null to explicitly disassociate all attachments
       // If we send null, the server might associate all attachments in the groupId
-      final attachmentIdsToSend = _attachmentIds.isNotEmpty ? _attachmentIds : <String>[];
+      final attachmentIdsToSend = [..._attachmentIds, ...?_uploader?.attachmentIds];
 
       // Determine prefix value to send
       // Send prefix parameter if editing first post and prefix is available
@@ -121,11 +124,12 @@ class _EditPostPageState extends State<EditPostPage> {
         false, // Don't need HTML return
         null, // No edit reason for now
         attachmentIdsToSend, // Send empty array instead of null
-        _groupId,
+        _uploader?.groupId ?? _groupId,
         prefixToSend, // Include prefix if it changed
       );
 
       if (result.result) {
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -152,132 +156,24 @@ class _EditPostPageState extends State<EditPostPage> {
   }
 
   Future<bool> _handleRemoveExistingAttachment(String attachmentId) async {
-    try {
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      var forumId = _forumId ?? "";
-
-      // Use groupId from attachmentData.hash for removing existing attachments
-      // The hash is required by the server API even for existing attachments during edit
-      var groupId = _groupId ?? "";
-
-      var removeResult = await attachmentProxy.removeAttachmentAsync(
-        attachmentId,
-        forumId,
-        groupId,
-        widget.postId,
-      );
-
-      if (removeResult.result) {
-        setState(() {
-          _attachmentIds.remove(attachmentId);
-          // Also remove from existing attachments list so UI updates immediately
-          if (_existingAttachments != null) {
-            _existingAttachments = _existingAttachments!.where((a) => a.id != attachmentId).toList();
-          }
-        });
-        return true;
-      } else {
-        // Provide a more descriptive error message
-        final errorMessage = removeResult.resultText?.trim();
-        if (errorMessage != null && errorMessage.isNotEmpty) {
-          throw Exception(errorMessage);
-        } else {
-          throw Exception('Failed to remove attachment. Please check your permissions.');
-        }
-      }
-    } catch (e) {
-      rethrow;
+    final uploader = _uploader;
+    if (uploader == null) return false;
+    await uploader.removeExisting(attachmentId, contentId: widget.postId);
+    if (mounted) {
+      setState(() {
+        _attachmentIds.remove(attachmentId);
+        // Also remove from existing attachments list so UI updates immediately
+        _existingAttachments = _existingAttachments?.where((a) => a.id != attachmentId).toList();
+      });
     }
+    return true;
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    try {
-      // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
-      final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-      // Check attachment count limit
-      if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
-        if (mounted) {
-          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-        }
-        return null;
-      }
-
-      // Validate file
-      XFile fileToUpload = file;
-      if (constraints != null) {
-        final isImage = isImageFile(file.name);
-        final validation = await validateFile(
-          file,
-          constraints,
-          isImage,
-          currentAttachmentCount: _attachmentIds.length,
-        );
-
-        if (!validation.isValid) {
-          if (mounted) {
-            SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
-          }
-          return null;
-        }
-
-        // For images that need optimization
-        if (isImage && validation.needsOptimization) {
-          // Optimize image
-          try {
-            final optimizedFile = await optimizeImage(file, constraints);
-            fileToUpload = optimizedFile;
-          } catch (e) {
-            String errorMessage = e.toString();
-            if (errorMessage.startsWith('Exception: ')) {
-              errorMessage = errorMessage.substring(11);
-            }
-            if (mounted) {
-              SnackbarHelper.showError(context, errorMessage);
-            }
-            return null;
-          }
-        }
-      }
-
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      // Use stored forum ID from attachmentData
-      var forumId = _forumId;
-
-      // Forum ID is required for uploads - if not available, show error
-      if (forumId == null || forumId.isEmpty) {
-        throw Exception('Forum ID not available. Please wait for the post to finish loading.');
-      }
-
-      final fileBytes = await fileToUpload.readAsBytes();
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync("post", forumId, groupId, fileToUpload.name, fileBytes);
-
-      if (uploadAttachmentResult.result) {
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            _attachmentIds.add(uploadAttachmentResult.attachmentId!);
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-          });
-        } else {
-          return null;
-        }
-
-        return uploadAttachmentResult.attachmentId;
-      } else {
-        throw Exception(uploadAttachmentResult.resultText ?? 'Failed to upload file');
-      }
-    } catch (e) {
-      throw Exception('Failed to upload file: ${e.toString()}');
-    }
+  /// The composer has checked and shrunk the file.
+  Future<String?> _handleFileUpload(XFile file) {
+    final uploader = _uploader;
+    if (uploader == null) throw AttachmentUploadException(AppLocalizations.of(context).failedToUploadFileTryAgain);
+    return uploader.upload(file);
   }
 
   @override
@@ -355,6 +251,12 @@ class _EditPostPageState extends State<EditPostPage> {
               _groupId = data.attachments!.first.groupId;
             }
           }
+          _uploader ??= AttachmentUploader(
+            siteContext: widget.siteContext,
+            kind: AttachmentKind.post,
+            targetId: _forumId ?? '',
+            groupId: _groupId,
+          );
         }
 
         final canEditTitle = (!isLoading && !hasError) ? (snapshot.data?.canEditTitle ?? false) : false;
@@ -420,41 +322,7 @@ class _EditPostPageState extends State<EditPostPage> {
               debugPrint('🔍 [EDIT_POST] Prefix state updated to: $_selectedPrefixId');
             }
           },
-          onRemoveAttachment: (attachmentId) async {
-            if (_attachmentIds.contains(attachmentId)) {
-              // For newly uploaded attachments (temporary), we need to call removeAttachment API
-              // to actually delete it from the server, not just remove it from the local list
-              try {
-                var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-                var forumId = _forumId ?? "";
-                var groupId = _groupId ?? ""; // groupId is required for temporary attachments
-
-                var removeResult = await attachmentProxy.removeAttachmentAsync(
-                  attachmentId,
-                  forumId,
-                  groupId, // Include groupId for temporary attachments
-                  widget.postId,
-                );
-
-                if (removeResult.result) {
-                  // Now remove from local list
-                  setState(() {
-                    _attachmentIds.remove(attachmentId);
-                  });
-                } else {
-                  // Still remove from local list even if server removal failed
-                  setState(() {
-                    _attachmentIds.remove(attachmentId);
-                  });
-                }
-              } catch (e) {
-                // Still remove from local list even if API call failed
-                setState(() {
-                  _attachmentIds.remove(attachmentId);
-                });
-              }
-            }
-          },
+          onRemoveAttachment: (attachmentId) async => _uploader?.remove(attachmentId),
           onSuccess: (success) => widget.postId,
           onError: (error) {
             if (context.mounted) {

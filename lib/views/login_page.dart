@@ -15,6 +15,7 @@ import 'forgot_password_page.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import '../utils/app_navigation.dart';
+import '../services/browser_login.dart';
 
 class LoginPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -109,8 +110,18 @@ class _LoginPageState extends State<LoginPage>
     final success = await loginController.handlePasskeyLogin(
       siteContext: widget.siteContext,
     );
+    if (success) _afterSignIn();
+  }
 
-    if (success && mounted) {
+  Future<void> _handleBrowserLogin() async {
+    final loginController = Get.put(LoginController());
+    final success = await loginController.handleBrowserLogin(siteContext: widget.siteContext);
+    if (success) _afterSignIn();
+  }
+
+  /// Signed in another way than the form (passkey, website): leave this page.
+  void _afterSignIn() {
+    if (mounted) {
       if (Get.isRegistered<GlobalLoaderController>()) {
         GlobalLoaderController.to.forceHide();
       }
@@ -424,6 +435,28 @@ class _LoginPageState extends State<LoginPage>
                             l10n: l10n,
                             enabled: true,
                           ),
+                      ],
+                      // Members who sign in on the website with Google,
+                      // Facebook, a passkey or two-step have no password here.
+                      if (BrowserLogin.isOffered(widget.siteContext)) ...[
+                        const SizedBox(height: DesignTokens.spacingM),
+                        OutlinedButton.icon(
+                          onPressed: _handleBrowserLogin,
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+                            ),
+                          ),
+                          icon: const Icon(Icons.open_in_browser_rounded),
+                          label: Text(l10n.signInOnWebsite),
+                        ),
+                        const SizedBox(height: DesignTokens.spacingXS),
+                        Text(
+                          l10n.signInOnWebsiteHint,
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                        ),
                       ],
                       const SizedBox(height: DesignTokens.spacingXL),
                       // Advisory text about credentials being sent to forum domain

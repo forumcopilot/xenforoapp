@@ -2801,4 +2801,145 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get thisForum => 'dit forum';
+
+  @override
+  String get openFullEditor => 'Volledige editor';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString leden',
+      one: '$countString lid',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString onderwerpen',
+      one: '$countString onderwerp',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString berichten',
+      one: '$countString bericht',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return 'Zoeken in $forumName';
+  }
+
+  @override
+  String get copyLink => 'Link kopiëren';
+
+  @override
+  String get linkCopied => 'Link gekopieerd';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gedeelde bestanden bijgevoegd.',
+      one: '1 gedeeld bestand bijgevoegd.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bestanden bijgevoegd. Niet bijgevoegd: $names',
+      one: '1 bestand bijgevoegd. Niet bijgevoegd: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => 'Berichten';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Nieuwe privéberichten en antwoorden daarop';
+
+  @override
+  String get notificationChannelReplies => 'Reacties en vermeldingen';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Reacties in gevolgde onderwerpen, citaten en vermeldingen';
+
+  @override
+  String get notificationChannelReactions => 'Likes en reacties';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Likes en reacties op je berichten';
+
+  @override
+  String get notificationChannelOther => 'Overige meldingen';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Volgers, trofeeën en andere forummeldingen';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Je account verwijderen?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Je account op $forumName wordt verwijderd, met je profiel en instellingen. Je berichten blijven staan, onder je naam. Dit kan niet ongedaan worden gemaakt.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Geen wachtwoord? Bevestig met je gebruikersnaam';
+
+  @override
+  String get deleteAccountUsePassword => 'Bevestig met je wachtwoord';
+
+  @override
+  String get accountDeleted => 'Je account is verwijderd.';
+
+  @override
+  String get signInOnWebsite => 'Inloggen op de website van het forum';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Voor Google, Facebook en de andere manieren waarop je daar inlogt';
+
+  @override
+  String get browserLoginFailed =>
+      'Inloggen via de website is niet gelukt. Probeer het opnieuw.';
 }

@@ -16,6 +16,9 @@ import 'package:flutter/foundation.dart';
 class SiteContext {
   static const String loginMethodPassword = 'password';
   static const String loginMethodPasskey = 'passkey';
+  /// Signed in through the forum's website (IFCBrowserLogin); kept signed in
+  /// by the forum's remember cookie, with no password to sign in again with.
+  static const String loginMethodBrowser = 'browser';
 
   Site site;
   FCConfigResult? configDataOutput;

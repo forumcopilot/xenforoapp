@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_forum_style.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_config_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
@@ -150,6 +151,11 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
         apiKey: response['apiKey'] ?? '',
         mbqFrameVersion: response['mbqFrameVersion'] ?? '1.0',
         forumType: response['forumType'] ?? 'xenforo',
+        style: FCForumStyle.fromJson(response['style']),
+        accountDeletion: response['accountDeletion'] is bool ? response['accountDeletion'] as bool : null,
+        browserLoginSchemes: response['browserLoginSchemes'] is List
+            ? [for (final s in response['browserLoginSchemes'] as List) s.toString()]
+            : null,
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_CONFIG] Error getting config: $e');

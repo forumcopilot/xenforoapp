@@ -2843,4 +2843,145 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get thisForum => 'dieses Forum';
+
+  @override
+  String get openFullEditor => 'Vollständiger Editor';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Mitglieder',
+      one: '$countString Mitglied',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Themen',
+      one: '$countString Thema',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString Beiträge',
+      one: '$countString Beitrag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return '$forumName durchsuchen';
+  }
+
+  @override
+  String get copyLink => 'Link kopieren';
+
+  @override
+  String get linkCopied => 'Link kopiert';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count geteilte Dateien angehängt.',
+      one: '1 geteilte Datei angehängt.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Dateien angehängt. Nicht angehängt: $names',
+      one: '1 Datei angehängt. Nicht angehängt: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => 'Nachrichten';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Neue Direktnachrichten und Antworten darauf';
+
+  @override
+  String get notificationChannelReplies => 'Antworten und Erwähnungen';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Antworten in beobachteten Themen, Zitate und Erwähnungen';
+
+  @override
+  String get notificationChannelReactions => 'Likes und Reaktionen';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Likes und Reaktionen auf deine Beiträge und Nachrichten';
+
+  @override
+  String get notificationChannelOther => 'Weitere Benachrichtigungen';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Folgen, Trophäen und andere Forenbenachrichtigungen';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Konto löschen?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Dein Konto bei $forumName wird mit Profil und Einstellungen gelöscht. Deine Beiträge bleiben unter deinem Namen erhalten. Das lässt sich nicht rückgängig machen.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Kein Passwort? Mit Benutzernamen bestätigen';
+
+  @override
+  String get deleteAccountUsePassword => 'Mit Passwort bestätigen';
+
+  @override
+  String get accountDeleted => 'Dein Konto wurde gelöscht.';
+
+  @override
+  String get signInOnWebsite => 'Auf der Website des Forums anmelden';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Für Google, Facebook und andere Anmeldearten dort';
+
+  @override
+  String get browserLoginFailed =>
+      'Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.';
 }

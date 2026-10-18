@@ -2,19 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'cached_redirect_image.dart';
 import '../../utils/link_preview_cache.dart';
-import '../../utils/url_utils.dart';
 import '../../theme/design_tokens.dart';
-import '../post_page.dart';
-import '../lists/posts_list.dart';
-import '../../controllers/site_manager.dart';
-import '../../utils/forum_navigation.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
-import 'package:get/get.dart';
-import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
-import '../../utils/snackbar_helper.dart';
-import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
 
 class LinkPreviewCard extends StatefulWidget {
   final String url;
@@ -101,93 +92,11 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
     }
   }
 
-  Future<void> _navigateToForum(SiteContext siteContext, String forumId) async {
-    try {
-      AppLogger.debug('DEBUG: LinkPreview navigating to forum ID: $forumId');
-
-      final forumManager = SiteManagerRegistry.getManager(siteContext);
-      AppLogger.debug('DEBUG: LinkPreview got forum manager, getting forum by ID...');
-
-      final targetForum = await forumManager.getForumById(forumId);
-      AppLogger.debug('DEBUG: LinkPreview target forum result: ${targetForum != null ? 'Found' : 'Not found'}');
-
-      if (targetForum != null && mounted) {
-        AppLogger.debug('DEBUG: LinkPreview navigating to forum or link...');
-        pushForumOrLinkForum(context, targetForum, siteContext);
-        AppLogger.debug('DEBUG: LinkPreview navigation completed');
-      } else {
-        AppLogger.debug('DEBUG: LinkPreview forum not found or widget unmounted');
-        if (mounted) {
-          SnackbarHelper.showInfo(context, AppLocalizations.of(context).forumNotFoundById(forumId));
-        }
-      }
-    } catch (e) {
-      AppLogger.debug('DEBUG: LinkPreview error navigating to forum $forumId: $e');
-      if (mounted) {
-        SnackbarHelper.showInfo(context, AppLocalizations.of(context).failedToNavigateToForum);
-      }
-    }
-  }
-
   Future<void> _launchUrl() async {
     final cleanUrl = widget.url.trim().replaceAll('"', '');
 
     AppLogger.debug('LinkPreviewCard URL tapped: $cleanUrl');
-
-    // Get current forum info for intelligent URL handling
-    final site = widget.siteContext.site;
-    final forumUrl = site.pluginUrl;
-    final forumType = widget.siteContext.ConfigData.forumType;
-
-    await UrlUtils.handleUrlTapWithForumDetection(
-      widget.siteContext,
-      cleanUrl,
-      context,
-      forumUrl: forumUrl,
-      forumType: forumType,
-      onForumNavigation: (topicId, postId, forumId) {
-        Future.microtask(() async {
-          if (!mounted) return;
-          if (!widget.siteContext.isLoggedIn) {
-            if (!Get.isRegistered<LoginController>()) {
-              Get.put(LoginController());
-            }
-            final loginController = Get.find<LoginController>();
-            final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
-            if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-              await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
-            }
-            if (!widget.siteContext.isLoggedIn) {
-              AppLogger.debug('LinkPreviewCard: proceeding to thread as guest after login screen');
-            }
-          }
-          // Handle forum navigation
-          if (postId != null) {
-            // Navigate to specific post
-            AppNavigation.push(context, PostPage(
-                  siteContext: widget.siteContext,
-                  topicId: topicId,
-                  title: '', // Could be enhanced with actual topic title
-                  mode: PostsListMode.thread_by_post,
-                  anchorPostId: postId,
-                  forumId: forumId,
-                ));
-          } else if (topicId.isNotEmpty) {
-            // Navigate to topic
-            AppNavigation.push(context, PostPage(
-                  siteContext: widget.siteContext,
-                  topicId: topicId,
-                  title: '', // Could be enhanced with actual topic title
-                  mode: PostsListMode.normal,
-                  forumId: forumId,
-                ));
-          } else if (forumId != null) {
-            // Navigate to forum
-            _navigateToForum(widget.siteContext, forumId);
-          }
-        });
-      },
-    );
+    await ForumLinks.open(context, cleanUrl, widget.siteContext);
   }
 
   @override

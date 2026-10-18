@@ -174,7 +174,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
           _conversations = [...(_conversations ?? []), ...conversationsData.list];
         }
         _isLoading = false;
-        _hasMoreData = conversationsData.list.length == _itemsPerPage;
+        _hasMoreData = conversationsData.hasMore ?? conversationsData.list.length == _itemsPerPage;
       });
       AppLogger.debug('   - State updated: conversations=${_conversations?.length ?? "null"}, isLoading=$_isLoading');
     } else {
@@ -470,7 +470,7 @@ class ConversationListState extends State<ConversationList> with AutomaticKeepAl
       setState(() {
         _conversations!.addAll(conversationsData.list);
         _currentPage = nextPage;
-        _hasMoreData = conversationsData.list.length >= _itemsPerPage;
+        _hasMoreData = conversationsData.hasMore ?? conversationsData.list.length >= _itemsPerPage;
       });
     }
   }

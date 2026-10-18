@@ -2810,4 +2810,145 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get thisForum => 'este fórum';
+
+  @override
+  String get openFullEditor => 'Editor completo';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString membros',
+      one: '$countString membro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString tópicos',
+      one: '$countString tópico',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString mensagens',
+      one: '$countString mensagem',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return 'Pesquisar em $forumName';
+  }
+
+  @override
+  String get copyLink => 'Copiar link';
+
+  @override
+  String get linkCopied => 'Link copiado';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arquivos compartilhados anexados.',
+      one: '1 arquivo compartilhado anexado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arquivos anexados. Não anexados: $names',
+      one: '1 arquivo anexado. Não anexados: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => 'Mensagens';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Novas mensagens diretas e respostas';
+
+  @override
+  String get notificationChannelReplies => 'Respostas e menções';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Respostas em tópicos que você segue, citações e menções';
+
+  @override
+  String get notificationChannelReactions => 'Curtidas e reações';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Curtidas e reações às suas mensagens';
+
+  @override
+  String get notificationChannelOther => 'Outras notificações';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Seguidores, troféus e outros alertas do fórum';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Excluir sua conta?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Sua conta em $forumName será excluída, com seu perfil e suas configurações. Suas mensagens permanecem, com seu nome. Isso não pode ser desfeito.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Sem senha? Confirme com seu nome de usuário';
+
+  @override
+  String get deleteAccountUsePassword => 'Confirmar com sua senha';
+
+  @override
+  String get accountDeleted => 'Sua conta foi excluída.';
+
+  @override
+  String get signInOnWebsite => 'Entrar pelo site do fórum';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Para Google, Facebook e as outras formas de entrar lá';
+
+  @override
+  String get browserLoginFailed =>
+      'Não foi possível entrar pelo site. Tente novamente.';
 }

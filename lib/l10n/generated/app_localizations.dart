@@ -4855,6 +4855,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'this forum'**
   String get thisForum;
+
+  /// Button next to the quick-reply field of a conversation: opens the full Reply page (attachments, formatting) with the text typed so far
+  ///
+  /// In en, this message translates to:
+  /// **'Full editor'**
+  String get openFullEditor;
+
+  /// Forum home header stats, joined with " · "; the number is compact (56.8K)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} member} other{{count} members}}'**
+  String statsMembers(int count);
+
+  /// Forum home header stats, joined with " · "; the number is compact (18.5K)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} topic} other{{count} topics}}'**
+  String statsTopics(int count);
+
+  /// Forum home header stats, joined with " · "; the number is compact (1.2M)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} post} other{{count} posts}}'**
+  String statsPosts(int count);
+
+  /// The search field in the forum home header
+  ///
+  /// In en, this message translates to:
+  /// **'Search {forumName}'**
+  String searchForumName(String forumName);
+
+  /// Post menu: copies a link to the post
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get linkCopied;
+
+  /// After files shared into the app were attached to a new topic
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Attached 1 shared file.} other{Attached {count} shared files.}}'**
+  String sharedFilesAttached(int count);
+
+  /// After files shared into the app were attached to a new topic, some failed; names lists them
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Attached 1 file. Not attached: {names}} other{Attached {count} files. Not attached: {names}}}'**
+  String sharedFilesPartlyAttached(int count, String names);
+
+  /// Android notification channel name: direct messages
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notificationChannelMessages;
+
+  /// No description provided for @notificationChannelMessagesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New direct messages and replies to them'**
+  String get notificationChannelMessagesDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Replies and mentions'**
+  String get notificationChannelReplies;
+
+  /// No description provided for @notificationChannelRepliesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies in threads you watch, quotes and mentions'**
+  String get notificationChannelRepliesDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Likes and reactions'**
+  String get notificationChannelReactions;
+
+  /// No description provided for @notificationChannelReactionsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Likes and reactions to your posts and messages'**
+  String get notificationChannelReactionsDescription;
+
+  /// Android notification channel name
+  ///
+  /// In en, this message translates to:
+  /// **'Other notifications'**
+  String get notificationChannelOther;
+
+  /// No description provided for @notificationChannelOtherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows, trophies and other forum alerts'**
+  String get notificationChannelOtherDescription;
+
+  /// No description provided for @deleteAccountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account?'**
+  String get deleteAccountConfirmTitle;
+
+  /// No description provided for @deleteAccountConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account on {forumName} will be deleted, with your profile and settings. Your posts stay, under your name. This cannot be undone.'**
+  String deleteAccountConfirmMessage(String forumName);
+
+  /// For members who signed up with Google or Facebook
+  ///
+  /// In en, this message translates to:
+  /// **'No password? Confirm with your user name'**
+  String get deleteAccountNoPassword;
+
+  /// No description provided for @deleteAccountUsePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm with your password'**
+  String get deleteAccountUsePassword;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get accountDeleted;
+
+  /// No description provided for @signInOnWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in on the forum\'s website'**
+  String get signInOnWebsite;
+
+  /// No description provided for @signInOnWebsiteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For Google, Facebook and the other ways you sign in there'**
+  String get signInOnWebsiteHint;
+
+  /// No description provided for @browserLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing in on the website didn\'t work. Please try again.'**
+  String get browserLoginFailed;
 }
 
 class _AppLocalizationsDelegate

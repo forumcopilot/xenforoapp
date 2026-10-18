@@ -7,11 +7,11 @@ import '../../utils/bbcode_processor.dart';
 import '../widgets/custom_bb_stylesheet.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import '../../utils/time_utils.dart';
-import '../../utils/url_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
 
 class MessageItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -33,7 +33,7 @@ class MessageItem extends StatelessWidget {
 
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) async {
-        await UrlUtils.handleUrlTap(url, context);
+        await ForumLinks.open(context, url, siteContext);
       },
       onMentionTap: (username) {
         AppNavigation.push(context, UserProfilePage(

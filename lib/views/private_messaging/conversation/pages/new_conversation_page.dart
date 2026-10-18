@@ -4,9 +4,7 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:forumcopilot_flutter/utils/file_picker_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
 import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/discard_changes_scope.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
@@ -17,6 +15,7 @@ import 'dart:io';
 import '../../../../utils/file_utils.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
+import '../../../../services/attachment_uploader.dart';
 
 class NewConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -40,9 +39,16 @@ class _NewConversationPageState extends State<NewConversationPage> {
   final List<String> _toRecipients = [];
   final Map<String, String?> _recipientIcons = {}; // Store icon URLs for recipients
   final List<XFile> _attachments = [];
-  final List<String> _attachmentIds = [];
   final Map<String, bool> _uploadingFiles = {}; // Track which files are currently uploading (key: file path)
-  String? _groupId;
+  // Attachment ids by the picked file's path.
+  final Map<String, String> _attachmentIdByPath = {};
+  // The attachments, sent to this forum whatever forum is opened meanwhile.
+  late final AttachmentUploader _uploader = AttachmentUploader(
+    siteContext: widget.siteContext,
+    kind: AttachmentKind.message,
+    targetId: '',
+  );
+  bool _sent = false;
   bool _isSubmitting = false;
   final FocusNode _messageFocusNode = FocusNode();
   String? _createdConversationId; // Store created conversation ID
@@ -110,13 +116,13 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
       // Create new conversation
       print('🐛 [NewConversationPage] Creating conversation with recipients: $_toRecipients, title: $title');
-      print('🐛 [NewConversationPage] Attachment IDs: $_attachmentIds, groupId: $_groupId');
+      print('🐛 [NewConversationPage] Attachment IDs: ${_uploader.attachmentIds}, groupId: ${_uploader.groupId}');
       final result = await conversationProxy.newConversationAsync(
         _toRecipients,
         title,
         content,
-        attachmentIds: _attachmentIds.isNotEmpty ? _attachmentIds : null,
-        groupId: _groupId,
+        attachmentIds: _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null,
+        groupId: _uploader.groupId,
         openInvite: _openInvite,
         conversationLocked: _conversationLocked,
       );
@@ -132,6 +138,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         // Store the conversation ID for navigation
         _createdConversationId = result.convId;
         _createdConversationTitle = title;
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -483,10 +490,9 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ..._attachments.asMap().entries.map((entry) {
-                                    final index = entry.key;
                                     final attachment = entry.value;
                                     // Try to find matching attachment ID (they should be in sync)
-                                    final attachmentId = index < _attachmentIds.length ? _attachmentIds[index] : null;
+                                    final attachmentId = _attachmentIdByPath[attachment.path];
                                     final isUploading = _uploadingFiles[attachment.path] ?? false;
                                     final isImage = isImageFile(attachment.name);
                                     return Column(
@@ -582,13 +588,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                             icon: Icon(Icons.close),
                                             onPressed: isUploading
                                                 ? null
-                                                : () => setState(() {
-                                                      _attachments.removeAt(index);
-                                                      _uploadingFiles.remove(attachment.path);
-                                                      if (index < _attachmentIds.length) {
-                                                        _attachmentIds.removeAt(index);
-                                                      }
-                                                    }),
+                                                : () => _removeAttachmentFile(attachment),
                                           ),
                                         ),
                                         if (isUploading)
@@ -707,174 +707,42 @@ class _NewConversationPageState extends State<NewConversationPage> {
         _toRecipients.any((r) => r != widget.initialRecipient);
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    debugPrint('🔍 [NEW_CONVERSATION] _handleFileUpload called');
-    debugPrint('🔍 [NEW_CONVERSATION] File details:');
-    debugPrint('   - file.path: "${file.path}"');
-    debugPrint('   - file.name: "${file.name}"');
-
-    // Check if this specific file is already uploading
-    if (_uploadingFiles[file.path] == true) {
-      debugPrint('⚠️ [NEW_CONVERSATION] File already uploading, returning');
-      return null;
-    }
-
-    // Get constraints from SiteContext
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-    // Check attachment count limit
-    if (!canAddMoreAttachments(_attachments.length, constraints)) {
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-      }
-      return null;
-    }
-
-    // Validate file
-    XFile fileToUpload = file;
-    if (constraints != null) {
-      final isImage = isImageFile(file.name);
-      final validation = await validateFile(
-        file,
-        constraints,
-        isImage,
-        currentAttachmentCount: _attachments.length,
-      );
-
-      if (!validation.isValid) {
-        if (mounted) {
-          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
-        }
-        return null;
-      }
-
-      // For images that need optimization
-      if (isImage && validation.needsOptimization) {
-        // Optimize image
-        try {
-          final optimizedFile = await optimizeImage(file, constraints);
-          fileToUpload = optimizedFile;
-          debugPrint('🔍 [NEW_CONVERSATION] Image optimized successfully');
-        } catch (e) {
-          debugPrint('❌ [NEW_CONVERSATION] Error optimizing image: $e');
-          String errorMessage = e.toString();
-          if (errorMessage.startsWith('Exception: ')) {
-            errorMessage = errorMessage.substring(11);
-          }
-          if (mounted) {
-            SnackbarHelper.showError(context, errorMessage);
-          }
-          return null;
-        }
-      }
-    }
-
-    // Mark this file as uploading
-    setState(() {
-      _uploadingFiles[fileToUpload.path] = true;
-    });
-
+  /// Checks, shrinks and uploads [file], already in the list; it leaves the
+  /// list again (with the reason) when it cannot be sent.
+  Future<void> _handleFileUpload(XFile file) async {
+    if (_uploadingFiles[file.path] == true) return;
+    setState(() => _uploadingFiles[file.path] = true);
     try {
-      debugPrint('🔍 [NEW_CONVERSATION] Getting attachment proxy...');
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      debugPrint('🔍 [NEW_CONVERSATION] Reading file bytes...');
-      final fileBytes = await fileToUpload.readAsBytes();
-      debugPrint('🔍 [NEW_CONVERSATION] File bytes read: ${fileBytes.length} bytes');
-
-      debugPrint('🔍 [NEW_CONVERSATION] Calling uploadAttachmentAsync with:');
-      debugPrint('   - type: "pm"');
-      debugPrint('   - id: "" (empty for new conversations)');
-      debugPrint('   - groupId: "$groupId"');
-      debugPrint('   - attachmentName: "${fileToUpload.name}"');
-      debugPrint('   - bytes length: ${fileBytes.length}');
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync(
-        "pm", // type for private messages/conversations
-        "", // empty string for new conversations (no conversation ID yet)
-        groupId,
-        file.name,
-        fileBytes,
-      );
-
-      debugPrint('🔍 [NEW_CONVERSATION] Upload result:');
-      debugPrint('   - result: ${uploadAttachmentResult.result}');
-      debugPrint('   - resultText: "${uploadAttachmentResult.resultText}"');
-      debugPrint('   - attachmentId: "${uploadAttachmentResult.attachmentId}"');
-      debugPrint('   - groupId: "${uploadAttachmentResult.groupId}"');
-
-      if (uploadAttachmentResult.result) {
-        debugPrint('✅ [NEW_CONVERSATION] File upload successful');
-
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            // Find the index of this file in the attachments list
-            final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-            if (fileIndex != -1) {
-              // Insert attachment ID at the correct position
-              while (_attachmentIds.length <= fileIndex) {
-                _attachmentIds.add('');
-              }
-              _attachmentIds[fileIndex] = uploadAttachmentResult.attachmentId!;
-            }
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-            _uploadingFiles.remove(file.path);
-          });
-          debugPrint('✅ [NEW_CONVERSATION] Stored attachmentId: ${uploadAttachmentResult.attachmentId}');
-          debugPrint('✅ [NEW_CONVERSATION] Current attachmentIds: $_attachmentIds');
-          debugPrint('✅ [NEW_CONVERSATION] Current groupId: "$_groupId"');
-          return uploadAttachmentResult.attachmentId;
-        } else {
-          debugPrint('⚠️ [NEW_CONVERSATION] Upload succeeded but attachmentId is null or empty');
-          setState(() {
-            _uploadingFiles.remove(fileToUpload.path);
-          });
-          return null;
-        }
-      } else {
-        debugPrint('❌ [NEW_CONVERSATION] File upload failed: ${uploadAttachmentResult.resultText}');
-        // Remove file from list on failure
-        setState(() {
-          final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-          if (fileIndex != -1) {
-            _attachments.removeAt(fileIndex);
-            if (fileIndex < _attachmentIds.length) {
-              _attachmentIds.removeAt(fileIndex);
-            }
-          }
-          _uploadingFiles.remove(file.path);
-        });
-        if (mounted) {
-          SnackbarHelper.showError(context, uploadAttachmentResult.resultText ?? AppLocalizations.of(context).failedToUploadFile(''));
-        }
-        return null;
-      }
-    } catch (e, stackTrace) {
-      debugPrint('❌ [NEW_CONVERSATION] Exception in _handleFileUpload: $e');
-      debugPrint('❌ [NEW_CONVERSATION] Stack trace: $stackTrace');
-      // Remove file from list on error
+      final prepared = await _uploader.prepare(file, currentCount: _attachments.length - 1);
+      final id = await _uploader.upload(prepared);
+      if (!mounted) return;
       setState(() {
-        final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-        if (fileIndex != -1) {
-          _attachments.removeAt(fileIndex);
-          if (fileIndex < _attachmentIds.length) {
-            _attachmentIds.removeAt(fileIndex);
-          }
-        }
         _uploadingFiles.remove(file.path);
+        _attachmentIdByPath[file.path] = id;
       });
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(e.toString()));
-      }
-      return null;
+    } on AttachmentUploadCancelled {
+      return;
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _uploadingFiles.remove(file.path);
+        _attachments.removeWhere((f) => f.path == file.path);
+      });
+      SnackbarHelper.showError(
+        context,
+        e is AttachmentUploadException ? e.message : AppLocalizations.of(context).failedToUploadFile(e.toString()),
+      );
     }
+  }
+
+  /// Takes [file] off the list, and off the forum when it was uploaded.
+  void _removeAttachmentFile(XFile file) {
+    setState(() {
+      _attachments.removeWhere((f) => f.path == file.path);
+      _uploadingFiles.remove(file.path);
+    });
+    final id = _attachmentIdByPath.remove(file.path);
+    if (id != null) _uploader.remove(id);
   }
 
   void _handleFileAttachment() async {
@@ -894,8 +762,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
   void _handleImageAttachment() async {
     // Get constraints and check count limit before showing picker
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
+    final constraints = _uploader.constraints;
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
@@ -1225,6 +1092,8 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
   @override
   void dispose() {
+    // Closed without sending: the uploads are removed from the forum.
+    _uploader.close(sent: _sent);
     _titleController.dispose();
     _messageController.dispose();
     _messageFocusNode.dispose();

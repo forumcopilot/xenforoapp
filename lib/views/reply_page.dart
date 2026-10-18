@@ -5,14 +5,12 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
-import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import '../utils/snackbar_helper.dart';
+import '../services/attachment_uploader.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 
 class ReplyPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -44,8 +42,14 @@ class ReplyPage extends StatefulWidget {
 
 class _ReplyPageState extends State<ReplyPage> {
 
-  final List<String> _attachmentIds = [];
-  String? _groupId;
+  // The reply's attachments, sent to this forum and node whatever forum is
+  // opened meanwhile.
+  late final AttachmentUploader _uploader = AttachmentUploader(
+    siteContext: widget.siteContext,
+    kind: AttachmentKind.post,
+    targetId: widget.forumId ?? '',
+  );
+  bool _sent = false;
   String? _createdPostId; // Store the created post ID
   Future<forumcopilot_sdk.FCQuotePostResult>? _quoteFuture;
 
@@ -56,6 +60,13 @@ class _ReplyPageState extends State<ReplyPage> {
     if (widget.isQuote && widget.postId != null) {
       _quoteFuture = SiteProxyFactory.getPostProxy().getQuotePostAsync(widget.postId!);
     }
+  }
+
+  @override
+  void dispose() {
+    // Closed without posting: the uploads are removed from the forum.
+    _uploader.close(sent: _sent);
+    super.dispose();
   }
 
   String? _getInitialContent() {
@@ -77,8 +88,8 @@ class _ReplyPageState extends State<ReplyPage> {
       AppLogger.debug('   - widget.forumId: ${widget.forumId}');
       AppLogger.debug('   - widget.threadId: ${widget.threadId}');
       AppLogger.debug('   - content length: ${content.length}');
-      AppLogger.debug('   - attachmentIds: $_attachmentIds');
-      AppLogger.debug('   - groupId: $_groupId');
+      AppLogger.debug('   - attachmentIds: ${_uploader.attachmentIds}');
+      AppLogger.debug('   - groupId: ${_uploader.groupId}');
       
       var postProxy = SiteProxyFactory.getPostProxy();
       final forumIdParam = widget.forumId ?? "";
@@ -88,16 +99,16 @@ class _ReplyPageState extends State<ReplyPage> {
       AppLogger.debug('   - threadId: "$threadIdParam" (empty: ${threadIdParam.isEmpty})');
       AppLogger.debug('   - subject: ""');
       AppLogger.debug('   - content length: ${content.length}');
-      AppLogger.debug('   - attachmentIds: $_attachmentIds');
-      AppLogger.debug('   - groupId: $_groupId');
+      AppLogger.debug('   - attachmentIds: ${_uploader.attachmentIds}');
+      AppLogger.debug('   - groupId: ${_uploader.groupId}');
       
       var result = await postProxy.replyPostAsync(
         forumIdParam,
         threadIdParam,
         "", // Subject is optional for replies
         content,
-        _attachmentIds.isNotEmpty ? _attachmentIds : null,
-        _groupId,
+        _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null,
+        _uploader.groupId,
         false, // Don't need HTML return
       );
       
@@ -124,6 +135,7 @@ class _ReplyPageState extends State<ReplyPage> {
             debugPrint('⚠️ [REPLY] Warning: postId is null or empty after successful submission');
           }
         }
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -160,119 +172,8 @@ class _ReplyPageState extends State<ReplyPage> {
     }
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    debugPrint('🔍 [REPLY] _handleFileUpload called');
-    debugPrint('🔍 [REPLY] File details:');
-    debugPrint('   - file.path: "${file.path}"');
-    debugPrint('   - file.name: "${file.name}"');
-    debugPrint('   - forumId: "${widget.forumId}"');
-
-    // Get constraints from SiteContext
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-    // Check attachment count limit
-    if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
-      if (mounted) {
-        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
-      }
-      return null;
-    }
-
-    // Validate file
-    XFile fileToUpload = file;
-    if (constraints != null) {
-      final isImage = isImageFile(file.name);
-      final validation = await validateFile(
-        file,
-        constraints,
-        isImage,
-        currentAttachmentCount: _attachmentIds.length,
-      );
-
-      if (!validation.isValid) {
-        if (mounted) {
-          SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
-        }
-        return null;
-      }
-
-      // For images that need optimization
-      if (isImage && validation.needsOptimization) {
-        // Optimize image
-        try {
-          final optimizedFile = await optimizeImage(file, constraints);
-          fileToUpload = optimizedFile;
-          debugPrint('🔍 [REPLY] Image optimized successfully');
-        } catch (e) {
-          debugPrint('❌ [REPLY] Error optimizing image: $e');
-          String errorMessage = e.toString();
-          if (errorMessage.startsWith('Exception: ')) {
-            errorMessage = errorMessage.substring(11);
-          }
-          if (mounted) {
-            SnackbarHelper.showError(context, errorMessage);
-          }
-          return null;
-        }
-      }
-    }
-
-    try {
-      debugPrint('🔍 [REPLY] Getting attachment proxy...');
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      debugPrint('🔍 [REPLY] Reading file bytes...');
-      final fileBytes = await fileToUpload.readAsBytes();
-      debugPrint('🔍 [REPLY] File bytes read: ${fileBytes.length} bytes');
-
-      debugPrint('🔍 [REPLY] Calling uploadAttachmentAsync with:');
-      debugPrint('   - type: "post"');
-      debugPrint('   - id: "${widget.forumId ?? ""}"');
-      debugPrint('   - groupId: "$groupId"');
-      debugPrint('   - attachmentName: "${fileToUpload.name}"');
-      debugPrint('   - bytes length: ${fileBytes.length}');
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync("post", widget.forumId ?? "", groupId, fileToUpload.name, fileBytes);
-      
-      debugPrint('🔍 [REPLY] Upload result:');
-      debugPrint('   - result: ${uploadAttachmentResult.result}');
-      debugPrint('   - resultText: "${uploadAttachmentResult.resultText}"');
-      debugPrint('   - attachmentId: "${uploadAttachmentResult.attachmentId}"');
-      debugPrint('   - groupId: "${uploadAttachmentResult.groupId}"');
-      
-      if (uploadAttachmentResult.result) {
-        debugPrint('✅ [REPLY] File upload successful');
-        
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            _attachmentIds.add(uploadAttachmentResult.attachmentId!);
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-          });
-          debugPrint('✅ [REPLY] Stored attachmentId: ${uploadAttachmentResult.attachmentId}');
-          debugPrint('✅ [REPLY] Current attachmentIds: $_attachmentIds');
-          debugPrint('✅ [REPLY] Current groupId: "$_groupId"');
-          return uploadAttachmentResult.attachmentId;
-        } else {
-          debugPrint('⚠️ [REPLY] Upload succeeded but attachmentId is null or empty');
-          return null;
-        }
-      } else {
-        debugPrint('❌ [REPLY] File upload failed: ${uploadAttachmentResult.resultText}');
-        throw Exception(uploadAttachmentResult.resultText ?? 'Failed to upload file');
-      }
-    } catch (e, stackTrace) {
-      debugPrint('❌ [REPLY] Exception in _handleFileUpload: $e');
-      debugPrint('❌ [REPLY] Stack trace: $stackTrace');
-      throw Exception('Failed to upload file: ${e.toString()}');
-    }
-  }
+  /// The composer has checked and shrunk the file.
+  Future<String?> _handleFileUpload(XFile file) => _uploader.upload(file);
 
   @override
   Widget build(BuildContext context) {
@@ -301,30 +202,7 @@ class _ReplyPageState extends State<ReplyPage> {
             onSubmit: _handleSubmit,
             onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
             topicTitle: widget.topicTitle,
-            onRemoveAttachment: (attachmentId) async {
-              // Remove the attachment ID from the list and call API to delete from server
-              // Call API to remove attachment from server
-              if (_groupId != null && _groupId!.isNotEmpty && widget.forumId != null && widget.forumId!.isNotEmpty) {
-                try {
-                  var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-                  await attachmentProxy.removeAttachmentAsync(
-                    attachmentId,
-                    widget.forumId!,
-                    _groupId!, // groupId is required for temporary attachments
-                    '', // postId is empty for new replies
-                  );
-                } catch (e) {
-                  // Silently handle errors
-                }
-              }
-              
-              // Remove from local list
-              if (_attachmentIds.contains(attachmentId)) {
-                setState(() {
-                  _attachmentIds.remove(attachmentId);
-                });
-              }
-            },
+            onRemoveAttachment: _uploader.remove,
             onSuccess: (success) {
               // Never null on success: the caller reads null as "closed without posting".
               return _createdPostId ?? true;
@@ -361,30 +239,11 @@ class _ReplyPageState extends State<ReplyPage> {
         onSubmit: _handleSubmit,
         onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
         topicTitle: widget.topicTitle,
-        onRemoveAttachment: (attachmentId) async {
-          // Remove the attachment ID from the list and call API to delete from server
-          // Call API to remove attachment from server
-          if (_groupId != null && _groupId!.isNotEmpty && widget.forumId != null && widget.forumId!.isNotEmpty) {
-            try {
-              var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-              await attachmentProxy.removeAttachmentAsync(
-                attachmentId,
-                widget.forumId!,
-                _groupId!, // groupId is required for temporary attachments
-                '', // postId is empty for new replies
-              );
-            } catch (e) {
-              // Silently handle errors
-            }
-          }
-          
-          // Remove from local list
-          if (_attachmentIds.contains(attachmentId)) {
-            setState(() {
-              _attachmentIds.remove(attachmentId);
-            });
-          }
-        },
+        onRemoveAttachment: _uploader.remove,
+        // The reply is kept as a draft, on this device and on the forum (where
+        // the web editor shows it), until it is posted.
+        draftKey: 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}',
+        serverDraftKey: XenForoDraftProxy.replyKey(widget.threadId),
         onSuccess: (success) {
           // Never null on success: the caller reads null as "closed without posting".
           return _createdPostId ?? true;

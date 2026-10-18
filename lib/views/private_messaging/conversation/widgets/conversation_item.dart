@@ -11,7 +11,6 @@ import '../../../../utils/bbcode_processor.dart';
 import '../../../widgets/custom_bb_stylesheet.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import '../../../../utils/time_utils.dart';
-import '../../../../utils/url_utils.dart';
 import '../../../../utils/accessibility_helpers.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../theme/design_tokens.dart';
@@ -20,13 +19,9 @@ import '../../../../utils/avatar_cache_utils.dart';
 import '../../../listitems/post_list_item_attachment.dart';
 import '../../../widgets/full_screen_image_viewer.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
-import 'package:get/get.dart';
-import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
-import 'package:forumcopilot_flutter/views/post_page.dart';
-import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
+import '../../../../utils/forum_links.dart';
 
 /// Icon for a conversation message's react button: the viewer's chosen
 /// reaction glyph (emoji or custom image) when they've reacted, else the heart.
@@ -113,53 +108,7 @@ class ConversationHeaderItem extends StatelessWidget {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = siteContext.ConfigData.forumType;
-        await UrlUtils.handleUrlTapWithForumDetection(
-          siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!context.mounted) return;
-              if (!siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController.attemptAutomaticLogin(siteContext);
-                if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
-                }
-                if (!siteContext.isLoggedIn) {
-                  AppLogger.debug('ConversationHeaderItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                AppNavigation.push(context, PostPage(
-                      siteContext: siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ));
-              } else if (topicId.isNotEmpty) {
-                AppNavigation.push(context, PostPage(
-                      siteContext: siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ));
-              }
-            });
-          },
-        );
+        await ForumLinks.open(context, cleanUrl, siteContext);
       },
       onMentionTap: (username) {
         AppLogger.debug('ConversationHeaderItem: BBCode Mention tapped: $username');
@@ -591,53 +540,7 @@ class ConversationItem extends StatelessWidget {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = siteContext.ConfigData.forumType;
-        await UrlUtils.handleUrlTapWithForumDetection(
-          siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!context.mounted) return;
-              if (!siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController.attemptAutomaticLogin(siteContext);
-                if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
-                }
-                if (!siteContext.isLoggedIn) {
-                  AppLogger.debug('ConversationItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                AppNavigation.push(context, PostPage(
-                      siteContext: siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ));
-              } else if (topicId.isNotEmpty) {
-                AppNavigation.push(context, PostPage(
-                      siteContext: siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ));
-              }
-            });
-          },
-        );
+        await ForumLinks.open(context, cleanUrl, siteContext);
       },
       onMentionTap: (username) {
         AppNavigation.push(context, UserProfilePage(

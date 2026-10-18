@@ -13,6 +13,7 @@ import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../utils/app_navigation.dart';
+import '../../../../utils/forum_links.dart';
 
 class TraditionalPMItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -34,7 +35,7 @@ class TraditionalPMItem extends StatelessWidget {
 
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) async {
-        await UrlUtils.handleUrlTap(url, context);
+        await ForumLinks.open(context, url, siteContext);
       },
       onMentionTap: (username) {
         AppNavigation.push(context, UserProfilePage(

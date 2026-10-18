@@ -2823,4 +2823,155 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get thisForum => 'этот форум';
+
+  @override
+  String get openFullEditor => 'Полный редактор';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString участника',
+      many: '$countString участников',
+      few: '$countString участника',
+      one: '$countString участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString темы',
+      many: '$countString тем',
+      few: '$countString темы',
+      one: '$countString тема',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString сообщения',
+      many: '$countString сообщений',
+      few: '$countString сообщения',
+      one: '$countString сообщение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return 'Поиск по $forumName';
+  }
+
+  @override
+  String get copyLink => 'Копировать ссылку';
+
+  @override
+  String get linkCopied => 'Ссылка скопирована';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Прикреплено $count общих файла.',
+      many: 'Прикреплено $count общих файлов.',
+      few: 'Прикреплено $count общих файла.',
+      one: 'Прикреплён $count общий файл.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Прикреплено $count файла. Не прикреплены: $names',
+      many: 'Прикреплено $count файлов. Не прикреплены: $names',
+      few: 'Прикреплено $count файла. Не прикреплены: $names',
+      one: 'Прикреплён $count файл. Не прикреплены: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => 'Сообщения';
+
+  @override
+  String get notificationChannelMessagesDescription =>
+      'Новые личные сообщения и ответы на них';
+
+  @override
+  String get notificationChannelReplies => 'Ответы и упоминания';
+
+  @override
+  String get notificationChannelRepliesDescription =>
+      'Ответы в отслеживаемых темах, цитаты и упоминания';
+
+  @override
+  String get notificationChannelReactions => 'Лайки и реакции';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'Лайки и реакции на ваши сообщения';
+
+  @override
+  String get notificationChannelOther => 'Другие уведомления';
+
+  @override
+  String get notificationChannelOtherDescription =>
+      'Подписки, награды и другие оповещения форума';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Удалить аккаунт?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return 'Ваш аккаунт на $forumName будет удалён вместе с профилем и настройками. Ваши сообщения останутся под вашим именем. Это действие нельзя отменить.';
+  }
+
+  @override
+  String get deleteAccountNoPassword =>
+      'Нет пароля? Подтвердите именем пользователя';
+
+  @override
+  String get deleteAccountUsePassword => 'Подтвердить паролем';
+
+  @override
+  String get accountDeleted => 'Ваш аккаунт удалён.';
+
+  @override
+  String get signInOnWebsite => 'Войти на сайте форума';
+
+  @override
+  String get signInOnWebsiteHint =>
+      'Для Google, Facebook и других способов входа на сайте';
+
+  @override
+  String get browserLoginFailed =>
+      'Не удалось войти через сайт. Попробуйте ещё раз.';
 }

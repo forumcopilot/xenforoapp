@@ -27,16 +27,13 @@ import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../user_profile_page.dart';
-import 'package:get/get.dart';
-import '../../controllers/login_controller.dart';
-import '../login_page.dart';
-import '../post_page.dart';
-import '../lists/posts_list.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/gestures.dart' show GestureRecognizer;
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/utils/preview_selection.dart';
 import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Everything a post's body needs that is derived from its text and its
 /// attachment lists. Immutable, and shared through [_postContentCache].
@@ -551,58 +548,7 @@ class _PostListItemState extends State<PostListItem> {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = widget.siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = widget.siteContext.ConfigData.forumType;
-        UrlUtils.handleUrlTapWithForumDetection(
-          widget.siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!mounted) return;
-              if (!widget.siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController
-                    .attemptAutomaticLogin(widget.siteContext);
-                if (!loginResult.success &&
-                    loginResult.hadCredentials &&
-                    Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
-                }
-                if (!widget.siteContext.isLoggedIn) {
-                  AppLogger.debug(
-                      'PostListItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId =
-                    topicId.isNotEmpty ? topicId : postId;
-                AppNavigation.push(context, PostPage(
-                      siteContext: widget.siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ));
-              } else if (topicId.isNotEmpty) {
-                AppNavigation.push(context, PostPage(
-                      siteContext: widget.siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ));
-              }
-            });
-          },
-        );
+        ForumLinks.open(context, cleanUrl, widget.siteContext);
       },
       // Viewable image attachments arrive here with the Hero tag they were
       // rendered with, so the viewer can fly from them like [img] images.
@@ -1004,6 +950,12 @@ class _PostListItemState extends State<PostListItem> {
       case 'report':
         _handleReport();
         break;
+      case 'copyLink':
+        _handleCopyLink();
+        break;
+      case 'share':
+        _handleShare();
+        break;
       default:
         break;
     }
@@ -1012,6 +964,26 @@ class _PostListItemState extends State<PostListItem> {
   // Builds the popup menu items for the post header
   List<PopupMenuEntry<String>> _buildPopupMenuItems(BuildContext context) {
     final items = <PopupMenuEntry<String>>[];
+    final l10n = AppLocalizations.of(context);
+    if (ForumLinks.postUrl(widget.siteContext.site, widget.post.id) != null) {
+      for (final (value, icon, label) in [
+        ('copyLink', Icons.link, l10n.copyLink),
+        ('share', Icons.share_outlined, l10n.share),
+      ]) {
+        items.add(
+          PopupMenuItem<String>(
+            value: value,
+            child: Row(
+              children: [
+                Icon(icon, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: DesignTokens.spacingM),
+                Text(label),
+              ],
+            ),
+          ),
+        );
+      }
+    }
     if (widget.siteContext.isLoggedIn && widget.post.canEdit) {
       items.add(
         PopupMenuItem<String>(
@@ -1061,6 +1033,25 @@ class _PostListItemState extends State<PostListItem> {
       );
     }
     return items;
+  }
+
+  /// Copies a link to this post (it opens the thread at the post).
+  Future<void> _handleCopyLink() async {
+    final url = ForumLinks.postUrl(widget.siteContext.site, widget.post.id);
+    if (url == null) return;
+    await UrlUtils.copyUrlToClipboard(url);
+    if (mounted) SnackbarHelper.showSuccess(context, AppLocalizations.of(context).linkCopied);
+  }
+
+  /// Shares a link to this post through the system share sheet.
+  Future<void> _handleShare() async {
+    final url = ForumLinks.postUrl(widget.siteContext.site, widget.post.id);
+    if (url == null) return;
+    final box = context.findRenderObject() as RenderBox?;
+    await UrlUtils.shareUrl(
+      url,
+      sharePositionOrigin: box != null && box.hasSize ? box.localToGlobal(Offset.zero) & box.size : null,
+    );
   }
 
   void _handleQuote() async {

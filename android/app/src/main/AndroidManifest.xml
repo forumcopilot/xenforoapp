@@ -28,6 +28,20 @@
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules">
+        <!-- Signing in through the forum's website (lib/services/browser_login.dart):
+             the page hands its one-time code to this scheme. -->
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- AppForumConfig.browserLoginScheme -->
+                <data android:scheme="forumapp" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -69,7 +83,7 @@
         <!-- Default notification channel for Firebase Cloud Messaging -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="forum_app_channel" />
+            android:value="forum_copilot_channel" />
         <meta-data
             android:name="asset_statements"
             android:resource="@string/asset_statements" />

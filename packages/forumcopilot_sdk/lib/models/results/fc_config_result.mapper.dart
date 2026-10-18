@@ -15,6 +15,7 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
   static FCConfigResultMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = FCConfigResultMapper._());
+      FCForumStyleMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -739,6 +740,22 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
     opt: true,
     def: "",
   );
+  static FCForumStyle? _$style(FCConfigResult v) => v.style;
+  static const Field<FCConfigResult, FCForumStyle> _f$style = Field(
+    'style',
+    _$style,
+    opt: true,
+  );
+  static bool? _$accountDeletion(FCConfigResult v) => v.accountDeletion;
+  static const Field<FCConfigResult, bool> _f$accountDeletion = Field(
+    'accountDeletion',
+    _$accountDeletion,
+    opt: true,
+  );
+  static List<String>? _$browserLoginSchemes(FCConfigResult v) =>
+      v.browserLoginSchemes;
+  static const Field<FCConfigResult, List<String>> _f$browserLoginSchemes =
+      Field('browserLoginSchemes', _$browserLoginSchemes, opt: true);
 
   @override
   final MappableFields<FCConfigResult> fields = const {
@@ -846,6 +863,9 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
     #apiKey: _f$apiKey,
     #mbqFrameVersion: _f$mbqFrameVersion,
     #forumType: _f$forumType,
+    #style: _f$style,
+    #accountDeletion: _f$accountDeletion,
+    #browserLoginSchemes: _f$browserLoginSchemes,
   };
 
   static FCConfigResult _instantiate(DecodingData data) {
@@ -954,6 +974,9 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
       apiKey: data.dec(_f$apiKey),
       mbqFrameVersion: data.dec(_f$mbqFrameVersion),
       forumType: data.dec(_f$forumType),
+      style: data.dec(_f$style),
+      accountDeletion: data.dec(_f$accountDeletion),
+      browserLoginSchemes: data.dec(_f$browserLoginSchemes),
     );
   }
 
@@ -1019,6 +1042,9 @@ extension FCConfigResultValueCopy<$R, $Out>
 
 abstract class FCConfigResultCopyWith<$R, $In extends FCConfigResult, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
+  FCForumStyleCopyWith<$R, FCForumStyle, FCForumStyle>? get style;
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
+  get browserLoginSchemes;
   $R call({
     bool? jsonSupport,
     String? systemVersion,
@@ -1124,6 +1150,9 @@ abstract class FCConfigResultCopyWith<$R, $In extends FCConfigResult, $Out>
     String? apiKey,
     String? mbqFrameVersion,
     String? forumType,
+    FCForumStyle? style,
+    bool? accountDeletion,
+    List<String>? browserLoginSchemes,
   });
   FCConfigResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1138,6 +1167,18 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
   @override
   late final ClassMapperBase<FCConfigResult> $mapper =
       FCConfigResultMapper.ensureInitialized();
+  @override
+  FCForumStyleCopyWith<$R, FCForumStyle, FCForumStyle>? get style =>
+      $value.style?.copyWith.$chain((v) => call(style: v));
+  @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
+  get browserLoginSchemes => $value.browserLoginSchemes != null
+      ? ListCopyWith(
+          $value.browserLoginSchemes!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(browserLoginSchemes: v),
+        )
+      : null;
   @override
   $R call({
     bool? jsonSupport,
@@ -1244,6 +1285,9 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
     String? apiKey,
     String? mbqFrameVersion,
     String? forumType,
+    Object? style = $none,
+    Object? accountDeletion = $none,
+    Object? browserLoginSchemes = $none,
   }) => $apply(
     FieldCopyWithData({
       if (jsonSupport != null) #jsonSupport: jsonSupport,
@@ -1354,6 +1398,10 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
       if (apiKey != null) #apiKey: apiKey,
       if (mbqFrameVersion != null) #mbqFrameVersion: mbqFrameVersion,
       if (forumType != null) #forumType: forumType,
+      if (style != $none) #style: style,
+      if (accountDeletion != $none) #accountDeletion: accountDeletion,
+      if (browserLoginSchemes != $none)
+        #browserLoginSchemes: browserLoginSchemes,
     }),
   );
   @override
@@ -1483,6 +1531,12 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
     apiKey: data.get(#apiKey, or: $value.apiKey),
     mbqFrameVersion: data.get(#mbqFrameVersion, or: $value.mbqFrameVersion),
     forumType: data.get(#forumType, or: $value.forumType),
+    style: data.get(#style, or: $value.style),
+    accountDeletion: data.get(#accountDeletion, or: $value.accountDeletion),
+    browserLoginSchemes: data.get(
+      #browserLoginSchemes,
+      or: $value.browserLoginSchemes,
+    ),
   );
 
   @override

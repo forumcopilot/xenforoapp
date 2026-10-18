@@ -8,7 +8,6 @@ import '../../utils/error_dialog.dart';
 import '../../utils/forum_navigation.dart';
 import '../listitems/forum_list_item.dart';
 
-import '../widgets/forum_header_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
 
@@ -318,10 +317,6 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
         },
         child: ListView(
           children: [
-            // Forum Header - Always show even when no forums
-            ForumHeaderWidget(
-              boardStats: widget.boardStats,
-            ),
             // Empty state message
             Center(
               child: Padding(
@@ -367,11 +362,8 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
       },
       child: ListView(
         children: [
-          // Forum Header
-          ForumHeaderWidget(
-            boardStats: widget.boardStats,
-            extendUnderAppBar: true,
-          ),
+          // The forum's header is on Home (ForumMasthead); this tab is its
+          // forums.
           if (widget.siteContext.isLoggedIn && _subscribedForums != null && _subscribedForums!.isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.fromLTRB(

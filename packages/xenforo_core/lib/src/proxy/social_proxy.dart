@@ -250,6 +250,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         resultText: response['resultText']?.toString() ?? '',
         total: response['total'] ?? 0,
         items: alertList,
+        // `page` is 1-based; `total` counts all of the member's alerts.
+        hasMore: response['total'] is int ? page * perpage < (response['total'] as int) : null,
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_SOCIAL] getAlertAsync error: $e');

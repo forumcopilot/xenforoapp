@@ -166,6 +166,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         totalConversations: response['totalConversations'] ?? response['total'] ?? 0,
         unreadConversations: response['unreadConversations'] ?? response['unread'] ?? 0,
         unreadMessages: response['unreadMessages'] ?? response['unread_messages'] ?? 0,
+        unreadAlerts: (response['unreadAlerts'] ?? response['unread_alerts']) as int?,
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatAsync error: $e');
@@ -179,41 +180,15 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     }
   }
 
-  /// Get inbox statistics including unread alerts
-  /// Returns a map with both FCInboxStatResult and unreadAlerts
+  /// [getInboxStatAsync] as a map ({'inboxStat', 'unreadAlerts'}), for older
+  /// callers. New code reads [FCInboxStatResult.unreadAlerts].
+  @Deprecated('Use getInboxStatAsync().unreadAlerts')
   Future<Map<String, dynamic>> getInboxStatWithAlertsAsync() async {
-    xfDebug('✅ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync called via plugin API');
-
-    try {
-      final response = await callPluginApi('getInboxStat', {});
-
-      final inboxStat = FCInboxStatResult(
-        result: response['result'] ?? false,
-        resultText: response['resultText']?.toString() ?? '',
-        totalConversations: response['totalConversations'] ?? response['total'] ?? 0,
-        unreadConversations: response['unreadConversations'] ?? response['unread'] ?? 0,
-        unreadMessages: response['unreadMessages'] ?? response['unread_messages'] ?? 0,
-      );
-
-      final unreadAlerts = response['unreadAlerts'] ?? response['unread_alerts'] ?? 0;
-
-      return {
-        'inboxStat': inboxStat,
-        'unreadAlerts': unreadAlerts,
-      };
-    } catch (e) {
-      xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getInboxStatWithAlertsAsync error: $e');
-      return {
-        'inboxStat': FCInboxStatResult(
-          result: false,
-          resultText: 'Error getting inbox stats: $e',
-          totalConversations: 0,
-          unreadConversations: 0,
-          unreadMessages: 0,
-        ),
-        'unreadAlerts': 0,
-      };
-    }
+    final inboxStat = await getInboxStatAsync();
+    return {
+      'inboxStat': inboxStat,
+      'unreadAlerts': inboxStat.unreadAlerts ?? 0,
+    };
   }
 
   @override
@@ -222,9 +197,14 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
     xfDebug('   📋 Parameters: startNum=$startNum, lastNum=$lastNum');
 
     try {
+      // The add-on's getConversations turns startNum into a page with
+      // ceil(startNum / perPage), which reads startNum as 1-based (1-20,
+      // 21-40), while callers pass 0-based ranges (0-19, 20-39), so the second
+      // page came back as the first again. A page-aligned 1-based range gives
+      // the right page with that and with the corrected add-on.
       final response = await callPluginApi('getConversations', {
-        'startNum': startNum,
-        'lastNum': lastNum,
+        'startNum': startNum + 1,
+        'lastNum': lastNum + 1,
       });
 
       // Parse conversation list - PHP returns array with conversation data
@@ -362,6 +342,11 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         unreadCount: response['unreadCount'] ?? 0,
         canUpload: response['canUpload'] ?? false,
         list: conversationList,
+        // conversationCount is the member's total, so this holds even when the
+        // add-on skipped a conversation it couldn't read.
+        hasMore: response['conversationCount'] is int
+            ? startNum + conversationList.length < (response['conversationCount'] as int)
+            : null,
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_PRIVATE_CONVERSATION] getConversationsAsync error: $e');

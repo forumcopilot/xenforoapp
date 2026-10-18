@@ -185,7 +185,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _topics.addAll(result.topics);
         _isLoadingTopics = false;
-        _hasMoreTopics = result.topics.length == _pageSize;
+        _hasMoreTopics = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTopics) _topicPage++;
       });
     } else {
@@ -213,7 +213,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _topics.addAll(result.topics);
         _isLoadingTopics = false;
-        _hasMoreTopics = result.topics.length == _pageSize;
+        _hasMoreTopics = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTopics) _topicPage++;
       });
     }
@@ -234,7 +234,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _posts.addAll(result.posts);
         _isLoadingPosts = false;
-        _hasMorePosts = result.posts.length == _pageSize;
+        _hasMorePosts = result.hasMore || result.posts.length == _pageSize;
         if (_hasMorePosts) _postPage++;
       });
     } else {
@@ -261,7 +261,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _posts.addAll(result.posts);
         _isLoadingPosts = false;
-        _hasMorePosts = result.posts.length == _pageSize;
+        _hasMorePosts = result.hasMore || result.posts.length == _pageSize;
         if (_hasMorePosts) _postPage++;
       });
     }
@@ -284,7 +284,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _titlesOnlyTopics.addAll(result.topics);
         _isLoadingTitlesOnly = false;
-        _hasMoreTitlesOnly = result.topics.length == _pageSize;
+        _hasMoreTitlesOnly = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTitlesOnly) _titlesOnlyPage++;
       });
     } else {
@@ -312,7 +312,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _titlesOnlyTopics.addAll(result.topics);
         _isLoadingTitlesOnly = false;
-        _hasMoreTitlesOnly = result.topics.length == _pageSize;
+        _hasMoreTitlesOnly = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTitlesOnly) _titlesOnlyPage++;
       });
     }

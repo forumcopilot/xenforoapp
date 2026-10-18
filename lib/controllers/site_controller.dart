@@ -18,6 +18,7 @@ import '../models/site_visit_history.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../utils/app_navigation.dart';
+import '../theme/app_theme.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
@@ -271,6 +272,8 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       siteContext = new SiteContext(siteType: site.siteType, site: site);
       siteContext.configDataOutput = configData;
     }
+    // The app in this forum's colours while it is open.
+    AppTheme.showForumStyle(site.pluginUrl, configData.style);
     _attachReloginHandler(siteContext);
     siteContext.lastGetConfigFcIsLogin = sessionFromConfig;
 

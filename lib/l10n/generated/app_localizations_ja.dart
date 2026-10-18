@@ -2686,4 +2686,134 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get thisForum => 'このフォーラム';
+
+  @override
+  String get openFullEditor => 'フルエディター';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'メンバー $countString 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'トピック $countString 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '投稿 $countString 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return '$forumName を検索';
+  }
+
+  @override
+  String get copyLink => 'リンクをコピー';
+
+  @override
+  String get linkCopied => 'リンクをコピーしました';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '共有ファイルを $count 件添付しました。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件を添付しました。添付できなかったファイル: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => 'メッセージ';
+
+  @override
+  String get notificationChannelMessagesDescription => '新しいダイレクトメッセージとその返信';
+
+  @override
+  String get notificationChannelReplies => '返信とメンション';
+
+  @override
+  String get notificationChannelRepliesDescription => 'ウォッチ中のスレッドへの返信、引用、メンション';
+
+  @override
+  String get notificationChannelReactions => 'いいねとリアクション';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      'あなたの投稿やメッセージへのいいねとリアクション';
+
+  @override
+  String get notificationChannelOther => 'その他の通知';
+
+  @override
+  String get notificationChannelOtherDescription => 'フォロー、トロフィー、その他のフォーラム通知';
+
+  @override
+  String get deleteAccountConfirmTitle => 'アカウントを削除しますか？';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '$forumName のアカウントが、プロフィールと設定とともに削除されます。投稿はあなたの名前のまま残ります。元に戻すことはできません。';
+  }
+
+  @override
+  String get deleteAccountNoPassword => 'パスワードがない場合はユーザー名で確認';
+
+  @override
+  String get deleteAccountUsePassword => 'パスワードで確認';
+
+  @override
+  String get accountDeleted => 'アカウントを削除しました。';
+
+  @override
+  String get signInOnWebsite => 'フォーラムのウェブサイトでログイン';
+
+  @override
+  String get signInOnWebsiteHint => 'Google、Facebook など、サイトで使っている方法でログインできます';
+
+  @override
+  String get browserLoginFailed => 'ウェブサイトでのログインに失敗しました。もう一度お試しください。';
 }

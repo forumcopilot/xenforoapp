@@ -1,8 +1,6 @@
 import 'package:forumcopilot_sdk/models/entities/fc_attachment_data.dart';
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import 'package:get/get.dart';
-import '../controllers/site_controller.dart';
 
 /// Converts FCLoginResult to FCAttachmentConstraints
 FCAttachmentConstraints? getAttachmentConstraintsFromLogin(FCLoginResult loginResult) {
@@ -50,18 +48,4 @@ FCAttachmentConstraints? getAttachmentConstraintsFromSiteContext(SiteContext? si
   }
 
   return getAttachmentConstraintsFromLogin(loginResult);
-}
-
-/// Helper to get current SiteContext
-/// Uses Get.find<SiteController>() pattern
-SiteContext? getCurrentSiteContext() {
-  try {
-    if (Get.isRegistered<SiteController>()) {
-      final siteController = Get.find<SiteController>();
-      return siteController.currentSiteContext.value;
-    }
-  } catch (e) {
-    // SiteController not registered, return null
-  }
-  return null;
 }

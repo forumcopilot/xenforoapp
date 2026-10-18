@@ -2643,4 +2643,133 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get thisForum => '此论坛';
+
+  @override
+  String get openFullEditor => '完整编辑器';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 位成员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 个主题',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString 个帖子',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return '搜索 $forumName';
+  }
+
+  @override
+  String get copyLink => '复制链接';
+
+  @override
+  String get linkCopied => '链接已复制';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已附加 $count 个共享文件。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已附加 $count 个文件。未能附加：$names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => '私信';
+
+  @override
+  String get notificationChannelMessagesDescription => '新的私信及其回复';
+
+  @override
+  String get notificationChannelReplies => '回复和提及';
+
+  @override
+  String get notificationChannelRepliesDescription => '关注主题中的回复、引用和提及';
+
+  @override
+  String get notificationChannelReactions => '点赞和回应';
+
+  @override
+  String get notificationChannelReactionsDescription => '对你的帖子和消息的点赞与回应';
+
+  @override
+  String get notificationChannelOther => '其他通知';
+
+  @override
+  String get notificationChannelOtherDescription => '关注、奖杯和其他论坛提醒';
+
+  @override
+  String get deleteAccountConfirmTitle => '删除你的账户？';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '你在 $forumName 的账户将被删除，包括个人资料和设置。你的帖子会以你的名字保留。此操作无法撤销。';
+  }
+
+  @override
+  String get deleteAccountNoPassword => '没有密码？用用户名确认';
+
+  @override
+  String get deleteAccountUsePassword => '用密码确认';
+
+  @override
+  String get accountDeleted => '你的账户已删除。';
+
+  @override
+  String get signInOnWebsite => '在论坛网站上登录';
+
+  @override
+  String get signInOnWebsiteHint => '适用于 Google、Facebook 及你在网站上使用的其他登录方式';
+
+  @override
+  String get browserLoginFailed => '网站登录未成功，请重试。';
 }

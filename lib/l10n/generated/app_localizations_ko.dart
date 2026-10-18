@@ -2678,4 +2678,134 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get thisForum => '이 포럼';
+
+  @override
+  String get openFullEditor => '전체 편집기';
+
+  @override
+  String statsMembers(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '회원 $countString명',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsTopics(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '주제 $countString개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsPosts(int count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '게시물 $countString개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String searchForumName(String forumName) {
+    return '$forumName 검색';
+  }
+
+  @override
+  String get copyLink => '링크 복사';
+
+  @override
+  String get linkCopied => '링크를 복사했습니다';
+
+  @override
+  String sharedFilesAttached(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '공유 파일 $count개를 첨부했습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sharedFilesPartlyAttached(int count, String names) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개를 첨부했습니다. 첨부하지 못한 파일: $names',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationChannelMessages => '메시지';
+
+  @override
+  String get notificationChannelMessagesDescription => '새 다이렉트 메시지와 답장';
+
+  @override
+  String get notificationChannelReplies => '답글 및 멘션';
+
+  @override
+  String get notificationChannelRepliesDescription => '구독 중인 글의 답글, 인용 및 멘션';
+
+  @override
+  String get notificationChannelReactions => '좋아요 및 반응';
+
+  @override
+  String get notificationChannelReactionsDescription =>
+      '내 게시물과 메시지에 대한 좋아요 및 반응';
+
+  @override
+  String get notificationChannelOther => '기타 알림';
+
+  @override
+  String get notificationChannelOtherDescription => '팔로우, 트로피 및 기타 포럼 알림';
+
+  @override
+  String get deleteAccountConfirmTitle => '계정을 삭제할까요?';
+
+  @override
+  String deleteAccountConfirmMessage(String forumName) {
+    return '$forumName의 계정이 프로필 및 설정과 함께 삭제됩니다. 게시물은 내 이름으로 남습니다. 되돌릴 수 없습니다.';
+  }
+
+  @override
+  String get deleteAccountNoPassword => '비밀번호가 없나요? 사용자 이름으로 확인';
+
+  @override
+  String get deleteAccountUsePassword => '비밀번호로 확인';
+
+  @override
+  String get accountDeleted => '계정이 삭제되었습니다.';
+
+  @override
+  String get signInOnWebsite => '포럼 웹사이트에서 로그인';
+
+  @override
+  String get signInOnWebsiteHint => 'Google, Facebook 등 사이트에서 쓰는 방법으로 로그인';
+
+  @override
+  String get browserLoginFailed => '웹사이트 로그인에 실패했습니다. 다시 시도하세요.';
 }

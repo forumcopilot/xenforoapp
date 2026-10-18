@@ -26,6 +26,8 @@ import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     as _passkey_platform;
 import '../l10n/generated/app_localizations.dart';
 import '../utils/l10n_now.dart';
+import '../services/browser_login.dart';
+import 'package:forumcopilot_sdk/interfaces/i_fc_browser_login.dart';
 
 /// Stable reason codes for push/login diagnostics.
 abstract class PushLoginReasonCode {
@@ -499,6 +501,55 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       if (showLoader && GlobalLoaderController.to.isLoading) {
         GlobalLoaderController.to.hide();
       }
+    }
+  }
+
+  /// Signs in through the forum's website (BrowserLogin), any way the website
+  /// signs members in: Google, Facebook, passkeys, two-step. True when
+  /// signed in; false when the member closed the sheet or it failed (said in
+  /// a dialog).
+  Future<bool> handleBrowserLogin({required SiteContext siteContext}) async {
+    final userProxy = SiteProxyService.getUserProxy();
+    if (userProxy is! IFCBrowserLogin) return false;
+    try {
+      final code = await BrowserLogin.requestCode(siteContext);
+      if (code == null) return false;
+
+      GlobalLoaderController.to.show();
+      final loginResult = await (userProxy as IFCBrowserLogin)
+          .completeBrowserLoginAsync(code: code.code, verifier: code.verifier);
+      GlobalLoaderController.to.hide();
+
+      final user = loginResult.user;
+      if (!loginResult.result || user == null) {
+        final reason = loginResult.resultText?.trim();
+        await _showLoginErrorDialog(
+          reason != null && reason.isNotEmpty ? reason : l10nNow().browserLoginFailed,
+          Get.theme.colorScheme,
+        );
+        return false;
+      }
+
+      siteContext.loginDataOutput = loginResult;
+      // Kept signed in by the forum's remember cookie; there is no password.
+      siteContext.lastSuccessfulLoginMethod = SiteContext.loginMethodBrowser;
+      siteContext.username = user.username;
+      siteContext.password = null;
+      await siteContext.saveToDevice();
+      await _recordVisitForPasskeyLogin(siteContext, username: user.username);
+      siteContext.updateLoginState();
+
+      Future.microtask(() async {
+        final siteController = Get.find<SiteController>();
+        final site = siteController.currentSite.value;
+        if (site != null) await _registerForPushNotifications(site, loginResult);
+      });
+      return true;
+    } catch (e, stackTrace) {
+      if (GlobalLoaderController.to.isLoading) GlobalLoaderController.to.hide();
+      await handleError(e, stackTrace, context: 'LoginController.handleBrowserLogin', showToUser: false);
+      await _showLoginErrorDialog(l10nNow().browserLoginFailed, Get.theme.colorScheme);
+      return false;
     }
   }
 

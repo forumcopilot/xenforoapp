@@ -1,5 +1,6 @@
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_user_proxy.dart';
+import 'package:forumcopilot_sdk/interfaces/i_fc_browser_login.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_user.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_tfa_provider.dart';
 import 'package:forumcopilot_sdk/models/results/fc_passkey_result.dart';
@@ -13,7 +14,7 @@ import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCUserProxy
 /// Handles user operations and profile management for XenForo forums
-class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
+class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy, IFCBrowserLogin {
   XenForoUserProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
@@ -523,6 +524,18 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy {
       xfDebug('✅ [XENFORO_USER] Login data saved to SiteContext (passkey)');
     }
 
+    return loginResult;
+  }
+
+  @override
+  Future<FCLoginResult> completeBrowserLoginAsync({required String code, required String verifier}) async {
+    final response = await callPluginApi('completeBrowserLogin', {'code': code, 'verifier': verifier});
+    final loginResult = _buildLoginResult(response);
+    if (loginResult.result) {
+      siteContext.setLoginData(loginResult);
+      siteContext.resetOnLogin();
+      xfDebug('✅ [XENFORO_USER] Login data saved to SiteContext (browser)');
+    }
     return loginResult;
   }
 

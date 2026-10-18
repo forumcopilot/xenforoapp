@@ -6,9 +6,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
-import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:get/get.dart';
-import 'package:xenforo_core/xenforo_core.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'appbars/forum_app_bar.dart';
@@ -30,6 +28,7 @@ import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'dart:async';
 import '../utils/app_navigation.dart';
 import 'enable_notifications_page.dart';
+import '../theme/app_theme.dart';
 
 class SiteHomePage extends StatefulWidget {
   final Site? siteToInitialize;
@@ -46,6 +45,7 @@ class SiteHomePage extends StatefulWidget {
 
   /// The Alerts tab's id, for [requestedTab].
   static const String alertsTab = 'notifications';
+  static const String homeTab = 'topics';
 
   /// A tab another part of the app wants shown: a push with nothing more
   /// specific opens the forum on its Alerts tab. The forum home switches to
@@ -652,8 +652,10 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   int _getTabIndex(String tabType) => _enabledTabs.indexOf(tabType);
   bool _isCurrentTab(String tabType) => _tabController.index == _getTabIndex(tabType);
 
-  // Build the appropriate app bar for the current tab
-  PreferredSizeWidget _buildAppBarForCurrentTab(bool isLoggedIn, bool canSendPM) {
+  // Build the appropriate app bar for the current tab. Home has none: its
+  // header (ForumMasthead, in the tab) collapses into one.
+  PreferredSizeWidget? _buildAppBarForCurrentTab(
+      bool isLoggedIn, bool canSendPM) {
     if (_siteContext == null) {
       return ForumAppBar(
         siteContext: SiteContext(siteType: 'none', site: Site(name: 'Loading...', url: '', description: '', siteType: 'none')),
@@ -665,10 +667,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     switch (currentTabType) {
       case _topicsTab:
-        return TopicsTabAppBar(
-          siteContext: _siteContext!,
-          isLoggedIn: isLoggedIn,
-        );
+        return null;
       case _forumsTab:
         return ForumsTabAppBar(
           siteContext: _siteContext!,
@@ -697,8 +696,22 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     }
   }
 
+  /// The forum whose colours this Home holds open (AppTheme), once known.
+  String? _forumColoursFor;
+
+  void _holdForumColours() {
+    final pluginUrl = _siteContext?.site.pluginUrl;
+    if (!mounted || _forumColoursFor != null || pluginUrl == null || pluginUrl.isEmpty) return;
+    _forumColoursFor = pluginUrl;
+    AppTheme.forumHomeOpened(pluginUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_forumColoursFor == null && _siteContext != null) {
+      // After the frame: it can change the app's theme.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _holdForumColours());
+    }
     // Don't build the main UI until initialization is complete
     if (_waitingForInitialization) {
       // Show a minimal scaffold with just the app bar while waiting
@@ -969,40 +982,22 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       AppLogger.debug('📬 [SITE_HOME] Fetching inbox stat...');
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
 
-      // Check if this is a XenForo proxy that supports getInboxStatWithAlertsAsync
-      if (conversationProxy is XenForoPrivateConversationProxy) {
-        final result = await conversationProxy.getInboxStatWithAlertsAsync();
-        final inboxStat = result['inboxStat'] as FCInboxStatResult;
-        final unreadAlerts = result['unreadAlerts'] as int;
-
-        if (inboxStat.result) {
-          AppLogger.debug(
-              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, $unreadAlerts unread alerts');
-          if (stillCurrent()) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              _unreadAlertsCount = unreadAlerts;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
+      // Unread alerts come with the inbox counts where the backend reports
+      // them (FCInboxStatResult.unreadAlerts); this used to cast to the
+      // XenForo proxy to get them.
+      final inboxStat = await conversationProxy.getInboxStatAsync();
+      if (inboxStat.result) {
+        AppLogger.debug(
+            '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, ${inboxStat.unreadAlerts} unread alerts');
+        if (stillCurrent()) {
+          setState(() {
+            _unreadConversationsCount = inboxStat.unreadConversations;
+            _unreadAlertsCount = inboxStat.unreadAlerts ?? 0;
+          });
         }
       } else {
-        // Fallback for proxies that don't support unread alert counts
-        final inboxStat = await conversationProxy.getInboxStatAsync();
-        if (inboxStat.result) {
-          AppLogger.debug(
-              '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations');
-          if (stillCurrent()) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              // unreadAlerts not available for this proxy type
-              _unreadAlertsCount = 0;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
-        }
+        AppLogger.debug(
+            '📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
       }
     } catch (e) {
       AppLogger.debug('📬 [SITE_HOME] Error fetching inbox stat: $e');
@@ -1018,6 +1013,10 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     SiteHomePage.requestedTab.removeListener(_onTabRequested);
     if (SiteHomePage._homeRoute == _route) SiteHomePage._homeRoute = null;
+    // Leaving the forum: back to the app's own colours (unless another of
+    // its Homes replaces this one, as signing in does).
+    final openedFor = _forumColoursFor;
+    if (openedFor != null) AppTheme.forumHomeClosed(openedFor);
     // Remove tab controller listener
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();

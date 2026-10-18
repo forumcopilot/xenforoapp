@@ -7,9 +7,11 @@ import '../../utils/bbcode_processor.dart';
 import '../widgets/custom_bb_stylesheet.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import '../../utils/time_utils.dart';
-import '../../utils/url_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
 
 class MessageItem extends StatelessWidget {
   final SiteContext siteContext;
@@ -31,30 +33,20 @@ class MessageItem extends StatelessWidget {
 
     final callbacks = BBCodeCallbacks(
       onUrlTap: (url) async {
-        await UrlUtils.handleUrlTap(url, context);
+        await ForumLinks.open(context, url, siteContext);
       },
       onMentionTap: (username) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // You can add onImageTap/onVideoTap if needed
     );
@@ -96,12 +88,12 @@ class MessageItem extends StatelessWidget {
             vertical: DesignTokens.spacingM - DesignTokens.spacingXS,
           ),
           elevation: DesignTokens.elevationMedium,
-          shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+          shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
           color: colorScheme.surfaceContainerLowest,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusL),
             side: BorderSide(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -118,16 +110,11 @@ class MessageItem extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UserProfilePage(
+                          AppNavigation.push(context, UserProfilePage(
                                 siteContext: siteContext,
                                 userName: message.msgFrom ?? message.authorName,
                                 profilePictureUrl: message.iconUrl,
-                              ),
-                            ),
-                          );
+                              ));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -174,7 +161,7 @@ class MessageItem extends StatelessWidget {
                     SizedBox(
                       width: DesignTokens.iconSizeXL + DesignTokens.spacingXS,
                       child: Text(
-                        'To:',
+                        '${AppLocalizations.of(context).toLabel}:',
                         style: StyleBuilders.bodyTextStyle(
                           colorScheme: colorScheme,
                           textTheme: textTheme,
@@ -190,15 +177,10 @@ class MessageItem extends StatelessWidget {
                         children: (message.msgTo as List<String>? ?? []).map((recipient) {
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userName: recipient,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Container(
                               padding: EdgeInsets.symmetric(
@@ -207,7 +189,7 @@ class MessageItem extends StatelessWidget {
                               ),
                               decoration: StyleBuilders.badgeDecoration(
                                 colorScheme: colorScheme,
-                                backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                                backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                                 borderRadius: DesignTokens.radiusL,
                               ),
                               child: Row(

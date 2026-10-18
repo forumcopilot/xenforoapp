@@ -14,6 +14,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/app_navigation.dart';
 
 class LatestTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -237,14 +238,14 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             // Only use first_unread mode if user is logged in (it requires authentication)
             // Otherwise, use normal mode which doesn't require authentication
             final mode = widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal;
             AppLogger.debug('🔍 [LatestTopicsList] Topic tapped: topicId=${topic.id}, isLoggedIn=${widget.siteContext.isLoggedIn}, mode=$mode');
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: mode, forumId: topic.forumId));
+            AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: mode, forumId: topic.forumId), name: '/PostPage');
           },
           onMarkAsRead: (topicId) {
             _latestTopicController!.markTopicAsRead(topicId);
@@ -289,7 +290,7 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noLatestTopics,
+              AppLocalizations.of(context).noLatestTopics,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -299,7 +300,7 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noRecentTopicsToDisplay,
+              AppLocalizations.of(context).noRecentTopicsToDisplay,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -330,8 +331,8 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
         if (!widget.siteContext.isLoggedIn) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)!.signInToViewLatestTopics,
-            message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewLatestTopics ?? resultText,
+            title: AppLocalizations.of(context).signInToViewLatestTopics,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewLatestTopics,
             icon: Icons.lock_outline_rounded,
           );
         }

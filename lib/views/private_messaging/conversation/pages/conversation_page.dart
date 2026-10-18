@@ -13,13 +13,17 @@ import 'edit_conversation_page.dart';
 import 'edit_conversation_message_page.dart';
 import '../widgets/conversation_item.dart';
 import '../widgets/conversation_header_widget.dart';
+import '../widgets/conversation_quick_reply_bar.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../../../theme/design_tokens.dart';
-import '../../../../theme/style_builders.dart';
-import '../../../../utils/accessibility_helpers.dart';
 import 'package:get/get.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import '../../../login_page.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
+import '../../../../utils/network_utils.dart';
+import '../../../../services/notification_service.dart';
 
 class ConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -43,7 +47,7 @@ class ConversationPage extends StatefulWidget {
   State<ConversationPage> createState() => _ConversationPageState();
 }
 
-class _ConversationPageState extends State<ConversationPage> {
+class _ConversationPageState extends State<ConversationPage> with WidgetsBindingObserver {
   FCConversationResult? _conversation;
   String? _error;
   bool _isLoading = true;
@@ -60,12 +64,138 @@ class _ConversationPageState extends State<ConversationPage> {
   // at) until the user replies; after that, loads show the newest messages.
   bool _anchored = true;
   Timer? _highlightTimer; // Timer to clear highlight after a few seconds
+  // Whether the reader is at the newest message: content that grows under it
+  // (images loading) keeps it there.
+  bool _atBottom = true;
+  Future<void>? _runningRefresh;
+  Future<void>? _queuedRefresh;
+  bool _queuedScrollToEnd = false;
+  StreamSubscription<String>? _activitySub;
+  // Light polling while the conversation is on screen with the app in front:
+  // replies arrive without a push (none set up, or one that was missed).
+  static const Duration _pollInterval = Duration(seconds: 30);
+  Timer? _pollTimer;
 
   @override
   void initState() {
     super.initState();
     _attemptAutoLoginAndLoad();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addObserver(this);
+    NotificationService.openConversationId = widget.conversationId;
+    // A push for this conversation while it is open brings the message in.
+    _activitySub = NotificationService.conversationActivity.listen((id) {
+      if (id == widget.conversationId || id == _conversation?.convId) _refreshNewest();
+    });
+    _pollTimer = Timer.periodic(_pollInterval, (_) => _poll());
+  }
+
+  void _poll() {
+    if (!mounted) return;
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
+    // Not under another page (a reply being written, a profile).
+    if (!(ModalRoute.isCurrentOf(context) ?? true)) return;
+    _refreshNewest();
+  }
+
+  // Back in the app: anything that arrived meanwhile.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshNewest();
+  }
+
+  /// Brings in the messages newer than the last one loaded, without the
+  /// full-screen spinner: after a reply, when the app comes back, on a push
+  /// for this conversation, and every [_pollInterval]. A reply used to reload
+  /// the whole conversation behind a spinner.
+  ///
+  /// One runs at a time. A call while one runs makes one more run after it
+  /// (a reply just sent is fetched even when a poll was already under way),
+  /// and the calls in between share that run.
+  Future<void> _refreshNewest({bool scrollToEnd = false}) {
+    final running = _runningRefresh;
+    if (running == null) {
+      return _runningRefresh = _fetchNewest(scrollToEnd: scrollToEnd).whenComplete(() => _runningRefresh = null);
+    }
+    _queuedScrollToEnd |= scrollToEnd;
+    return _queuedRefresh ??= running.then((_) {
+      _queuedRefresh = null;
+      final queuedScrollToEnd = _queuedScrollToEnd;
+      _queuedScrollToEnd = false;
+      return mounted ? _refreshNewest(scrollToEnd: queuedScrollToEnd) : null;
+    });
+  }
+
+  Future<void> _fetchNewest({required bool scrollToEnd}) async {
+    final current = _conversation;
+    if (_isLoading || current == null) return;
+    final stayAtEnd = scrollToEnd || _atBottom;
+    try {
+      final proxy = SiteProxyFactory.getPrivateConversationProxy();
+      final id = current.convId;
+      final meta = await proxy.getConversationAsync(id, 1, 1, false);
+      if (!mounted || !meta.result) return;
+      final total = meta.totalMessageNum ?? 0;
+      final missing = total - _currentLastNum;
+      if (missing <= 0) return;
+      if (missing <= _pageSize) {
+        final page = await proxy.getConversationAsync(id, _currentLastNum + 1, total, false);
+        if (!mounted || !page.result || _conversation != current) return;
+        final known = {for (final m in current.messages) m.messageId};
+        final added = page.messages.where((m) => !known.contains(m.messageId)).toList();
+        setState(() {
+          _conversation = _withMessages(page, [...current.messages, ...added]);
+          _currentLastNum = total;
+          _hasMoreMessages = _currentStartNum > 1;
+        });
+      } else {
+        // Too far behind to append: the newest page, as opening it shows.
+        final start = math.max(1, total - _pageSize + 1);
+        final page = await proxy.getConversationAsync(id, start, total, false);
+        if (!mounted || !page.result || _conversation != current) return;
+        setState(() {
+          _conversation = page;
+          _currentStartNum = start;
+          _currentLastNum = total;
+          _hasMoreMessages = start > 1;
+        });
+      }
+      if (stayAtEnd) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _scrollController.hasClients) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('ConversationPage: refreshing the newest messages failed: $e');
+    }
+  }
+
+  /// [base]'s conversation details with [messages].
+  FCConversationResult _withMessages(FCConversationResult base, List<FCConversationMessage> messages) {
+    return FCConversationResult(
+      result: base.result,
+      resultText: base.resultText,
+      convId: base.convId,
+      subject: base.subject,
+      convTitle: base.convTitle,
+      messages: messages,
+      participants: base.participants,
+      participantCount: base.participantCount,
+      canReply: base.canReply,
+      canInvite: base.canInvite,
+      canEdit: base.canEdit,
+      canClose: base.canClose,
+      isClosed: base.isClosed,
+      totalMessageNum: base.totalMessageNum,
+      canUpload: base.canUpload,
+      position: base.position,
+    );
   }
 
   void _attemptAutoLoginAndLoad() {
@@ -80,11 +210,7 @@ class _ConversationPageState extends State<ConversationPage> {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => LoginPage(siteContext: widget.siteContext),
-            ),
-          );
+          await AppNavigation.push(context, LoginPage(siteContext: widget.siteContext));
         }
       }
       if (mounted) {
@@ -93,24 +219,57 @@ class _ConversationPageState extends State<ConversationPage> {
     });
   }
 
-  Future<void> _onReplyPressed() async {
-    if (_conversation != null) {
-      final result = await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyConversationPage(
-            siteContext: widget.siteContext,
-            conversationId: widget.conversationId,
-            subject: widget.subject,
-            canUpload: _conversation?.canUpload,
-          ),
-        ),
-      );
+  /// Where an unsent reply is kept on this device: the quick-reply bar and
+  /// the full Reply page share it.
+  String get _replyDraftKey => 'dm_reply_draft:${widget.siteContext.site.pluginUrl}:${widget.conversationId}';
 
-      // If reply was successful, refresh conversation and scroll to last message
-      if (result == true) {
-        await _refreshAndScrollToLast();
+  /// The quick-reply bar's send: the reply is added at the end of the list.
+  /// False (the bar keeps the text) when it was not posted.
+  Future<bool> _sendQuickReply(String text) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final result = await SiteProxyFactory.getPrivateConversationProxy()
+          .replyConversationAsync(widget.conversationId, text, null, null);
+      if (!mounted) return false;
+      if (!result.result) {
+        final message = result.resultText?.trim();
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(message)
+              ? l10n.errorNetwork
+              : (message != null && message.isNotEmpty ? message : l10n.failedToSendReply('')),
+        );
+        return false;
       }
+      unawaited(_refreshAndScrollToLast());
+      return true;
+    } catch (e) {
+      if (mounted) {
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(e.toString()) ? l10n.errorNetwork : l10n.failedToSendReply(e.toString()),
+        );
+      }
+      return false;
     }
+  }
+
+  /// The full Reply page (attachments, formatting) on the quick-reply text.
+  Future<bool> _openFullReply(TextEditingController controller) async {
+    final result = await Navigator.of(context).push(
+      FormPageRoute(
+        builder: (context) => ReplyConversationPage(
+          siteContext: widget.siteContext,
+          conversationId: widget.conversationId,
+          subject: widget.subject,
+          canUpload: _conversation?.canUpload,
+          contentController: controller,
+        ),
+      ),
+    );
+    if (result != true) return false;
+    if (mounted) await _refreshAndScrollToLast();
+    return true;
   }
 
   Future<void> _markAsUnread() async {
@@ -123,34 +282,19 @@ class _ConversationPageState extends State<ConversationPage> {
           // Call the callback to update the conversation state in the list
           widget.onMarkUnread?.call();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationMarkedAsUnread ?? 'Conversation marked as unread'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationMarkedAsUnread);
           // Pop back to the conversation list
           Navigator.pop(context);
         } else {
           // API call returned false - show error message
           final errorMessage =
-              result.resultText?.isNotEmpty == true ? result.resultText! : AppLocalizations.of(context)?.failedToMarkConversationAsUnread('') ?? 'Failed to mark conversation as unread';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+              result.resultText?.isNotEmpty == true ? result.resultText! : AppLocalizations.of(context).failedToMarkConversationAsUnread('');
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToMarkConversationAsUnread(e.toString()) ?? 'Failed to mark conversation as unread: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToMarkConversationAsUnread(e.toString()));
       }
     }
   }
@@ -524,45 +668,16 @@ class _ConversationPageState extends State<ConversationPage> {
     _highlightMessage(messageId);
   }
 
-  /// Refresh the conversation and scroll to the last message, highlighting it
+  /// After a reply: bring it in (with any other new messages) at the end of
+  /// the list, scroll to it and highlight it. A conversation opened at a
+  /// message (from a push) used to reload around that message, so the reply
+  /// just sent was not shown; and the whole conversation reloaded behind a
+  /// spinner.
   Future<void> _refreshAndScrollToLast() async {
-    try {
-      // Reset highlight before loading
-      setState(() {
-        _highlightedMessageId = null;
-      });
-
-      // Fully refresh the conversation by calling _loadConversation
-      // This will automatically load the last page and scroll to bottom.
-      // A conversation opened at a message (from a push) used to reload
-      // around that message, so the reply just sent was not shown.
-      _anchored = false;
-      await _loadConversation();
-
-      if (mounted && _conversation != null && _conversation!.list.isNotEmpty) {
-        // Highlight the last message (the one user just posted)
-        final lastMessage = _conversation!.list.last;
-        _highlightMessage(lastMessage.messageId);
-
-        // Ensure we scroll to the very bottom after UI is rendered
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_scrollController.hasClients && mounted) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-          _isLoadingMore = false;
-        });
-      }
+    _anchored = false;
+    await _refreshNewest(scrollToEnd: true);
+    if (mounted && _conversation != null && _conversation!.list.isNotEmpty) {
+      _highlightMessage(_conversation!.list.last.messageId);
     }
   }
 
@@ -574,13 +689,13 @@ class _ConversationPageState extends State<ConversationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Close Conversation',
+          AppLocalizations.of(context).closeConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          'Are you sure you want to close this conversation? This will prevent new replies from being posted.',
+          AppLocalizations.of(context).closeConversationConfirm,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -589,14 +704,14 @@ class _ConversationPageState extends State<ConversationPage> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              'Close',
+              AppLocalizations.of(context).close,
               style: TextStyle(color: colorScheme.onPrimary),
             ),
           ),
@@ -611,31 +726,16 @@ class _ConversationPageState extends State<ConversationPage> {
 
       if (mounted) {
         if (result.result) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationClosed ?? 'Conversation closed'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationClosed);
           // Refresh conversation to update state
           await _loadConversation();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToCloseConversation('') ?? 'Failed to close conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context).failedToCloseConversation(''));
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToCloseConversation(e.toString()) ?? 'Failed to close conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToCloseConversation(e.toString()));
       }
     }
   }
@@ -648,13 +748,13 @@ class _ConversationPageState extends State<ConversationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Open Conversation',
+          AppLocalizations.of(context).openConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          'Are you sure you want to open this conversation? This will allow new replies to be posted.',
+          AppLocalizations.of(context).openConversationConfirm,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -663,14 +763,14 @@ class _ConversationPageState extends State<ConversationPage> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              'Open',
+              AppLocalizations.of(context).open,
               style: TextStyle(color: colorScheme.onPrimary),
             ),
           ),
@@ -685,31 +785,16 @@ class _ConversationPageState extends State<ConversationPage> {
 
       if (mounted) {
         if (result.result) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.conversationOpened ?? 'Conversation opened'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationOpened);
           // Refresh conversation to update state
           await _loadConversation();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.resultText ?? 'Failed to open conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, result.resultText ?? 'Failed to open conversation');
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToOpenConversation(e.toString()) ?? 'Failed to open conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToOpenConversation(e.toString()));
       }
     }
   }
@@ -722,13 +807,13 @@ class _ConversationPageState extends State<ConversationPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          AppLocalizations.of(context)?.leaveConversation ?? 'Leave conversation',
+          AppLocalizations.of(context).leaveConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          'Are you sure you want to leave this conversation? This will hide it from your inbox.',
+          AppLocalizations.of(context).leaveConversationConfirm,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),
@@ -737,14 +822,14 @@ class _ConversationPageState extends State<ConversationPage> {
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              'Leave',
+              AppLocalizations.of(context).leave,
               style: TextStyle(color: colorScheme.onPrimary),
             ),
           ),
@@ -761,21 +846,11 @@ class _ConversationPageState extends State<ConversationPage> {
         Navigator.of(context).pop(true);
       } else {
         // The page used to close as if the conversation had been left.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.resultText ?? AppLocalizations.of(context)?.failedToLeaveConversation('') ?? 'Failed to leave conversation'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, result.resultText ?? AppLocalizations.of(context).failedToLeaveConversation(''));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToLeaveConversation(e.toString()) ?? 'Failed to leave conversation: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToLeaveConversation(e.toString()));
       }
     }
   }
@@ -807,7 +882,7 @@ class _ConversationPageState extends State<ConversationPage> {
   Future<void> _editConversation() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => EditConversationPage(
           siteContext: widget.siteContext,
           conversationId: widget.conversationId,
@@ -832,14 +907,14 @@ class _ConversationPageState extends State<ConversationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading conversation: $_error',
+              AppLocalizations.of(context).errorLoadingConversation('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadConversation,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -849,13 +924,20 @@ class _ConversationPageState extends State<ConversationPage> {
     if (_conversation == null) {
       return Center(
         child: Text(
-          'Conversation not found',
+          AppLocalizations.of(context).conversationNotFound,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
         ),
       );
     }
+
+    final canReply = (_conversation!.canReply ?? true) && !(_conversation!.isClosed ?? false);
+    // Without the composer under the list, the navigator sits clear of the
+    // system bar itself.
+    final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
+    // The keyboard is up: the room is for the messages and the composer.
+    final showNavigator = MediaQuery.viewInsetsOf(context).bottom == 0;
 
     return Column(
       children: [
@@ -865,10 +947,10 @@ class _ConversationPageState extends State<ConversationPage> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
               border: Border(
                 bottom: BorderSide(
-                  color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
                   width: 1,
                 ),
               ),
@@ -884,7 +966,7 @@ class _ConversationPageState extends State<ConversationPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'This conversation is closed and no longer accepting replies',
+                    AppLocalizations.of(context).conversationClosedNoReplies,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -914,7 +996,22 @@ class _ConversationPageState extends State<ConversationPage> {
             children: [
               RefreshIndicator(
                 onRefresh: _loadConversation,
-                child: SingleChildScrollView(
+                // Content that grows while the reader is at the newest message
+                // (images loading, reactions) keeps the newest message in view;
+                // late images used to push it off screen.
+                child: NotificationListener<ScrollMetricsNotification>(
+                  onNotification: (notification) {
+                    final metrics = notification.metrics;
+                    if (_atBottom && metrics.pixels < metrics.maxScrollExtent - 1) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted && _scrollController.hasClients) {
+                          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                        }
+                      });
+                    }
+                    return false;
+                  },
+                  child: SingleChildScrollView(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
@@ -937,7 +1034,7 @@ class _ConversationPageState extends State<ConversationPage> {
                           child: OutlinedButton.icon(
                             onPressed: () => _loadOlderMessages(),
                             icon: const Icon(Icons.arrow_upward),
-                            label: Text(AppLocalizations.of(context)?.loadEarlierMessages ?? 'Load Earlier Messages'),
+                            label: Text(AppLocalizations.of(context).loadEarlierMessages),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                             ),
@@ -984,7 +1081,7 @@ class _ConversationPageState extends State<ConversationPage> {
                           padding: const EdgeInsets.all(16.0),
                           child: Center(
                             child: Text(
-                              'No messages found',
+                              AppLocalizations.of(context).noMessagesFound,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
@@ -1009,7 +1106,7 @@ class _ConversationPageState extends State<ConversationPage> {
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: Center(
                                   child: Text(
-                                    'End of conversation',
+                                    AppLocalizations.of(context).endOfConversation,
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           fontStyle: FontStyle.italic,
@@ -1021,15 +1118,25 @@ class _ConversationPageState extends State<ConversationPage> {
                             return const SizedBox.shrink();
                           },
                         ),
-                      const SizedBox(height: 80), // for bottom bar spacing
+                      // Room for the navigator over the last message.
+                      SizedBox(height: 72 + navigatorBottom),
                     ],
                   ),
                 ),
+                ),
               ),
-              _buildBottomBar(context),
+              if (showNavigator) _buildNavigator(context, bottom: navigatorBottom),
             ],
           ),
         ),
+        if (canReply)
+          ConversationQuickReplyBar(
+            draftKey: _replyDraftKey,
+            siteContext: widget.siteContext,
+            serverDraftKey: XenForoDraftProxy.conversationReplyKey(widget.conversationId),
+            onSend: _sendQuickReply,
+            onOpenFullEditor: _openFullReply,
+          ),
       ],
     );
   }
@@ -1039,6 +1146,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
     final position = _scrollController.position;
     final isNearBottom = position.pixels >= position.maxScrollExtent - 200;
+    _atBottom = position.pixels >= position.maxScrollExtent - 48;
 
     // Only auto-load newer messages when scrolling to the bottom
     // Older messages require manual button click
@@ -1225,7 +1333,7 @@ class _ConversationPageState extends State<ConversationPage> {
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
               title: Text(
-                'Jump to Message',
+                AppLocalizations.of(context).jumpToMessage,
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -1259,7 +1367,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                    AppLocalizations.of(context).cancel,
                     style: TextStyle(color: colorScheme.primary),
                   ),
                 ),
@@ -1269,7 +1377,7 @@ class _ConversationPageState extends State<ConversationPage> {
                     await _jumpToMessagePosition(selectedMessagePosition);
                   },
                   child: Text(
-                    'Jump',
+                    AppLocalizations.of(context).jump,
                     style: TextStyle(color: colorScheme.primary),
                   ),
                 ),
@@ -1382,94 +1490,70 @@ class _ConversationPageState extends State<ConversationPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToJumpToMessage(e.toString()) ?? 'Failed to jump to message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToJumpToMessage(e.toString()));
       }
     }
   }
 
-  Widget _buildBottomBar(BuildContext context) {
-    if (_conversation == null) return const SizedBox.shrink();
+  /// First and newest message, and the position (tap to jump to one),
+  /// floating over the messages at the bottom right.
+  Widget _buildNavigator(BuildContext context, {required double bottom}) {
+    final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final total = _conversation!.totalMessageNum ?? _conversation!.list.length;
+    final position = _currentVisibleMessagePosition;
 
     return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, -2),
+      right: DesignTokens.spacingM,
+      bottom: bottom + DesignTokens.spacingS,
+      child: Material(
+        color: colorScheme.surfaceContainerHigh,
+        elevation: 2,
+        shape: const StadiumBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Semantics(
+              label: l10n.goToTop,
+              hint: l10n.jumpToFirstMessage,
+              button: true,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_upward),
+                onPressed: _jumpToFirstMessage,
+                tooltip: l10n.goToTop,
+              ),
+            ),
+            Semantics(
+              label: l10n.messagePositionOf(position, total),
+              hint: l10n.tapToJumpToMessage,
+              button: true,
+              excludeSemantics: true,
+              child: InkWell(
+                onTap: () => _showJumpToMessageDialog(context),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingXS),
+                    child: Center(
+                      widthFactor: 1,
+                      child: Text('$position / $total', style: Theme.of(context).textTheme.bodyMedium),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Semantics(
+              label: l10n.goToBottom,
+              hint: l10n.jumpToLastMessage,
+              button: true,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_downward),
+                onPressed: _jumpToLastMessage,
+                tooltip: l10n.goToBottom,
+              ),
             ),
           ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingS,
-            ),
-            child: Row(
-              children: [
-                Semantics(
-                  label: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
-                  hint: 'Jump to first message',
-                  button: true,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_upward),
-                    onPressed: _jumpToFirstMessage,
-                    tooltip: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
-                  ),
-                ),
-                Semantics(
-                  label: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
-                  hint: 'Jump to last message',
-                  button: true,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_downward),
-                    onPressed: _jumpToLastMessage,
-                    tooltip: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
-                  ),
-                ),
-                SizedBox(width: DesignTokens.spacingS),
-                Semantics(
-                  label: 'Message ${_currentVisibleMessagePosition} of ${_conversation!.totalMessageNum ?? _conversation!.list.length}',
-                  hint: 'Tap to jump to a specific message',
-                  button: true,
-                  child: GestureDetector(
-                    onTap: () {
-                      _showJumpToMessageDialog(context);
-                    },
-                    child: Text(
-                      '${_currentVisibleMessagePosition} / ${_conversation!.totalMessageNum ?? _conversation!.list.length}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                if ((_conversation!.canReply ?? true) && !(_conversation!.isClosed ?? false))
-                  Semantics(
-                    label: AccessibilityHelpers.getReplyButtonLabel(context),
-                    button: true,
-                    child: FilledButton.icon(
-                      onPressed: _onReplyPressed,
-                      icon: const Icon(Icons.reply),
-                      label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
-                      style: StyleBuilders.extendedFilledButtonStyle(
-                        colorScheme: Theme.of(context).colorScheme,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -1477,7 +1561,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onQuoteMessage(FCConversationMessage message) async {
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => ReplyConversationPage(
           siteContext: widget.siteContext,
           conversationId: widget.conversationId,
@@ -1496,7 +1580,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onEditMessage(FCConversationMessage message) async {
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => EditConversationMessagePage(
           siteContext: widget.siteContext,
           messageId: message.messageId,
@@ -1513,12 +1597,7 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Future<void> _onLikeMessage(FCConversationMessage message) async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)?.pleaseLoginToLikeMessages ?? 'Please login to like messages'),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
       return;
     }
 
@@ -1647,14 +1726,8 @@ class _ConversationPageState extends State<ConversationPage> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)
-                    ?.failedToLikeOrUnlikeMessage(wasLiked ? (AppLocalizations.of(context)?.unlike ?? 'unlike') : (AppLocalizations.of(context)?.like ?? 'like'), e.toString()) ??
-                'Failed to ${wasLiked ? 'unlike' : 'like'} message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)
+                    .failedToLikeOrUnlikeMessage(wasLiked ? AppLocalizations.of(context).unlike : AppLocalizations.of(context).like, e.toString()));
       }
     }
   }
@@ -1762,15 +1835,19 @@ class _ConversationPageState extends State<ConversationPage> {
         }
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to react: $e')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).failedToReact('$e'));
       }
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _activitySub?.cancel();
+    _pollTimer?.cancel();
+    if (NotificationService.openConversationId == widget.conversationId) {
+      NotificationService.openConversationId = null;
+    }
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _highlightTimer?.cancel(); // Cancel timer on dispose

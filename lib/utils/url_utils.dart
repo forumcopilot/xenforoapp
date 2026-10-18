@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'snackbar_helper.dart';
 import 'package:flutter/material.dart'; // Added for BuildContext
+import '../l10n/generated/app_localizations.dart';
 
 /// Forum template types enum
 enum ForumTemplate {
@@ -513,11 +515,7 @@ class UrlUtils {
     try {
       final String shareText = title != null ? '$title\n$url' : url;
 
-      await Share.share(
-        shareText,
-        subject: subject,
-        sharePositionOrigin: sharePositionOrigin,
-      );
+      await SharePlus.instance.share(ShareParams(text: shareText, subject: subject, sharePositionOrigin: sharePositionOrigin));
     } catch (e) {
       debugPrint('Error sharing URL: $e');
       // Fallback to copying URL to clipboard
@@ -540,11 +538,7 @@ class UrlUtils {
     try {
       final String shareContent = '$text\n\n$url';
 
-      await Share.share(
-        shareContent,
-        subject: subject,
-        sharePositionOrigin: sharePositionOrigin,
-      );
+      await SharePlus.instance.share(ShareParams(text: shareContent, subject: subject, sharePositionOrigin: sharePositionOrigin));
     } catch (e) {
       debugPrint('Error sharing URL with text: $e');
       // Fallback to copying content to clipboard
@@ -608,10 +602,7 @@ class UrlUtils {
     String? subject,
   }) async {
     final String shareText = title != null ? '$title\n$url' : url;
-    await Share.share(
-      shareText,
-      subject: subject,
-    );
+    await SharePlus.instance.share(ShareParams(text: shareText, subject: subject));
   }
 
   /// Android specific URL sharing
@@ -621,10 +612,7 @@ class UrlUtils {
     String? subject,
   }) async {
     final String shareText = title != null ? '$title\n$url' : url;
-    await Share.share(
-      shareText,
-      subject: subject,
-    );
+    await SharePlus.instance.share(ShareParams(text: shareText, subject: subject));
   }
 
   /// macOS specific URL sharing
@@ -634,10 +622,7 @@ class UrlUtils {
     String? subject,
   }) async {
     final String shareText = title != null ? '$title\n$url' : url;
-    await Share.share(
-      shareText,
-      subject: subject,
-    );
+    await SharePlus.instance.share(ShareParams(text: shareText, subject: subject));
   }
 
   /// Web platform URL sharing
@@ -648,7 +633,7 @@ class UrlUtils {
     try {
       // Try to use Web Share API - share_plus will handle availability internally
       final String shareText = title != null ? '$title\n$url' : url;
-      await Share.share(shareText);
+      await SharePlus.instance.share(ShareParams(text: shareText));
     } catch (e) {
       debugPrint('Web sharing failed, copying to clipboard: $e');
       // Fallback to clipboard if Web Share API is not available
@@ -774,68 +759,7 @@ class UrlUtils {
     } catch (e) {
       debugPrint('Error handling URL tap: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
-
-  /// Handle URL tap with intelligent forum URL detection (advanced behavior)
-  ///
-  /// [url] - The URL that was tapped
-  /// [context] - BuildContext for navigation and error handling
-  /// [forumUrl] - Current forum URL for same-forum detection
-  /// [forumType] - Forum type for URL analysis
-  /// [onForumNavigation] - Callback for forum navigation (optional)
-  static Future<void> handleUrlTapWithForumDetection(
-    SiteContext siteContext,
-    String url,
-    BuildContext context, {
-    required String forumUrl,
-    required String forumType,
-    Function(String topicId, String? postId, String? forumId)? onForumNavigation,
-  }) async {
-    try {
-      final cleanUrl = url.trim().replaceAll('"', '');
-
-      // Check if it's an email address first
-      if (_isEmailAddress(cleanUrl)) {
-        await _openEmailAddress(cleanUrl, context);
-        return;
-      }
-
-      // Check if this is a forum URL that should be handled internally
-      final analysis = _analyzeForumUrl(siteContext, cleanUrl, forumUrl, forumType);
-      if (analysis.isSameForum) {
-        // Use callback if provided, otherwise fallback to external launch
-        if (onForumNavigation != null) {
-          onForumNavigation(
-            analysis.topicId ?? '',
-            analysis.postId,
-            analysis.forumId,
-          );
-        } else {
-          // Fallback to external launch if no callback provided
-          await openUrl(cleanUrl);
-        }
-        return;
-      }
-
-      // Launch external URL
-      await openUrl(cleanUrl);
-    } catch (e) {
-      debugPrint('Error handling URL tap: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open link: ${url.length > 50 ? '${url.substring(0, 50)}...' : url}'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenLink(url.length > 50 ? '${url.substring(0, 50)}...' : url));
       }
     }
   }
@@ -854,155 +778,15 @@ class UrlUtils {
       final Uri currentUri = Uri.parse(baseCurrentUrl);
       final Uri targetUri = Uri.parse(url);
 
-      // Check if the URL belongs to the same domain
-      return currentUri.host == targetUri.host;
+      // The same host, with or without www.
+      String bare(String host) {
+        final h = host.toLowerCase();
+        return h.startsWith('www.') ? h.substring(4) : h;
+      }
+      return bare(currentUri.host) == bare(targetUri.host);
     } catch (e) {
       debugPrint('Error checking same domain: $e');
       return false;
-    }
-  }
-
-  /// Analyze if a URL belongs to the current forum
-  static _ForumUrlAnalysis _analyzeForumUrl(SiteContext siteContext, String url, String forumUrl, String forumType) {
-    try {
-      // Get the real forum URL by removing mobiquo directory from plugin URL
-      String baseCurrentUrl = siteContext.site.url;
-
-      // Check if the URL belongs to the same domain
-      final Uri currentUri = Uri.parse(baseCurrentUrl);
-      final Uri targetUri = Uri.parse(url);
-
-      if (currentUri.host != targetUri.host) {
-        return _ForumUrlAnalysis(isSameForum: false, originalUrl: url);
-      }
-
-      // Parse URL based on forum type to extract IDs
-      return _parseUrlByForumType(url, parseForumType(forumType));
-    } catch (e) {
-      debugPrint('Error analyzing forum URL: $e');
-      return _ForumUrlAnalysis(isSameForum: false, originalUrl: url);
-    }
-  }
-
-  /// Parse URL based on forum type to extract topic_id and post_id
-  static _ForumUrlAnalysis _parseUrlByForumType(String url, ForumTemplate forumType) {
-    try {
-      String? topicId;
-      String? postId;
-      String? forumId;
-
-      switch (forumType) {
-        case ForumTemplate.dz:
-          // forum.php?mod=viewthread&tid=123 or forum.php?mod=redirect&goto=findpost&pid=456&ptid=123
-          final tidMatch = RegExp(r'tid=(\d+)').firstMatch(url);
-          final pidMatch = RegExp(r'pid=(\d+)').firstMatch(url);
-          topicId = tidMatch?.group(1);
-          postId = pidMatch?.group(1);
-          break;
-
-        case ForumTemplate.vb:
-        case ForumTemplate.vb3:
-          // showthread.php?t=123 or showpost.php?p=456
-          final tMatch = RegExp(r'[?&]t=(\d+)').firstMatch(url);
-          final pMatch = RegExp(r'[?&]p=(\d+)').firstMatch(url);
-          topicId = tMatch?.group(1);
-          postId = pMatch?.group(1);
-          break;
-
-        case ForumTemplate.vb5:
-          // /forum/123-topic-title?p=456#post456
-          final topicMatch = RegExp(r'/(\d+)-[^?]+').firstMatch(url);
-          final postMatch = RegExp(r'[?&]p=(\d+)').firstMatch(url);
-          topicId = topicMatch?.group(1);
-          postId = postMatch?.group(1);
-          break;
-
-        case ForumTemplate.xf:
-          // XenForo URL parsing rules:
-          // 1) /threads/{thread}/post-{post_id}
-          // 2) /posts/{post_id}
-          // 3) /threads/{thread}#post-{post_id}
-          // 4) /threads/{thread}
-          final Uri xfUri = Uri.parse(url);
-          final String pathWithQuery = xfUri.query.isNotEmpty ? '${xfUri.path}?${xfUri.query}' : xfUri.path;
-          final String fragment = xfUri.fragment;
-          final directPostMatch = RegExp(r'(?:/|\?|&)threads/(?:[^/]+\.)?(\d+)/post-(\d+)', caseSensitive: false).firstMatch(pathWithQuery);
-          if (directPostMatch != null) {
-            topicId = directPostMatch.group(1);
-            postId = directPostMatch.group(2);
-            break;
-          }
-          final shortPostMatch = RegExp(r'(?:/|\?|&)posts/(\d+)/?', caseSensitive: false).firstMatch(pathWithQuery);
-          if (shortPostMatch != null) {
-            postId = shortPostMatch.group(1);
-            break;
-          }
-          final threadMatch = RegExp(r'(?:/|\?|&)threads/(?:[^/]+\.)?(\d+)(?:/|$|(?=page-)|(?=unread))', caseSensitive: false).firstMatch(pathWithQuery);
-          if (threadMatch != null) {
-            topicId = threadMatch.group(1);
-            final fragmentMatch = RegExp(r'^post-(\d+)$', caseSensitive: false).firstMatch(fragment);
-            if (fragmentMatch != null) {
-              postId = fragmentMatch.group(1);
-            }
-            break;
-          }
-          // Fallback: index.php?threads/123/ or index.php?posts/456/
-          final threadQueryMatch = RegExp(r'threads/(?:[^/]+\.)?(\d+)', caseSensitive: false).firstMatch(url);
-          final postQueryMatch = RegExp(r'posts/(\d+)', caseSensitive: false).firstMatch(url);
-          topicId = threadQueryMatch?.group(1);
-          postId = postQueryMatch?.group(1);
-          break;
-
-        case ForumTemplate.ip:
-        case ForumTemplate.ip4:
-          // index.php?/topic/123-topic-title/page__view__findpost__p__456
-          final topicMatch = RegExp(r'/topic/(\d+)').firstMatch(url);
-          final postMatch = RegExp(r'p__(\d+)').firstMatch(url);
-          topicId = topicMatch?.group(1);
-          postId = postMatch?.group(1);
-          break;
-
-        case ForumTemplate.pb:
-          // viewtopic.php?t=123 or viewtopic.php?p=456#p456
-          // Also handle legacy pattern: -t12345.html
-          final tMatch = RegExp(r'[?&]t=(\d+)').firstMatch(url);
-          final pMatch = RegExp(r'[?&]p=(\d+)').firstMatch(url);
-          final tapatalkTopicMatch = RegExp(r'-t(\d+)\.html').firstMatch(url);
-
-          topicId = tMatch?.group(1) ?? tapatalkTopicMatch?.group(1);
-          postId = pMatch?.group(1);
-          break;
-
-        case ForumTemplate.smf:
-        case ForumTemplate.smf1:
-          // index.php?topic=123.0 or index.php?topic=123.msg456#msg456
-          final topicMatch = RegExp(r'topic=(\d+)').firstMatch(url);
-          final msgMatch = RegExp(r'msg(\d+)').firstMatch(url);
-          topicId = topicMatch?.group(1);
-          postId = msgMatch?.group(1);
-          break;
-
-        default:
-          // For other forum types, try generic patterns
-          final genericTopicMatch = RegExp(r'[?&](?:tid|thread|topic)=(\d+)').firstMatch(url);
-          final genericPostMatch = RegExp(r'[?&](?:pid|post)=(\d+)').firstMatch(url);
-
-          topicId = genericTopicMatch?.group(1);
-          postId = genericPostMatch?.group(1);
-          break;
-      }
-
-      final bool isSameForum = topicId != null || postId != null;
-      return _ForumUrlAnalysis(
-        isSameForum: isSameForum,
-        topicId: topicId,
-        postId: postId,
-        forumId: forumId,
-        originalUrl: url,
-      );
-    } catch (e) {
-      debugPrint('Error parsing URL by forum type: $e');
-      return _ForumUrlAnalysis(isSameForum: false, originalUrl: url);
     }
   }
 
@@ -1037,41 +821,14 @@ class UrlUtils {
         // Fallback: try to copy email to clipboard
         await Clipboard.setData(ClipboardData(text: cleanEmail));
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Email copied to clipboard: $cleanEmail'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).emailCopiedToClipboard(cleanEmail));
         }
       }
     } catch (e) {
       debugPrint('Error opening email address: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open email: $email'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).couldNotOpenEmail(email));
       }
     }
   }
-}
-
-/// Internal class for forum URL analysis results
-class _ForumUrlAnalysis {
-  final bool isSameForum;
-  final String? topicId;
-  final String? postId;
-  final String? forumId;
-  final String originalUrl;
-
-  _ForumUrlAnalysis({
-    required this.isSameForum,
-    this.topicId,
-    this.postId,
-    this.forumId,
-    required this.originalUrl,
-  });
 }

@@ -4,6 +4,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_poll.dart';
 import 'package:forumcopilot_flutter/services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Twitter/X-style poll card shown at the top of a thread when the thread has a poll.
 class ThreadPollCard extends StatefulWidget {
@@ -57,25 +58,9 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
       final updated = await postProxy.votePollAsync(widget.topicId, _selectedIds.toList());
       if (updated != null && mounted) {
         widget.onVoteSuccess(updated);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.vote,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            margin: DesignTokens.paddingS,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).vote);
       } else if (mounted) {
-        _showError('Vote failed. Please try again.');
+        _showError(AppLocalizations.of(context).voteFailedTryAgain);
       }
     } catch (e) {
       if (mounted) _showError(e.toString());
@@ -85,23 +70,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        behavior: SnackBarBehavior.floating,
-        margin: DesignTokens.paddingS,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-        ),
-        duration: const Duration(seconds: 4),
-      ),
-    );
+    SnackbarHelper.showError(context, message);
   }
 
   @override
@@ -109,7 +78,7 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final showResults = widget.poll.canViewResults &&
         widget.poll.voterCount != null &&
         widget.poll.voterCount! > 0;
@@ -122,10 +91,10 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
         vertical: DesignTokens.spacingS,
       ),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(DesignTokens.opacityLow),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -214,11 +183,11 @@ class _ThreadPollCardState extends State<ThreadPollCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(DesignTokens.radiusS),
               color: isSelected
-                  ? colorScheme.primaryContainer.withOpacity(DesignTokens.opacityMediumLow)
+                  ? colorScheme.primaryContainer.withValues(alpha: DesignTokens.opacityMediumLow)
                   : null,
               border: isSelected
                   ? Border.all(
-                      color: colorScheme.primary.withOpacity(DesignTokens.opacityMediumLow),
+                      color: colorScheme.primary.withValues(alpha: DesignTokens.opacityMediumLow),
                       width: DesignTokens.borderWidthThin,
                     )
                   : null,

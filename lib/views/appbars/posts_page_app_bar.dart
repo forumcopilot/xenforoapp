@@ -98,7 +98,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
       ),
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       iconTheme: IconThemeData(
         color: colorScheme.onSurface,
@@ -185,7 +185,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                 ),
                 const SizedBox(width: DesignTokens.spacingM),
                 Text(
-                  AppLocalizations.of(context)?.refresh ?? 'Refresh',
+                  AppLocalizations.of(context).refresh,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -205,8 +205,8 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
                     widget.isSubscribed
-                        ? (AppLocalizations.of(context)?.unsubscribe ?? 'Unsubscribe')
-                        : (AppLocalizations.of(context)?.subscribe ?? 'Subscribe'),
+                        ? AppLocalizations.of(context).unsubscribe
+                        : AppLocalizations.of(context).subscribe,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -226,8 +226,8 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
                     widget.isClosed 
-                        ? (AppLocalizations.of(context)?.unlock ?? 'Unlock')
-                        : (AppLocalizations.of(context)?.lock ?? 'Lock'),
+                        ? AppLocalizations.of(context).unlock
+                        : AppLocalizations.of(context).lock,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -247,8 +247,8 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
                     widget.isSticky 
-                        ? (AppLocalizations.of(context)?.unstick ?? 'Unstick')
-                        : (AppLocalizations.of(context)?.stick ?? 'Stick'),
+                        ? AppLocalizations.of(context).unstick
+                        : AppLocalizations.of(context).stick,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -267,7 +267,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   ),
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
-                    widget.isDeleted ? (AppLocalizations.of(context)?.undelete ?? 'Undelete') : (AppLocalizations.of(context)?.delete ?? 'Delete'),
+                    widget.isDeleted ? AppLocalizations.of(context).undelete : AppLocalizations.of(context).delete,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.error,
                     ),
@@ -286,7 +286,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   ),
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
-                    AppLocalizations.of(context)?.share ?? 'Share',
+                    AppLocalizations.of(context).share,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -305,7 +305,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   ),
                   const SizedBox(width: DesignTokens.spacingM),
                   Text(
-                    AppLocalizations.of(context)?.viewOnWeb ?? 'View on Web',
+                    AppLocalizations.of(context).viewOnWeb,
                     style: textTheme.titleMedium?.copyWith(
                       color: colorScheme.onSurface,
                     ),
@@ -334,15 +334,15 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(
-                      widget.isClosed ? 'Unlock Topic' : 'Lock Topic',
+                      widget.isClosed ? AppLocalizations.of(context).unlockTopic : AppLocalizations.of(context).lockTopic,
                       style: textTheme.titleLarge?.copyWith(
                         color: colorScheme.onSurface,
                       ),
                     ),
                     content: Text(
                       widget.isClosed
-                          ? 'Are you sure you want to unlock this topic? Other users will be able to reply and interact with it again.'
-                          : 'Are you sure you want to lock this topic? Other users will not be able to reply or interact with it.',
+                          ? AppLocalizations.of(context).unlockTopicConfirm
+                          : AppLocalizations.of(context).lockTopicConfirm,
                       style: textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -353,7 +353,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                           Navigator.of(context).pop();
                         },
                         child: Text(
-                          'Cancel',
+                          AppLocalizations.of(context).cancel,
                           style: textTheme.labelLarge?.copyWith(
                             color: colorScheme.primary,
                           ),
@@ -377,7 +377,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                           elevation: DesignTokens.elevationMedium,
                         ),
                         child: Text(
-                          widget.isClosed ? 'Unlock' : 'Lock',
+                          widget.isClosed ? AppLocalizations.of(context).unlock : AppLocalizations.of(context).lock,
                           style: textTheme.labelLarge?.copyWith(
                             color: colorScheme.onPrimary,
                           ),
@@ -394,15 +394,15 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(
-                      widget.isSticky ? 'Unstick Topic' : 'Stick Topic',
+                      widget.isSticky ? AppLocalizations.of(context).unstickTopic : AppLocalizations.of(context).stickTopic,
                       style: textTheme.titleLarge?.copyWith(
                         color: colorScheme.primary,
                       ),
                     ),
                     content: Text(
                       widget.isSticky
-                          ? 'Are you sure you want to unstick this topic? It will no longer appear at the top of the forum.'
-                          : 'Are you sure you want to stick this topic? It will appear at the top of the forum for all users.',
+                          ? AppLocalizations.of(context).unstickTopicConfirm
+                          : AppLocalizations.of(context).stickTopicConfirm,
                       style: textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -413,7 +413,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                           Navigator.of(context).pop();
                         },
                         child: Text(
-                          'Cancel',
+                          AppLocalizations.of(context).cancel,
                           style: textTheme.labelLarge?.copyWith(
                             color: colorScheme.primary,
                           ),
@@ -437,7 +437,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                           elevation: DesignTokens.elevationMedium,
                         ),
                         child: Text(
-                          widget.isSticky ? 'Unstick' : 'Stick',
+                          widget.isSticky ? AppLocalizations.of(context).unstick : AppLocalizations.of(context).stick,
                           style: textTheme.labelLarge?.copyWith(
                             color: colorScheme.onPrimary,
                           ),
@@ -456,13 +456,13 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: Text(
-                        'Undelete Topic',
+                        AppLocalizations.of(context).undeleteTopic,
                         style: textTheme.titleLarge?.copyWith(
                           color: colorScheme.error,
                         ),
                       ),
                       content: Text(
-                        'Are you sure you want to undelete this topic? It will be visible to other users again.',
+                        AppLocalizations.of(context).undeleteTopicConfirm,
                         style: textTheme.bodyLarge?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -473,7 +473,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                             Navigator.of(context).pop();
                           },
                           child: Text(
-                            'Cancel',
+                            AppLocalizations.of(context).cancel,
                             style: textTheme.labelLarge?.copyWith(
                               color: colorScheme.primary,
                             ),
@@ -497,7 +497,7 @@ class PostsPageAppBarState extends State<PostsPageAppBar> {
                             elevation: DesignTokens.elevationMedium,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)?.undelete ?? 'Undelete',
+                            AppLocalizations.of(context).undelete,
                             style: textTheme.labelLarge?.copyWith(
                               color: colorScheme.onError,
                             ),

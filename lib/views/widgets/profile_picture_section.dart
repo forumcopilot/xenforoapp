@@ -8,6 +8,9 @@ import 'package:forumcopilot_flutter/utils/file_picker_utils.dart';
 import 'dart:io';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ProfilePictureSection extends StatefulWidget {
   final SiteContext siteContext;
@@ -38,20 +41,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
     final canUploadAvatar = widget.siteContext.loginDataOutput?.canUploadAvatar ?? false;
     if (!canUploadAvatar) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'You do not have permission to upload avatars',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).noPermissionToUploadAvatars);
       }
       return;
     }
@@ -92,20 +82,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
               });
             }
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Avatar uploaded successfully',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context).avatarUploadedSuccessfully);
             }
           } else {
             throw Exception(uploadAttachmentResult.resultText);
@@ -128,20 +105,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
         });
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick image: $e',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToPickImage}: $e');
       }
     }
   }
@@ -193,16 +157,11 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
               GestureDetector(
                 onTap: () {
                   if (widget.imageUrl.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => FullScreenImageViewer(
+                    AppNavigation.push(context, FullScreenImageViewer(
                           imageUrls: [widget.imageUrl],
                           initialIndex: 0,
                           heroTag: 'profile_picture_${widget.username}',
-                        ),
-                      ),
-                    );
+                        ));
                   }
                 },
                 child: _selectedImageFile != null
@@ -226,7 +185,7 @@ class _ProfilePictureSectionState extends State<ProfilePictureSection> {
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: colorScheme.surface.withOpacity(0.35),
+                      color: colorScheme.surface.withValues(alpha: 0.35),
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,

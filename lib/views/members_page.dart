@@ -11,6 +11,8 @@ import 'package:forumcopilot_sdk/models/entities/fc_user.dart';
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import '../theme/design_tokens.dart';
 import '../utils/number_utils.dart';
+import 'widgets/filter_chip_bar.dart';
+import '../utils/app_navigation.dart';
 
 class MembersPage extends StatefulWidget {
   const MembersPage({
@@ -28,8 +30,8 @@ class _MembersPageState extends State<MembersPage> {
   int _selectedFilterIndex = 0;
   List<String> _getFilterLabels(BuildContext context) {
     return [
-      AppLocalizations.of(context)?.allMembers ?? 'All Members',
-      AppLocalizations.of(context)?.online ?? 'Online',
+      AppLocalizations.of(context).allMembers,
+      AppLocalizations.of(context).online,
     ];
   }
 
@@ -212,46 +214,15 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Widget _buildFilterChips() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.spacingL,
-        vertical: DesignTokens.spacingM,
-      ),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                _handleFilterChange(index);
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceVariant,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        _handleFilterChange(index);
+      },
     );
   }
 
@@ -268,7 +239,7 @@ class _MembersPageState extends State<MembersPage> {
   Widget _buildSearchResults(ColorScheme colorScheme, TextTheme textTheme) {
     if (_searchError != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.searchFailed ?? 'Search failed',
+        title: AppLocalizations.of(context).searchFailed,
         message: _searchError!,
       );
     }
@@ -282,16 +253,16 @@ class _MembersPageState extends State<MembersPage> {
     if (_searchResults.isEmpty && _hasSearched) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: AppLocalizations.of(context)?.noMembersFound ?? 'No members found',
-        description: AppLocalizations.of(context)?.trySearchingWithDifferentUsername ?? 'Try searching with a different username',
+        title: AppLocalizations.of(context).noMembersFound,
+        description: AppLocalizations.of(context).trySearchingWithDifferentUsername,
       );
     }
 
     if (_searchResults.isEmpty && !_hasSearched) {
       return EmptyStateWidget(
         icon: Icons.people_alt_outlined,
-        title: AppLocalizations.of(context)?.searchForMembers ?? 'Search for members',
-        description: AppLocalizations.of(context)?.enterUsernameToFindMembers ?? 'Enter a username to find forum members',
+        title: AppLocalizations.of(context).searchForMembers,
+        description: AppLocalizations.of(context).enterUsernameToFindMembers,
       );
     }
 
@@ -341,7 +312,7 @@ class _MembersPageState extends State<MembersPage> {
   Widget _buildOnlineUsers(ColorScheme colorScheme, TextTheme textTheme) {
     if (_onlineError != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.failedToLoadOnlineUsers ?? 'Failed to load online users',
+        title: AppLocalizations.of(context).failedToLoadOnlineUsers,
         message: _onlineError!,
       );
     }
@@ -355,8 +326,8 @@ class _MembersPageState extends State<MembersPage> {
     if (_onlineUsers.isEmpty && !_onlineIsLoading) {
       return EmptyStateWidget(
         icon: Icons.people_outline_rounded,
-        title: AppLocalizations.of(context)?.noUsersOnline ?? 'No users online',
-        description: AppLocalizations.of(context)?.noMembersOnline ?? 'No members are currently online',
+        title: AppLocalizations.of(context).noUsersOnline,
+        description: AppLocalizations.of(context).noMembersOnline,
       );
     }
 
@@ -452,17 +423,12 @@ class _MembersPageState extends State<MembersPage> {
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userId: user.id,
               userName: user.username,
               profilePictureUrl: user.iconUrl,
-            ),
-          ),
-        );
+            ));
       },
     );
   }
@@ -475,7 +441,7 @@ class _MembersPageState extends State<MembersPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.members ?? 'Members',
+          AppLocalizations.of(context).members,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -483,10 +449,9 @@ class _MembersPageState extends State<MembersPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: DesignTokens.elevationMedium,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -500,7 +465,7 @@ class _MembersPageState extends State<MembersPage> {
                 color: colorScheme.surface,
                 border: Border(
                   bottom: BorderSide(
-                    color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                    color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                     width: DesignTokens.borderWidthThin,
                   ),
                 ),
@@ -508,7 +473,7 @@ class _MembersPageState extends State<MembersPage> {
               child: SearchTextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
-                hintText: AppLocalizations.of(context)?.enterUsernameToSearch ?? 'Enter username to search...',
+                hintText: AppLocalizations.of(context).enterUsernameToSearch,
                 onSearch: _handleSearch,
                 autoSearch: true,
                 onClear: _handleClear,

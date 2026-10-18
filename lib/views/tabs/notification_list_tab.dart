@@ -11,9 +11,12 @@ import '../post_page.dart';
 import '../lists/posts_list.dart';
 import '../private_messaging/conversation/pages/conversation_page.dart';
 import '../user_profile_page.dart';
-import '../../utils/url_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../services/notification_router.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
 
 class NotificationListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -227,7 +230,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           _isLoading = false;
           _isLoadingMore = false;
           _error = null;
-          _hasMore = topics.length >= _perPage;
+          // Rows without text are dropped above, so count what the server sent.
+          _hasMore = alertData.hasMore ?? alertData.items.length >= _perPage;
           if (_hasMore) _page += 1;
         });
         _hasLoaded = true; // Mark as loaded after successful load
@@ -272,107 +276,62 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     AppLogger.debug('Timestamp: ${alert.timestamp}');
     AppLogger.debug('==================');
 
-    // Handle navigation based on content type
-    final contentType = alert.content_type?.toLowerCase() ?? '';
-
-    if (contentType == 'post') {
-      // For post type: use getThreadByPost with the post_id
-      if (alert.postId == null || alert.postId!.isEmpty) {
-        _showErrorDialog(context, 'Post ID is missing. Cannot navigate to the post.');
-        return;
-      }
-
-      // topicId is now always provided by the API for post alerts
-      if (alert.topicId == null || alert.topicId!.isEmpty) {
-        _showErrorDialog(context, 'Topic ID is missing. Cannot navigate to the post.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PostPage(
-            siteContext: widget.siteContext,
-            topicId: alert.topicId!,
-            title: _extractTopicTitleFromMessage(alert.message),
-            mode: PostsListMode.thread_by_post,
-            anchorPostId: alert.postId,
-            forumId: '', // Forum ID may not be available
-          ),
-        ),
-      );
-    } else if (contentType == 'thread') {
-      // For thread type: open the topic
-      final topicId = alert.topic_id ?? alert.content_id;
-      if (topicId == null || topicId.isEmpty) {
-        _showErrorDialog(context, 'Topic ID is missing. Cannot open the topic.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PostPage(
-            siteContext: widget.siteContext,
-            topicId: topicId,
-            title: _extractTopicTitleFromMessage(alert.message),
-            mode: PostsListMode.first_unread,
-            forumId: '', // Forum ID may not be available
-          ),
-        ),
-      );
-    } else if (contentType == 'conversation_message') {
-      // For conversation_message type: open the conversation
-      final conversationId = alert.conversationId ?? alert.content_id;
-      if (conversationId == null || conversationId.isEmpty) {
-        _showErrorDialog(context, 'Conversation ID is missing. Cannot open the conversation.');
-        return;
-      }
-
-      // For conversation_message type, contentId is the message ID
-      // Use it to navigate to the specific message in the conversation
-      final messageId = alert.content_id?.isNotEmpty == true ? alert.content_id : null;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConversationPage(
-            siteContext: widget.siteContext,
-            conversationId: conversationId,
-            subject: _extractSubjectFromMessage(alert.message),
-            anchorMessageId: messageId,
-          ),
-        ),
-      );
-    } else if (contentType == 'user') {
-      // For user type: open user profile page
-      final username = alert.fromUsername ?? alert.username;
-      if (username.isEmpty) {
-        _showErrorDialog(context, 'Username is missing. Cannot open user profile.');
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UserProfilePage(
-            siteContext: widget.siteContext,
-            userName: username,
-            profilePictureUrl: alert.icon_url,
-          ),
-        ),
-      );
-    } else {
-      // For all other types: use actionUrl to open in external browser
-      final actionUrl = alert.actionUrl;
-      if (actionUrl == null || actionUrl.isEmpty) {
-        AppLogger.debug('Content type "${alert.content_type}" has no actionUrl. Cannot navigate.');
-        _showErrorDialog(context, 'No action URL available for this notification type.');
-        return;
-      }
-
-      // Open URL in external browser
-      await UrlUtils.openUrl(actionUrl);
+    // The same mapping pushes use (NotificationRouter).
+    final destination = NotificationRouter.destinationFor(
+      contentType: alert.contentType,
+      contentId: alert.contentId,
+      postId: alert.postId,
+      topicId: alert.topicId,
+      conversationId: alert.conversationId,
+      username: alert.fromUsername ?? alert.username,
+      url: alert.actionUrl,
+    );
+    switch (destination) {
+      case PostDestination(:final postId, :final topicId):
+        if (topicId == null) {
+          _showErrorDialog(
+            context,
+            AppLocalizations.of(context).topicIdIsMissingCannotNavigateToThePost,
+          );
+          return;
+        }
+        AppNavigation.push(context, PostPage(
+              siteContext: widget.siteContext,
+              topicId: topicId,
+              title: _extractTopicTitleFromMessage(alert.message),
+              mode: PostsListMode.thread_by_post,
+              anchorPostId: postId,
+              forumId: '', // Forum ID may not be available
+            ));
+      case TopicDestination(:final topicId):
+        AppNavigation.push(context, PostPage(
+              siteContext: widget.siteContext,
+              topicId: topicId,
+              title: _extractTopicTitleFromMessage(alert.message),
+              mode: PostsListMode.first_unread,
+              forumId: '', // Forum ID may not be available
+            ));
+      case ConversationDestination(:final conversationId, :final messageId):
+        AppNavigation.push(context, ConversationPage(
+              siteContext: widget.siteContext,
+              conversationId: conversationId,
+              subject: _extractSubjectFromMessage(alert.message),
+              anchorMessageId: messageId,
+            ));
+      case ProfileDestination(:final userId, :final username):
+        AppNavigation.push(context, UserProfilePage(
+              siteContext: widget.siteContext,
+              userId: userId,
+              userName: username,
+              profilePictureUrl: alert.icon_url,
+            ));
+      case LinkDestination(:final url):
+        await ForumLinks.open(context, url, widget.siteContext);
+      case AlertsDestination():
+        SnackbarHelper.showInfo(
+          context,
+          AppLocalizations.of(context).noActionUrlAvailableForThisNotificationType,
+        );
     }
   }
 
@@ -398,7 +357,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            AppLocalizations.of(context)?.errorTitle ?? 'Error',
+            AppLocalizations.of(context).errorTitle,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightSemiBold,
@@ -413,7 +372,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           actions: <Widget>[
             TextButton(
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -434,8 +393,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: 'Sign in to view notifications',
-        message: 'You need to be signed in to view your notifications.',
+        title: AppLocalizations.of(context).signInToViewNotifications,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewYourNotifications,
         icon: Icons.notifications_outlined,
       );
     }
@@ -468,7 +427,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingXL),
                         Text(
-                          'Error loading notifications',
+                          AppLocalizations.of(context).errorLoadingNotifications,
                           style: textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -485,9 +444,9 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
                         Text(
-                          'Pull down to refresh',
+                          AppLocalizations.of(context).pullDownToRefresh,
                           style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -526,7 +485,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingXL),
                         Text(
-                          "All caught up!",
+                          AppLocalizations.of(context).youAreAllCaughtUp,
                           style: textTheme.headlineSmall?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -535,7 +494,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingS),
                         Text(
-                          'You have no new notifications. Check back later for updates on topics you\'re following.',
+                          AppLocalizations.of(context).youHaveNoNewNotificationsCheckBackLater,
                           style: textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -543,9 +502,9 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
                         Text(
-                          'Pull down to refresh',
+                          AppLocalizations.of(context).pullDownToRefresh,
                           style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           ),
                           textAlign: TextAlign.center,
                         ),

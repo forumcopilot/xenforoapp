@@ -90,6 +90,10 @@ class FCInboxStatResult extends FCBaseResult with FCInboxStatResultMappable {
   /// Number of unread messages
   int unreadMessages;
 
+  /// Unread alerts (notifications) for the badge, when the backend reports
+  /// them with the inbox counts. Null when it doesn't: ask the alerts list.
+  int? unreadAlerts;
+
   // Compatibility properties for snake_case access
   int get total_conversations => totalConversations;
   int get unread_conversations => unreadConversations;
@@ -101,6 +105,7 @@ class FCInboxStatResult extends FCBaseResult with FCInboxStatResultMappable {
     required this.totalConversations,
     required this.unreadConversations,
     required this.unreadMessages,
+    this.unreadAlerts,
   }) : super(result: result, resultText: resultText);
 }
 
@@ -120,6 +125,10 @@ class FCConversationsResult extends FCBaseResult with FCConversationsResultMappa
   /// List of conversations
   List<FCConversationSummary> list;
 
+  /// Whether another page follows this one. Null when the backend can't
+  /// tell: then guess from whether the page came back full.
+  bool? hasMore;
+
   // Compatibility properties for snake_case access
   int? get conversation_count => conversationCount;
   int? get unread_count => unreadCount;
@@ -132,6 +141,7 @@ class FCConversationsResult extends FCBaseResult with FCConversationsResultMappa
     required this.unreadCount,
     required this.canUpload,
     required this.list,
+    this.hasMore,
   }) : super(result: result, resultText: resultText);
 }
 
@@ -190,6 +200,10 @@ class FCConversationSummary with FCConversationSummaryMappable {
   /// Number of unread messages in the conversation
   int? unreadMessageCount;
 
+  /// Member groups the conversation is addressed to, as well as or instead
+  /// of people (Discourse's group messages). Null when the backend has none.
+  List<String>? groups;
+
   FCConversationSummary({
     required this.convId,
     required this.replyCount,
@@ -208,6 +222,7 @@ class FCConversationSummary with FCConversationSummaryMappable {
     this.isClosed,
     this.messageId,
     this.unreadMessageCount,
+    this.groups,
   });
 
   // Compatibility properties for snake_case access

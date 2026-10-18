@@ -10,6 +10,9 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
+import '../utils/l10n_now.dart';
+import '../utils/app_navigation.dart';
+import '../theme/app_theme.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {
@@ -44,7 +47,7 @@ class SiteInitializationService {
 
       // Get domain name for progress message
       final domainName = Uri.tryParse(site.url)?.host ?? site.url;
-      onProgress('Connecting to $domainName...');
+      onProgress(l10nNow().connectingTo(domainName));
 
       // Get SiteController
       if (!Get.isRegistered<SiteController>()) {
@@ -103,6 +106,8 @@ class SiteInitializationService {
         AppLogger.info('Creating new site context');
         siteContext.configDataOutput = configData;
       }
+      // The app in this forum's colours while it is open.
+      AppTheme.showForumStyle(site.pluginUrl, configData.style);
 
       // Verify that the plugin URL is properly set after initialization
       final pluginUrl = siteContext.site.pluginUrl;
@@ -151,14 +156,16 @@ class SiteInitializationService {
           Get.put(LoginController());
         }
         final loginController = Get.find<LoginController>();
-        final loginResult = await loginController.attemptAutomaticLogin(siteContext);
+        // The getConfig above, on this same SiteContext, already said whether
+        // the session is signed in.
+        final loginResult = await loginController.attemptAutomaticLogin(siteContext, sessionCheckedByConfig: true);
 
         if (loginResult.success) {
           AppLogger.info('🔍 [INIT_SERVICE] ✅ Automatic login successful');
         } else {
           AppLogger.info('🔍 [INIT_SERVICE] ❌ Automatic login failed: ${loginResult.errorMessage ?? "unknown error"}, hadCredentials=${loginResult.hadCredentials}');
           if (loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-            await Get.to(() => LoginPage(siteContext: siteContext));
+            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
           }
         }
       } else {
@@ -177,13 +184,15 @@ class SiteInitializationService {
 
       siteContext.updateLoginState();
       siteController.isInitialized.value = true;
+      siteController.lastInitializedAt = DateTime.now();
       siteController.currentSiteContext.value = siteContext;
       siteController.attachReloginHandler(siteContext);
 
       // Record this visit in the history
       AppLogger.debug('Recording visit for site: ${site.name}');
-      await SiteVisitTracker.instance.recordVisit(site);
-      AppLogger.debug('Visit recorded successfully');
+      unawaited(SiteVisitTracker.instance.recordVisit(site).catchError((Object e) {
+        AppLogger.debug('Recording the visit failed: $e');
+      }));
 
       AppLogger.info('SiteInitializationService: Site initialization completed successfully for ${site.name}');
 

@@ -20,7 +20,7 @@ class SiteInitializationHelper {
     // Show progress dialog with initial message
     final progress = ProgressDialog.showWithUpdater(
       context,
-      AppLocalizations.of(context)?.connectingTo(domainName) ?? 'Connecting to $domainName...',
+      AppLocalizations.of(context).connectingTo(domainName),
     );
 
     try {
@@ -34,7 +34,7 @@ class SiteInitializationHelper {
           final l10n = AppLocalizations.of(context);
           switch (key) {
             case 'loggingIn':
-              return l10n?.loggingIn ?? fallback ?? '';
+              return l10n.loggingIn;
             default:
               return fallback ?? '';
           }

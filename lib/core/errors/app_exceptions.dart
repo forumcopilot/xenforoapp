@@ -44,6 +44,9 @@ class NetworkException extends AppException {
           stackTrace: stackTrace,
         );
 
+  /// What [serverError] says when the server gave no message.
+  static const String defaultServerErrorMessage = 'Server error occurred. Please try again later.';
+
   /// No internet connection
   static NetworkException noConnection() {
     return const NetworkException(
@@ -63,7 +66,7 @@ class NetworkException extends AppException {
   /// Server error
   static NetworkException serverError(int statusCode, String? message) {
     return NetworkException(
-      message: message ?? 'Server error occurred. Please try again later.',
+      message: message ?? defaultServerErrorMessage,
       code: 'SERVER_ERROR_$statusCode',
     );
   }
@@ -219,9 +222,13 @@ class ValidationException extends AppException {
 
 /// Permission-related exceptions
 class PermissionException extends AppException {
+  /// The feature [featureNotAvailable] is about, for a translated message.
+  final String? feature;
+
   const PermissionException({
     required String message,
     String? code,
+    this.feature,
     dynamic originalError,
     StackTrace? stackTrace,
   }) : super(
@@ -244,6 +251,7 @@ class PermissionException extends AppException {
     return PermissionException(
       message: '$feature is not available on this forum.',
       code: 'FEATURE_NOT_AVAILABLE',
+      feature: feature,
     );
   }
 }

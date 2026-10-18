@@ -163,74 +163,6 @@ class StyleBuilders {
   }
 
   // ============================================================================
-  // BUTTON STYLE BUILDERS
-  // ============================================================================
-
-  /// Creates a standardized ElevatedButton style.
-  static ButtonStyle elevatedButtonStyle({
-    required ColorScheme colorScheme,
-    EdgeInsetsGeometry? padding,
-    double? borderRadius,
-    double? elevation,
-  }) {
-    return ElevatedButton.styleFrom(
-      elevation: elevation ?? DesignTokens.elevationNone,
-      padding: padding ??
-          EdgeInsets.symmetric(
-            horizontal: DesignTokens.spacingXL,
-            vertical: DesignTokens.spacingM,
-          ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          borderRadius ?? DesignTokens.radiusS,
-        ),
-      ),
-    );
-  }
-
-  /// Creates a standardized TextButton style.
-  static ButtonStyle textButtonStyle({
-    required ColorScheme colorScheme,
-    EdgeInsetsGeometry? padding,
-    double? borderRadius,
-  }) {
-    return TextButton.styleFrom(
-      padding: padding ??
-          EdgeInsets.symmetric(
-            horizontal: DesignTokens.spacingL,
-            vertical: DesignTokens.spacingS,
-          ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          borderRadius ?? DesignTokens.radiusS,
-        ),
-      ),
-    );
-  }
-
-  /// Creates a standardized FilledButton style for extended buttons.
-  /// Matches the style of FloatingActionButton.extended for consistency.
-  /// Automatically adapts to light and dark mode through ColorScheme.
-  static ButtonStyle extendedFilledButtonStyle({
-    required ColorScheme colorScheme,
-    EdgeInsetsGeometry? padding,
-    double? borderRadius,
-    double? elevation,
-  }) {
-    return FilledButton.styleFrom(
-      backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimary,
-      padding: padding ?? DesignTokens.paddingExtendedButton,
-      elevation: elevation ?? DesignTokens.elevationMedium,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          borderRadius ?? DesignTokens.radiusExtendedButton,
-        ),
-      ),
-    );
-  }
-
-  // ============================================================================
   // CONTAINER DECORATION BUILDERS
   // ============================================================================
 
@@ -243,13 +175,13 @@ class StyleBuilders {
     double? borderOpacity,
   }) {
     return BoxDecoration(
-      color: color ?? colorScheme.surfaceVariant,
+      color: color ?? colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(
         borderRadius ?? DesignTokens.radiusXS,
       ),
       border: showBorder
           ? Border.all(
-              color: colorScheme.outlineVariant.withOpacity(
+              color: colorScheme.outlineVariant.withValues(alpha: 
                 borderOpacity ?? DesignTokens.opacityLow,
               ),
               width: DesignTokens.borderWidthThin,
@@ -288,7 +220,8 @@ class StyleBuilders {
         );
   }
 
-  /// Creates a TextStyle for small/secondary text.
+  /// Creates a TextStyle for small/secondary text: `bodySmall` (12sp). It
+  /// used to force 14sp onto it, so "small" text was body-sized.
   static TextStyle smallTextStyle({
     required ColorScheme colorScheme,
     required TextTheme textTheme,
@@ -296,12 +229,11 @@ class StyleBuilders {
     FontWeight? fontWeight,
   }) {
     return textTheme.bodySmall?.copyWith(
-          fontSize: DesignTokens.fontSizeS,
           color: color ?? colorScheme.onSurfaceVariant,
           fontWeight: fontWeight ?? DesignTokens.fontWeightNormal,
         ) ??
         TextStyle(
-          fontSize: DesignTokens.fontSizeS,
+          fontSize: DesignTokens.fontSizeXS,
           color: color ?? colorScheme.onSurfaceVariant,
           fontWeight: fontWeight ?? DesignTokens.fontWeightNormal,
         );
@@ -353,14 +285,14 @@ class StyleBuilders {
     final effectiveColor = color ?? colorScheme.surfaceContainerLowest;
     final effectiveBorderSide = borderSide ??
         BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         );
 
     Widget cardContent = Card(
       margin: effectiveMargin,
       elevation: effectiveElevation,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
       color: effectiveColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(effectiveBorderRadius),
@@ -393,12 +325,12 @@ class StyleBuilders {
     double? borderWidth,
   }) {
     return BoxDecoration(
-      color: color ?? colorScheme.surfaceVariant,
+      color: color ?? colorScheme.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(
         borderRadius ?? DesignTokens.radiusS,
       ),
       border: Border.all(
-        color: colorScheme.outlineVariant.withOpacity(
+        color: colorScheme.outlineVariant.withValues(alpha: 
           borderOpacity ?? DesignTokens.opacityLow,
         ),
         width: borderWidth ?? DesignTokens.borderWidthThin,
@@ -422,7 +354,7 @@ class StyleBuilders {
     return Divider(
       height: height ?? DesignTokens.borderWidthThin,
       thickness: thickness ?? DesignTokens.borderWidthThin,
-      color: colorScheme.outlineVariant.withOpacity(
+      color: colorScheme.outlineVariant.withValues(alpha: 
         opacity ?? DesignTokens.opacityLow,
       ),
       indent: indent,
@@ -449,7 +381,9 @@ class StyleBuilders {
     );
   }
 
-  /// Creates a TextStyle for badge text labels (e.g., BANNED, DELETED).
+  /// Creates a TextStyle for badge text labels (e.g., BANNED, DELETED):
+  /// Material 3's `labelSmall` (11sp, medium), the smallest role there is.
+  /// It was 10sp bold, below anything Material sets text in.
   static TextStyle badgeTextStyle({
     required ColorScheme colorScheme,
     required TextTheme textTheme,
@@ -457,14 +391,13 @@ class StyleBuilders {
     FontWeight? fontWeight,
   }) {
     return textTheme.labelSmall?.copyWith(
-          fontSize: DesignTokens.fontSizeXXS,
           color: color ?? colorScheme.onSurfaceVariant,
-          fontWeight: fontWeight ?? DesignTokens.fontWeightBold,
+          fontWeight: fontWeight ?? DesignTokens.fontWeightMedium,
         ) ??
         TextStyle(
-          fontSize: DesignTokens.fontSizeXXS,
+          fontSize: 11,
           color: color ?? colorScheme.onSurfaceVariant,
-          fontWeight: fontWeight ?? DesignTokens.fontWeightBold,
+          fontWeight: fontWeight ?? DesignTokens.fontWeightMedium,
         );
   }
 

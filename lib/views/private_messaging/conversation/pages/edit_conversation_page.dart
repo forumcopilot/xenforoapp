@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../utils/snackbar_helper.dart';
 
 class EditConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -55,13 +56,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
   Future<bool> _handleSubmit() async {
     if (_titleController.text.trim().isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.titleCannotBeEmpty ?? 'Title cannot be empty'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).titleCannotBeEmpty);
       }
       return false;
     }
@@ -81,38 +76,20 @@ class _EditConversationPageState extends State<EditConversationPage> {
       if (!result.result) {
         final errorMessage = result.resultText?.trim();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage ?? AppLocalizations.of(context)?.failedToSaveConversation ?? 'Failed to save conversation'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage ?? AppLocalizations.of(context).failedToSaveConversation);
         }
         return false;
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.conversationUpdatedSuccessfully ?? 'Conversation updated successfully'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationUpdatedSuccessfully);
         Navigator.of(context).pop(true); // Return true to indicate success
       }
 
       return true;
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).error('$e'));
       }
       return false;
     } finally {
@@ -132,7 +109,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Edit Conversation',
+          AppLocalizations.of(context).editConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightSemiBold,
@@ -140,12 +117,11 @@ class _EditConversationPageState extends State<EditConversationPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(
           color: colorScheme.onSurface,
         ),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: _isSubmitting
@@ -183,7 +159,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     ),
                     SizedBox(height: DesignTokens.spacingM),
                     Text(
-                      'Failed to load conversation',
+                      AppLocalizations.of(context).failedToLoadConversation,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.error,
                       ),
@@ -201,7 +177,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(AppLocalizations.of(context)?.goBack ?? 'Go Back'),
+                      child: Text(AppLocalizations.of(context).goBack),
                     ),
                   ],
                 ),
@@ -223,7 +199,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     ),
                     SizedBox(height: DesignTokens.spacingM),
                     Text(
-                      'Cannot edit this conversation',
+                      AppLocalizations.of(context).cannotEditConversation,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.error,
                       ),
@@ -241,7 +217,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(AppLocalizations.of(context)?.goBack ?? 'Go Back'),
+                      child: Text(AppLocalizations.of(context).goBack),
                     ),
                   ],
                 ),
@@ -276,7 +252,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
               children: [
                 // Title field
                 Text(
-                  'Title',
+                  AppLocalizations.of(context).titleLabel,
                   style: textTheme.titleSmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: DesignTokens.fontWeightMedium,
@@ -286,10 +262,10 @@ class _EditConversationPageState extends State<EditConversationPage> {
                 TextField(
                   controller: _titleController,
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)?.enterConversationTitle ?? 'Enter conversation title',
+                    hintText: AppLocalizations.of(context).enterConversationTitle,
                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                     filled: true,
-                    fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       borderSide: BorderSide.none,
@@ -315,7 +291,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Options',
+                      AppLocalizations.of(context).options,
                       style: textTheme.titleSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: DesignTokens.fontWeightMedium,
@@ -324,7 +300,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                     SizedBox(height: DesignTokens.spacingS),
                     Container(
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                       ),
                       child: Column(
@@ -332,14 +308,14 @@ class _EditConversationPageState extends State<EditConversationPage> {
                           // Open Invite toggle
                           SwitchListTile(
                             title: Text(
-                              'Open Invite',
+                              AppLocalizations.of(context).openInvite,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
                               ),
                             ),
                             subtitle: Text(
-                              'Allow any participant to invite others',
+                              AppLocalizations.of(context).allowAnyParticipantToInviteOthers,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -351,24 +327,24 @@ class _EditConversationPageState extends State<EditConversationPage> {
                                 _hasChanges = true;
                               });
                             },
-                            activeColor: colorScheme.primary,
+                            activeThumbColor: colorScheme.primary,
                           ),
                           Divider(
                             height: 1,
                             thickness: 1,
-                            color: colorScheme.outlineVariant.withOpacity(0.3),
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                           ),
                           // Conversation Open toggle
                           SwitchListTile(
                             title: Text(
-                              'Conversation Open',
+                              AppLocalizations.of(context).conversationOpen,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
                               ),
                             ),
                             subtitle: Text(
-                              _conversationOpen == true ? 'Conversation is open for replies' : 'Conversation is closed (no replies allowed)',
+                              _conversationOpen == true ? AppLocalizations.of(context).conversationIsOpenForReplies : AppLocalizations.of(context).conversationIsClosedNoRepliesAllowed,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -380,7 +356,7 @@ class _EditConversationPageState extends State<EditConversationPage> {
                                 _hasChanges = true;
                               });
                             },
-                            activeColor: colorScheme.primary,
+                            activeThumbColor: colorScheme.primary,
                           ),
                         ],
                       ),

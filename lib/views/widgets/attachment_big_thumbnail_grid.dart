@@ -82,10 +82,10 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
       margin: EdgeInsets.only(top: DesignTokens.spacingS),
       padding: DesignTokens.paddingS,
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
         borderRadius: BorderRadius.circular(DesignTokens.radiusS),
         border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -110,7 +110,7 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                   topLeft: Radius.circular(DesignTokens.radiusS),
                   topRight: Radius.circular(DesignTokens.radiusS),
                 ),
-                color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
@@ -140,11 +140,11 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                           return Container(
                             width: actualWidth,
                             height: actualWidth, // Square fallback
-                            color: colorScheme.surfaceVariant.withOpacity(0.5),
+                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                             child: Icon(
                               Icons.broken_image,
                               size: 32,
-                              color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                             ),
                           );
                         },
@@ -159,7 +159,7 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: colorScheme.error.withOpacity(0.9),
+                            color: colorScheme.error.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Icon(
@@ -183,8 +183,8 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                 // Optimize for dark mode - use higher opacity in dark mode for better visibility
                 final isDarkMode = Theme.of(context).brightness == Brightness.dark;
                 final backgroundColor = isDarkMode
-                    ? colorScheme.surfaceVariant.withOpacity(0.5) // Higher opacity in dark mode
-                    : colorScheme.surfaceVariant.withOpacity(0.3); // Lower opacity in light mode
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.5) // Higher opacity in dark mode
+                    : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3); // Lower opacity in light mode
                 
                 return Container(
                   decoration: BoxDecoration(
@@ -198,10 +198,10 @@ class AttachmentBigThumbnailGrid extends StatelessWidget {
                   child: _buildFilenameWithExtension(
                     attachment.filename,
                     textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: DesignTokens.fontSizeXXS,
                     ) ?? TextStyle(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontSize: DesignTokens.fontSizeXXS,
                     ),
                   ),

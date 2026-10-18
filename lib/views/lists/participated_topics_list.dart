@@ -13,6 +13,7 @@ import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class ParticipatedTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -233,11 +234,11 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             // At the first unread post, as the Latest list opens topics (signed in only).
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+            AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
           },
         ),
       );
@@ -279,7 +280,7 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noParticipatedTopics,
+              AppLocalizations.of(context).noParticipatedTopics,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -289,7 +290,7 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.topicsYouParticipatedIn,
+              AppLocalizations.of(context).topicsYouParticipatedIn,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -307,8 +308,8 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewParticipatedTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewParticipatedTopics,
+        title: AppLocalizations.of(context).signInToViewParticipatedTopics,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewParticipatedTopics,
         icon: Icons.chat_bubble_outline_rounded,
       );
     }
@@ -317,8 +318,8 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
       if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
         return NotSignedInView(
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewParticipatedTopics ?? 'Sign in to view participated topics',
-          message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewParticipatedTopics ?? 'You need to be signed in to view topics you have participated in.',
+          title: AppLocalizations.of(context).signInToViewParticipatedTopics,
+          message: AppLocalizations.of(context).youNeedToBeSignedInToViewParticipatedTopics,
           icon: Icons.chat_bubble_outline_rounded,
         );
       }

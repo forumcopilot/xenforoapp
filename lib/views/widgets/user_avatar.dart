@@ -122,7 +122,7 @@ class UserAvatar extends StatelessWidget {
                 placeholder: (context, url) => _ShimmerLoadingCircle(
                   size: radius * 2,
                   baseColor: avatarColors['background']!,
-                  highlightColor: avatarColors['background']!.withOpacity(0.6),
+                  highlightColor: avatarColors['background']!.withValues(alpha: 0.6),
                 ),
                 errorWidget: (context, url, error) => Container(
                   width: radius * 2,
@@ -197,7 +197,7 @@ class UserAvatar extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 2,
                       spreadRadius: 0,
                     ),

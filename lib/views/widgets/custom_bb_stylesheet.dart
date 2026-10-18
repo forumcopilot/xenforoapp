@@ -16,6 +16,7 @@ import 'attachment_item_widget.dart';
 import 'user_avatar.dart';
 import 'broken_image_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Callback configuration for BBCode interactions
 class BBCodeCallbacks {
@@ -466,7 +467,7 @@ class ImgTag extends AdvancedTag {
               borderRadius: BorderRadius.circular(DesignTokens.radiusM),
               child: Semantics(
                 label: AccessibilityHelpers.getImageLabel(context),
-                hint: 'Tap to view full size image',
+                hint: AppLocalizations.of(context).tapToViewFullSizeImage,
                 image: true,
                 button: onImageTap != null,
                 child: GestureDetector(
@@ -505,16 +506,16 @@ class ImgTag extends AdvancedTag {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           LinearProgressIndicator(
-                            backgroundColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                             ),
                             borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
                             minHeight: DesignTokens.spacingXS,
                           ),
                           const SizedBox(height: DesignTokens.spacingS),
                           Text(
-                            _getLoadingText(url),
+                            _getLoadingText(context, url),
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
@@ -544,22 +545,22 @@ class ImgTag extends AdvancedTag {
   }
 
   /// Helper method to generate loading text with domain name
-  String _getLoadingText(String? url) {
+  String _getLoadingText(BuildContext context, String? url) {
     if (url == null || url.isEmpty) {
-      return 'Loading image...';
+      return AppLocalizations.of(context).loadingImage;
     }
 
     try {
       final uri = Uri.parse(url);
       final host = uri.host;
       if (host.isNotEmpty) {
-        return 'Loading image from $host';
+        return AppLocalizations.of(context).loadingImageFrom(host);
       }
     } catch (e) {
       // If URL parsing fails, fall back to generic text
     }
 
-    return 'Loading image...';
+    return AppLocalizations.of(context).loadingImage;
   }
 }
 
@@ -983,7 +984,7 @@ class CustomQuoteTag extends AdvancedTag {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                   side: BorderSide(
-                    color: colorScheme.outlineVariant.withOpacity(
+                    color: colorScheme.outlineVariant.withValues(alpha: 
                       DesignTokens.opacityLow,
                     ),
                     width: DesignTokens.borderWidthThin,
@@ -1021,13 +1022,13 @@ class CustomQuoteTag extends AdvancedTag {
                       DefaultTextStyle(
                         style: textTheme.bodyMedium?.copyWith(
                               fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withOpacity(0.75),
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
                               letterSpacing: 0.15,
                               height: 1.5,
                             ) ??
                             TextStyle(
                               fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withOpacity(0.75),
+                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
                             ),
                         child: Builder(
                           builder: (context) {
@@ -1117,7 +1118,7 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
           color: _isRevealed ? colorScheme.surfaceContainerHighest : colorScheme.surface,
           borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
           border: Border.all(
-            color: _isRevealed ? colorScheme.outline.withOpacity(0.2) : colorScheme.outline.withOpacity(0.3),
+            color: _isRevealed ? colorScheme.outline.withValues(alpha: 0.2) : colorScheme.outline.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -1135,21 +1136,21 @@ class _SpoilerWidgetState extends State<_SpoilerWidget> {
                   Icon(
                     Icons.visibility_off,
                     size: 16,
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Spoiler',
+                    AppLocalizations.of(context).spoiler,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '(tap to reveal)',
+                    AppLocalizations.of(context).tapToReveal,
                     style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -1681,16 +1682,16 @@ class InlineAttachmentTag extends AdvancedTag {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   LinearProgressIndicator(
-                                    backgroundColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                                    backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                      colorScheme.onSurfaceVariant.withOpacity(0.6),
+                                      colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                                     ),
                                     borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
                                     minHeight: DesignTokens.spacingXS,
                                   ),
                                   const SizedBox(height: DesignTokens.spacingS),
                                   Text(
-                                    'Loading image...',
+                                    AppLocalizations.of(context).loadingImage,
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: colorScheme.onSurfaceVariant,
                                         ),
@@ -1722,15 +1723,15 @@ class InlineAttachmentTag extends AdvancedTag {
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
                                   // Use a semi-transparent dark background that works in both light and dark themes
-                                  color: colorScheme.surface.withOpacity(0.85),
+                                  color: colorScheme.surface.withValues(alpha: 0.85),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: colorScheme.outline.withOpacity(0.3),
+                                    color: colorScheme.outline.withValues(alpha: 0.3),
                                     width: 1,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
+                                      color: Colors.black.withValues(alpha: 0.1),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -1739,7 +1740,7 @@ class InlineAttachmentTag extends AdvancedTag {
                                 child: Icon(
                                   Icons.lock_outline,
                                   size: 14,
-                                  color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+                                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                                 ),
                               ),
                             ),
@@ -1770,7 +1771,7 @@ class InlineAttachmentTag extends AdvancedTag {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Inline Attachments',
+                          AppLocalizations.of(context).inlineAttachments,
                           style: textTheme.titleSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -2072,11 +2073,11 @@ class TableTag extends AdvancedTag {
                   child: Table(
                     border: TableBorder(
                       horizontalInside: BorderSide(
-                        color: colorScheme.outlineVariant.withOpacity(0.5),
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                       verticalInside: BorderSide(
-                        color: colorScheme.outlineVariant.withOpacity(0.5),
+                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                     ),
@@ -2092,7 +2093,7 @@ class TableTag extends AdvancedTag {
                       return TableRow(
                         decoration: isHeaderRow
                             ? BoxDecoration(
-                                color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                               )
                             : null,
                         children: List.generate(maxColumns, (colIndex) {

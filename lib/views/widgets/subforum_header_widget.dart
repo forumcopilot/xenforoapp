@@ -84,7 +84,7 @@ class SubforumHeaderWidget extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -103,7 +103,7 @@ class SubforumHeaderWidget extends StatelessWidget {
                       children: [
                         // Base background color
                         Container(
-                          color: colorScheme.surfaceVariant,
+                          color: colorScheme.surfaceContainerHighest,
                         ),
                         // Pattern image with theme color tint
                         // Matches default logo color when no logo is present
@@ -112,7 +112,7 @@ class SubforumHeaderWidget extends StatelessWidget {
                             (isDarkMode 
                               ? _getDarkModePatternColor(_getBackgroundThemeColor(context))
                               : _getBackgroundThemeColor(context)
-                            ).withOpacity(
+                            ).withValues(alpha: 
                               isDarkMode ? DesignTokens.opacityHigh : DesignTokens.opacityMediumLow,  // Much higher opacity in dark mode for darker effect
                             ),
                             isDarkMode 
@@ -129,8 +129,8 @@ class SubforumHeaderWidget extends StatelessWidget {
                         // Text readability overlay - darker in dark mode to make pattern more subtle
                         Container(
                           color: isDarkMode 
-                            ? Colors.black.withOpacity(DesignTokens.opacityMediumLow)
-                            : Colors.white.withOpacity(DesignTokens.opacityMedium),
+                            ? Colors.black.withValues(alpha: DesignTokens.opacityMediumLow)
+                            : Colors.white.withValues(alpha: DesignTokens.opacityMedium),
                         ),
                       ],
                     ),
@@ -155,8 +155,8 @@ class SubforumHeaderWidget extends StatelessWidget {
                               // Color overlay for better text readability
                               Container(
                                 color: isDarkMode 
-                                  ? Colors.black.withOpacity(DesignTokens.opacityMediumLow)
-                                  : Colors.white.withOpacity(DesignTokens.opacityHigh),
+                                  ? Colors.black.withValues(alpha: DesignTokens.opacityMediumLow)
+                                  : Colors.white.withValues(alpha: DesignTokens.opacityHigh),
                               ),
                             ],
                           );
@@ -227,10 +227,7 @@ class SubforumHeaderWidget extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onNewTopic,
                       icon: const Icon(Icons.post_add_rounded),
-                      label: Text(AppLocalizations.of(context)?.newTopic ?? 'New Topic'),
-                      style: StyleBuilders.extendedFilledButtonStyle(
-                        colorScheme: colorScheme,
-                      ),
+                      label: Text(AppLocalizations.of(context).newTopic),
                     ),
                   ],
                 ],

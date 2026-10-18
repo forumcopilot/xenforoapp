@@ -9,6 +9,8 @@ import '../../../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../pages/traditional_pm_page.dart';
 import 'traditional_pm_list_item.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class TraditionalPMList extends StatefulWidget {
   final SiteContext siteContext;
@@ -199,21 +201,13 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToDeleteMessage(e.toString()));
       }
     }
   }
 
   void _onMessageTap(FCPrivateMessage message) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TraditionalPMPage(
+    AppNavigation.push(context, TraditionalPMPage(
           siteContext: widget.siteContext,
           messageId: message.msg_id ?? '',
           boxId: widget.isInbox ? "INBOX" : "SENTBOX",
@@ -226,9 +220,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
               });
             }
           },
-        ),
-      ),
-    );
+        ));
   }
 
   @override
@@ -260,8 +252,8 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
         if (!isLoggedIn) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.signInToViewMessages ?? 'Sign in to view messages',
-            message: 'You need to be signed in to view your private messages.',
+            title: AppLocalizations.of(context).signInToViewMessages,
+            message: AppLocalizations.of(context).youNeedToBeSignedInToViewConversations,
             icon: Icons.mail_outline_rounded,
           );
         }
@@ -270,8 +262,8 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
         if (!canPM) {
           return NotSignedInView(
             siteContext: widget.siteContext,
-            title: AppLocalizations.of(context)?.privateMessagesNotAvailable ?? 'Private messages not available',
-            message: 'You do not have permission to use private messaging.',
+            title: AppLocalizations.of(context).privateMessagesNotAvailable,
+            message: AppLocalizations.of(context).privateMessagesNotAvailable,
             icon: Icons.mail_outline_rounded,
           );
         }
@@ -292,14 +284,14 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading messages: $_error',
+              AppLocalizations.of(context).errorLoadingMessages('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             FilledButton(
               onPressed: loadMessages,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -317,7 +309,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Center(
                   child: Text(
-                    'No ${widget.isInbox ? "inbox" : "sent"} messages',
+                    widget.isInbox ? AppLocalizations.of(context).noInboxMessages : AppLocalizations.of(context).noSentMessages,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -384,12 +376,7 @@ class TraditionalPMListState extends State<TraditionalPMList> with AutomaticKeep
       await _loadMorePrivateMessages();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorLoadingMoreMessages(e.toString()) ?? 'Error loading more messages: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorLoadingMoreMessages(e.toString()));
       }
     } finally {
       if (mounted) {

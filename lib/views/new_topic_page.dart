@@ -5,11 +5,8 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
 import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
-import 'package:forumcopilot_flutter/utils/file_utils.dart';
-import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../utils/snackbar_helper.dart';
+import '../services/attachment_uploader.dart';
 
 class NewTopicPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -28,8 +25,14 @@ class NewTopicPage extends StatefulWidget {
 }
 
 class _NewTopicPageState extends State<NewTopicPage> {
-  final List<String> _attachmentIds = [];
-  String? _groupId;
+  // The topic's attachments, sent to this forum (node) whatever forum is
+  // opened meanwhile.
+  late final AttachmentUploader _uploader = AttachmentUploader(
+    siteContext: widget.siteContext,
+    kind: AttachmentKind.post,
+    targetId: widget.forumId,
+  );
+  bool _sent = false;
   String? _selectedPrefixId;
 
   // Prefix-related state
@@ -42,6 +45,13 @@ class _NewTopicPageState extends State<NewTopicPage> {
   void initState() {
     super.initState();
     _loadPrefixes();
+  }
+
+  @override
+  void dispose() {
+    // Closed without posting: the uploads are removed from the forum.
+    _uploader.close(sent: _sent);
+    super.dispose();
   }
 
   Future<void> _loadPrefixes() async {
@@ -84,45 +94,13 @@ class _NewTopicPageState extends State<NewTopicPage> {
   /// The forum holds this topic for a moderator: say so, or it seems to vanish.
   void _showAwaitingApproval() {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)?.postAwaitingApproval ?? 'Your post will appear once a moderator approves it.'),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 6),
-      ),
-    );
+    SnackbarHelper.showInfo(context, AppLocalizations.of(context).postAwaitingApproval);
   }
 
   Future<bool> _handleSubmit(String title, String content) async {
     // Validate required prefix before submission
     if (_requirePrefix && (_selectedPrefixId == null || _selectedPrefixId!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context)?.pleaseSelectPrefix ?? 'Please select a prefix',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-          ),
-          margin: DesignTokens.paddingS,
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseSelectPrefix);
       return false;
     }
 
@@ -133,8 +111,8 @@ class _NewTopicPageState extends State<NewTopicPage> {
         title,
         content,
         prefixId: _selectedPrefixId, // Pass the selected prefix
-        attachmentIds: _attachmentIds.isNotEmpty ? _attachmentIds : null,
-        groupId: _groupId,
+        attachmentIds: _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null,
+        groupId: _uploader.groupId,
       );
 
       debugPrint('🔍 [NEW_TOPIC] Submit result:');
@@ -142,11 +120,12 @@ class _NewTopicPageState extends State<NewTopicPage> {
       debugPrint('   - resultText: "${result.resultText}"');
       debugPrint('   - topicId: "${result.topicId}"');
       debugPrint('   - prefixId passed: "$_selectedPrefixId"');
-      debugPrint('   - attachmentIds passed: $_attachmentIds');
-      debugPrint('   - groupId passed: "$_groupId"');
+      debugPrint('   - attachmentIds passed: ${_uploader.attachmentIds}');
+      debugPrint('   - groupId passed: "${_uploader.groupId}"');
 
       if (result.result) {
         if (result.state == 1) _showAwaitingApproval();
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -172,155 +151,8 @@ class _NewTopicPageState extends State<NewTopicPage> {
     }
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    debugPrint('🔍 [NEW_TOPIC] _handleFileUpload called');
-    debugPrint('🔍 [NEW_TOPIC] File details:');
-    debugPrint('   - file.path: "${file.path}"');
-    debugPrint('   - file.name: "${file.name}"');
-    debugPrint('   - forumId: "${widget.forumId}"');
-
-    // Get constraints from SiteContext
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-    // Check attachment count limit
-    if (!canAddMoreAttachments(_attachmentIds.length, constraints)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
-      }
-      return null;
-    }
-
-    // Validate file
-    XFile fileToUpload = file;
-    if (constraints != null) {
-      final isImage = isImageFile(file.name);
-      final validation = await validateFile(
-        file,
-        constraints,
-        isImage,
-        currentAttachmentCount: _attachmentIds.length,
-      );
-
-      if (!validation.isValid) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
-        }
-        return null;
-      }
-
-      // For images that need optimization
-      if (isImage && validation.needsOptimization) {
-        // Optimize image
-        try {
-          final optimizedFile = await optimizeImage(file, constraints);
-          fileToUpload = optimizedFile;
-          debugPrint('🔍 [NEW_TOPIC] Image optimized successfully');
-        } catch (e) {
-          debugPrint('❌ [NEW_TOPIC] Error optimizing image: $e');
-          String errorMessage = e.toString();
-          if (errorMessage.startsWith('Exception: ')) {
-            errorMessage = errorMessage.substring(11);
-          }
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
-          }
-          return null;
-        }
-      }
-    }
-
-    try {
-      debugPrint('🔍 [NEW_TOPIC] Getting attachment proxy...');
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      debugPrint('🔍 [NEW_TOPIC] Reading file bytes...');
-      final fileBytes = await fileToUpload.readAsBytes();
-      debugPrint('🔍 [NEW_TOPIC] File bytes read: ${fileBytes.length} bytes');
-
-      debugPrint('🔍 [NEW_TOPIC] Calling uploadAttachmentAsync with:');
-      debugPrint('   - type: "post"');
-      debugPrint('   - id: "${widget.forumId}"');
-      debugPrint('   - groupId: "$groupId"');
-      debugPrint('   - attachmentName: "${fileToUpload.name}"');
-      debugPrint('   - bytes length: ${fileBytes.length}');
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync("post", widget.forumId, groupId, fileToUpload.name, fileBytes);
-
-      debugPrint('🔍 [NEW_TOPIC] Upload result:');
-      debugPrint('   - result: ${uploadAttachmentResult.result}');
-      debugPrint('   - resultText: "${uploadAttachmentResult.resultText}"');
-      debugPrint('   - attachmentId: "${uploadAttachmentResult.attachmentId}"');
-      debugPrint('   - groupId: "${uploadAttachmentResult.groupId}"');
-
-      if (uploadAttachmentResult.result) {
-        debugPrint('✅ [NEW_TOPIC] File upload successful');
-
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            _attachmentIds.add(uploadAttachmentResult.attachmentId!);
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-          });
-          debugPrint('✅ [NEW_TOPIC] Stored attachmentId: ${uploadAttachmentResult.attachmentId}');
-          debugPrint('✅ [NEW_TOPIC] Current attachmentIds: $_attachmentIds');
-          debugPrint('✅ [NEW_TOPIC] Current groupId: "$_groupId"');
-          return uploadAttachmentResult.attachmentId;
-        } else {
-          debugPrint('⚠️ [NEW_TOPIC] Upload succeeded but attachmentId is null or empty');
-          return null;
-        }
-      } else {
-        debugPrint('❌ [NEW_TOPIC] File upload failed: ${uploadAttachmentResult.resultText}');
-        throw Exception(uploadAttachmentResult.resultText ?? 'Failed to upload file');
-      }
-    } catch (e, stackTrace) {
-      debugPrint('❌ [NEW_TOPIC] Exception in _handleFileUpload: $e');
-      debugPrint('❌ [NEW_TOPIC] Stack trace: $stackTrace');
-      throw Exception('Failed to create topic: ${e.toString()}');
-    }
-  }
+  /// The composer has checked and shrunk the file.
+  Future<String?> _handleFileUpload(XFile file) => _uploader.upload(file);
 
   void _handlePrefixChanged(String? prefixId) {
     setState(() {
@@ -333,10 +165,10 @@ class _NewTopicPageState extends State<NewTopicPage> {
   Widget build(BuildContext context) {
     return MessageComposePage(
       siteContext: widget.siteContext,
-      title: AppLocalizations.of(context)?.newTopic ?? 'New Topic',
+      title: AppLocalizations.of(context).newTopic,
       showTitleField: true,
-      titleHint: 'Write your topic title...',
-      contentHint: 'Write your topic content...',
+      titleHint: AppLocalizations.of(context).writeYourTopicTitle,
+      contentHint: AppLocalizations.of(context).writeYourTopicContent,
       onSubmit: _handleSubmit,
       onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
       forumName: widget.forumName,
@@ -344,30 +176,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
       requirePrefix: _requirePrefix,
       selectedPrefixId: _selectedPrefixId,
       isLoadingPrefixes: _isLoadingPrefixes,
-      onRemoveAttachment: (attachmentId) async {
-        // Remove the attachment ID from the list and call API to delete from server
-        // Call API to remove attachment from server
-        if (_groupId != null && _groupId!.isNotEmpty && widget.forumId.isNotEmpty) {
-          try {
-            var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-            await attachmentProxy.removeAttachmentAsync(
-              attachmentId,
-              widget.forumId,
-              _groupId!, // groupId is required for temporary attachments
-              '', // postId is empty for new topics
-            );
-          } catch (e) {
-            // Silently handle errors
-          }
-        }
-
-        // Remove from local list
-        if (_attachmentIds.contains(attachmentId)) {
-          setState(() {
-            _attachmentIds.remove(attachmentId);
-          });
-        }
-      },
+      onRemoveAttachment: _uploader.remove,
       prefixError: _prefixError,
       onPrefixChanged: _handlePrefixChanged,
       showSignatureToggle: true,
@@ -380,41 +189,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
             errorMessage = errorMessage.substring(11);
           }
 
-          // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       },
     );

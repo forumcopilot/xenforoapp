@@ -63,7 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         debugPrint('[ForgotPasswordPage] forgetPassword API exception: ${e.toString()}');
         debugPrint('[ForgotPasswordPage] Exception type: ${e.runtimeType}');
         // Show error dialog with exception message
-        _showForgotPasswordErrorDialog(AppLocalizations.of(context)!.errorSendingResetLink);
+        _showForgotPasswordErrorDialog(AppLocalizations.of(context).errorSendingResetLink);
       } finally {
         setState(() {
           _isLoading = false;
@@ -74,7 +74,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void _showForgotPasswordSuccessDialog(String? resultText) {
     final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -143,7 +143,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 elevation: DesignTokens.elevationMedium,
               ),
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.onPrimary,
                   fontWeight: DesignTokens.fontWeightBold,
@@ -160,7 +160,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void _showForgotPasswordErrorDialog(String? errorMessage) {
     final colorScheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -238,7 +238,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -276,7 +276,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Widget _buildFormView(ColorScheme colorScheme, TextTheme textTheme) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Form(
       key: _formKey,
       child: Column(

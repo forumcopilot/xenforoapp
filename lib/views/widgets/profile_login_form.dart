@@ -8,6 +8,7 @@ import 'package:forumcopilot_flutter/views/register_page.dart';
 import 'package:forumcopilot_flutter/views/forgot_password_page.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ProfileLoginForm extends StatefulWidget {
   final SiteContext siteContext;
@@ -68,15 +69,15 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
     final siteUrl = siteController.currentSite.value?.url;
 
     if (siteUrl == null || siteUrl.isEmpty) {
-      return 'this forum';
+      return AppLocalizations.of(context).thisForum;
     }
 
     try {
       final uri = Uri.parse(siteUrl);
-      return uri.host.isNotEmpty ? uri.host : 'this forum';
+      return uri.host.isNotEmpty ? uri.host : AppLocalizations.of(context).thisForum;
     } catch (e) {
       // Fallback if URL parsing fails
-      return 'this forum';
+      return AppLocalizations.of(context).thisForum;
     }
   }
 
@@ -106,10 +107,10 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Welcome Text
-                  Text(AppLocalizations.of(context)?.welcomeBack ?? 'Welcome Back',
+                  Text(AppLocalizations.of(context).welcomeBack,
                       style: textTheme.headlineMedium?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
                   const SizedBox(height: 8),
-                  Text(AppLocalizations.of(context)?.signInToAccessYourProfile ?? 'Sign in to access your profile and manage your account',
+                  Text(AppLocalizations.of(context).signInToAccessYourProfile,
                       style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
                   const SizedBox(height: 32),
                   // Username field
@@ -120,11 +121,11 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     autocorrect: false,
                     enableSuggestions: false,
                     decoration: InputDecoration(
-                      labelText: 'Username',
-                      hintText: AppLocalizations.of(context)?.enterYourUsername ?? 'Enter your username',
+                      labelText: AppLocalizations.of(context).usernameLabel,
+                      hintText: AppLocalizations.of(context).enterYourUsername,
                       prefixIcon: Icon(Icons.person_outline_rounded, color: colorScheme.onSurfaceVariant),
                       filled: true,
-                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide(color: colorScheme.primary, width: DesignTokens.borderWidthMedium)),
@@ -135,7 +136,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     onFieldSubmitted: (_) => _passwordFocusNode.requestFocus(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your username';
+                        return AppLocalizations.of(context).pleaseEnterUsername;
                       }
                       return null;
                     },
@@ -148,8 +149,8 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     autofillHints: const [AutofillHints.password],
                     obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: AppLocalizations.of(context)?.enterYourPassword ?? 'Enter your password',
+                      labelText: AppLocalizations.of(context).passwordLabel,
+                      hintText: AppLocalizations.of(context).enterYourPassword,
                       prefixIcon: Icon(Icons.lock_outline_rounded, color: colorScheme.onSurfaceVariant),
                       suffixIcon: IconButton(
                         icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility, color: colorScheme.onSurfaceVariant),
@@ -160,7 +161,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                         },
                       ),
                       filled: true,
-                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL), borderSide: BorderSide(color: colorScheme.primary, width: DesignTokens.borderWidthMedium)),
@@ -171,7 +172,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     onFieldSubmitted: (_) => _handleLogin(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return AppLocalizations.of(context).pleaseEnterPassword;
                       }
                       return null;
                     },
@@ -181,9 +182,9 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ForgotPasswordPage(siteContext: widget.siteContext)));
+                        AppNavigation.push(context, ForgotPasswordPage(siteContext: widget.siteContext));
                       },
-                      child: Text(AppLocalizations.of(context)?.forgotPassword ?? 'Forgot password?', style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w500)),
+                      child: Text(AppLocalizations.of(context).forgotPassword, style: textTheme.bodyMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w500)),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -200,7 +201,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       elevation: DesignTokens.elevationMedium,
                     ),
                     child: Text(
-                      'Login',
+                      AppLocalizations.of(context).loginTitle,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onPrimary,
                         fontWeight: DesignTokens.fontWeightBold,
@@ -221,7 +222,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       ),
                       icon: Icon(Icons.key_rounded, color: colorScheme.primary),
                       label: Text(
-                        l10n?.signInWithPasskey ?? 'Sign in with Passkey',
+                        l10n.signInWithPasskey,
                         style: textTheme.titleMedium?.copyWith(
                           color: colorScheme.primary,
                           fontWeight: DesignTokens.fontWeightBold,
@@ -238,7 +239,7 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: Text(
-                          'Your username and password will be sent to $domain',
+                          AppLocalizations.of(context).credentialsSentToDomain(domain),
                           style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant, fontSize: DesignTokens.fontSizeXS),
                           textAlign: TextAlign.center,
                         ),
@@ -250,12 +251,12 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppLocalizations.of(context)?.dontHaveAnAccount ?? 'Don\'t have an account?', style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
+                      Text(AppLocalizations.of(context).dontHaveAnAccount, style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant)),
                       TextButton(
                         onPressed: () {
-                          Get.to(() => RegisterPage(siteContext: widget.siteContext));
+                          AppNavigation.pushGlobal(RegisterPage(siteContext: widget.siteContext), name: '/RegisterPage');
                         },
-                        child: Text(AppLocalizations.of(context)?.register ?? 'Register', style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
+                        child: Text(AppLocalizations.of(context).register, style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

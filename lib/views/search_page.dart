@@ -13,6 +13,8 @@ import 'post_page.dart';
 import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 import 'login_page.dart';
+import 'widgets/filter_chip_bar.dart';
+import '../utils/app_navigation.dart';
 
 class SearchPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -32,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   String? _currentQuery;
   int _selectedFilterIndex = 0; // 0 = All (Posts), 1 = Topics Only, 2 = Titles Only
   List<String> _getFilterLabels(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return [l10n.all, l10n.topicsOnly, l10n.titlesOnly];
   }
 
@@ -183,7 +185,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _topics.addAll(result.topics);
         _isLoadingTopics = false;
-        _hasMoreTopics = result.topics.length == _pageSize;
+        _hasMoreTopics = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTopics) _topicPage++;
       });
     } else {
@@ -211,7 +213,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _topics.addAll(result.topics);
         _isLoadingTopics = false;
-        _hasMoreTopics = result.topics.length == _pageSize;
+        _hasMoreTopics = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTopics) _topicPage++;
       });
     }
@@ -232,7 +234,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _posts.addAll(result.posts);
         _isLoadingPosts = false;
-        _hasMorePosts = result.posts.length == _pageSize;
+        _hasMorePosts = result.hasMore || result.posts.length == _pageSize;
         if (_hasMorePosts) _postPage++;
       });
     } else {
@@ -259,7 +261,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _posts.addAll(result.posts);
         _isLoadingPosts = false;
-        _hasMorePosts = result.posts.length == _pageSize;
+        _hasMorePosts = result.hasMore || result.posts.length == _pageSize;
         if (_hasMorePosts) _postPage++;
       });
     }
@@ -282,7 +284,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _titlesOnlyTopics.addAll(result.topics);
         _isLoadingTitlesOnly = false;
-        _hasMoreTitlesOnly = result.topics.length == _pageSize;
+        _hasMoreTitlesOnly = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTitlesOnly) _titlesOnlyPage++;
       });
     } else {
@@ -310,7 +312,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _titlesOnlyTopics.addAll(result.topics);
         _isLoadingTitlesOnly = false;
-        _hasMoreTitlesOnly = result.topics.length == _pageSize;
+        _hasMoreTitlesOnly = result.hasMore || result.topics.length == _pageSize;
         if (_hasMoreTitlesOnly) _titlesOnlyPage++;
       });
     }
@@ -324,7 +326,7 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.search ?? 'Search',
+          AppLocalizations.of(context).search,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -332,10 +334,9 @@ class _SearchPageState extends State<SearchPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(0.3),
+        shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -346,7 +347,7 @@ class _SearchPageState extends State<SearchPage> {
               color: colorScheme.surface,
               border: Border(
                 bottom: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -355,7 +356,7 @@ class _SearchPageState extends State<SearchPage> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)?.enterKeywordsToSearchTopics ?? 'Enter keywords to search topics...',
+                hintText: AppLocalizations.of(context).enterKeywordsToSearchTopics,
                 hintStyle: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -397,7 +398,7 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
                 filled: true,
-                fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                 contentPadding: DesignTokens.paddingInput,
               ),
               style: textTheme.bodyLarge?.copyWith(
@@ -429,11 +430,11 @@ class _SearchPageState extends State<SearchPage> {
             Icon(
               Icons.search_outlined,
               size: 64,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'Search for topics',
+              AppLocalizations.of(context).searchForTopics,
               style: StyleBuilders.titleTextStyle(
                 colorScheme: colorScheme,
                 textTheme: textTheme,
@@ -442,9 +443,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
             const SizedBox(height: DesignTokens.spacingS),
             Text(
-              AppLocalizations.of(context)?.enterKeywordsToFindTopicsAndPosts ?? 'Enter keywords to find topics and posts',
+              AppLocalizations.of(context).enterKeywordsToFindTopicsAndPosts,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -506,45 +507,16 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildFilterChips(ColorScheme colorScheme, TextTheme textTheme) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DesignTokens.spacingL,
-        vertical: DesignTokens.spacingM,
-      ),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                setState(() {
-                  _selectedFilterIndex = index;
-                });
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceVariant,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        setState(() {
+          _selectedFilterIndex = index;
+        });
+      },
     );
   }
 
@@ -561,20 +533,20 @@ class _SearchPageState extends State<SearchPage> {
             Icon(
               Icons.topic_outlined,
               size: 48,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'No topics found',
+              AppLocalizations.of(context).noTopicsFound,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: DesignTokens.spacingS),
             Text(
-              'Try searching with different keywords',
+              AppLocalizations.of(context).trySearchingDifferentKeywords,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -600,19 +572,14 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: t.id,
                     title: t.title,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {
@@ -638,20 +605,20 @@ class _SearchPageState extends State<SearchPage> {
             Icon(
               Icons.message_outlined,
               size: 48,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'No posts found',
+              AppLocalizations.of(context).noPostsFound,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: DesignTokens.spacingS),
             Text(
-              'Try searching with different keywords',
+              AppLocalizations.of(context).trySearchingDifferentKeywords,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -692,22 +659,17 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: p.topicId,
                     title: p.topicTitle ?? p.title,
                     mode: PostsListMode.thread_by_post,
                     anchorPostId: p.id,
                     forumId: p.topicId,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {
@@ -733,20 +695,20 @@ class _SearchPageState extends State<SearchPage> {
             Icon(
               Icons.title_outlined,
               size: 48,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'No topics found',
+              AppLocalizations.of(context).noTopicsFound,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: DesignTokens.spacingS),
             Text(
-              'Try searching with different keywords',
+              AppLocalizations.of(context).trySearchingDifferentKeywords,
               style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -772,19 +734,14 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                 }
               }
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PostPage(
+              AppNavigation.push(context, PostPage(
                     siteContext: widget.siteContext,
                     topicId: t.id,
                     title: t.title,
-                  ),
-                ),
-              );
+                  ));
             },
           );
         } else {

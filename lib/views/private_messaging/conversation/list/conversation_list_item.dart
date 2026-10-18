@@ -4,6 +4,8 @@ import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import '../../../../utils/time_utils.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
+import '../../../widgets/unread_badge.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class ConversationListItem extends StatelessWidget {
   final FCConversationSummary conversation;
@@ -21,7 +23,7 @@ class ConversationListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(0.3),
+      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
     );
   }
 
@@ -31,7 +33,7 @@ class ConversationListItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     // Get the last reply person's profile picture and username
-    String displayUsername = 'Unknown';
+    String displayUsername = AppLocalizations.of(context).unknown;
     String? displayAvatar;
 
     // Use the last user who posted in the conversation
@@ -95,7 +97,7 @@ class ConversationListItem extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                displayUsername.isNotEmpty ? displayUsername : "Unknown",
+                                displayUsername.isNotEmpty ? displayUsername : AppLocalizations.of(context).unknown,
                                 style: textTheme.titleMedium?.copyWith(
                                   color: hasNewPosts ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                                   fontWeight: hasNewPosts ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightMedium,
@@ -106,39 +108,14 @@ class ConversationListItem extends StatelessWidget {
                             // Unread indicator on the right side
                             if (hasNewPosts) ...[
                               SizedBox(width: DesignTokens.spacingS),
-                              // Show unread count badge if available and > 0, otherwise show dot indicator
-                              (conversation.unreadMessageCount != null && conversation.unreadMessageCount! > 0)
-                                  ? Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: conversation.unreadMessageCount! > 99 
-                                            ? DesignTokens.spacingXS 
-                                            : DesignTokens.spacingS,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.primary,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        conversation.unreadMessageCount! > 99 
-                                            ? '99+'
-                                            : '${conversation.unreadMessageCount}',
-                                        style: textTheme.labelSmall?.copyWith(
-                                          color: colorScheme.onPrimary,
-                                          fontWeight: DesignTokens.fontWeightBold,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    )
-                                  : Container(
-                                      width: 8,
-                                      height: 8,
-                                      margin: EdgeInsets.only(top: 6),
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
+                              // The unread count, or a dot when the forum gives none.
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: UnreadBadge(
+                                  count: conversation.unreadMessageCount ?? 0,
+                                  semanticLabel: AppLocalizations.of(context).unread,
+                                ),
+                              ),
                             ],
                           ],
                         ),

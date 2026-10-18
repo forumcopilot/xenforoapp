@@ -267,6 +267,8 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
     _$postId,
     opt: true,
   );
+  static String? _$name(FCPoll v) => v.name;
+  static const Field<FCPoll, String> _f$name = Field('name', _$name, opt: true);
 
   @override
   final MappableFields<FCPoll> fields = const {
@@ -285,6 +287,7 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
     #hasVoted: _f$hasVoted,
     #canViewResults: _f$canViewResults,
     #postId: _f$postId,
+    #name: _f$name,
   };
 
   static FCPoll _instantiate(DecodingData data) {
@@ -304,6 +307,7 @@ class FCPollMapper extends ClassMapperBase<FCPoll> {
       hasVoted: data.dec(_f$hasVoted),
       canViewResults: data.dec(_f$canViewResults),
       postId: data.dec(_f$postId),
+      name: data.dec(_f$name),
     );
   }
 
@@ -375,6 +379,7 @@ abstract class FCPollCopyWith<$R, $In extends FCPoll, $Out>
     bool? hasVoted,
     bool? canViewResults,
     String? postId,
+    String? name,
   });
   FCPollCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -413,6 +418,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
     bool? hasVoted,
     bool? canViewResults,
     Object? postId = $none,
+    Object? name = $none,
   }) => $apply(
     FieldCopyWithData({
       if (pollId != null) #pollId: pollId,
@@ -430,6 +436,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
       if (hasVoted != null) #hasVoted: hasVoted,
       if (canViewResults != null) #canViewResults: canViewResults,
       if (postId != $none) #postId: postId,
+      if (name != $none) #name: name,
     }),
   );
   @override
@@ -452,6 +459,7 @@ class _FCPollCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPoll, $Out>
     hasVoted: data.get(#hasVoted, or: $value.hasVoted),
     canViewResults: data.get(#canViewResults, or: $value.canViewResults),
     postId: data.get(#postId, or: $value.postId),
+    name: data.get(#name, or: $value.name),
   );
 
   @override

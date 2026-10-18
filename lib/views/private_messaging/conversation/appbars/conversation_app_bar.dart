@@ -9,6 +9,9 @@ import 'package:forumcopilot_flutter/utils/avatar_cache_utils.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../widgets/sheet_title.dart';
+import '../../../../utils/app_navigation.dart';
 
 class ConversationAppBar extends BaseForumAppBar {
   final SiteContext siteContext;
@@ -60,7 +63,7 @@ class ConversationAppBar extends BaseForumAppBar {
             Icons.people_rounded,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)?.participants(participantCount) ?? 'Participants ($participantCount)',
+          tooltip: AppLocalizations.of(context).participants(participantCount),
           onPressed: () {
             showParticipantsBottomSheet(
               context,
@@ -79,7 +82,7 @@ class ConversationAppBar extends BaseForumAppBar {
             Icons.mark_email_unread_rounded,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+          tooltip: AppLocalizations.of(context).markAsUnread,
           onPressed: onMarkUnread,
         ),
       // More options menu (Delete and Report)
@@ -88,7 +91,7 @@ class ConversationAppBar extends BaseForumAppBar {
           Icons.more_vert,
           color: colorScheme.onSurfaceVariant,
         ),
-        tooltip: AppLocalizations.of(context)?.moreOptions ?? 'More options',
+        tooltip: AppLocalizations.of(context).moreOptions,
         onSelected: (value) {
           switch (value) {
             case 'edit':
@@ -122,7 +125,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Edit conversation',
+                    AppLocalizations.of(context).editConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -143,7 +146,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Close conversation',
+                    AppLocalizations.of(context).closeConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -163,7 +166,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Open conversation',
+                    AppLocalizations.of(context).openConversation,
                     style: TextStyle(
                       color: colorScheme.onSurface,
                     ),
@@ -186,7 +189,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Leave conversation',
+                    AppLocalizations.of(context).leaveConversation,
                     style: TextStyle(
                       color: colorScheme.error,
                     ),
@@ -207,7 +210,7 @@ class ConversationAppBar extends BaseForumAppBar {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Report conversation',
+                    AppLocalizations.of(context).reportConversation,
                     style: TextStyle(
                       color: colorScheme.error,
                     ),
@@ -231,9 +234,6 @@ class ConversationAppBar extends BaseForumAppBar {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -242,30 +242,22 @@ class ConversationAppBar extends BaseForumAppBar {
           expand: false,
           builder: (context, scrollController) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
+              // The theme's drag handle sits above; rows line up with the title.
+              padding: EdgeInsets.only(bottom: DesignTokens.spacingL),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.people_rounded, color: Theme.of(context).colorScheme.primary),
-                      SizedBox(width: DesignTokens.spacingS),
-                      Text(AppLocalizations.of(context)?.participantsLabel ?? 'Participants', style: Theme.of(context).textTheme.titleMedium),
-                      const Spacer(),
-                      if (canInvite && conversationId != null)
-                        IconButton(
-                          icon: Icon(Icons.person_add_rounded, color: Theme.of(context).colorScheme.primary),
-                          tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
-                          onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+                  SheetTitle(
+                    AppLocalizations.of(context).participantsLabel,
+                    trailing: canInvite && conversationId != null
+                        ? IconButton(
+                            icon: const Icon(Icons.person_add_rounded),
+                            tooltip: AppLocalizations.of(context).invite,
+                            onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
+                          )
+                        : null,
                   ),
-                  SizedBox(height: DesignTokens.spacingL),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,
@@ -277,17 +269,12 @@ class ConversationAppBar extends BaseForumAppBar {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userId: participant.userId,
                                     userName: participant.username,
                                     profilePictureUrl: participant.iconUrl,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Row(
                               children: [
@@ -371,34 +358,19 @@ class ConversationAppBar extends BaseForumAppBar {
           Navigator.pop(context);
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('$username has been invited to the conversation'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).usernameHasBeenInvited(username));
 
           // Refresh conversation data
           onInviteSuccess?.call();
         } else {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(inviteResult.resultText ?? AppLocalizations.of(context)?.errorInvitingUser('') ?? 'Failed to invite user'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, inviteResult.resultText ?? AppLocalizations.of(context).errorInvitingUser(''));
         }
       } catch (e) {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorInvitingUser(e.toString()) ?? 'Error inviting user: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorInvitingUser(e.toString()));
       }
     }
   }

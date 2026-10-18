@@ -4,9 +4,7 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:forumcopilot_flutter/utils/file_picker_utils.dart';
-import 'package:forumcopilot_flutter/utils/attachment_constraints_utils.dart';
 import 'package:forumcopilot_flutter/utils/attachment_validation_utils.dart';
-import 'package:forumcopilot_flutter/utils/image_optimization_utils.dart';
 import 'package:forumcopilot_flutter/views/user_search_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/discard_changes_scope.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
@@ -15,6 +13,9 @@ import '../../../../theme/design_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../../../../utils/file_utils.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
+import '../../../../services/attachment_uploader.dart';
 
 class NewConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -38,9 +39,16 @@ class _NewConversationPageState extends State<NewConversationPage> {
   final List<String> _toRecipients = [];
   final Map<String, String?> _recipientIcons = {}; // Store icon URLs for recipients
   final List<XFile> _attachments = [];
-  final List<String> _attachmentIds = [];
   final Map<String, bool> _uploadingFiles = {}; // Track which files are currently uploading (key: file path)
-  String? _groupId;
+  // Attachment ids by the picked file's path.
+  final Map<String, String> _attachmentIdByPath = {};
+  // The attachments, sent to this forum whatever forum is opened meanwhile.
+  late final AttachmentUploader _uploader = AttachmentUploader(
+    siteContext: widget.siteContext,
+    kind: AttachmentKind.message,
+    targetId: '',
+  );
+  bool _sent = false;
   bool _isSubmitting = false;
   final FocusNode _messageFocusNode = FocusNode();
   String? _createdConversationId; // Store created conversation ID
@@ -108,13 +116,13 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
       // Create new conversation
       print('🐛 [NewConversationPage] Creating conversation with recipients: $_toRecipients, title: $title');
-      print('🐛 [NewConversationPage] Attachment IDs: $_attachmentIds, groupId: $_groupId');
+      print('🐛 [NewConversationPage] Attachment IDs: ${_uploader.attachmentIds}, groupId: ${_uploader.groupId}');
       final result = await conversationProxy.newConversationAsync(
         _toRecipients,
         title,
         content,
-        attachmentIds: _attachmentIds.isNotEmpty ? _attachmentIds : null,
-        groupId: _groupId,
+        attachmentIds: _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null,
+        groupId: _uploader.groupId,
         openInvite: _openInvite,
         conversationLocked: _conversationLocked,
       );
@@ -130,6 +138,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         // Store the conversation ID for navigation
         _createdConversationId = result.convId;
         _createdConversationTitle = title;
+        _sent = true;
         return true;
       } else {
         // Server returned result=false with a message - throw it directly without wrapping
@@ -154,84 +163,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
             errorMessage = errorMessage.substring(11);
           }
           // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          final colorScheme = Theme.of(context).colorScheme;
-          final textTheme = Theme.of(context).textTheme;
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
         return false;
       } else {
         // Wrap other exceptions
         if (mounted) {
           // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          final colorScheme = Theme.of(context).colorScheme;
-          final textTheme = Theme.of(context).textTheme;
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to create conversation: ${e.toString()}',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToCreateConversation('$e'));
         }
         return false;
       }
@@ -253,7 +192,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
           size: DesignTokens.iconSizeSMedium,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
@@ -270,7 +209,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Participants',
+          AppLocalizations.of(context).participantsLabel,
           style: textTheme.titleSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -289,12 +228,12 @@ class _NewConversationPageState extends State<NewConversationPage> {
                 color: colorScheme.primary,
               ),
               label: Text(
-                'Add',
+                AppLocalizations.of(context).add,
                 style: TextStyle(
                   color: colorScheme.primary,
                 ),
               ),
-              backgroundColor: colorScheme.primaryContainer.withOpacity(DesignTokens.opacityLow),
+              backgroundColor: colorScheme.primaryContainer.withValues(alpha: DesignTokens.opacityLow),
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
@@ -339,7 +278,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
       child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'New Conversation',
+          AppLocalizations.of(context).newConversation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightSemiBold,
@@ -347,12 +286,11 @@ class _NewConversationPageState extends State<NewConversationPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: 3,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(
           color: colorScheme.onSurface,
         ),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: _isSubmitting
@@ -378,13 +316,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
                       final success = await _handleSubmit(title, content);
                       if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.conversationCreatedSuccessfully ?? 'Conversation created successfully'),
-                            backgroundColor: colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).conversationCreatedSuccessfully);
 
                         // Dismiss keyboard before navigating
                         FocusScope.of(context).unfocus();
@@ -394,15 +326,11 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           // Pop the new conversation page first
                           Navigator.of(context).pop();
                           // Then navigate to the conversation page
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ConversationPage(
+                          AppNavigation.push(context, ConversationPage(
                                 siteContext: widget.siteContext,
                                 conversationId: _createdConversationId!,
                                 subject: _createdConversationTitle ?? title,
-                              ),
-                            ),
-                          );
+                              ));
                         } else {
                           // Fallback: just pop if conversation ID is missing
                           Navigator.of(context).pop(true);
@@ -442,7 +370,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Subject',
+                            AppLocalizations.of(context).subject,
                             style: textTheme.titleSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: DesignTokens.fontWeightMedium,
@@ -452,10 +380,10 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           TextField(
                             controller: _titleController,
                             decoration: InputDecoration(
-                              hintText: 'Enter subject',
+                              hintText: AppLocalizations.of(context).enterSubject,
                               hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                               filled: true,
-                              fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                              fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                 borderSide: BorderSide.none,
@@ -488,7 +416,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Message',
+                            AppLocalizations.of(context).message,
                             style: textTheme.titleSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                               fontWeight: DesignTokens.fontWeightMedium,
@@ -499,10 +427,10 @@ class _NewConversationPageState extends State<NewConversationPage> {
                             controller: _messageController,
                             focusNode: _messageFocusNode,
                             decoration: InputDecoration(
-                              hintText: AppLocalizations.of(context)?.writeYourMessage ?? 'Write your message...',
+                              hintText: AppLocalizations.of(context).writeYourMessage,
                               hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                               filled: true,
-                              fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                              fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                 borderSide: BorderSide.none,
@@ -543,7 +471,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                 Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
                                 SizedBox(width: DesignTokens.spacingS),
                                 Text(
-                                  'Attachments',
+                                  AppLocalizations.of(context).attachments,
                                   style: textTheme.titleSmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontWeight: DesignTokens.fontWeightMedium,
@@ -555,17 +483,16 @@ class _NewConversationPageState extends State<NewConversationPage> {
                             Container(
                               padding: DesignTokens.paddingS,
                               decoration: BoxDecoration(
-                                color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ..._attachments.asMap().entries.map((entry) {
-                                    final index = entry.key;
                                     final attachment = entry.value;
                                     // Try to find matching attachment ID (they should be in sync)
-                                    final attachmentId = index < _attachmentIds.length ? _attachmentIds[index] : null;
+                                    final attachmentId = _attachmentIdByPath[attachment.path];
                                     final isUploading = _uploadingFiles[attachment.path] ?? false;
                                     final isImage = isImageFile(attachment.name);
                                     return Column(
@@ -578,7 +505,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                                       width: 48,
                                                       height: 48,
                                                       decoration: BoxDecoration(
-                                                        color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                                        color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                                       ),
                                                       child: ClipRRect(
@@ -653,21 +580,15 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                                 ),
                                           title: Text(attachment.name),
                                           subtitle: isUploading
-                                              ? Text(AppLocalizations.of(context)?.uploading ?? 'Uploading...', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                              ? Text(AppLocalizations.of(context).uploading, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                               : attachmentId != null
-                                                  ? Text(AppLocalizations.of(context)?.uploaded ?? 'Uploaded', style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
+                                                  ? Text(AppLocalizations.of(context).uploaded, style: textTheme.bodySmall?.copyWith(color: colorScheme.primary))
                                                   : null,
                                           trailing: IconButton(
                                             icon: Icon(Icons.close),
                                             onPressed: isUploading
                                                 ? null
-                                                : () => setState(() {
-                                                      _attachments.removeAt(index);
-                                                      _uploadingFiles.remove(attachment.path);
-                                                      if (index < _attachmentIds.length) {
-                                                        _attachmentIds.removeAt(index);
-                                                      }
-                                                    }),
+                                                : () => _removeAttachmentFile(attachment),
                                           ),
                                         ),
                                         if (isUploading)
@@ -675,7 +596,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                             padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingM),
                                             child: LinearProgressIndicator(
                                               minHeight: 2,
-                                              backgroundColor: colorScheme.surfaceVariant,
+                                              backgroundColor: colorScheme.surfaceContainerHighest,
                                               valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
                                             ),
                                           ),
@@ -695,7 +616,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Options',
+                              AppLocalizations.of(context).options,
                               style: textTheme.titleSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: DesignTokens.fontWeightMedium,
@@ -704,21 +625,21 @@ class _NewConversationPageState extends State<NewConversationPage> {
                             SizedBox(height: DesignTokens.spacingS),
                             Container(
                               decoration: BoxDecoration(
-                                color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                               ),
                               child: Column(
                                 children: [
                                   SwitchListTile(
                                     title: Text(
-                                      'Open Invite',
+                                      AppLocalizations.of(context).openInvite,
                                       style: textTheme.titleSmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: DesignTokens.fontWeightMedium,
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Allow any participant to invite others',
+                                      AppLocalizations.of(context).allowAnyParticipantToInviteOthers,
                                       style: textTheme.bodySmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
@@ -729,23 +650,23 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                         _openInvite = value;
                                       });
                                     },
-                                    activeColor: colorScheme.primary,
+                                    activeThumbColor: colorScheme.primary,
                                   ),
                                   Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: colorScheme.outlineVariant.withOpacity(0.3),
+                                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                                   ),
                                   SwitchListTile(
                                     title: Text(
-                                      'Lock Conversation',
+                                      AppLocalizations.of(context).lockConversation,
                                       style: textTheme.titleSmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                         fontWeight: DesignTokens.fontWeightMedium,
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Create conversation as closed (no replies allowed)',
+                                      AppLocalizations.of(context).createConversationAsClosed,
                                       style: textTheme.bodySmall?.copyWith(
                                         color: colorScheme.onSurfaceVariant,
                                       ),
@@ -756,7 +677,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                                         _conversationLocked = value;
                                       });
                                     },
-                                    activeColor: colorScheme.primary,
+                                    activeThumbColor: colorScheme.primary,
                                   ),
                                 ],
                               ),
@@ -786,222 +707,42 @@ class _NewConversationPageState extends State<NewConversationPage> {
         _toRecipients.any((r) => r != widget.initialRecipient);
   }
 
-  Future<String?> _handleFileUpload(XFile file) async {
-    debugPrint('🔍 [NEW_CONVERSATION] _handleFileUpload called');
-    debugPrint('🔍 [NEW_CONVERSATION] File details:');
-    debugPrint('   - file.path: "${file.path}"');
-    debugPrint('   - file.name: "${file.name}"');
-
-    // Check if this specific file is already uploading
-    if (_uploadingFiles[file.path] == true) {
-      debugPrint('⚠️ [NEW_CONVERSATION] File already uploading, returning');
-      return null;
-    }
-
-    // Get constraints from SiteContext
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
-
-    // Check attachment count limit
-    if (!canAddMoreAttachments(_attachments.length, constraints)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
-      }
-      return null;
-    }
-
-    // Validate file
-    XFile fileToUpload = file;
-    if (constraints != null) {
-      final isImage = isImageFile(file.name);
-      final validation = await validateFile(
-        file,
-        constraints,
-        isImage,
-        currentAttachmentCount: _attachments.length,
-      );
-
-      if (!validation.isValid) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                validation.errorMessage ?? 'File validation failed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
-        }
-        return null;
-      }
-
-      // For images that need optimization
-      if (isImage && validation.needsOptimization) {
-        // Optimize image
-        try {
-          final optimizedFile = await optimizeImage(file, constraints);
-          fileToUpload = optimizedFile;
-          debugPrint('🔍 [NEW_CONVERSATION] Image optimized successfully');
-        } catch (e) {
-          debugPrint('❌ [NEW_CONVERSATION] Error optimizing image: $e');
-          String errorMessage = e.toString();
-          if (errorMessage.startsWith('Exception: ')) {
-            errorMessage = errorMessage.substring(11);
-          }
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  errorMessage,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                margin: const EdgeInsets.all(8),
-              ),
-            );
-          }
-          return null;
-        }
-      }
-    }
-
-    // Mark this file as uploading
-    setState(() {
-      _uploadingFiles[fileToUpload.path] = true;
-    });
-
+  /// Checks, shrinks and uploads [file], already in the list; it leaves the
+  /// list again (with the reason) when it cannot be sent.
+  Future<void> _handleFileUpload(XFile file) async {
+    if (_uploadingFiles[file.path] == true) return;
+    setState(() => _uploadingFiles[file.path] = true);
     try {
-      debugPrint('🔍 [NEW_CONVERSATION] Getting attachment proxy...');
-      var attachmentProxy = SiteProxyFactory.getAttachmentProxy();
-      // Use existing groupId if available, otherwise use empty string
-      var groupId = _groupId ?? "";
-
-      debugPrint('🔍 [NEW_CONVERSATION] Reading file bytes...');
-      final fileBytes = await fileToUpload.readAsBytes();
-      debugPrint('🔍 [NEW_CONVERSATION] File bytes read: ${fileBytes.length} bytes');
-
-      debugPrint('🔍 [NEW_CONVERSATION] Calling uploadAttachmentAsync with:');
-      debugPrint('   - type: "pm"');
-      debugPrint('   - id: "" (empty for new conversations)');
-      debugPrint('   - groupId: "$groupId"');
-      debugPrint('   - attachmentName: "${fileToUpload.name}"');
-      debugPrint('   - bytes length: ${fileBytes.length}');
-
-      var uploadAttachmentResult = await attachmentProxy.uploadAttachmentAsync(
-        "pm", // type for private messages/conversations
-        "", // empty string for new conversations (no conversation ID yet)
-        groupId,
-        file.name,
-        fileBytes,
-      );
-
-      debugPrint('🔍 [NEW_CONVERSATION] Upload result:');
-      debugPrint('   - result: ${uploadAttachmentResult.result}');
-      debugPrint('   - resultText: "${uploadAttachmentResult.resultText}"');
-      debugPrint('   - attachmentId: "${uploadAttachmentResult.attachmentId}"');
-      debugPrint('   - groupId: "${uploadAttachmentResult.groupId}"');
-
-      if (uploadAttachmentResult.result) {
-        debugPrint('✅ [NEW_CONVERSATION] File upload successful');
-
-        // Store attachment ID and group ID
-        if (uploadAttachmentResult.attachmentId != null && uploadAttachmentResult.attachmentId!.isNotEmpty) {
-          setState(() {
-            // Find the index of this file in the attachments list
-            final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-            if (fileIndex != -1) {
-              // Insert attachment ID at the correct position
-              while (_attachmentIds.length <= fileIndex) {
-                _attachmentIds.add('');
-              }
-              _attachmentIds[fileIndex] = uploadAttachmentResult.attachmentId!;
-            }
-            // Update groupId if provided (should be consistent across all uploads)
-            if (uploadAttachmentResult.groupId != null && uploadAttachmentResult.groupId!.isNotEmpty) {
-              _groupId = uploadAttachmentResult.groupId;
-            }
-            _uploadingFiles.remove(file.path);
-          });
-          debugPrint('✅ [NEW_CONVERSATION] Stored attachmentId: ${uploadAttachmentResult.attachmentId}');
-          debugPrint('✅ [NEW_CONVERSATION] Current attachmentIds: $_attachmentIds');
-          debugPrint('✅ [NEW_CONVERSATION] Current groupId: "$_groupId"');
-          return uploadAttachmentResult.attachmentId;
-        } else {
-          debugPrint('⚠️ [NEW_CONVERSATION] Upload succeeded but attachmentId is null or empty');
-          setState(() {
-            _uploadingFiles.remove(fileToUpload.path);
-          });
-          return null;
-        }
-      } else {
-        debugPrint('❌ [NEW_CONVERSATION] File upload failed: ${uploadAttachmentResult.resultText}');
-        // Remove file from list on failure
-        setState(() {
-          final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-          if (fileIndex != -1) {
-            _attachments.removeAt(fileIndex);
-            if (fileIndex < _attachmentIds.length) {
-              _attachmentIds.removeAt(fileIndex);
-            }
-          }
-          _uploadingFiles.remove(file.path);
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(uploadAttachmentResult.resultText ?? AppLocalizations.of(context)?.failedToUploadFile('') ?? 'Failed to upload file'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-        }
-        return null;
-      }
-    } catch (e, stackTrace) {
-      debugPrint('❌ [NEW_CONVERSATION] Exception in _handleFileUpload: $e');
-      debugPrint('❌ [NEW_CONVERSATION] Stack trace: $stackTrace');
-      // Remove file from list on error
+      final prepared = await _uploader.prepare(file, currentCount: _attachments.length - 1);
+      final id = await _uploader.upload(prepared);
+      if (!mounted) return;
       setState(() {
-        final fileIndex = _attachments.indexWhere((f) => f.path == file.path);
-        if (fileIndex != -1) {
-          _attachments.removeAt(fileIndex);
-          if (fileIndex < _attachmentIds.length) {
-            _attachmentIds.removeAt(fileIndex);
-          }
-        }
         _uploadingFiles.remove(file.path);
+        _attachmentIdByPath[file.path] = id;
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToUploadFile(e.toString()) ?? 'Failed to upload file: ${e.toString()}'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-      return null;
+    } on AttachmentUploadCancelled {
+      return;
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _uploadingFiles.remove(file.path);
+        _attachments.removeWhere((f) => f.path == file.path);
+      });
+      SnackbarHelper.showError(
+        context,
+        e is AttachmentUploadException ? e.message : AppLocalizations.of(context).failedToUploadFile(e.toString()),
+      );
     }
+  }
+
+  /// Takes [file] off the list, and off the forum when it was uploaded.
+  void _removeAttachmentFile(XFile file) {
+    setState(() {
+      _attachments.removeWhere((f) => f.path == file.path);
+      _uploadingFiles.remove(file.path);
+    });
+    final id = _attachmentIdByPath.remove(file.path);
+    if (id != null) _uploader.remove(id);
   }
 
   void _handleFileAttachment() async {
@@ -1021,24 +762,11 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
   void _handleImageAttachment() async {
     // Get constraints and check count limit before showing picker
-    final siteContext = getCurrentSiteContext();
-    final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
+    final constraints = _uploader.constraints;
 
     if (!canAddMoreAttachments(_attachments.length, constraints)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Maximum of ${constraints!.count} attachment(s) allowed',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
       }
       return;
     }
@@ -1107,10 +835,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
   }
 
   void _handleMention() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserSearchPage(
+    AppNavigation.push(context, UserSearchPage(
           siteContext: widget.siteContext,
           onUserSelected: (username, iconUrl) {
             final currentText = _messageController.text;
@@ -1126,9 +851,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
             _messageFocusNode.requestFocus();
           },
           selectedUsers: const [],
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildBottomToolbar() {
@@ -1144,7 +867,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+            color: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
             offset: const Offset(0, -1),
             blurRadius: 4,
           ),
@@ -1163,7 +886,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                     Icons.attach_file,
                     color: colorScheme.onSurfaceVariant,
                   ),
-                  tooltip: 'Attach File',
+                  tooltip: AppLocalizations.of(context).attachFile,
                   onPressed: _handleFileAttachment,
                 ),
               // Image upload button
@@ -1173,14 +896,14 @@ class _NewConversationPageState extends State<NewConversationPage> {
                     Icons.image,
                     color: colorScheme.onSurfaceVariant,
                   ),
-                  tooltip: 'Upload Image',
+                  tooltip: AppLocalizations.of(context).uploadImage,
                   onPressed: _handleImageAttachment,
                 ),
               // BBCode button
               PopupMenuButton<String>(
                 enabled: _isMessageFieldFocused,
-                icon: Icon(Icons.format_bold, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
-                tooltip: 'Formatting',
+                icon: Icon(Icons.format_bold, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
+                tooltip: AppLocalizations.of(context).formatting,
                 onSelected: _insertBBCode,
                 itemBuilder: (context) => [
                   // Text formatting
@@ -1190,7 +913,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_bold, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bold ?? 'Bold', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bold, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1200,7 +923,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_italic, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.italic ?? 'Italic', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).italic, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1210,7 +933,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_underline, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.underline ?? 'Underline', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).underline, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1220,7 +943,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.strikethrough_s, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.strikethrough ?? 'Strikethrough', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).strikethrough, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1232,7 +955,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.link, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.link ?? 'Link', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).link, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1242,7 +965,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.image, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.image ?? 'Image', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).image, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1252,7 +975,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.videocam, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.video ?? 'Video', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).video, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1264,7 +987,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_quote, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.quote ?? 'Quote', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).quote, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1274,7 +997,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.code, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.code ?? 'Code', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).code, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1284,7 +1007,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.visibility_off, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.spoiler ?? 'Spoiler', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).spoiler, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1296,7 +1019,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_list_bulleted, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bulletList ?? 'Bullet List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bulletList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1306,7 +1029,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_list_numbered, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.numberedList ?? 'Numbered List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).numberedList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1316,7 +1039,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.subdirectory_arrow_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.listItem ?? 'List Item', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).listItem, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1328,7 +1051,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_left, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignLeft ?? 'Align Left', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignLeft, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1338,7 +1061,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_center, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignCenter ?? 'Align Center', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignCenter, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1348,7 +1071,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                       children: [
                         Icon(Icons.format_align_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignRight ?? 'Align Right', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignRight, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1356,8 +1079,8 @@ class _NewConversationPageState extends State<NewConversationPage> {
               ),
               // Mention button
               IconButton(
-                icon: Icon(Icons.alternate_email, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
-                tooltip: 'Mention User',
+                icon: Icon(Icons.alternate_email, color: _isMessageFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
+                tooltip: AppLocalizations.of(context).mentionUser,
                 onPressed: _isMessageFieldFocused ? _handleMention : null,
               ),
             ],
@@ -1369,6 +1092,8 @@ class _NewConversationPageState extends State<NewConversationPage> {
 
   @override
   void dispose() {
+    // Closed without sending: the uploads are removed from the forum.
+    _uploader.close(sent: _sent);
     _titleController.dispose();
     _messageController.dispose();
     _messageFocusNode.dispose();

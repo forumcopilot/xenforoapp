@@ -136,7 +136,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Search User',
+          AppLocalizations.of(context).searchForMembers,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -144,10 +144,9 @@ class _UserSearchPageState extends State<UserSearchPage> {
         ),
         backgroundColor: colorScheme.surface,
         elevation: DesignTokens.elevationMedium,
-        shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+        shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
         surfaceTintColor: colorScheme.surfaceTint,
         iconTheme: IconThemeData(color: colorScheme.onSurface),
-        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -157,7 +156,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
               color: colorScheme.surface,
               border: Border(
                 bottom: BorderSide(
-                  color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                  color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                   width: DesignTokens.borderWidthThin,
                 ),
               ),
@@ -165,7 +164,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
             child: SearchTextField(
               controller: _searchController,
               focusNode: _searchFocusNode,
-              hintText: AppLocalizations.of(context)?.searchUsers ?? 'Search users...',
+              hintText: AppLocalizations.of(context).searchUsers,
               onSearch: _handleSearch,
               autoSearch: true,
               onClear: _handleClear,
@@ -182,7 +181,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
   Widget _buildContent(ColorScheme colorScheme, TextTheme textTheme) {
     if (_error != null) {
       return ErrorStateWidget(
-        title: AppLocalizations.of(context)?.searchFailed ?? 'Search failed',
+        title: AppLocalizations.of(context).searchFailed,
         message: _error!,
       );
     }
@@ -196,16 +195,16 @@ class _UserSearchPageState extends State<UserSearchPage> {
     if (_users.isEmpty && _hasSearched) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: 'No users found',
-        description: 'Try searching with a different username',
+        title: AppLocalizations.of(context).noMembersFound,
+        description: AppLocalizations.of(context).trySearchingWithDifferentUsername,
       );
     }
 
     if (_users.isEmpty && !_hasSearched) {
       return EmptyStateWidget(
         icon: Icons.person_search_rounded,
-        title: 'Search for users',
-        description: 'Enter a username to find and invite users',
+        title: AppLocalizations.of(context).searchForMembers,
+        description: AppLocalizations.of(context).enterUsernameToFindMembers,
       );
     }
 
@@ -240,7 +239,7 @@ class _UserSearchPageState extends State<UserSearchPage> {
           title: Text(
             user.username,
             style: textTheme.titleMedium?.copyWith(
-              color: isSelected ? colorScheme.onSurface.withOpacity(DesignTokens.opacityDisabled) : colorScheme.onSurface,
+              color: isSelected ? colorScheme.onSurface.withValues(alpha: DesignTokens.opacityDisabled) : colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightMedium,
             ),
           ),

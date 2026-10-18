@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 and below (fullBackupContent).
+
+  Saved forum passwords live in flutter_secure_storage: ciphertext in the
+  FlutterSecureStorage shared-preferences file, the key that decrypts it in
+  the hardware Keystore. Auto Backup copies the file but never the Keystore
+  key, so a restored install (new phone, reinstall from cloud backup) gets a
+  file it cannot read. Excluding it means a restore starts with no saved
+  passwords (the member signs in once) instead of an unreadable store.
+  Everything else (settings, the forum list, drafts) still backs up.
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="FlutterSecureStorage.xml"/>
+</full-backup-content>

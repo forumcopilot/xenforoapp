@@ -8,8 +8,51 @@ import 'package:forumcopilot_flutter/views/forum_topics_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_password_dialog.dart';
 import 'package:forumcopilot_flutter/controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/controllers/topic_controller.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumActions {
+  /// Whether the visitor can search [siteContext]'s forum: members, and
+  /// guests where the forum lets guests search.
+  static bool canSearch(SiteContext siteContext) =>
+      siteContext.isLoggedIn || (siteContext.configDataOutput?.guestSearch ?? false);
+
+  /// Asks, then marks every forum read (the Home and Forums tabs' action).
+  static Future<void> confirmMarkAllRead(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(
+            l10n.markAllForumsAsRead,
+            style: textTheme.titleLarge?.copyWith(color: colorScheme.onSurface),
+          ),
+          content: Text(
+            l10n.markAllForumsAsReadMessage,
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel, style: TextStyle(color: colorScheme.onSurfaceVariant)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.markAsRead, style: TextStyle(color: colorScheme.primary)),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed == true && context.mounted) {
+      await ForumActions().markAllAsRead(context, '0');
+    }
+  }
+
   // Track if markAllAsRead is currently in progress to prevent concurrent calls
   // Static to prevent concurrent calls across all instances
   static bool _isMarkingAsRead = false;
@@ -40,22 +83,7 @@ class ForumActions {
         // Double-check context is still valid before showing snackbar
         if (context.mounted) {
           try {
-            final theme = Theme.of(context);
-            final scaffoldMessenger = ScaffoldMessenger.of(context);
-            scaffoldMessenger.showSnackBar(
-              SnackBar(
-                content: Text(
-                  'All forum topics have been marked as read',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onInverseSurface,
-                  ),
-                ),
-                backgroundColor: theme.colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(8),
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).allForumTopicsMarkedRead);
           } catch (e) {
             // Context became invalid between mounted check and usage
             // Silently ignore - the operation succeeded, just can't show UI feedback
@@ -109,7 +137,7 @@ class ForumActions {
           onSuccess();
         } else {
           // Default behavior: navigate to forum topics page
-          Get.to(() => ForumTopicsPage(forum: forum, siteContext: siteContext));
+          AppNavigation.pushGlobal(ForumTopicsPage(forum: forum, siteContext: siteContext), name: '/ForumTopicsPage');
         }
       } else {
         // Login failed, show error message
@@ -144,7 +172,7 @@ class ForumActions {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Login Failed',
+          AppLocalizations.of(context).loginFailed,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -159,7 +187,7 @@ class ForumActions {
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'OK',
+              AppLocalizations.of(context).okButton,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

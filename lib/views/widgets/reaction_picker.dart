@@ -8,10 +8,9 @@ import '../../l10n/generated/app_localizations.dart';
 String reactionCountLabel(BuildContext context, int count) {
   final l10n = AppLocalizations.of(context);
   if (ReactionRegistry.instance.isAvailable) {
-    return l10n?.reactionsCount(count) ??
-        (count == 1 ? '1 Reaction' : '$count Reactions');
+    return l10n.reactionsCount(count);
   }
-  return l10n?.likesCount(count) ?? (count == 1 ? '1 Like' : '$count Likes');
+  return l10n.likesCount(count);
 }
 
 
@@ -34,32 +33,21 @@ Future<FCReaction?> showReactionPicker(
     // when there are many reactions; capped below so it never fills the whole
     // screen. Content wraps to multiple rows AND scrolls if it still overflows.
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
     builder: (ctx) {
-      final colorScheme = Theme.of(ctx).colorScheme;
       // Cap the sheet at 70% of screen height; the reaction grid scrolls
       // within that if the wrapped rows are taller.
       final maxSheetHeight = MediaQuery.of(ctx).size.height * 0.7;
       return SafeArea(
+        // Full width: Material 3's sheet shrinks to content that doesn't
+        // expand, and the centred grid doesn't.
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: maxSheetHeight),
+          constraints: BoxConstraints(minWidth: double.infinity, maxHeight: maxSheetHeight),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 16, 12, 20),
+            // The theme draws the drag handle above.
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // drag handle
-                Container(
-                  width: 36,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
                 // Flexible + scroll view: the grid wraps to multiple rows and,
                 // if those rows exceed the capped height, scrolls vertically.
                 Flexible(
@@ -111,11 +99,11 @@ class _ReactionChoice extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
         decoration: BoxDecoration(
           color: selected
-              ? colorScheme.primary.withOpacity(0.12)
+              ? colorScheme.primary.withValues(alpha: 0.12)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: selected
-              ? Border.all(color: colorScheme.primary.withOpacity(0.5))
+              ? Border.all(color: colorScheme.primary.withValues(alpha: 0.5))
               : null,
         ),
         child: Column(

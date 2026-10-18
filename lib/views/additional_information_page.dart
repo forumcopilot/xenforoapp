@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import '../l10n/generated/app_localizations.dart';
+import '../utils/snackbar_helper.dart';
 
 class AdditionalInformationPage extends StatefulWidget {
   final FCRegistrationRequirements registrationRequirements;
@@ -124,7 +125,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -142,7 +143,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Additional Information',
+          AppLocalizations.of(context).additionalInformation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -226,7 +227,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
               field: field,
               controller: widget.customFieldControllers[fieldId]!,
               focusNode: widget.customFieldFocusNodes[fieldId],
-              validator: (value) => CustomFieldValidator.validateField(field, value),
+              validator: (value) => CustomFieldValidator.validateField(field, value, AppLocalizations.of(context)),
               onFieldSubmitted: () {
                 if (index < widget.customFields.length - 1) {
                   final nextFieldId = widget.customFields[index + 1].identifier;
@@ -310,7 +311,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Date of Birth${requirement.required ? " *" : ""}',
+          '${AppLocalizations.of(context).dateOfBirth}${requirement.required ? " *" : ""}',
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -355,7 +356,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
                   child: Text(
                     _selectedDateOfBirth != null
                         ? DateFormat('yyyy-MM-dd').format(_selectedDateOfBirth!)
-                        : 'Select date of birth',
+                        : AppLocalizations.of(context).selectDateOfBirth,
                     style: TextStyle(
                       color: _selectedDateOfBirth != null
                           ? colorScheme.onSurface
@@ -372,7 +373,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
           Padding(
             padding: const EdgeInsets.only(top: DesignTokens.spacingS),
             child: Text(
-              'Minimum age: ${requirement.minimumAge} years',
+              AppLocalizations.of(context).minimumAge(requirement.minimumAge ?? 0),
               style: StyleBuilders.smallTextStyle(
                 colorScheme: colorScheme,
                 textTheme: textTheme,
@@ -391,7 +392,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Location${isRequired ? " *" : ""}',
+          '${AppLocalizations.of(context).location}${isRequired ? " *" : ""}',
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -412,7 +413,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
             final req = widget.registrationRequirements;
             if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
               if (value == null || value.trim().isEmpty) {
-                return 'Location is required';
+                return AppLocalizations.of(context).locationIsRequired;
               }
             }
             return null;
@@ -433,7 +434,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
   Widget _buildEmailChoiceField(ColorScheme colorScheme, TextTheme textTheme) {
     return CheckboxListTile(
       title: Text(
-        'Receive site mailings',
+        AppLocalizations.of(context).receiveSiteMailings,
         style: StyleBuilders.titleTextStyle(
           colorScheme: colorScheme,
           textTheme: textTheme,
@@ -452,6 +453,34 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     );
   }
 
+  /// "I accept the {document}", with the document as a link wherever the
+  /// translation puts it.
+  TextSpan _acceptSpan(String document, VoidCallback onTap, ColorScheme colorScheme, TextTheme textTheme) {
+    const marker = '\u0000';
+    final parts = AppLocalizations.of(context).iAcceptTheDocument(marker).split(marker);
+    return TextSpan(
+      text: parts.first,
+      style: StyleBuilders.bodyTextStyle(
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+      ),
+      children: [
+        TextSpan(
+          text: document,
+          style: StyleBuilders.bodyTextStyle(
+            colorScheme: colorScheme,
+            textTheme: textTheme,
+            color: colorScheme.primary,
+          ).copyWith(
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: TapGestureRecognizer()..onTap = onTap,
+        ),
+        if (parts.length > 1) TextSpan(text: parts.sublist(1).join()),
+      ],
+    );
+  }
+
   Widget _buildPolicyAcceptanceFields(
     ColorScheme colorScheme,
     TextTheme textTheme,
@@ -463,26 +492,11 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
         if (req.termsOfService != null && req.termsOfService!.required)
           CheckboxListTile(
             title: Text.rich(
-              TextSpan(
-                text: 'I accept the ',
-                style: StyleBuilders.bodyTextStyle(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: StyleBuilders.bodyTextStyle(
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                      color: colorScheme.primary,
-                    ).copyWith(
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _openPolicyUrl(req.termsOfService!.url),
-                  ),
-                ],
+              _acceptSpan(
+                AppLocalizations.of(context).termsOfService,
+                () => _openPolicyUrl(req.termsOfService!.url),
+                colorScheme,
+                textTheme,
               ),
             ),
             value: _acceptTerms,
@@ -497,26 +511,11 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
         if (req.privacyPolicy != null && req.privacyPolicy!.required)
           CheckboxListTile(
             title: Text.rich(
-              TextSpan(
-                text: 'I accept the ',
-                style: StyleBuilders.bodyTextStyle(
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: StyleBuilders.bodyTextStyle(
-                      colorScheme: colorScheme,
-                      textTheme: textTheme,
-                      color: colorScheme.primary,
-                    ).copyWith(
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _openPolicyUrl(req.privacyPolicy!.url),
-                  ),
-                ],
+              _acceptSpan(
+                AppLocalizations.of(context).privacyPolicy,
+                () => _openPolicyUrl(req.privacyPolicy!.url),
+                colorScheme,
+                textTheme,
               ),
             ),
             value: _acceptPrivacy,
@@ -573,7 +572,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
           elevation: DesignTokens.elevationNone,
         ),
         child: Text(
-          'Create Account',
+          AppLocalizations.of(context).createAccount,
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,
@@ -591,9 +590,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Date of Birth if required
     if (req.dateOfBirth != null && (req.dateOfBirth!.required || req.dateOfBirth!.requireDob == true)) {
       if (_selectedDateOfBirth == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseSelectDateOfBirth ?? 'Please select your date of birth')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseSelectDateOfBirth);
         return;
       }
     }
@@ -601,9 +598,7 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Location if required
     if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
       if (widget.locationController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseEnterLocation ?? 'Please enter your location')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterLocation);
         return;
       }
     }
@@ -611,24 +606,18 @@ class _AdditionalInformationPageState extends State<AdditionalInformationPage> {
     // Validate Email Choice if required
     if (req.emailChoice != null && (req.emailChoice!.required || req.emailChoice!.requireEmailChoice == true)) {
       if (_emailChoice == null || _emailChoice == false) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)?.pleaseIndicateEmailPreference ?? 'Please indicate your email preference')),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseIndicateEmailPreference);
         return;
       }
     }
     
     // Validate policies if required
     if (req.termsOfService?.required == true && !_acceptTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.pleaseAcceptTermsOfService ?? 'Please accept the Terms of Service')),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptTermsOfService);
       return;
     }
     if (req.privacyPolicy?.required == true && !_acceptPrivacy) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)?.pleaseAcceptPrivacyPolicy ?? 'Please accept the Privacy Policy')),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptPrivacyPolicy);
       return;
     }
 

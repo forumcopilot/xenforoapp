@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
@@ -46,6 +47,8 @@ class _Host extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SingleChildScrollView(
             child: PostListItem(
@@ -148,6 +151,8 @@ void main() {
   testWidgets('a theme change re-prepares and still renders the body',
       (tester) async {
     Widget host(ThemeData theme) => MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: theme,
           home: Scaffold(
             body: SingleChildScrollView(

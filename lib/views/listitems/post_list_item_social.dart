@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show Re
 import 'package:forumcopilot_flutter/views/widgets/reaction_summary.dart';
 import '../../utils/accessibility_helpers.dart';
 import '../../theme/design_tokens.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class PostListItemSocial extends StatelessWidget {
   final FCPost post;
@@ -12,6 +13,10 @@ class PostListItemSocial extends StatelessWidget {
   final int likeCount;
   final bool isLoggedIn;
   final VoidCallback? onLike;
+
+  /// Long press on the react button: the reaction picker. Null on a forum
+  /// with only Like.
+  final VoidCallback? onLongPressLike;
   final VoidCallback? onShowLikes;
   final Widget? trailing;
 
@@ -28,6 +33,7 @@ class PostListItemSocial extends StatelessWidget {
     this.currentReaction,
     this.isLoggedIn = false,
     this.onLike,
+    this.onLongPressLike,
     this.onShowLikes,
     this.trailing,
   });
@@ -64,15 +70,13 @@ class PostListItemSocial extends StatelessWidget {
         // ],
         // Like button row
         SizedBox(height: DesignTokens.spacingM),
+        // As in the Discourse app: the actions sit at the end of the row, with
+        // Reply last; the summary (the emoji people used and how many; a tap
+        // lists who) packed against the react button it counts for.
         Row(
           children: [
-            // Reply button (trailing widget)
-            if (trailing != null) trailing!,
-            // Reactions, as in the Discourse app: the summary (the emoji
-            // people used and how many; a tap lists who) packed against the
-            // react button it counts for.
+            const Spacer(),
             if (showSummary) ...[
-              if (trailing != null) SizedBox(width: DesignTokens.spacingXL),
               ReactionSummary(
                 likes: post.likesInfo,
                 count: likeCount,
@@ -82,13 +86,11 @@ class PostListItemSocial extends StatelessWidget {
             ],
             // Show like button only if logged in and can like
             if (showReactButton) ...[
-              if (trailing != null && !showSummary) SizedBox(width: DesignTokens.spacingXL),
               Builder(
                 builder: (context) {
-                  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-                  final iconColor = isLiked
-                      ? colorScheme.error
-                      : colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+                  // Full-strength onSurfaceVariant when not liked: at 40-50%
+                  // it read as disabled (Material's disabled is 38%).
+                  final iconColor = isLiked ? colorScheme.error : colorScheme.onSurfaceVariant;
                   // When the viewer has a specific reaction, render it (native
                   // emoji or the reaction's image for custom reactions);
                   // otherwise fall back to the heart icon (liked = filled).
@@ -102,16 +104,24 @@ class PostListItemSocial extends StatelessWidget {
                           color: iconColor,
                           size: DesignTokens.iconSizeMedium,
                         );
+                  // A tap likes (or takes your reaction back); a long press
+                  // opens the picker, so a Like is one tap on any forum.
                   return AccessibilityHelpers.accessibleIconButton(
                     icon: reactIcon,
                     onTap: onLike,
+                    onLongPress: onLongPressLike,
                     label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount),
+                    hint: onLongPressLike == null
+                        ? null
+                        : AppLocalizations.of(context).reactionHoldHint,
                     isSelected: isLiked,
                     context: context,
                   );
                 },
               ),
             ],
+            // Reply last, as in the Discourse app.
+            if (trailing != null) trailing!,
           ],
         ),
       ],

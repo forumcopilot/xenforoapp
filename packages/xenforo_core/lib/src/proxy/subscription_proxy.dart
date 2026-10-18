@@ -5,11 +5,12 @@ import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_notification_level.dart';
 import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCSubscriptionProxy
 /// Handles subscription operations for XenForo forums
 class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscriptionProxy {
-  XenForoSubscriptionProxy(SiteContext context) : super(context);
+  XenForoSubscriptionProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCSubscribedForumResult> getSubscribedForumAsync() async {

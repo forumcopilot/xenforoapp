@@ -10,6 +10,7 @@ import '../login_page.dart';
 import '../register_page.dart';
 import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
@@ -29,7 +30,7 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_rounded),
@@ -37,7 +38,7 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       title: Obx(() {
         final site = siteController.currentSite.value;
-        final forumName = site?.name ?? (AppLocalizations.of(context)?.forum ?? "Forum");
+        final forumName = site?.name ?? AppLocalizations.of(context).forum;
         final domain = _extractDomain(site?.url);
 
         return Column(
@@ -88,43 +89,37 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildSearchButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.manage_search_rounded),
-      tooltip: AppLocalizations.of(context)?.search ?? 'Search',
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => SearchPage(siteContext: siteContext)),
-      ),
+      tooltip: AppLocalizations.of(context).search,
+      onPressed: () => AppNavigation.push(context, SearchPage(siteContext: siteContext)),
     );
   }
 
   Widget _buildMembersButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.people_alt_rounded),
-      tooltip: AppLocalizations.of(context)?.members ?? 'Members',
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MembersPage(siteContext: siteContext)),
-      ),
+      tooltip: AppLocalizations.of(context).members,
+      onPressed: () => AppNavigation.push(context, MembersPage(siteContext: siteContext)),
     );
   }
 
   Widget _buildMenuButton(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert_rounded),
-      tooltip: AppLocalizations.of(context)?.moreOptions ?? 'More options',
+      tooltip: AppLocalizations.of(context).moreOptions,
       onSelected: (value) => _handleMenuAction(context, value),
       itemBuilder: (context) {
         if (isLoggedIn) {
           // Show logged-in menu items
           return [
-            _buildMenuItem('mark_read', Icons.visibility_off_rounded, AppLocalizations.of(context)?.markForumRead ?? 'Mark Forum Read', colorScheme, textTheme),
-            _buildMenuItem('notification_test', Icons.notifications_active_rounded, AppLocalizations.of(context)?.notificationTest ?? 'Notification Test', colorScheme, textTheme),
-            _buildMenuItem('logout', Icons.logout_rounded, AppLocalizations.of(context)?.logout ?? 'Logout', colorScheme, textTheme, isDestructive: true),
+            _buildMenuItem('mark_read', Icons.visibility_off_rounded, AppLocalizations.of(context).markForumRead, colorScheme, textTheme),
+            _buildMenuItem('notification_test', Icons.notifications_active_rounded, AppLocalizations.of(context).notificationTest, colorScheme, textTheme),
+            _buildMenuItem('logout', Icons.logout_rounded, AppLocalizations.of(context).logout, colorScheme, textTheme, isDestructive: true),
           ];
         } else {
           // Show sign-in/register menu items when not logged in
           return [
-            _buildMenuItem('sign_in', Icons.login_rounded, AppLocalizations.of(context)?.signIn ?? 'Sign In', colorScheme, textTheme),
-            _buildMenuItem('register', Icons.person_add_rounded, AppLocalizations.of(context)?.register ?? 'Register', colorScheme, textTheme),
+            _buildMenuItem('sign_in', Icons.login_rounded, AppLocalizations.of(context).signIn, colorScheme, textTheme),
+            _buildMenuItem('register', Icons.person_add_rounded, AppLocalizations.of(context).register, colorScheme, textTheme),
           ];
         }
       },
@@ -155,10 +150,10 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   Future<void> _handleMenuAction(BuildContext context, String value) async {
     switch (value) {
       case 'sign_in':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => LoginPage(siteContext: siteContext)));
+        AppNavigation.push(context, LoginPage(siteContext: siteContext));
         break;
       case 'register':
-        Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterPage(siteContext: siteContext)));
+        AppNavigation.push(context, RegisterPage(siteContext: siteContext));
         break;
       case 'mark_read':
         ForumActions().markAllAsRead(context, '0');

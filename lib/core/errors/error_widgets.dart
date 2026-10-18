@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:get/get.dart';
-import '../../theme/design_tokens.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../views/widgets/empty_state_view.dart';
 
 /// Reusable error widgets for consistent error display throughout the app
 class ErrorWidgets {
@@ -15,58 +16,29 @@ class ErrorWidgets {
     String? helpText,
     VoidCallback? onHelp,
   }) {
+    // The shared EmptyStateView's error form; Get help, when offered, is
+    // its second action.
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: DesignTokens.paddingXL,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 80,
-                color: Get.theme.colorScheme.error,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: Get.theme.textTheme.headlineSmall?.copyWith(
-                  color: Get.theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                style: Get.theme.textTheme.bodyLarge?.copyWith(
-                  color: Get.theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              if (onRetry != null)
-                ElevatedButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(retryText ?? (AppLocalizations.of(context)?.tryAgain ?? 'Try Again')),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+        child: onHelp == null
+            ? EmptyStateView.error(message: title, hint: message, onRetry: onRetry)
+            : EmptyStateView(
+                icon: Icons.error_outline,
+                message: title,
+                hint: message,
+                actions: [
+                  if (onRetry != null)
+                    OutlinedButton.icon(
+                      onPressed: onRetry,
+                      icon: const Icon(Icons.refresh),
+                      label: Text(retryText ?? AppLocalizations.of(context).tryAgain),
                     ),
+                  TextButton(
+                    onPressed: onHelp,
+                    child: Text(helpText ?? AppLocalizations.of(context).getHelp),
                   ),
-                ),
-              if (onHelp != null) ...[
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: onHelp,
-                  child: Text(helpText ?? (AppLocalizations.of(context)?.getHelp ?? 'Get Help')),
-                ),
-              ],
-            ],
-          ),
-        ),
+                ],
+              ),
       ),
     );
   }
@@ -80,10 +52,10 @@ class ErrorWidgets {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.errorContainer.withOpacity(0.1),
+        color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Get.theme.colorScheme.error.withOpacity(0.3),
+          color: Get.theme.colorScheme.error.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -124,7 +96,7 @@ class ErrorWidgets {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Get.theme.colorScheme.errorContainer.withOpacity(0.1),
+        color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
@@ -188,7 +160,7 @@ class ErrorWidgets {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: Text(AppLocalizations.of(context)?.retryButton ?? 'Retry'),
+              label: Text(AppLocalizations.of(context).retryButton),
             ),
           ],
         ],
@@ -204,9 +176,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.noInternetConnection ?? 'No Internet Connection',
-      message: l10n?.checkInternetConnection ?? 'Please check your internet connection and try again.',
-      retryText: l10n?.retryButton ?? 'Retry',
+      title: l10n.noInternetConnection,
+      message: l10n.checkInternetConnection,
+      retryText: l10n.retryButton,
       onRetry: onRetry,
     );
   }
@@ -220,9 +192,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.authenticationRequired ?? 'Authentication Required',
-      message: l10n?.pleaseLoginToContinue ?? 'Please log in to continue.',
-      retryText: l10n?.logIn ?? 'Log In',
+      title: l10n.authenticationRequired,
+      message: l10n.pleaseLoginToContinue,
+      retryText: l10n.logIn,
       onRetry: onLogin,
     );
   }
@@ -236,9 +208,9 @@ class ErrorWidgets {
     final l10n = AppLocalizations.of(context);
     return fullScreenError(
       context: context,
-      title: l10n?.forumError ?? 'Forum Error',
+      title: l10n.forumError,
       message: message,
-      retryText: l10n?.tryAgain ?? 'Try Again',
+      retryText: l10n.tryAgain,
       onRetry: onRetry,
     );
   }
@@ -269,11 +241,11 @@ class ErrorOrChild extends StatelessWidget {
 
     final l10n = AppLocalizations.of(context);
     if (customErrorBuilder != null) {
-      return customErrorBuilder!(errorMessage ?? (l10n?.anErrorOccurred ?? 'An error occurred'), onRetry);
+      return customErrorBuilder!(errorMessage ?? l10n.anErrorOccurred, onRetry);
     }
 
     return ErrorWidgets.compactError(
-      message: errorMessage ?? (l10n?.anErrorOccurred ?? 'An error occurred'),
+      message: errorMessage ?? l10n.anErrorOccurred,
       onRetry: onRetry,
     );
   }
@@ -337,8 +309,8 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       final l10n = AppLocalizations.of(context);
       return ErrorWidgets.fullScreenError(
         context: context,
-        title: l10n?.somethingWentWrong ?? 'Something went wrong',
-        message: l10n?.unexpectedErrorOccurred ?? 'An unexpected error occurred. Please try again.',
+        title: l10n.somethingWentWrong,
+        message: l10n.unexpectedErrorOccurred,
         onRetry: () {
           setState(() {
             _error = null;
@@ -376,21 +348,7 @@ class ErrorSnackbar {
     SnackPosition position = SnackPosition.BOTTOM,
     VoidCallback? onTap,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.errorContainer,
-      colorText: Get.theme.colorScheme.onErrorContainer,
-      icon: Icon(
-        Icons.error_outline,
-        color: Get.theme.colorScheme.onErrorContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-      onTap: onTap != null ? (_) => onTap() : null,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showError(ctx, message);
   }
 
   /// Show success snackbar
@@ -400,20 +358,7 @@ class ErrorSnackbar {
     Duration duration = const Duration(seconds: 3),
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.primaryContainer,
-      colorText: Get.theme.colorScheme.onPrimaryContainer,
-      icon: Icon(
-        Icons.check_circle_outline,
-        color: Get.theme.colorScheme.onPrimaryContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showSuccess(ctx, message);
   }
 
   /// Show warning snackbar
@@ -423,19 +368,6 @@ class ErrorSnackbar {
     Duration duration = const Duration(seconds: 4),
     SnackPosition position = SnackPosition.BOTTOM,
   }) {
-    Get.snackbar(
-      title,
-      message,
-      duration: duration,
-      snackPosition: position,
-      backgroundColor: Get.theme.colorScheme.tertiaryContainer,
-      colorText: Get.theme.colorScheme.onTertiaryContainer,
-      icon: Icon(
-        Icons.warning_outlined,
-        color: Get.theme.colorScheme.onTertiaryContainer,
-      ),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    if (Get.context case final ctx?) SnackbarHelper.showInfo(ctx, message);
   }
 }

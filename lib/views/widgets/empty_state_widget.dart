@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/design_tokens.dart';
+import 'empty_state_view.dart';
 
 /// A reusable empty state widget with icon, title, and description.
 class EmptyStateWidget extends StatelessWidget {
@@ -16,43 +17,11 @@ class EmptyStateWidget extends StatelessWidget {
     this.iconSize = DesignTokens.iconSizeXXL,
   }) : super(key: key);
 
+  // The shared EmptyStateView (from the Discourse app), so every empty
+  // screen looks the same. [iconSize] is kept for callers and unused.
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: iconSize,
-            color: colorScheme.onSurfaceVariant.withOpacity(DesignTokens.opacityMediumLow),
-          ),
-          SizedBox(height: DesignTokens.spacingL),
-          Text(
-            title,
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          if (description != null) ...[
-            SizedBox(height: DesignTokens.spacingS),
-            Padding(
-              padding: DesignTokens.paddingHorizontalXL,
-              child: Text(
-                description!,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant.withOpacity(DesignTokens.opacityHigh),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
+    return EmptyStateView(icon: icon, message: title, hint: description);
   }
 }
 

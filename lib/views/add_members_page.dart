@@ -10,6 +10,8 @@ import '../views/user_search_page.dart';
 // import '../views/widgets/cached_redirect_image.dart';
 import 'widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
+import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class AddMembersPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -86,7 +88,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
         }
         // Remove ANSI color codes if present
         errorMessage = errorMessage.replaceAll(RegExp(r'\[\d+m'), '');
-        showErrorDialog(AppLocalizations.of(context)?.errorAddingMembers(errorMessage) ?? 'Error adding members: $errorMessage');
+        showErrorDialog(AppLocalizations.of(context).errorAddingMembers(errorMessage));
       }
       return false;
     }
@@ -107,7 +109,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
           size: 18,
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
@@ -130,23 +132,18 @@ class _AddMembersPageState extends State<AddMembersPage> {
             color: colorScheme.primary,
           ),
           label: Text(
-            AppLocalizations.of(context)?.add ?? 'Add',
+            AppLocalizations.of(context).add,
             style: TextStyle(
               color: colorScheme.primary,
             ),
           ),
-          backgroundColor: colorScheme.primaryContainer.withOpacity(0.3),
+          backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
           onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => UserSearchPage(
+            final result = await AppNavigation.push(context, UserSearchPage(
                   siteContext: widget.siteContext,
                   onUserSelected: (username, iconUrl) {},
                   selectedUsers: [..._toRecipients],
-                ),
-              ),
-            );
+                ));
             if (result != null && result is Map<String, dynamic>) {
               final username = result['username'] as String;
               final iconUrl = result['iconUrl'] as String?;
@@ -176,7 +173,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          AppLocalizations.of(context)?.addMembers ?? 'Add Members',
+          AppLocalizations.of(context).addMembers,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
@@ -204,13 +201,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
                       final content = _messageController.text;
                       final success = await _handleSubmit(content);
                       if (success && mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.membersAddedSuccessfully ?? 'Members added successfully'),
-                            backgroundColor: colorScheme.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
+                        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).membersAddedSuccessfully);
                         Navigator.of(context).pop(true);
                       }
                     } finally {
@@ -230,7 +221,7 @@ class _AddMembersPageState extends State<AddMembersPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Invite:',
+              '${AppLocalizations.of(context).invite}:',
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
@@ -249,12 +240,12 @@ class _AddMembersPageState extends State<AddMembersPage> {
             TextField(
               controller: _messageController,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)?.inviteMessageOptional ?? 'Invite Message (optional)',
-                hintText: AppLocalizations.of(context)?.iWouldLikeToAddYouToThisConversation ?? 'I would like to add you to this conversation.',
+                labelText: AppLocalizations.of(context).inviteMessageOptional,
+                hintText: AppLocalizations.of(context).iWouldLikeToAddYouToThisConversation,
                 labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                 floatingLabelStyle: TextStyle(color: colorScheme.primary),
                 filled: true,
-                fillColor: colorScheme.surfaceVariant.withOpacity(0.3),
+                fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,

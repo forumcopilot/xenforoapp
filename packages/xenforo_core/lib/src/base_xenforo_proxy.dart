@@ -59,6 +59,7 @@ abstract class BaseXenForoProxy {
       };
 
       xfDebug('🔍 [BASE_PROXY] Calling _client.forumcopilotApi...');
+      var generation = siteContext.sessionGeneration;
       var result = await _client.forumcopilotApi(siteContext, requestData);
       xfDebug('🔍 [BASE_PROXY] API call completed, statusCode: ${result.statusCode}');
 
@@ -67,11 +68,13 @@ abstract class BaseXenForoProxy {
       if (siteContext.allowLoginRetry &&
           !siteContext.passkeyLoginInProgress &&
           siteContext.loginDataOutput != null &&
+          result.hasLoginHeader &&
           !result.fcIsLogin &&
           !_loginRetryExcludedMethods.contains(method)) {
         xfDebug('🔄 [BASE_PROXY] fc_is_login=false with login data - checking the session before retrying $method');
         if (await _checkSessionOrRelogin()) {
           xfDebug('🔄 [BASE_PROXY] Session usable again - retrying $method');
+          generation = siteContext.sessionGeneration;
           result = await _client.forumcopilotApi(siteContext, requestData);
           xfDebug('🔍 [BASE_PROXY] Retry API call completed, statusCode: ${result.statusCode}');
         }
@@ -79,7 +82,7 @@ abstract class BaseXenForoProxy {
       }
 
       xfDebug('🔍 [BASE_PROXY] Calling handleResponse...');
-      final response = handleResponse(result);
+      final response = handleResponse(result, generation: generation);
       xfDebug('🔍 [BASE_PROXY] Response handled, keys: ${response.keys.toList()}');
 
       // Plugin returns data directly in FC format - return the parsed response
@@ -103,21 +106,28 @@ abstract class BaseXenForoProxy {
     return parse(response);
   }
 
-  /// Handle API response and extract data
-  Map<String, dynamic> handleResponse(FCCallResult result) {
+  /// Handle API response and extract data. [generation] is the session
+  /// generation the request started in; when the user has signed in or out
+  /// since, the reply's login header no longer describes this session and
+  /// leaves the login state alone (the reply itself is still returned).
+  Map<String, dynamic> handleResponse(FCCallResult result, {int? generation}) {
     xfDebug('🔍 [BASE_PROXY] handleResponse called:');
     xfDebug('   - statusCode: ${result.statusCode}');
     xfDebug('   - body length: ${result.body.length}');
     xfDebug('   - fcIsLogin: ${result.fcIsLogin}');
 
-    // Update site context with the response to track authentication state
-    xfDebug('🔍 [BASE_PROXY] Setting last call response...');
-    siteContext.setLastCallResponse(result);
-
-    // Update login state from fc_is_login header
-    // This ensures authentication state stays in sync with server
-    xfDebug('🔍 [BASE_PROXY] Updating login state from header...');
-    siteContext.updateLoginStateFromHeader(result.fcIsLogin);
+    if (generation != null && !siteContext.isCurrentSession(generation)) {
+      xfDebug('🔒 [BASE_PROXY] Reply to a request from before the last sign-in/out: login state left alone');
+    } else if (!result.hasLoginHeader) {
+      // Never reached the add-on (offline, timeout, an error page): no news
+      // about the session, so don't sign the app out over it.
+      xfDebug('🔒 [BASE_PROXY] Reply without fc_is_login (status ${result.statusCode}): login state left alone');
+    } else {
+      // Update site context with the response to track authentication state
+      siteContext.setLastCallResponse(result);
+      // Keep the login state in sync with the server's fc_is_login header.
+      siteContext.updateLoginStateFromHeader(result.fcIsLogin);
+    }
 
     if (result.statusCode < 200 || result.statusCode >= 300) {
       xfDebug('❌ [BASE_PROXY] HTTP error status: ${result.statusCode}');
@@ -279,6 +289,11 @@ abstract class BaseXenForoProxy {
         xfDebug('🔄 [BASE_PROXY] getConfig confirms the session is still valid');
         return true;
       }
+      if (!confirm.hasLoginHeader) {
+        // The forum can't be reached: signing in again would fail the same way.
+        xfDebug('🔄 [BASE_PROXY] getConfig did not reach the forum - no relogin');
+        return false;
+      }
       xfDebug('🔄 [BASE_PROXY] getConfig confirms signed out - attempting relogin');
       await _doRelogin();
       return true;
@@ -311,7 +326,7 @@ abstract class BaseXenForoProxy {
     }
 
     xfDebug('🔄 [BASE_PROXY] Attempting relogin with saved credentials');
-    final loginResult = await XenForoUserProxy(siteContext).loginAsync(
+    final loginResult = await XenForoUserProxy(siteContext, client: _client).loginAsync(
       siteContext.username!,
       siteContext.password!,
       false, // not anonymous

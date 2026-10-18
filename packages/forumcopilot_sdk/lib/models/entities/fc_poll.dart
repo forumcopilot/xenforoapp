@@ -75,6 +75,11 @@ class FCPoll with FCPollMappable {
   /// attaches polls to the topic rather than a specific post.
   String? postId;
 
+  /// The poll's name within its post, for platforms where a post can hold
+  /// several polls and votes address one by post id and name (Discourse).
+  /// Null when the poll id alone identifies it.
+  String? name;
+
   FCPoll({
     required this.pollId,
     required this.topicId,
@@ -91,5 +96,6 @@ class FCPoll with FCPollMappable {
     this.hasVoted = false,
     this.canViewResults = false,
     this.postId,
+    this.name,
   });
 }

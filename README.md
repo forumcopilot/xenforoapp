@@ -78,6 +78,8 @@ This app provides a full-featured forum experience for a single XenForo site:
 - **Profile** – View profile, avatar, recent posts, and custom profile fields.
 - **Profile picture** – Change avatar from device or camera.
 - **Passkeys** – Sign in with passkeys where supported (requires Android/iOS app and assetlinks/AASA configured).
+- **Sign in on the website** – For members who use Google, Facebook or another way your website offers (see [Configure your forum](#3-configure-your-forum)).
+- **Delete account** – In Settings, where the add-on allows it (App Store guideline 5.1.1(v)).
 
 ### Notifications & alerts
 - **Alerts** – In-app alerts list (when enabled by forum).
@@ -145,6 +147,8 @@ static const String pluginEndpoint = 'forumcopilot.php';
 ```
 
 Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed. Push has its own section: [Push notifications](#push-notifications-optional).
+
+Members who sign in on your website with Google, Facebook, a passkey or two-step have no password to type into the app; they sign in through the website instead ("Sign in on the forum's website", in the system browser sheet). For that, give the app a URL scheme of its own in `browserLoginScheme` (not `forumcopilot`, which the official app uses), put the same scheme in `android/app/src/main/AndroidManifest.xml` (the `flutter_web_auth_2` CallbackActivity), and add it to the add-on option **App sign-in schemes** in your admin panel (Options > Forum Copilot). The button shows once the forum lists the app's scheme.
 
 `forumName` and `forumBaseUrl` can also be overridden at build time without editing the file, which is handy for a CI build, a preview against a staging forum, or the benchmark harness:
 

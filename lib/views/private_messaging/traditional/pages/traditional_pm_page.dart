@@ -7,6 +7,8 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../appbars/traditional_pm_app_bar.dart';
 import 'reply_traditional_pm_page.dart';
 import '../widgets/traditional_pm_item.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
 
 class TraditionalPMPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -54,17 +56,13 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
 
   void _onReplyPressed() {
     if (_message != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             initialRecipients: [_message!.msg_from ?? ''],
             subject: widget.subject,
             isQuote: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 
@@ -83,35 +81,27 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
         }
       }
 
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             initialRecipients: allRecipients,
             subject: widget.subject,
             isQuote: true,
             showCcField: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 
   void _onForwardPressed() {
     if (_message != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ReplyTraditionalPMPage(
+      AppNavigation.push(context, ReplyTraditionalPMPage(
             siteContext: widget.siteContext,
             conversationId: widget.messageId,
             username: null,
             subject: 'Fwd: ${_cleanSubject(widget.subject)}',
             isQuote: true,
             isForward: true,
-          ),
-        ),
-      );
+          ));
     }
   }
 
@@ -123,22 +113,12 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
       if (mounted) {
         widget.onMarkUnread?.call();
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.messageMarkedAsUnread ?? 'Message marked as unread'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).messageMarkedAsUnread);
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToMarkAsUnread(e.toString()) ?? 'Failed to mark message as unread: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToMarkAsUnread(e.toString()));
       }
     }
   }
@@ -182,21 +162,21 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          AppLocalizations.of(context)?.deleteMessage ?? 'Delete Message',
+          AppLocalizations.of(context).deleteMessage,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         content: Text(
-          AppLocalizations.of(context)?.areYouSureYouWantToDeleteThisMessage ?? 'Are you sure you want to delete this message?',
+          AppLocalizations.of(context).areYouSureYouWantToDeleteThisMessage,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+            child: Text(AppLocalizations.of(context).delete),
           ),
         ],
       ),
@@ -210,12 +190,7 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.failedToDeleteMessage(e.toString()) ?? 'Failed to delete message: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToDeleteMessage(e.toString()));
       }
     }
   }
@@ -250,14 +225,14 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              AppLocalizations.of(context)?.errorLoadingMessage(_error ?? '') ?? 'Error loading message: $_error',
+              AppLocalizations.of(context).errorLoadingMessage(_error ?? ''),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: _loadMessage,
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -267,7 +242,7 @@ class _TraditionalPMPageState extends State<TraditionalPMPage> {
     if (_message == null) {
       return Center(
         child: Text(
-          AppLocalizations.of(context)?.messageNotFound ?? 'Message not found',
+          AppLocalizations.of(context).messageNotFound,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

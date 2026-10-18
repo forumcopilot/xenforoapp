@@ -120,6 +120,16 @@ class FCUpdatePasswordResult extends FCBaseResult with FCUpdatePasswordResultMap
   }) : super(result: result, resultText: resultText);
 }
 
+/// The result of deleting the signed-in member's account
+/// (IFCAccountDeletion.deleteAccount).
+@MappableClass()
+class FCDeleteAccountResult extends FCBaseResult with FCDeleteAccountResultMappable {
+  FCDeleteAccountResult({
+    required bool result,
+    String? resultText,
+  }) : super(result: result, resultText: resultText);
+}
+
 /// Forum Copilot Update Profile Result
 /// Maps from UpdateProfileData_Output
 @MappableClass()
@@ -144,9 +154,14 @@ class FCUpdatePasswordSSOResult extends FCBaseResult with FCUpdatePasswordSSORes
 /// Maps from UpdateEmailData_Output
 @MappableClass()
 class FCUpdateEmailResult extends FCBaseResult with FCUpdateEmailResultMappable {
+  /// The forum emails a confirmation link before the new address takes
+  /// effect (XenForo's email change service decides; staff are exempt).
+  bool confirmationRequired;
+
   FCUpdateEmailResult({
     required bool result,
     String? resultText,
+    this.confirmationRequired = false,
   }) : super(result: result, resultText: resultText);
 }
 

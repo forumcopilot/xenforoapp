@@ -6,6 +6,7 @@ import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../widgets/unread_badge.dart';
 
 class NotificationListItem extends StatelessWidget {
   final FCTopic topic;
@@ -30,7 +31,7 @@ class NotificationListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+      color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
     );
   }
 
@@ -153,13 +154,7 @@ class NotificationListItem extends StatelessWidget {
                     SizedBox(width: DesignTokens.spacingS),
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Semantics(
-                        label: AppLocalizations.of(context)?.unread ?? 'Unread',
-                        child: Badge(
-                          smallSize: 8,
-                          backgroundColor: colorScheme.primary,
-                        ),
-                      ),
+                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context).unread),
                     ),
                   ],
                 ],

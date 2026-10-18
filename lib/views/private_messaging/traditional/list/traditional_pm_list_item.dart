@@ -5,6 +5,7 @@ import '../../../../utils/time_utils.dart';
 import '../../../../theme/design_tokens.dart';
 import '../../../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class TraditionalPMListItem extends StatefulWidget {
   final FCPrivateMessage message;
@@ -82,12 +83,12 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       elevation: 2,
-      shadowColor: colorScheme.shadow.withOpacity(0.1),
+      shadowColor: colorScheme.shadow.withValues(alpha: 0.1),
       color: colorScheme.surfaceContainerLowest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusL),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -158,7 +159,7 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
                         Row(
                           children: [
                             Text(
-                              (widget.message.timestamp != null && widget.message.timestamp!.isNotEmpty) ? _formatTimestamp(widget.message.timestamp!, context) : 'Unknown date',
+                              (widget.message.timestamp != null && widget.message.timestamp!.isNotEmpty) ? _formatTimestamp(widget.message.timestamp!, context) : AppLocalizations.of(context).unknownDate,
                               style: textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -189,7 +190,7 @@ class _TraditionalPMListItemState extends State<TraditionalPMListItem> with Sing
       final dateTime = DateTime.parse(timestamp);
       return formatSmartDateTime(dateTime, context);
     } catch (e) {
-      return 'Unknown date';
+      return AppLocalizations.of(context).unknownDate;
     }
   }
 }

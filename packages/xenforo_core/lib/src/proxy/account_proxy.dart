@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_account_proxy.dart';
+import 'package:forumcopilot_sdk/interfaces/i_fc_account_deletion.dart';
 import 'package:forumcopilot_sdk/models/results/fc_account_result.dart';
 import 'package:forumcopilot_sdk/models/registration/fc_registration_requirements.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_custom_field_definition.dart';
@@ -11,11 +12,12 @@ import '../base_xenforo_proxy.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_notification_prefs.dart';
 import 'package:forumcopilot_sdk/models/results/fc_notification_result.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCAccountProxy
 /// Handles user registration and authentication for XenForo forums
-class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
-  XenForoAccountProxy(SiteContext context) : super(context);
+class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy, IFCAccountDeletion {
+  XenForoAccountProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCForgetPasswordResult> forgetPassword(String username, String token, String code) async {
@@ -274,15 +276,57 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy {
   }
 
   @override
-  Future<FCUpdateEmailResult> updateEmail(String password, String newEmail) {
-    // TODO: implement updateEmail
-    throw UnimplementedError();
+  Future<FCUpdateEmailResult> updateEmail(String password, String newEmail) async {
+    try {
+      final response = await callPluginApi('updateEmail', {
+        'password': password,
+        'newEmail': newEmail,
+      });
+      return FCUpdateEmailResult(
+        result: response['result'] == true,
+        resultText: response['resultText']?.toString(),
+        confirmationRequired: response['confirmationRequired'] == true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_ACCOUNT] updateEmail error: $e');
+      return FCUpdateEmailResult(result: false, resultText: e.toString());
+    }
   }
 
   @override
-  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword) {
-    // TODO: implement updatePassword
-    throw UnimplementedError();
+  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword) async {
+    try {
+      final response = await callPluginApi('updatePassword', {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+      });
+      return FCUpdatePasswordResult(
+        result: response['result'] == true,
+        resultText: response['resultText']?.toString(),
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_ACCOUNT] updatePassword error: $e');
+      return FCUpdatePasswordResult(result: false, resultText: e.toString());
+    }
+  }
+
+  @override
+  Future<FCDeleteAccountResult> deleteAccount({String? password, String? username}) async {
+    try {
+      final response = await callPluginApi('deleteAccount', {
+        if (password != null) 'password': password,
+        if (username != null) 'username': username,
+      });
+      final ok = response['result'] == true;
+      if (ok) {
+        // The forum ended the session with the account.
+        siteContext.resetOnLogout();
+      }
+      return FCDeleteAccountResult(result: ok, resultText: response['resultText']?.toString());
+    } catch (e) {
+      xfDebug('❌ [XENFORO_ACCOUNT] deleteAccount error: $e');
+      return FCDeleteAccountResult(result: false, resultText: e.toString());
+    }
   }
 
   @override

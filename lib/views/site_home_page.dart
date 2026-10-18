@@ -6,9 +6,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
-import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
 import 'package:get/get.dart';
-import 'package:xenforo_core/xenforo_core.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'appbars/forum_app_bar.dart';
@@ -28,6 +26,9 @@ import 'widgets/resettable_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'dart:async';
+import '../utils/app_navigation.dart';
+import 'enable_notifications_page.dart';
+import '../theme/app_theme.dart';
 
 class SiteHomePage extends StatefulWidget {
   final Site? siteToInitialize;
@@ -41,6 +42,31 @@ class SiteHomePage extends StatefulWidget {
 
   // Static flag to trigger autoShowLogin in ProfileTab after registration
   static bool triggerProfileAutoLogin = false;
+
+  /// The Alerts tab's id, for [requestedTab].
+  static const String alertsTab = 'notifications';
+  static const String homeTab = 'topics';
+
+  /// A tab another part of the app wants shown: a push with nothing more
+  /// specific opens the forum on its Alerts tab. The forum home switches to
+  /// it once the tab is there, and clears it.
+  static final ValueNotifier<String?> requestedTab = ValueNotifier<String?>(null);
+
+  // The open forum home's route, so [showTab] can bring it to the front
+  // whichever way it was opened (Get.to names its route, MaterialPageRoute
+  // doesn't).
+  static ModalRoute<dynamic>? _homeRoute;
+
+  /// Brings the open forum home to the front on [tab], closing the pages
+  /// over it. False when no forum home is open.
+  static bool showTab(String tab) {
+    final route = _homeRoute;
+    final navigator = route?.navigator;
+    if (route == null || navigator == null || !route.isActive) return false;
+    requestedTab.value = tab;
+    navigator.popUntil((r) => r == route);
+    return true;
+  }
 
   @override
   State<SiteHomePage> createState() => _SiteHomePageState();
@@ -68,6 +94,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   bool _waitingForInitialization = false;
   // Set once this page has asked to close after a failed start.
   bool _leaving = false;
+  bool _askedForNotifications = false;
 
   // Track unread conversations count for badge
   int _unreadConversationsCount = 0;
@@ -98,6 +125,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     _tabController = TabController(length: _tabCount, vsync: this);
     _previousTabIndex = _tabController.index; // Initialize to match initial index
     _tabController.addListener(_onTabChanged);
+    SiteHomePage.requestedTab.addListener(_onTabRequested);
 
     // If siteToInitialize is null, site was already initialized in bootstrap flow.
     // Do not set context, listener, or load here when site is initialized: the block
@@ -154,7 +182,20 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         final currentContext = siteController.currentSiteContext.value;
         final currentSite = siteController.currentSite.value;
 
-        if (currentContext != null && currentSite != null) {
+        if (currentContext != null &&
+            currentSite != null &&
+            siteController.initializedWithin(const Duration(minutes: 1))) {
+          // Just initialized (the forum list opened it a moment ago, with its
+          // config fetched): no second getConfig to check it is reachable.
+          _siteContext = currentContext;
+          _setupLoginStateListener();
+          _loadBoardStats();
+          if (currentContext.isLoggedIn) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _fetchInboxStat();
+            });
+          }
+        } else if (currentContext != null && currentSite != null) {
           // Show loading state while verifying
           setState(() {
             _waitingForInitialization = true;
@@ -201,7 +242,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 setState(() {
                   _waitingForInitialization = false;
                 });
-                _showErrorAndGoBack(currentSite, 'Connection timed out. The site may be down or unreachable.');
+                _showErrorAndGoBack(currentSite, AppLocalizations.of(context).connectionTimedOut);
               }
             } catch (e) {
               AppLogger.error('🏁 [SITE_HOME] ❌ Site verification failed: $e - site may be down');
@@ -210,7 +251,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 setState(() {
                   _waitingForInitialization = false;
                 });
-                _showErrorAndGoBack(currentSite, AppLocalizations.of(context)!.failedToConnectToSite);
+                _showErrorAndGoBack(currentSite, AppLocalizations.of(context).failedToConnectToSite);
               }
             }
           });
@@ -412,7 +453,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            AppLocalizations.of(context)!.connectionFailed,
+            AppLocalizations.of(context).connectionFailed,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.error,
               fontWeight: DesignTokens.fontWeightSemiBold,
@@ -423,7 +464,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppLocalizations.of(context)!.failedToConnectToSiteName(site.name),
+                AppLocalizations.of(context).failedToConnectToSiteName(site.name),
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -447,7 +488,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
                 Navigator.of(context).pop(); // Go back to previous page
               },
               child: Text(
-                AppLocalizations.of(context)!.okButton,
+                AppLocalizations.of(context).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -554,15 +595,15 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     if (_siteContext!.configDataOutput?.conversation ?? false) {
       final result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => NewConversationPage(siteContext: _siteContext!)),
+        FormPageRoute(
+            builder: (context) =>
+                NewConversationPage(siteContext: _siteContext!)),
       );
       if (result == true) {
         _pmListKey.currentState?.resetTab();
       }
     } else {
-      final result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => NewTraditionalPMPage(siteContext: _siteContext!)),
-      );
+      final result = await AppNavigation.push(context, NewTraditionalPMPage(siteContext: _siteContext!));
       if (result == true) {
         _pmListKey.currentState?.resetTab();
       }
@@ -585,12 +626,36 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     return tabs;
   }
 
+  ModalRoute<dynamic>? _route;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _route = ModalRoute.of(context);
+    SiteHomePage._homeRoute = _route;
+  }
+
+  /// Shows [SiteHomePage.requestedTab] once it is one of this forum's tabs.
+  void _onTabRequested() {
+    final tab = SiteHomePage.requestedTab.value;
+    if (tab == null || !mounted || _siteContext == null) return;
+    final index = _enabledTabs.indexOf(tab);
+    if (index < 0 || index >= _tabController.length) return;
+    SiteHomePage.requestedTab.value = null;
+    setState(() {
+      _tabController.index = index;
+      _previousTabIndex = index;
+    });
+  }
+
   // Helper methods to get tab indices
   int _getTabIndex(String tabType) => _enabledTabs.indexOf(tabType);
   bool _isCurrentTab(String tabType) => _tabController.index == _getTabIndex(tabType);
 
-  // Build the appropriate app bar for the current tab
-  PreferredSizeWidget _buildAppBarForCurrentTab(bool isLoggedIn, bool canSendPM) {
+  // Build the appropriate app bar for the current tab. Home has none: its
+  // header (ForumMasthead, in the tab) collapses into one.
+  PreferredSizeWidget? _buildAppBarForCurrentTab(
+      bool isLoggedIn, bool canSendPM) {
     if (_siteContext == null) {
       return ForumAppBar(
         siteContext: SiteContext(siteType: 'none', site: Site(name: 'Loading...', url: '', description: '', siteType: 'none')),
@@ -602,10 +667,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
     switch (currentTabType) {
       case _topicsTab:
-        return TopicsTabAppBar(
-          siteContext: _siteContext!,
-          isLoggedIn: isLoggedIn,
-        );
+        return null;
       case _forumsTab:
         return ForumsTabAppBar(
           siteContext: _siteContext!,
@@ -634,8 +696,22 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     }
   }
 
+  /// The forum whose colours this Home holds open (AppTheme), once known.
+  String? _forumColoursFor;
+
+  void _holdForumColours() {
+    final pluginUrl = _siteContext?.site.pluginUrl;
+    if (!mounted || _forumColoursFor != null || pluginUrl == null || pluginUrl.isEmpty) return;
+    _forumColoursFor = pluginUrl;
+    AppTheme.forumHomeOpened(pluginUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_forumColoursFor == null && _siteContext != null) {
+      // After the frame: it can change the app's theme.
+      WidgetsBinding.instance.addPostFrameCallback((_) => _holdForumColours());
+    }
     // Don't build the main UI until initialization is complete
     if (_waitingForInitialization) {
       // Show a minimal scaffold with just the app bar while waiting
@@ -673,7 +749,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       // Return minimal error state while navigating back
       return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)?.errorTitle ?? 'Error'),
+          title: Text(AppLocalizations.of(context).errorTitle),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -691,6 +767,12 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
       AppLogger.debug('🔍 [SITE_HOME] Current TabController index: ${_tabController.index}');
       _lastLoggedTabCount = enabledTabs.length;
       _lastLoggedTabIndex = _tabController.index;
+    }
+
+    // A requested tab (a push opened the forum for its Alerts) is shown as
+    // soon as the forum's tabs are in place.
+    if (SiteHomePage.requestedTab.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onTabRequested());
     }
 
     // Check if TabController needs to be recreated due to tab count change
@@ -758,7 +840,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           ? FloatingActionButton.extended(
               onPressed: _onNewMessagePressed,
               icon: const Icon(Icons.post_add_rounded),
-              label: Text(_siteContext?.configDataOutput?.conversation ?? false ? AppLocalizations.of(context)!.newConversation : AppLocalizations.of(context)!.newMessage),
+              label: Text(_siteContext?.configDataOutput?.conversation ?? false ? AppLocalizations.of(context).newConversation : AppLocalizations.of(context).newMessage),
             )
           : null,
       ),
@@ -821,32 +903,32 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           return NavigationDestination(
             selectedIcon: const Icon(Icons.chat_bubble),
             icon: const Icon(Icons.chat_bubble_outline),
-            label: l10n?.home ?? 'Home',
+            label: l10n.home,
           );
         case _forumsTab:
           return NavigationDestination(
             selectedIcon: const Icon(Icons.forum),
             icon: const Icon(Icons.forum_outlined),
-            label: l10n?.forums ?? 'Forums',
+            label: l10n.forums,
           );
         case _messagesTab:
           return NavigationDestination(
             selectedIcon: counted(_unreadConversationsCount, Icons.mail),
             icon: counted(_unreadConversationsCount, Icons.mail_outline),
-            label: l10n?.messages ?? 'Messages',
+            label: l10n.messages,
           );
         case _notificationsTab:
           return NavigationDestination(
             selectedIcon: counted(_unreadAlertsCount, Icons.notifications),
             icon: counted(_unreadAlertsCount, Icons.notifications_outlined),
-            label: l10n?.notificationsTab ?? 'Alerts',
-            tooltip: l10n?.notifications ?? 'Notifications',
+            label: l10n.notificationsTab,
+            tooltip: l10n.notifications,
           );
         case _profileTab:
           return NavigationDestination(
             selectedIcon: const Icon(Icons.person),
             icon: const Icon(Icons.person_outlined),
-            label: l10n?.profile ?? 'Profile',
+            label: l10n.profile,
           );
         default:
           throw ArgumentError('Unknown tab type: $tabType');
@@ -881,43 +963,41 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     if (_siteContext == null || !_siteContext!.isLoggedIn) {
       return;
     }
+    // Signed in and the forum is up: the moment to ask for notification
+    // permission, once (EnableNotificationsPage decides whether it's due).
+    if (!_askedForNotifications) {
+      _askedForNotifications = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _siteContext != null) EnableNotificationsPage.maybeShow(context, _siteContext!);
+      });
+    }
+
+    // Counts that arrive after a sign-out or account switch belong to the
+    // previous account: drop them rather than show its badges.
+    final siteContext = _siteContext!;
+    final generation = siteContext.sessionGeneration;
+    bool stillCurrent() => mounted && siteContext.isCurrentSession(generation);
 
     try {
       AppLogger.debug('📬 [SITE_HOME] Fetching inbox stat...');
       final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
 
-      // Check if this is a XenForo proxy that supports getInboxStatWithAlertsAsync
-      if (conversationProxy is XenForoPrivateConversationProxy) {
-        final result = await conversationProxy.getInboxStatWithAlertsAsync();
-        final inboxStat = result['inboxStat'] as FCInboxStatResult;
-        final unreadAlerts = result['unreadAlerts'] as int;
-
-        if (inboxStat.result) {
-          AppLogger.debug('📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, $unreadAlerts unread alerts');
-          if (mounted) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              _unreadAlertsCount = unreadAlerts;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
+      // Unread alerts come with the inbox counts where the backend reports
+      // them (FCInboxStatResult.unreadAlerts); this used to cast to the
+      // XenForo proxy to get them.
+      final inboxStat = await conversationProxy.getInboxStatAsync();
+      if (inboxStat.result) {
+        AppLogger.debug(
+            '📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations, ${inboxStat.unreadAlerts} unread alerts');
+        if (stillCurrent()) {
+          setState(() {
+            _unreadConversationsCount = inboxStat.unreadConversations;
+            _unreadAlertsCount = inboxStat.unreadAlerts ?? 0;
+          });
         }
       } else {
-        // Fallback for proxies that don't support unread alert counts
-        final inboxStat = await conversationProxy.getInboxStatAsync();
-        if (inboxStat.result) {
-          AppLogger.debug('📬 [SITE_HOME] Inbox stat fetched: ${inboxStat.unreadConversations} unread conversations');
-          if (mounted) {
-            setState(() {
-              _unreadConversationsCount = inboxStat.unreadConversations;
-              // unreadAlerts not available for this proxy type
-              _unreadAlertsCount = 0;
-            });
-          }
-        } else {
-          AppLogger.debug('📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
-        }
+        AppLogger.debug(
+            '📬 [SITE_HOME] Failed to fetch inbox stat: ${inboxStat.resultText}');
       }
     } catch (e) {
       AppLogger.debug('📬 [SITE_HOME] Error fetching inbox stat: $e');
@@ -931,6 +1011,12 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
     _loginStateDebounceTimer?.cancel();
     _loginStateDebounceTimer = null;
 
+    SiteHomePage.requestedTab.removeListener(_onTabRequested);
+    if (SiteHomePage._homeRoute == _route) SiteHomePage._homeRoute = null;
+    // Leaving the forum: back to the app's own colours (unless another of
+    // its Homes replaces this one, as signing in does).
+    final openedFor = _forumColoursFor;
+    if (openedFor != null) AppTheme.forumHomeClosed(openedFor);
     // Remove tab controller listener
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();

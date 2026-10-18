@@ -5,6 +5,7 @@ import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_icon_widget.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class ForumListItem extends StatelessWidget {
   final FCForum forum;
@@ -33,7 +34,7 @@ class ForumListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(0.3),
+      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
     );
   }
 
@@ -111,7 +112,7 @@ class ForumListItem extends StatelessWidget {
                                   ),
                                   decoration: StyleBuilders.badgeDecoration(
                                     colorScheme: colorScheme,
-                                    backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+                                    backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                                     borderRadius: DesignTokens.radiusM,
                                   ),
                                   child: Row(
@@ -144,7 +145,7 @@ class ForumListItem extends StatelessWidget {
                                   ),
                                   decoration: StyleBuilders.badgeDecoration(
                                     colorScheme: colorScheme,
-                                    backgroundColor: colorScheme.errorContainer.withOpacity(0.5),
+                                    backgroundColor: colorScheme.errorContainer.withValues(alpha: 0.5),
                                     borderRadius: DesignTokens.radiusM,
                                   ),
                                   child: Row(
@@ -157,7 +158,7 @@ class ForumListItem extends StatelessWidget {
                                       ),
                                       const SizedBox(width: DesignTokens.spacingXS),
                                       Text(
-                                        'Protected',
+                                        AppLocalizations.of(context).protectedBadge,
                                         style: StyleBuilders.smallTextStyle(
                                           colorScheme: colorScheme,
                                           textTheme: textTheme,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../../config/app_forum_config.dart';
@@ -16,6 +17,10 @@ import 'package:forumcopilot_flutter/views/widgets/cached_redirect_image.dart';
 import 'dart:io';
 import 'package:forumcopilot_flutter/utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/snackbar_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/server_draft.dart';
+import '../../utils/app_navigation.dart';
 
 class MessageComposePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -27,8 +32,8 @@ class MessageComposePage extends StatefulWidget {
   // Returns attachment ID on success, null on failure
   // If null, attachment upload buttons will be hidden
   final Future<String?> Function(XFile file)? onFileUpload;
-  final String titleHint;
-  final String contentHint;
+  final String? titleHint;
+  final String? contentHint;
   final bool showAppBar;
   final bool autoFocusContent;
   final String? forumName;
@@ -64,6 +69,18 @@ class MessageComposePage extends StatefulWidget {
   /// asks "discard your changes?" rather than "discard your post?".
   final bool isEditing;
 
+  /// Where this form keeps a local draft of its text (per device), or null
+  /// for none. The draft is saved about 2 s after typing stops and when the
+  /// form closes, restored when it opens again, and cleared once sent; with
+  /// one, closing loses nothing, so it doesn't ask before discarding.
+  final String? draftKey;
+
+  /// The forum's own key for this draft (XenForo: thread-{id}, forum-{id},
+  /// conversation-reply-{id}), to keep it on the forum as well, where the
+  /// web editor shows it; null for none. Needs [draftKey]. With
+  /// [showTitleField], the title is kept too.
+  final String? serverDraftKey;
+
   const MessageComposePage({
     super.key,
     required this.siteContext,
@@ -73,8 +90,8 @@ class MessageComposePage extends StatefulWidget {
     this.showTitleField = false,
     this.requireTitle = true, // Default to true to maintain existing behavior
     this.initialContent,
-    this.titleHint = 'Write your title...',
-    this.contentHint = 'Write your content...',
+    this.titleHint,
+    this.contentHint,
     this.showAppBar = true,
     this.autoFocusContent = true,
     this.forumName,
@@ -95,6 +112,8 @@ class MessageComposePage extends StatefulWidget {
     this.submitIcon,
     this.showSignatureToggle = false,
     this.isEditing = false,
+    this.draftKey,
+    this.serverDraftKey,
   });
 
   @override
@@ -176,6 +195,89 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     _baselineTitle = _titleController.text;
     _baselineContent = _contentController.text;
+
+    if (widget.draftKey != null) {
+      final serverKey = widget.serverDraftKey;
+      if (serverKey != null) _serverDraft = ServerDraft(siteContext: widget.siteContext, key: serverKey);
+      _restoreDraft();
+      _contentController.addListener(_scheduleDraftSave);
+      if (_serverDraft != null) _titleController.addListener(_scheduleDraftSave);
+    }
+  }
+
+  Timer? _draftTimer;
+  bool _sent = false;
+  ServerDraft? _serverDraft;
+
+  // Never over text already typed or put there by the page (a quote).
+  Future<void> _restoreDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final draft = prefs.getString(widget.draftKey!);
+      if (!mounted) return;
+      if (draft != null && draft.trim().isNotEmpty) {
+        if (_contentController.text.trim().isNotEmpty) return;
+        _contentController.text = draft;
+        _contentController.selection = TextSelection.collapsed(offset: draft.length);
+        return;
+      }
+      // None here: the forum's, from the web editor or another device.
+      await _restoreServerDraft();
+    } catch (e) {
+      debugPrint('MessageComposePage: restoring the draft failed: $e');
+    }
+  }
+
+  Future<void> _restoreServerDraft() async {
+    final serverDraft = _serverDraft;
+    if (serverDraft == null || _contentController.text.trim().isNotEmpty) return;
+    final draft = await serverDraft.load();
+    // Never over what was typed meanwhile.
+    if (!mounted || draft == null || _contentController.text.trim().isNotEmpty) return;
+    final title = draft.topicTitle;
+    if (widget.showTitleField && title != null && _titleController.text.trim().isEmpty) {
+      _titleController.text = title;
+    }
+    _contentController.text = draft.reply;
+    _contentController.selection = TextSelection.collapsed(offset: draft.reply.length);
+  }
+
+  void _scheduleDraftSave() {
+    _draftTimer?.cancel();
+    _draftTimer = Timer(const Duration(seconds: 2), _saveDraft);
+    if (!_sent) _serverDraft?.schedule(_contentController.text, title: _draftTitle);
+  }
+
+  String? get _draftTitle => widget.showTitleField ? _titleController.text : null;
+
+  Future<void> _saveDraft() async {
+    final key = widget.draftKey;
+    if (key == null || _sent) return;
+    final text = _contentController.text;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (text.trim().isEmpty) {
+        await prefs.remove(key);
+      } else {
+        await prefs.setString(key, text);
+      }
+    } catch (e) {
+      debugPrint('MessageComposePage: saving the draft failed: $e');
+    }
+  }
+
+  Future<void> _clearDraft() async {
+    final key = widget.draftKey;
+    if (key == null) return;
+    _sent = true;
+    _draftTimer?.cancel();
+    unawaited(_serverDraft?.discard());
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+    } catch (e) {
+      debugPrint('MessageComposePage: clearing the draft failed: $e');
+    }
   }
 
   /// Whether closing now would lose something the writer added.
@@ -205,6 +307,16 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
   @override
   void dispose() {
+    if (widget.draftKey != null) {
+      _draftTimer?.cancel();
+      _contentController.removeListener(_scheduleDraftSave);
+      _titleController.removeListener(_scheduleDraftSave);
+      // Closed without sending: keep what was typed, here and on the forum.
+      if (!_sent) {
+        _saveDraft();
+        _serverDraft?.saveNow(_contentController.text, title: _draftTitle);
+      }
+    }
     // Only dispose controllers if we own them
     if (_ownsTitleController) {
       _titleController.dispose();
@@ -278,20 +390,20 @@ class _MessageComposePageState extends State<MessageComposePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.insertImage ?? 'Insert Image'),
-          content: Text(AppLocalizations.of(context)?.howWouldYouLikeToInsertImage ?? 'How would you like to insert this image?'),
+          title: Text(AppLocalizations.of(context).insertImage),
+          content: Text(AppLocalizations.of(context).howWouldYouLikeToInsertImage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop('thumbnail'),
-              child: Text(AppLocalizations.of(context)?.thumbnail ?? 'Thumbnail'),
+              child: Text(AppLocalizations.of(context).thumbnail),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop('full'),
-              child: Text(AppLocalizations.of(context)?.fullSize ?? 'Full Size'),
+              child: Text(AppLocalizations.of(context).fullSize),
             ),
           ],
         );
@@ -342,25 +454,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (widget.onFileUpload == null) return;
     try {
       // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
+      // This composer's forum, not whichever is current.
+      final siteContext = widget.siteContext;
       final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
 
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Maximum of ${constraints!.count} attachment(s) allowed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
         }
         return;
       }
@@ -384,19 +485,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
           if (!validation.isValid) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    validation.errorMessage ?? 'File validation failed',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showError(context, validation.errorMessage ?? 'File validation failed');
             }
             return;
           }
@@ -413,19 +502,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 errorMessage = errorMessage.substring(11);
               }
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, errorMessage);
               }
               return;
             }
@@ -462,20 +539,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               _cachedAttachmentsKey = '';
             });
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Failed to upload file. Please try again.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
+              SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFileTryAgain);
             }
           }
         } catch (e) {
@@ -492,38 +556,13 @@ class _MessageComposePageState extends State<MessageComposePage> {
             if (errorMessage.startsWith('Exception: ')) {
               errorMessage = errorMessage.substring(11);
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Failed to upload file: $errorMessage',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onErrorContainer,
-                      ),
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                margin: const EdgeInsets.all(8),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showError(context, AppLocalizations.of(context).failedToUploadFile(errorMessage));
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick file',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPickFile);
       }
     }
   }
@@ -532,25 +571,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
     if (widget.onFileUpload == null) return;
     try {
       // Get constraints from SiteContext
-      final siteContext = getCurrentSiteContext();
+      // This composer's forum, not whichever is current.
+      final siteContext = widget.siteContext;
       final constraints = getAttachmentConstraintsFromSiteContext(siteContext);
 
       // Check attachment count limit before file selection
       if (!canAddMoreAttachments(_attachments.length, constraints)) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Maximum of ${constraints!.count} attachment(s) allowed',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context).maximumAttachmentsAllowed(constraints!.count ?? 0));
         }
         return;
       }
@@ -566,19 +594,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       // Limit to remaining slots if there's a limit
       if (remainingSlots != null && selectedImages.length > remainingSlots) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Only ${remainingSlots} more attachment(s) allowed. Processing first ${remainingSlots} image(s).',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-              margin: const EdgeInsets.all(8),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).onlyMoreAttachmentsAllowed(remainingSlots));
         }
         selectedImages = selectedImages.take(remainingSlots).toList();
       }
@@ -592,19 +608,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
           // Check if we've reached the limit
           if (!canAddMoreAttachments(_attachments.length, constraints)) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Attachment limit reached. Skipping remaining images.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                  margin: const EdgeInsets.all(8),
-                ),
-              );
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context).attachmentLimitReachedSkipping);
             }
             break;
           }
@@ -621,19 +625,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
             if (!validation.isValid) {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${image.name}: ${validation.errorMessage ?? 'Image validation failed'}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    margin: const EdgeInsets.all(8),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${image.name}: ${validation.errorMessage ?? AppLocalizations.of(context).imageValidationFailed}');
               }
               continue; // Skip this image and continue with next
             }
@@ -650,19 +642,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   errorMessage = errorMessage.substring(11);
                 }
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        '${image.name}: $errorMessage',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                      margin: const EdgeInsets.all(8),
-                    ),
-                  );
+                  SnackbarHelper.showError(context, '${image.name}: $errorMessage');
                 }
                 continue; // Skip this image and continue with next
               }
@@ -698,20 +678,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 _cachedAttachmentsKey = '';
               });
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${imageToUpload.name}: Failed to upload image. Please try again.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                    behavior: SnackBarBehavior.floating,
-                    margin: const EdgeInsets.all(8),
-                    duration: const Duration(seconds: 4),
-                  ),
-                );
+                SnackbarHelper.showError(context, '${imageToUpload.name}: ${AppLocalizations.of(context).failedToUploadImageTryAgain}');
               }
             }
           } catch (e) {
@@ -728,39 +695,14 @@ class _MessageComposePageState extends State<MessageComposePage> {
               if (errorMessage.startsWith('Exception: ')) {
                 errorMessage = errorMessage.substring(11);
               }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${imageToUpload.name}: Failed to upload image: $errorMessage',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(8),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
+              SnackbarHelper.showError(context, '${imageToUpload.name}: ${AppLocalizations.of(context).failedToUploadImage(errorMessage)}');
             }
           }
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to pick image',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPickImage);
       }
     }
   }
@@ -804,21 +746,21 @@ class _MessageComposePageState extends State<MessageComposePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.removeAttachment ?? 'Remove Attachment'),
+          title: Text(AppLocalizations.of(context).removeAttachment),
           content: Text(
-            AppLocalizations.of(context)?.areYouSureYouWantToRemoveThisAttachment ?? 'Are you sure you want to remove this attachment?',
+            AppLocalizations.of(context).areYouSureYouWantToRemoveThisAttachment,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
               ),
-              child: Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+              child: Text(AppLocalizations.of(context).delete),
             ),
           ],
         );
@@ -842,19 +784,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Failed to remove attachment: ${e.toString()}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToRemoveAttachment('$e'));
       }
     } finally {
       if (mounted) {
@@ -883,7 +813,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
             Icon(Icons.attach_file, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
             SizedBox(width: DesignTokens.spacingS),
             Text(
-              'Attachments',
+              AppLocalizations.of(context).attachments,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: DesignTokens.fontWeightMedium,
@@ -895,10 +825,10 @@ class _MessageComposePageState extends State<MessageComposePage> {
         Container(
           padding: DesignTokens.paddingS,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
             borderRadius: BorderRadius.circular(DesignTokens.radiusS),
             border: Border.all(
-              color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
               width: DesignTokens.borderWidthThin,
             ),
           ),
@@ -951,7 +881,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                             width: 48,
                                             height: 48,
                                             decoration: BoxDecoration(
-                                              color: isImage ? Theme.of(context).colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow) : getFileTypeColor(attachment.name),
+                                              color: isImage ? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow) : getFileTypeColor(attachment.name),
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: isImage
@@ -993,9 +923,9 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                                 const SizedBox(height: 2),
                                                 Text(
                                                   isUploading
-                                                      ? AppLocalizations.of(context)?.uploading ?? 'Uploading...'
+                                                      ? AppLocalizations.of(context).uploading
                                                       : attachmentId != null
-                                                          ? '$fileType • $fileSize • ${AppLocalizations.of(context)?.uploaded ?? 'Uploaded'}'
+                                                          ? '$fileType • $fileSize • ${AppLocalizations.of(context).uploaded}'
                                                           : '$fileType • $fileSize',
                                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                         color: isUploading ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1026,7 +956,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingM),
                                   child: LinearProgressIndicator(
                                     minHeight: 2,
-                                    backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                                     valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                                   ),
                                 ),
@@ -1053,7 +983,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                         }
                         if (snapshot.hasError) {
                           debugPrint('   - Showing error: ${snapshot.error}');
-                          return Text('${AppLocalizations.of(context)?.error ?? 'Error'}: ${snapshot.error}');
+                          return Text('${AppLocalizations.of(context).error}: ${snapshot.error}');
                         }
                         debugPrint('   - Returning ${snapshot.data?.length ?? 0} attachment widgets');
                         return Column(
@@ -1101,7 +1031,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   height: 48,
                   decoration: BoxDecoration(
                     color: isImage && attachment.thumbnailUrl != null && attachment.thumbnailUrl!.isNotEmpty
-                        ? colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow)
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow)
                         : getFileTypeColor(attachment.filename),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1223,7 +1153,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
         Row(
           children: [
             Text(
-              'Prefix',
+              AppLocalizations.of(context).prefix,
               style: textTheme.titleSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: DesignTokens.fontWeightMedium,
@@ -1259,7 +1189,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
           Container(
             padding: DesignTokens.paddingM,
             decoration: BoxDecoration(
-              color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityLow),
+              color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityLow),
               borderRadius: BorderRadius.circular(DesignTokens.radiusM),
             ),
             child: Row(
@@ -1272,7 +1202,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 SizedBox(width: DesignTokens.spacingS),
                 Expanded(
                   child: Text(
-                    'Failed to load prefixes',
+                    AppLocalizations.of(context).failedToLoadPrefixes,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onErrorContainer,
                     ),
@@ -1289,7 +1219,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // "None" option if prefix is not required
               if (!widget.requirePrefix)
                 FilterChip(
-                  label: Text(AppLocalizations.of(context)?.none ?? 'None'),
+                  label: Text(AppLocalizations.of(context).none),
                   selected: widget.selectedPrefixId == null,
                   onSelected: (selected) {
                     if (widget.onPrefixChanged != null) {
@@ -1304,7 +1234,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   labelStyle: textTheme.bodyMedium?.copyWith(
                     color: widget.selectedPrefixId == null ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
                   ),
-                  backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                  backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                   side: BorderSide(
                     color: widget.selectedPrefixId == null ? colorScheme.primary : colorScheme.outlineVariant,
                     width: widget.selectedPrefixId == null ? DesignTokens.borderWidthThinMedium : DesignTokens.borderWidthThin,
@@ -1342,7 +1272,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                   labelStyle: textTheme.bodyMedium?.copyWith(
                     color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
                   ),
-                  backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                  backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                   side: BorderSide(
                     color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
                     width: isSelected ? DesignTokens.borderWidthThinMedium : DesignTokens.borderWidthThin,
@@ -1356,10 +1286,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
   }
 
   void _handleMention() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UserSearchPage(
+    AppNavigation.push(context, UserSearchPage(
           siteContext: widget.siteContext,
           onUserSelected: (username, iconUrl) {
             final currentText = _contentController.text;
@@ -1375,43 +1302,17 @@ class _MessageComposePageState extends State<MessageComposePage> {
             _contentFocusNode.requestFocus();
           },
           selectedUsers: const [],
-        ),
-      ),
-    );
+        ));
   }
 
   Future<void> _submit() async {
     if (widget.showTitleField && widget.requireTitle && _titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.pleaseEnterTitle ?? 'Please enter a title',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterTitle);
       return;
     }
 
     if (_contentController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.pleaseEnterContent ?? 'Please enter some content',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterContent);
       return;
     }
 
@@ -1433,6 +1334,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
       );
 
       if (mounted && success) {
+        await _clearDraft();
+        if (!mounted) return;
         // Dismiss keyboard before navigating back
         FocusScope.of(context).unfocus();
         if (widget.onSuccess != null) {
@@ -1448,45 +1351,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
           widget.onError!(e as Exception);
         } else {
           // Cache theme values to avoid multiple Theme.of(context) calls that could trigger rebuilds
-          final theme = Theme.of(context);
-          final colorScheme = theme.colorScheme;
-          final textTheme = theme.textTheme;
           
-          // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-          final scaffoldMessenger = ScaffoldMessenger.of(context);
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      e.toString(),
-                      style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingL - DesignTokens.spacingXS),
-              duration: const Duration(seconds: 4),
-              // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-              // with an action stays until tapped and queues later messages behind it.
-              showCloseIcon: true,
-              closeIconColor: colorScheme.onErrorContainer,
-            ),
-          );
+          SnackbarHelper.showError(context, e.toString());
         }
       }
     } finally {
@@ -1507,7 +1373,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(DesignTokens.opacityLow * 0.33),
+            color: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow * 0.33),
             offset: const Offset(0, -1),
             blurRadius: 4,
           ),
@@ -1522,43 +1388,43 @@ class _MessageComposePageState extends State<MessageComposePage> {
               // File attachment button - only show if onFileUpload is provided
               if (widget.onFileUpload != null)
                 Semantics(
-                  label: AppLocalizations.of(context)?.attachFile ?? 'Attach File',
-                  hint: 'Attach a file to this message',
+                  label: AppLocalizations.of(context).attachFile,
+                  hint: AppLocalizations.of(context).attachFileHint,
                   button: true,
                   child: IconButton(
                     icon: Icon(
                       Icons.attach_file,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    tooltip: AppLocalizations.of(context)?.attachFile ?? 'Attach File',
+                    tooltip: AppLocalizations.of(context).attachFile,
                     onPressed: _handleFileUpload,
                   ),
                 ),
               // Image upload button - only show if onFileUpload is provided
               if (widget.onFileUpload != null)
                 Semantics(
-                  label: AppLocalizations.of(context)?.uploadImage ?? 'Upload Image',
-                  hint: 'Upload an image to this message',
+                  label: AppLocalizations.of(context).uploadImage,
+                  hint: AppLocalizations.of(context).uploadImageHint,
                   button: true,
                   child: IconButton(
                     icon: Icon(
                       Icons.image,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    tooltip: AppLocalizations.of(context)?.uploadImage ?? 'Upload Image',
+                    tooltip: AppLocalizations.of(context).uploadImage,
                     onPressed: _handleImageUpload,
                   ),
                 ),
               // BBCode button
               Semantics(
-                label: AppLocalizations.of(context)?.formatting ?? 'Formatting',
-                hint: 'Open formatting options',
+                label: AppLocalizations.of(context).formatting,
+                hint: AppLocalizations.of(context).openFormattingOptions,
                 button: true,
                 enabled: _isContentFieldFocused,
                 child: PopupMenuButton<String>(
                   enabled: _isContentFieldFocused,
-                  icon: Icon(Icons.format_bold, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
-                  tooltip: AppLocalizations.of(context)?.formatting ?? 'Formatting',
+                  icon: Icon(Icons.format_bold, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
+                  tooltip: AppLocalizations.of(context).formatting,
                   onSelected: _insertBBCode,
                 itemBuilder: (context) => [
                   // Text formatting
@@ -1568,7 +1434,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_bold, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bold ?? 'Bold', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bold, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1578,7 +1444,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_italic, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.italic ?? 'Italic', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).italic, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1588,7 +1454,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_underline, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.underline ?? 'Underline', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).underline, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1598,7 +1464,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.strikethrough_s, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.strikethrough ?? 'Strikethrough', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).strikethrough, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1610,7 +1476,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.link, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.link ?? 'Link', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).link, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1620,7 +1486,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.image, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.image ?? 'Image', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).image, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1630,7 +1496,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.videocam, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.video ?? 'Video', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).video, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1642,7 +1508,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_quote, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.quote ?? 'Quote', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).quote, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1652,7 +1518,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.code, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.code ?? 'Code', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).code, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1662,7 +1528,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.visibility_off, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.spoiler ?? 'Spoiler', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).spoiler, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1674,7 +1540,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_list_bulleted, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.bulletList ?? 'Bullet List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).bulletList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1684,7 +1550,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_list_numbered, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.numberedList ?? 'Numbered List', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).numberedList, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1694,7 +1560,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.subdirectory_arrow_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.listItem ?? 'List Item', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).listItem, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1706,7 +1572,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_left, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignLeft ?? 'Align Left', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignLeft, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1716,7 +1582,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_center, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignCenter ?? 'Align Center', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignCenter, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1726,7 +1592,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                       children: [
                         Icon(Icons.format_align_right, size: 20, color: colorScheme.onSurface),
                         const SizedBox(width: DesignTokens.spacingS),
-                        Text(AppLocalizations.of(context)?.alignRight ?? 'Align Right', style: textTheme.bodyMedium),
+                        Text(AppLocalizations.of(context).alignRight, style: textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -1735,8 +1601,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
               ),
               // Mention button
               IconButton(
-                icon: Icon(Icons.alternate_email, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withOpacity(0.38)),
-                tooltip: AppLocalizations.of(context)?.mentionUser ?? 'Mention User',
+                icon: Icon(Icons.alternate_email, color: _isContentFieldFocused ? colorScheme.onSurfaceVariant : colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
+                tooltip: AppLocalizations.of(context).mentionUser,
                 onPressed: _isContentFieldFocused ? _handleMention : null,
               ),
             ],
@@ -1762,7 +1628,8 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     return DiscardChangesScope(
       listenable: Listenable.merge([_titleController, _contentController]),
-      hasChanges: _hasUnsavedChanges,
+      // With a draft, closing keeps the text: nothing to ask about.
+      hasChanges: widget.draftKey == null ? _hasUnsavedChanges : () => false,
       isEdit: widget.isEditing,
       busy: _isSubmitting,
       child: PopScope(
@@ -1786,14 +1653,17 @@ class _MessageComposePageState extends State<MessageComposePage> {
                 ),
                 backgroundColor: colorScheme.surface,
                 elevation: 3,
-                shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+                shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
                 surfaceTintColor: colorScheme.surfaceTint,
                 iconTheme: IconThemeData(
                   color: colorScheme.onSurface,
                 ),
                 leading: Builder(
+                  // A writing form opens as a full-screen dialog (FormPageRoute),
+                  // so it closes with ✕, Material's close for such a form.
                   builder: (context) => IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded),
+                    icon: const Icon(Icons.close_rounded),
+                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                     onPressed: _handleBackNavigation,
                   ),
                 ),
@@ -1836,7 +1706,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)?.forum ?? 'Forum',
+                                    AppLocalizations.of(context).forum,
                                     style: textTheme.titleSmall?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
                                       fontWeight: DesignTokens.fontWeightMedium,
@@ -1857,7 +1727,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                           ),
                                         ),
                                         label: Text(widget.forumName!),
-                                        backgroundColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                        backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                         labelStyle: textTheme.bodyMedium?.copyWith(
                                           color: colorScheme.onSurface,
                                         ),
@@ -1880,7 +1750,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Title',
+                                    AppLocalizations.of(context).titleLabel,
                                     style: textTheme.titleSmall?.copyWith(
                                       color: colorScheme.onSurfaceVariant,
                                       fontWeight: DesignTokens.fontWeightMedium,
@@ -1891,7 +1761,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                     controller: _titleController,
                                     focusNode: _titleFocusNode,
                                     decoration: InputDecoration(
-                                      hintText: widget.titleHint,
+                                      hintText: widget.titleHint ?? AppLocalizations.of(context).writeYourTitle,
                                       hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
@@ -1909,7 +1779,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                         ),
                                       ),
                                       filled: true,
-                                      fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                      fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                       contentPadding: DesignTokens.paddingInput,
                                     ),
                                     style: textTheme.titleMedium?.copyWith(
@@ -1925,7 +1795,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  AppLocalizations.of(context)?.content ?? 'Content',
+                                  AppLocalizations.of(context).content,
                                   style: textTheme.titleSmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontWeight: DesignTokens.fontWeightMedium,
@@ -1940,7 +1810,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   keyboardType: TextInputType.multiline,
                                   textCapitalization: TextCapitalization.sentences,
                                   decoration: InputDecoration(
-                                    hintText: widget.contentHint,
+                                    hintText: widget.contentHint ?? AppLocalizations.of(context).writeYourContent,
                                     hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(DesignTokens.radiusM),
@@ -1958,7 +1828,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                       ),
                                     ),
                                     filled: true,
-                                    fillColor: colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+                                    fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
                                     contentPadding: DesignTokens.paddingL,
                                   ),
                                   style: textTheme.bodyLarge?.copyWith(

@@ -14,6 +14,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import '../../core/logging/app_logger.dart';
+import '../../utils/app_navigation.dart';
 
 class UnreadTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -303,11 +304,11 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             // At the first unread post: these are the topics with unread posts.
-            Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+            AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, forumId: topic.forumId, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
           },
           onMarkAsRead: (topicId) {
             controller!.markTopicAsRead(topicId);
@@ -351,7 +352,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.youAreAllCaughtUp,
+              AppLocalizations.of(context).youAreAllCaughtUp,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -361,7 +362,7 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.thereAreNoUnreadTopics,
+              AppLocalizations.of(context).thereAreNoUnreadTopics,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -379,8 +380,8 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewUnreadTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewUnreadTopics,
+        title: AppLocalizations.of(context).signInToViewUnreadTopics,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewUnreadTopics,
         icon: Icons.lock_outline_rounded,
       );
     }
@@ -389,8 +390,8 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
       if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
         return NotSignedInView(
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewUnreadTopics ?? 'Sign in to view unread topics',
-          message: 'You need to be signed in to view topics your unread topics.',
+          title: AppLocalizations.of(context).signInToViewUnreadTopics,
+          message: AppLocalizations.of(context).youNeedToBeSignedInToViewUnreadTopics,
           icon: Icons.lock_outline_rounded,
         );
       }

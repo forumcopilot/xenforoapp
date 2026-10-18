@@ -41,6 +41,18 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - `followUser` / `unfollowUser` called `User::canFollow()`, `follow()` and `unfollow()`, which exist in no XenForo version; they now use `canFollowUser()` and the `XF:User\Follow` service. `markConversationRead` called a nonexistent `ConversationMaster::markAsRead()`; it now marks the visitor's `ConversationUser` row read through the conversation repository, like `markConversationUnread` already did. Found by the live API suite.
 - `follow`, `unfollow` and `unbanUser` accept a username where the SDK only carries one identifier.
 
+### Added (ported from the official app's 0.12, phase 3)
+Most need the add-on changes on the `addon/next` branch (not released yet); with an older add-on the app behaves as before.
+- Home opens with the forum's own header: logo (whole, SVG included), name, a line about the forum, compact translated stats, its banner picture and a search field, collapsing into the app bar on scroll. The bars no longer say "Home"; search is offered to guests where the forum allows guest search.
+- The app in the forum's own colours: the add-on sends the default style's colours and logo (light, and dark on XenForo 2.3), the app seeds its colour scheme from the forum's link colour (kept readable) and draws the header in the forum's header colours.
+- Conversations have a reply bar at the bottom (the text stays when sending fails; the same draft as the full Reply page) and check for new messages every 30 seconds while open.
+- Replies and direct-message replies are kept as drafts on the forum as well, in XenForo's own drafts, so the web editor and the app share them.
+- Links to the forum open in the app (threads at their post, posts, forums, members, direct messages; www. or not, http or https, friendly or plain URLs, only inside the forum's folder). Posts have Copy link and Share.
+- Delete account in Settings, where the add-on allows it (App Store guideline 5.1.1(v)).
+- Sign in on the forum's website, for members who sign in there with Google, Facebook, a passkey or two-step; set `AppForumConfig.browserLoginScheme` (see README).
+- Android notifications in four channels (Messages, Replies and mentions, Likes and reactions, Other), so each kind can be silenced on its own; the add-on names the channel in each push.
+- One upload service bound to the composer's forum: closing a composer without posting removes its uploads from the forum, and the old-style private message pages can attach files again.
+
 ### Changed
 - `packages/forumcopilot_sdk` and `packages/xenforo_core` are byte-identical with the canonical repo again after a two-way sync. Into canonical: the XenForo device proxy (push device registration through `forumcopilot.php`), the shared-suite test fixes and the `test/config.json` ignore rule. From canonical: the Cloudflare challenge webview now clears its cache explicitly instead of through deprecated settings, `FCTopic` carries last-poster fields, `FCUser`/`FCGroup` gain a few platform-neutral fields, `IFCPrivateConversationProxy` has an `archiveConversationAsync` default that XenForo reports as unsupported, and `ForumCopilotApiService` reads its base URL from `FC_API_BASE_URL` (unused by this standalone app). The stray `flutter_inappwebview` import is gone, so CI now analyzes the whole tree.
 - The shared SDK test suite (`packages/forumcopilot_sdk/lib/test`, synced from canonical) is now runnable against a real forum: it picks a postable forum instead of a category, records unimplemented methods as skipped, logs back in after its logout test, addresses conversations, follows and bans to a second user, and cleans up its own uploads. `packages/xenforo_core` passes `secondUsername`, `secondPassword` and the new `thirdUsername` through from `test/config.json`. On XenForo 2.2.19: basic suite 49/49, interface suite 100/100.
@@ -55,6 +67,19 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
   - Follow and Unfollow are back on member profiles.
   - A forum's topic list, Unread and Participated open topics at the first unread post.
   - A reply or topic held for moderator approval says so ("Your post will appear once a moderator approves it.", 11 locales; needs add-on 1.8.12).
+- App changes ported from the official app's 0.11 (its phase 2, "Material 3 foundation"):
+  - Material 3 defaults instead of forced shapes and sizes: fully rounded buttons, start-aligned titles, 56dp outlined fields, sheets with a drag handle, floating snackbars, a 16dp screen margin. The deprecated colour APIs (`withOpacity`, `surfaceVariant`) are gone, and CI keeps them out.
+  - Shared components from the Discourse app: every snackbar goes through `SnackbarHelper`, empty / error / signed-out screens through `EmptyStateView`, plus `FilterChipBar`, `UnreadBadge`, `SheetTitle` and `AppNavigation` (writing forms open as full-screen dialogs with ✕).
+  - One tap on Like likes; a long press opens the reaction picker. Post actions are 48dp, with Reply last.
+  - Opening the forum makes one `getConfig` call instead of three.
+  - Pushes and the Alerts tab open the same places (`NotificationRouter`); a thread alert no longer says "Unsupported notification type".
+  - Notification permission is asked after sign-in, on a page that shows what arrives, instead of at first launch.
+  - The Profile tab is an account hub: View profile, forum Settings, Change email, Change password, App Settings, Sign out.
+  - Direct messages open at the newest message, bring new ones in on resume or on a push for the open conversation, stay at the bottom, and keep a local draft of a reply.
+  - `AppLocalizations.of(context)` is non-nullable, and about 330 more strings are translated in all 11 languages (screens, dialogs, snackbars, input hints, validators, the error dialog, and messages from controllers and services through `l10nNow()`), including screens this repo still had in English from before (conversation pages, settings, registration, the bootstrap page). The "Sent from … mobile app" signature stays as it is: it is posted into the forum.
+  - Saved passwords survive a locked iOS Keychain (a push tapped on the lock screen), an update and a restore: encrypted Android storage with `resetOnError`, iOS `first_unlock` (existing entries are moved once), a refused read is retried and never read as signed out, and the secure-storage file is excluded from Android backup and device transfer.
+  - `packages/` re-synced: a reply to a request from before a sign-in or sign-out, or one that never reached the forum (offline), no longer changes the login state; `XenForoProxyFactory(client:)` takes a scripted client, with offline tests for the main paths; XenForo `updateEmail` / `updatePassword`.
+  - 1,322 dead `?? 'English'` fallbacks and 267 duplicate ARB keys removed.
 
 ### Fixed
 - Reactions, from the canonical SDK (`packages/` re-synced, which also brings canonical's SDK changes since 2026-09-22: the WebView's real User-Agent instead of a hard-coded Chrome/131, poll and author fields on `FCPost` and `FCConversationMessage`, `FCSearchPersonal.messages`, no request headers in Cloudflare-challenge logs):

@@ -11,6 +11,7 @@ import '../services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'site_controller.dart';
+import '../utils/l10n_now.dart';
 
 /// Main controller for managing push notifications across multiple sites
 class PushNotificationController extends GetxController with ErrorHandlingMixin {
@@ -401,7 +402,7 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         final errorMsg = 'Push notification system not ready for registration';
         AppLogger.debug(errorMsg);
         _lastError = errorMsg;
-        _showToast('Push notifications not ready', isError: true);
+        _showToast(l10nNow().pushNotificationsNotReady, isError: true);
         update();
         return false;
       }
@@ -489,10 +490,10 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         if (!suppressToasts) {
           if (toastDelay != null) {
             Future.delayed(toastDelay, () {
-              _showToast('Push notifications enabled for $siteName', isError: false);
+              _showToast(l10nNow().pushEnabledFor(siteName), isError: false);
             });
           } else {
-            _showToast('Push notifications enabled for $siteName', isError: false);
+            _showToast(l10nNow().pushEnabledFor(siteName), isError: false);
           }
         }
         update();
@@ -523,10 +524,10 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         if (!suppressToasts) {
           if (toastDelay != null) {
             Future.delayed(toastDelay, () {
-              _showToast('Failed to enable push notifications', isError: true);
+              _showToast(l10nNow().failedToEnablePush, isError: true);
             });
           } else {
-            _showToast('Failed to enable push notifications', isError: true);
+            _showToast(l10nNow().failedToEnablePush, isError: true);
           }
         }
         update();
@@ -559,10 +560,10 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
       if (!suppressToasts) {
         if (toastDelay != null) {
           Future.delayed(toastDelay, () {
-            _showToast('Failed to register for push notifications', isError: true);
+            _showToast(l10nNow().failedToRegisterPush, isError: true);
           });
         } else {
-          _showToast('Failed to register for push notifications', isError: true);
+          _showToast(l10nNow().failedToRegisterPush, isError: true);
         }
       }
       update();
@@ -598,17 +599,17 @@ class PushNotificationController extends GetxController with ErrorHandlingMixin 
         await _saveSiteStates();
 
         AppLogger.debug('Successfully unregistered from site: ${state.siteName}');
-        _showToast('Push notifications disabled for ${state.siteName}', isError: false);
+        _showToast(l10nNow().pushDisabledFor(state.siteName), isError: false);
         update();
         return true;
       } else {
         AppLogger.debug('Failed to unregister from site: ${state.siteName}');
-        _showToast('Failed to disable push notifications', isError: true);
+        _showToast(l10nNow().failedToDisablePush, isError: true);
         return false;
       }
     } catch (e) {
       AppLogger.debug('Error unregistering site $siteId: $e');
-      _showToast('Error disabling push notifications', isError: true);
+      _showToast(l10nNow().failedToDisablePush, isError: true);
       return false;
     }
   }

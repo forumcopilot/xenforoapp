@@ -6,6 +6,8 @@ import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/user_avatar.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../widgets/unread_badge.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Widget para representar un ítem de la lista de foros
 class TopicListItem extends StatelessWidget {
@@ -37,7 +39,7 @@ class TopicListItem extends StatelessWidget {
     return Divider(
       height: 1,
       thickness: 1,
-      color: colorScheme.outlineVariant.withOpacity(0.3),
+      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
     );
   }
 
@@ -72,7 +74,7 @@ class TopicListItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          topic.authorName.isNotEmpty ? topic.authorName : "Unknown",
+                          topic.authorName.isNotEmpty ? topic.authorName : AppLocalizations.of(context).unknown,
                           style: textTheme.titleMedium?.copyWith(
                             color: topic.hasNewPosts ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                             fontWeight: topic.hasNewPosts ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightMedium,
@@ -102,17 +104,12 @@ class TopicListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (topic.hasNewPosts) ...[
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: EdgeInsets.only(
+                    Padding(
+                      padding: EdgeInsets.only(
                         top: DesignTokens.spacingM - DesignTokens.spacingXS,
                         right: DesignTokens.spacingS,
                       ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        shape: BoxShape.circle,
-                      ),
+                      child: UnreadBadge(semanticLabel: AppLocalizations.of(context).unread),
                     ),
                   ],
                   if (topic.isDeleted) ...[
@@ -123,7 +120,7 @@ class TopicListItem extends StatelessWidget {
                       ),
                       decoration: StyleBuilders.badgeDecoration(
                         colorScheme: colorScheme,
-                        backgroundColor: colorScheme.outline.withOpacity(DesignTokens.opacityLow),
+                        backgroundColor: colorScheme.outline.withValues(alpha: DesignTokens.opacityLow),
                         borderRadius: DesignTokens.radiusS,
                       ),
                       child: Row(
@@ -136,7 +133,7 @@ class TopicListItem extends StatelessWidget {
                           ),
                           SizedBox(width: DesignTokens.spacingXS),
                           Text(
-                            'DELETED',
+                            AppLocalizations.of(context).deletedBadge,
                             style: StyleBuilders.smallTextStyle(
                               colorScheme: colorScheme,
                               textTheme: textTheme,
@@ -191,7 +188,7 @@ class TopicListItem extends StatelessWidget {
                   if (topic.hasPoll) 1,
                 ].length;
                 final showLabels = statusIconCount == 1;
-                final metaColor = colorScheme.onSurfaceVariant.withOpacity(0.72);
+                final metaColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.72);
                 
                 return Padding(
                   padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
@@ -271,7 +268,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Announcement',
+                                AppLocalizations.of(context).topicAnnouncement,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -292,7 +289,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Pinned',
+                                AppLocalizations.of(context).topicPinned,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -313,7 +310,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Subscribed',
+                                AppLocalizations.of(context).subscribed,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -334,7 +331,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Locked',
+                                AppLocalizations.of(context).topicLocked,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,
@@ -356,7 +353,7 @@ class TopicListItem extends StatelessWidget {
                             if (showLabels) ...[
                               SizedBox(width: DesignTokens.spacingXS),
                               Text(
-                                'Poll',
+                                AppLocalizations.of(context).topicPoll,
                                 style: textTheme.bodySmall?.copyWith(
                                   color: metaColor,
                                   letterSpacing: DesignTokens.letterSpacingWide,

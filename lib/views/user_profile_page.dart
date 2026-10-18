@@ -20,6 +20,8 @@ import 'login_page.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class UserProfilePage extends StatefulWidget {
   final SiteContext siteContext;
@@ -71,7 +73,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await Get.to(() => LoginPage(siteContext: widget.siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
         }
       }
       if (!mounted) {
@@ -130,7 +132,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(
           content: Text(
-            failure.isNotEmpty ? failure : (AppLocalizations.of(context)?.somethingWentWrong ?? 'Something went wrong'),
+            failure.isNotEmpty ? failure : AppLocalizations.of(context).somethingWentWrong,
             style: TextStyle(color: colorScheme.onErrorContainer),
           ),
           backgroundColor: colorScheme.errorContainer,
@@ -158,9 +160,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
       });
     } catch (e) {
       AppLogger.debug('Error fetching user info: $e');
-      showErrorDialog('Failed to load user info: $e');
+      if (!mounted) return;
+      showErrorDialog(AppLocalizations.of(context).failedToLoadUserInfo('$e'));
       setState(() {
-        _error = 'Failed to load user info. $e';
+        _error = AppLocalizations.of(context).failedToLoadUserInfo('$e');
         _isLoading = false;
       });
     }
@@ -196,7 +199,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: _isLoading
-            ? Text(AppLocalizations.of(context)?.loading ?? 'Loading...')
+            ? Text(AppLocalizations.of(context).loading)
             : _userInfo != null
                 ? (widget.siteContext.loginDataOutput != null && widget.siteContext.loginDataOutput?.user?.id != _userInfo!.id)
                     ? const SizedBox.shrink() // Hide title when viewing another user's profile
@@ -209,8 +212,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       )
-                : Text(AppLocalizations.of(context)?.userProfile ?? 'User Profile'),
-        centerTitle: true,
+                : Text(AppLocalizations.of(context).userProfile),
         actions: [
           if (_userInfo != null && widget.siteContext.loginDataOutput != null && widget.siteContext.loginDataOutput?.user?.id != _userInfo!.id)
             PopupMenuButton<String>(
@@ -242,7 +244,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         Icon(Icons.flag_outlined, color: colorScheme.error),
                         const SizedBox(width: DesignTokens.spacingM),
                         Text(
-                          AppLocalizations.of(context)!.reportUser,
+                          AppLocalizations.of(context).reportUser,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
                           ),
@@ -262,7 +264,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                         const SizedBox(width: DesignTokens.spacingM),
                         Text(
-                          _userInfo!.isBanned ? AppLocalizations.of(context)!.unbanUser : AppLocalizations.of(context)!.banUser,
+                          _userInfo!.isBanned ? AppLocalizations.of(context).unbanUser : AppLocalizations.of(context).banUser,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
                           ),
@@ -279,7 +281,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         Icon(Icons.cleaning_services, color: colorScheme.error),
                         const SizedBox(width: DesignTokens.spacingM),
                         Text(
-                          AppLocalizations.of(context)?.spamCleaner ?? 'Spam Cleaner',
+                          AppLocalizations.of(context).spamCleaner,
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
                           ),
@@ -307,7 +309,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
                         Text(
-                          AppLocalizations.of(context)?.unableToLoadProfile ?? 'Unable to Load Profile',
+                          AppLocalizations.of(context).unableToLoadProfile,
                           style: textTheme.titleLarge?.copyWith(
                             color: colorScheme.error,
                             fontWeight: DesignTokens.fontWeightBold,
@@ -326,7 +328,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         FilledButton.icon(
                           onPressed: _fetchUserInfo,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: Text(AppLocalizations.of(context)?.tryAgain ?? 'Try Again'),
+                          label: Text(AppLocalizations.of(context).tryAgain),
                           style: FilledButton.styleFrom(
                             backgroundColor: colorScheme.primary,
                             foregroundColor: colorScheme.onPrimary,
@@ -345,7 +347,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                 )
               : _userInfo == null
-                  ? Center(child: Text(AppLocalizations.of(context)?.userInformationNotAvailable ?? 'User information not available'))
+                  ? Center(child: Text(AppLocalizations.of(context).userInformationNotAvailable))
                   : RefreshIndicator(
                       onRefresh: _refreshProfile,
                       child: SingleChildScrollView(
@@ -363,16 +365,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         ? _userInfo!.iconUrl!
                                         : (widget.profilePictureUrl != null && widget.profilePictureUrl!.isNotEmpty ? widget.profilePictureUrl! : null);
                                     if (imageUrl != null && imageUrl.isNotEmpty) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FullScreenImageViewer(
+                                      AppNavigation.push(context, FullScreenImageViewer(
                                             imageUrls: [imageUrl],
                                             initialIndex: 0,
                                             heroTag: 'profile_picture_${_userInfo!.username}',
-                                          ),
-                                        ),
-                                      );
+                                          ));
                                     }
                                   },
                                   child: UserAvatar(
@@ -416,7 +413,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                       vertical: DesignTokens.spacingXS / 2,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityHigh),
+                                      color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityHigh),
                                       borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                                     ),
                                     child: Row(
@@ -429,7 +426,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         ),
                                         SizedBox(width: DesignTokens.spacingXS),
                                         Text(
-                                          AppLocalizations.of(context)?.banned ?? 'BANNED',
+                                          AppLocalizations.of(context).banned,
                                           style: StyleBuilders.badgeTextStyle(
                                             colorScheme: colorScheme,
                                             textTheme: textTheme,
@@ -468,12 +465,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         ? OutlinedButton.icon(
                                             onPressed: _followBusy ? null : _toggleFollow,
                                             icon: const Icon(Icons.person_remove_outlined),
-                                            label: Text(AppLocalizations.of(context)?.unfollow ?? 'Unfollow'),
+                                            label: Text(AppLocalizations.of(context).unfollow),
                                           )
                                         : FilledButton.tonalIcon(
                                             onPressed: _followBusy ? null : _toggleFollow,
                                             icon: const Icon(Icons.person_add_outlined),
-                                            label: Text(AppLocalizations.of(context)?.follow ?? 'Follow'),
+                                            label: Text(AppLocalizations.of(context).follow),
                                           ),
                                   if (_userInfo!.acceptsPM) ...[
                                     SizedBox(width: DesignTokens.spacingM),
@@ -483,7 +480,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         if (conversationSupported) {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(
+                                            FormPageRoute(
                                               builder: (context) => NewConversationPage(
                                                 siteContext: widget.siteContext,
                                                 initialRecipient: _userInfo!.username,
@@ -492,28 +489,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                             ),
                                           );
                                         } else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => NewTraditionalPMPage(
+                                          AppNavigation.push(context, NewTraditionalPMPage(
                                                 siteContext: widget.siteContext,
                                                 initialRecipient: _userInfo!.username,
                                                 initialRecipientIconUrl: (_userInfo!.iconUrl != null && _userInfo!.iconUrl!.isNotEmpty) ? _userInfo!.iconUrl! : (widget.profilePictureUrl ?? null),
-                                              ),
-                                            ),
-                                          );
+                                              ));
                                         }
                                       },
                                       icon: Icon(Icons.message, size: DesignTokens.iconSizeM),
                                       label: Text(
-                                        AppLocalizations.of(context)?.sendMessage ?? 'Send Message',
+                                        AppLocalizations.of(context).sendMessage,
                                         style: textTheme.titleMedium?.copyWith(
                                           color: colorScheme.onPrimary,
                                           fontWeight: DesignTokens.fontWeightBold,
                                         ),
-                                      ),
-                                      style: StyleBuilders.extendedFilledButtonStyle(
-                                        colorScheme: colorScheme,
                                       ),
                                     ),
                                   ],
@@ -532,7 +521,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                                 side: BorderSide(
-                                  color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                                  color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
                                   width: DesignTokens.borderWidthThin,
                                 ),
                               ),
@@ -544,7 +533,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.calendar_today,
-                                      title: AppLocalizations.of(context)?.memberSince ?? 'Member Since',
+                                      title: AppLocalizations.of(context).memberSince,
                                       subtitle: DateFormat.yMMMMd().format(_userInfo!.registrationTime as DateTime),
                                     ),
                                   if (_userInfo!.customFieldsList != null)
@@ -567,7 +556,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         _buildInfoTile(
                                           context,
                                           icon: Icons.cake,
-                                          title: AppLocalizations.of(context)?.birthday ?? 'Birthday',
+                                          title: AppLocalizations.of(context).birthday,
                                           subtitle: formatted,
                                         ),
                                       ];
@@ -576,14 +565,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.access_time,
-                                      title: AppLocalizations.of(context)?.lastActivity ?? 'Last Activity',
+                                      title: AppLocalizations.of(context).lastActivity,
                                       subtitle: DateFormat.yMMMd(Localizations.localeOf(context).toString()).add_jm().format(_userInfo!.lastActivityTime!.toLocal()),
                                     ),
                                   if (_userInfo!.postCount != 0)
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.post_add,
-                                      title: AppLocalizations.of(context)?.posts ?? 'Posts',
+                                      title: AppLocalizations.of(context).posts,
                                       subtitle: NumberFormat.decimalPattern(Localizations.localeOf(context).toString()).format(_userInfo!.postCount),
                                     ),
                                   if (_userInfo!.customFieldsList != null)
@@ -599,7 +588,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         fields.add(_buildInfoTile(
                                           context,
                                           icon: Icons.thumb_up,
-                                          title: AppLocalizations.of(context)?.likesReceived ?? 'Likes Received',
+                                          title: AppLocalizations.of(context).likesReceived,
                                           subtitle: NumberFormat.decimalPattern(Localizations.localeOf(context).toString()).format(int.tryParse(likesReceivedField.first!.value) ?? 0),
                                         ));
                                       }
@@ -607,7 +596,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         fields.add(_buildInfoTile(
                                           context,
                                           icon: Icons.thumb_up_outlined,
-                                          title: AppLocalizations.of(context)?.likesGiven ?? 'Likes Given',
+                                          title: AppLocalizations.of(context).likesGiven,
                                           subtitle: NumberFormat.decimalPattern(Localizations.localeOf(context).toString()).format(int.tryParse(likesGivenField.first!.value) ?? 0),
                                         ));
                                       }
@@ -617,14 +606,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.people_outline,
-                                      title: AppLocalizations.of(context)?.following ?? 'Following',
+                                      title: AppLocalizations.of(context).following,
                                       subtitle: _userInfo!.followingCount.toString(),
                                     ),
                                   if (_userInfo!.follower != null && _userInfo!.follower != 0)
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.people,
-                                      title: AppLocalizations.of(context)?.followers ?? 'Followers',
+                                      title: AppLocalizations.of(context).followers,
                                       subtitle: _userInfo!.follower.toString(),
                                     ),
                                   // About field (from direct API field)
@@ -632,7 +621,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.person_outline,
-                                      title: AppLocalizations.of(context)?.about ?? 'About',
+                                      title: AppLocalizations.of(context).about,
                                       subtitle: _userInfo!.bio!,
                                     ),
                                   // Location field (from direct API field)
@@ -640,7 +629,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.location_on,
-                                      title: AppLocalizations.of(context)?.location ?? 'Location',
+                                      title: AppLocalizations.of(context).location,
                                       subtitle: _userInfo!.location!,
                                     ),
                                   // Website field (clickable)
@@ -648,7 +637,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildInfoTile(
                                       context,
                                       icon: Icons.language,
-                                      title: AppLocalizations.of(context)?.website ?? 'Website',
+                                      title: AppLocalizations.of(context).website,
                                       subtitle: _userInfo!.website!,
                                       onTap: () async {
                                         final url = _userInfo!.website!;
@@ -663,7 +652,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     _buildSignatureTile(
                                       context,
                                       icon: Icons.edit_note,
-                                      title: AppLocalizations.of(context)?.signature ?? 'Signature',
+                                      title: AppLocalizations.of(context).signature,
                                       signature: _userInfo!.signature!,
                                     ),
                                   // Location field from customFields (fallback for older data)
@@ -690,7 +679,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         _buildSignatureTile(
                                           context,
                                           icon: Icons.edit_note,
-                                          title: AppLocalizations.of(context)?.signature ?? 'Signature',
+                                          title: AppLocalizations.of(context).signature,
                                           signature: signatureField.first.value,
                                         ),
                                       ];
@@ -713,7 +702,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                         backgroundColor: Colors.transparent,
                                         collapsedBackgroundColor: Colors.transparent,
                                         title: Text(
-                                          AppLocalizations.of(context)?.showMore ?? 'Show More',
+                                          AppLocalizations.of(context).showMore,
                                           style: textTheme.titleSmall?.copyWith(
                                             color: colorScheme.primary,
                                             fontWeight: DesignTokens.fontWeightMedium,
@@ -835,7 +824,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     AppLogger.debug('Handling report of user: ${_userInfo!.id}');
 
     // Common report reasons
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final reportReasons = [
       l10n.spamOrAdvertising,
       l10n.harassmentOrBullying,
@@ -858,7 +847,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
             return AlertDialog(
               title: Text(
-                AppLocalizations.of(context)?.reportUser ?? 'Report User',
+                AppLocalizations.of(context).reportUser,
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -871,43 +860,48 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.pleaseSelectReasonForReportingUser,
+                        AppLocalizations.of(context).pleaseSelectReasonForReportingUser,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
-                      ...reportReasons.map((reason) {
-                        return RadioListTile<String>(
-                          title: Text(
-                            reason,
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          value: reason,
-                          groupValue: selectedReason,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedReason = value;
-                            });
-                          },
-                          contentPadding: EdgeInsets.zero,
-                        );
-                      }).toList(),
+                      RadioGroup<String>(
+                        groupValue: selectedReason,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedReason = value;
+                          });
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: reportReasons.map((reason) {
+                            return RadioListTile<String>(
+                              title: Text(
+                                reason,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              value: reason,
+                              contentPadding: EdgeInsets.zero,
+                            );
+                          }).toList(),
+                        ),
+                      ),
                       if (selectedReason == l10n.otherPleaseSpecify) ...[
                         const SizedBox(height: DesignTokens.spacingM),
                         TextFormField(
                           controller: customReasonController,
                           decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)!.pleaseSpecifyReason,
-                            hintText: AppLocalizations.of(context)!.enterReasonForReportingUser,
+                            labelText: AppLocalizations.of(context).pleaseSpecifyReason,
+                            hintText: AppLocalizations.of(context).enterReasonForReportingUser,
                             border: const OutlineInputBorder(),
                           ),
                           maxLines: 3,
                           validator: (value) {
                             if (selectedReason == l10n.otherPleaseSpecify && (value == null || value.trim().isEmpty)) {
-                              return AppLocalizations.of(context)!.pleaseSpecifyReason;
+                              return AppLocalizations.of(context).pleaseSpecifyReason;
                             }
                             return null;
                           },
@@ -921,19 +915,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(null),
                   child: Text(
-                    AppLocalizations.of(context)!.cancel,
+                    AppLocalizations.of(context).cancel,
                     style: TextStyle(color: colorScheme.onSurfaceVariant),
                   ),
                 ),
                 FilledButton(
                   onPressed: () {
                     if (selectedReason == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(AppLocalizations.of(context)!.pleaseSelectReason),
-                          backgroundColor: colorScheme.error,
-                        ),
-                      );
+                      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseSelectReason);
                       return;
                     }
 
@@ -946,7 +935,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     backgroundColor: colorScheme.error,
                     foregroundColor: colorScheme.onError,
                   ),
-                  child: Text(AppLocalizations.of(context)?.submitReport ?? 'Submit Report'),
+                  child: Text(AppLocalizations.of(context).submitReport),
                 ),
               ],
             );
@@ -973,7 +962,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               const SizedBox(width: DesignTokens.spacingM),
               Text(
-                AppLocalizations.of(context)?.submittingReport ?? 'Submitting report...',
+                AppLocalizations.of(context).submittingReport,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
@@ -1009,108 +998,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
           if (reportResult.result) {
             AppLogger.debug('Report submitted successfully for user: ${_userInfo!.id}');
             // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Text(
-                      AppLocalizations.of(context)?.reportSubmittedSuccessfully ?? 'Report submitted successfully',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).reportSubmittedSuccessfully);
           } else {
             final errorMessage =
-                (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : (AppLocalizations.of(context)?.failedToSubmitReport ?? 'Failed to submit report');
+                (reportResult.resultText != null && reportResult.resultText!.isNotEmpty) ? reportResult.resultText! : AppLocalizations.of(context).failedToSubmitReport;
             AppLogger.debug('Report failed for user: ${_userInfo!.id}, error: $errorMessage');
             // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Expanded(
-                      child: Text(
-                        errorMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 5),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
         }
       } catch (e) {
         AppLogger.debug('Exception occurred while reporting user: ${_userInfo!.id}, error: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      '${AppLocalizations.of(context)?.failedToSubmitReport ?? 'Failed to submit report'}: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToSubmitReport}: ${e.toString()}');
         }
       }
     }
@@ -1122,7 +1022,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     AppLogger.debug('Handling ban of user: ${_userInfo!.id}');
 
     // Common ban reasons
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final banReasons = [
       l10n.violationOfCommunityGuidelines,
       l10n.spamOrAdvertising,
@@ -1154,7 +1054,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
               return AlertDialog(
                 title: Text(
-                  AppLocalizations.of(context)!.banUser,
+                  AppLocalizations.of(context).banUser,
                   style: textTheme.titleLarge?.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -1167,43 +1067,48 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          AppLocalizations.of(context)!.pleaseSelectReasonForBanningUser(_userInfo!.username),
+                          AppLocalizations.of(context).pleaseSelectReasonForBanningUser(_userInfo!.username),
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: DesignTokens.spacingL),
-                        ...banReasons.map((reason) {
-                          return RadioListTile<String>(
-                            title: Text(
-                              reason,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                            value: reason,
-                            groupValue: selectedReason,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedReason = value;
-                              });
-                            },
-                            contentPadding: EdgeInsets.zero,
-                          );
-                        }).toList(),
+                        RadioGroup<String>(
+                          groupValue: selectedReason,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedReason = value;
+                            });
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: banReasons.map((reason) {
+                              return RadioListTile<String>(
+                                title: Text(
+                                  reason,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
+                                value: reason,
+                                contentPadding: EdgeInsets.zero,
+                              );
+                            }).toList(),
+                          ),
+                        ),
                         if (selectedReason == l10n.otherPleaseSpecify) ...[
                           const SizedBox(height: DesignTokens.spacingM),
                           TextFormField(
                             controller: customReasonController,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!.pleaseSpecifyReason,
-                              hintText: AppLocalizations.of(context)!.enterReasonForBanningUser,
+                              labelText: AppLocalizations.of(context).pleaseSpecifyReason,
+                              hintText: AppLocalizations.of(context).enterReasonForBanningUser,
                               border: const OutlineInputBorder(),
                             ),
                             maxLines: 3,
                             validator: (value) {
                               if (selectedReason == l10n.otherPleaseSpecify && (value == null || value.trim().isEmpty)) {
-                                return AppLocalizations.of(context)!.pleaseSpecifyReason;
+                                return AppLocalizations.of(context).pleaseSpecifyReason;
                               }
                               return null;
                             },
@@ -1217,7 +1122,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(null),
                     child: Text(
-                      AppLocalizations.of(context)!.cancel,
+                      AppLocalizations.of(context).cancel,
                       style: TextStyle(color: colorScheme.onSurfaceVariant),
                     ),
                   ),
@@ -1237,7 +1142,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
                     ),
-                    child: Text(AppLocalizations.of(context)?.next ?? 'Next'),
+                    child: Text(AppLocalizations.of(context).next),
                   ),
                 ],
               );
@@ -1262,7 +1167,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
               return AlertDialog(
                 title: Text(
-                  AppLocalizations.of(context)!.banUser,
+                  AppLocalizations.of(context).banUser,
                   style: textTheme.titleLarge?.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -1273,48 +1178,50 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)?.setBanDurationFor(_userInfo!.username) ?? 'Set the ban duration for ${_userInfo!.username}',
+                        AppLocalizations.of(context).setBanDurationFor(_userInfo!.username),
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: DesignTokens.spacingL),
-                      RadioListTile<String>(
-                        title: Text(
-                          AppLocalizations.of(context)?.permanent ?? 'Permanent',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        value: 'permanent',
+                      RadioGroup<String>(
                         groupValue: banLength,
                         onChanged: (value) {
                           setState(() {
                             banLength = value;
-                            selectedEndDate = null;
-                          });
-                        },
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      RadioListTile<String>(
-                        title: Text(
-                          AppLocalizations.of(context)?.temporary ?? 'Temporary',
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        value: 'temporary',
-                        groupValue: banLength,
-                        onChanged: (value) {
-                          setState(() {
-                            banLength = value;
-                            // Default to 7 days from now if no date selected
-                            if (selectedEndDate == null) {
-                              selectedEndDate = DateTime.now().add(const Duration(days: 7));
+                            if (value == 'permanent') {
+                              selectedEndDate = null;
+                            } else {
+                              // Default to 7 days from now if no date selected
+                              selectedEndDate ??= DateTime.now().add(const Duration(days: 7));
                             }
                           });
                         },
-                        contentPadding: EdgeInsets.zero,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                          RadioListTile<String>(
+                            title: Text(
+                              AppLocalizations.of(context).permanent,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            value: 'permanent',
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          RadioListTile<String>(
+                            title: Text(
+                              AppLocalizations.of(context).temporary,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            value: 'temporary',
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          ],
+                        ),
                       ),
                       // Date picker for temporary ban
                       if (banLength == 'temporary') ...[
@@ -1357,12 +1264,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           },
                           child: InputDecorator(
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context)!.banUntil,
+                              labelText: AppLocalizations.of(context).banUntil,
                               border: const OutlineInputBorder(),
                               suffixIcon: const Icon(Icons.calendar_today),
                             ),
                             child: Text(
-                              selectedEndDate != null ? DateFormat.yMMMd().add_jm().format(selectedEndDate!) : AppLocalizations.of(context)!.selectDate,
+                              selectedEndDate != null ? DateFormat.yMMMd().add_jm().format(selectedEndDate!) : AppLocalizations.of(context).selectDate,
                               style: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurface,
                               ),
@@ -1372,7 +1279,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         if (selectedEndDate == null) ...[
                           const SizedBox(height: DesignTokens.spacingXS),
                           Text(
-                            AppLocalizations.of(context)?.pleaseSelectEndDate ?? 'Please select an end date',
+                            AppLocalizations.of(context).pleaseSelectEndDate,
                             style: textTheme.bodySmall?.copyWith(
                               color: colorScheme.error,
                             ),
@@ -1386,19 +1293,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(null),
                     child: Text(
-                      AppLocalizations.of(context)?.back ?? 'Back',
+                      AppLocalizations.of(context).back,
                       style: TextStyle(color: colorScheme.onSurfaceVariant),
                     ),
                   ),
                   FilledButton(
                     onPressed: () {
                       if (banLength == 'temporary' && selectedEndDate == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(AppLocalizations.of(context)?.pleaseSelectEndDateForTemporaryBan ?? 'Please select an end date for temporary ban'),
-                            backgroundColor: colorScheme.error,
-                          ),
-                        );
+                        SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseSelectEndDateForTemporaryBan);
                         return;
                       }
 
@@ -1416,7 +1318,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       backgroundColor: colorScheme.error,
                       foregroundColor: colorScheme.onError,
                     ),
-                    child: Text(AppLocalizations.of(context)?.banUser ?? 'Ban User'),
+                    child: Text(AppLocalizations.of(context).banUser),
                   ),
                 ],
               );
@@ -1451,7 +1353,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               const SizedBox(width: DesignTokens.spacingM),
               Text(
-                AppLocalizations.of(context)?.banningUser ?? 'Banning user...',
+                AppLocalizations.of(context).banningUser,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
@@ -1493,112 +1395,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
           if (banResult.result) {
             AppLogger.debug('User banned successfully: ${_userInfo!.id}');
             // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Text(
-                      AppLocalizations.of(context)?.userBannedSuccessfully ?? 'User banned successfully',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).userBannedSuccessfully);
             // Refresh entire page to reflect ban status
             await _refreshProfile();
           } else {
-            final errorMessage = (banResult.resultText != null && banResult.resultText!.isNotEmpty) ? banResult.resultText! : (AppLocalizations.of(context)?.failedToBanUser ?? 'Failed to ban user');
+            final errorMessage = (banResult.resultText != null && banResult.resultText!.isNotEmpty) ? banResult.resultText! : AppLocalizations.of(context).failedToBanUser;
             AppLogger.debug('Ban failed for user: ${_userInfo!.id}, error: $errorMessage');
             // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-                    const SizedBox(width: DesignTokens.spacingM),
-                    Expanded(
-                      child: Text(
-                        errorMessage,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-                ),
-                margin: DesignTokens.paddingS,
-                padding: EdgeInsets.symmetric(
-                  horizontal: DesignTokens.spacingL,
-                  vertical: DesignTokens.spacingM,
-                ),
-                duration: const Duration(seconds: 5),
-              ),
-            );
+            SnackbarHelper.showError(context, errorMessage);
           }
         }
       } catch (e) {
         AppLogger.debug('Exception occurred while banning user: ${_userInfo!.id}, error: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      'Failed to ban user: ${e.toString()}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToBanUser}: $e');
         }
       }
     }
@@ -1618,13 +1428,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
         return AlertDialog(
           title: Text(
-            AppLocalizations.of(context)!.unbanUser,
+            AppLocalizations.of(context).unbanUser,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
           ),
           content: Text(
-            'Are you sure you want to unban ${_userInfo!.username}?',
+            AppLocalizations.of(context).areYouSureUnban(_userInfo!.username),
             style: textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -1633,7 +1443,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
@@ -1643,7 +1453,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
               ),
-              child: Text(AppLocalizations.of(context)?.unban ?? 'Unban'),
+              child: Text(AppLocalizations.of(context).unban),
             ),
           ],
         );
@@ -1669,7 +1479,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
             const SizedBox(width: DesignTokens.spacingM),
             Text(
-              AppLocalizations.of(context)?.unbanningUser ?? 'Unbanning user...',
+              AppLocalizations.of(context).unbanningUser,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
@@ -1705,110 +1515,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
         if (unbanResult.result) {
           AppLogger.debug('User unbanned successfully: ${_userInfo!.id}');
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Text(
-                    AppLocalizations.of(context)?.userUnbannedSuccessfully ?? 'User unbanned successfully',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).userUnbannedSuccessfully);
           // Refresh entire page to reflect unban status
           await _refreshProfile();
         } else {
           final errorMessage =
-              (unbanResult.resultText != null && unbanResult.resultText!.isNotEmpty) ? unbanResult.resultText! : (AppLocalizations.of(context)?.failedToUnbanUser ?? 'Failed to unban user');
+              (unbanResult.resultText != null && unbanResult.resultText!.isNotEmpty) ? unbanResult.resultText! : AppLocalizations.of(context).failedToUnbanUser;
           AppLogger.debug('Unban failed for user: ${_userInfo!.id}, error: $errorMessage');
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       AppLogger.debug('Exception occurred while unbanning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    'Failed to unban user: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: const EdgeInsets.all(8),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToUnbanUser}: $e');
       }
     }
   }
@@ -1834,7 +1555,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
             return AlertDialog(
               title: Text(
-                AppLocalizations.of(context)?.spamCleanUser ?? 'Spam Clean User',
+                AppLocalizations.of(context).spamCleanUser,
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -1845,14 +1566,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Spam Clean ${_userInfo!.username}',
+                      AppLocalizations.of(context).spamClean(_userInfo!.username),
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: DesignTokens.spacingL),
                     Text(
-                      AppLocalizations.of(context)?.selectActionsToPerform ?? 'Select the actions to perform:',
+                      AppLocalizations.of(context).selectActionsToPerform,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -1860,13 +1581,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     const SizedBox(height: DesignTokens.spacingM),
                     CheckboxListTile(
                       title: Text(
-                        AppLocalizations.of(context)?.handleThreads ?? 'Handle Threads',
+                        AppLocalizations.of(context).handleThreads,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurface,
                         ),
                       ),
                       subtitle: Text(
-                        AppLocalizations.of(context)?.moveOrDeleteThreadsBasedOnAdminSettings ?? 'Move or delete threads based on admin settings',
+                        AppLocalizations.of(context).moveOrDeleteThreadsBasedOnAdminSettings,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1881,13 +1602,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     CheckboxListTile(
                       title: Text(
-                        AppLocalizations.of(context)?.deleteMessages ?? 'Delete Messages',
+                        AppLocalizations.of(context).deleteMessages,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurface,
                         ),
                       ),
                       subtitle: Text(
-                        'Delete posts, profile posts, and comments',
+                        AppLocalizations.of(context).deletePostsProfilePostsComments,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1902,13 +1623,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     CheckboxListTile(
                       title: Text(
-                        AppLocalizations.of(context)?.deleteConversations ?? 'Delete Conversations',
+                        AppLocalizations.of(context).deleteConversations,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurface,
                         ),
                       ),
                       subtitle: Text(
-                        AppLocalizations.of(context)?.deletePrivateConversations ?? 'Delete private conversations',
+                        AppLocalizations.of(context).deletePrivateConversations,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1923,13 +1644,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     CheckboxListTile(
                       title: Text(
-                        AppLocalizations.of(context)!.banUser,
+                        AppLocalizations.of(context).banUser,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurface,
                         ),
                       ),
                       subtitle: Text(
-                        AppLocalizations.of(context)?.banTheUserAccount ?? 'Ban the user account',
+                        AppLocalizations.of(context).banTheUserAccount,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1944,7 +1665,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     const SizedBox(height: DesignTokens.spacingL),
                     Text(
-                      'This action cannot be undone.',
+                      AppLocalizations.of(context).thisActionCannotBeUndone,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.error,
                         fontWeight: DesignTokens.fontWeightMedium,
@@ -1957,7 +1678,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(null),
                   child: Text(
-                    AppLocalizations.of(context)!.cancel,
+                    AppLocalizations.of(context).cancel,
                     style: TextStyle(color: colorScheme.onSurfaceVariant),
                   ),
                 ),
@@ -1974,7 +1695,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     backgroundColor: colorScheme.error,
                     foregroundColor: colorScheme.onError,
                   ),
-                  child: Text(AppLocalizations.of(context)?.cleanSpam ?? 'Clean Spam'),
+                  child: Text(AppLocalizations.of(context).cleanSpam),
                 ),
               ],
             );
@@ -1993,7 +1714,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         final textTheme = Theme.of(context).textTheme;
 
         final selectedActions = <String>[];
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         if (result['actionThreads'] == true) selectedActions.add(l10n.handleThreads);
         if (result['deleteMessages'] == true) selectedActions.add(l10n.deleteMessages);
         if (result['deleteConversations'] == true) selectedActions.add(l10n.deleteConversations);
@@ -2001,7 +1722,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
         return AlertDialog(
           title: Text(
-            AppLocalizations.of(context)!.confirmSpamClean,
+            AppLocalizations.of(context).confirmSpamClean,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -2011,7 +1732,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Are you sure you want to spam clean ${_userInfo!.username}?',
+                AppLocalizations.of(context).areYouSureSpamClean(_userInfo!.username),
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -2019,7 +1740,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               if (selectedActions.isNotEmpty) ...[
                 const SizedBox(height: DesignTokens.spacingL),
                 Text(
-                  'Selected actions:',
+                  AppLocalizations.of(context).selectedActions,
                   style: textTheme.titleSmall?.copyWith(
                     color: colorScheme.onSurface,
                   ),
@@ -2047,7 +1768,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ],
               const SizedBox(height: DesignTokens.spacingL),
               Text(
-                'This action cannot be undone.',
+                AppLocalizations.of(context).thisActionCannotBeUndone,
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.error,
                   fontWeight: DesignTokens.fontWeightMedium,
@@ -2059,7 +1780,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
             ),
@@ -2069,7 +1790,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 backgroundColor: colorScheme.error,
                 foregroundColor: colorScheme.onError,
               ),
-              child: Text(AppLocalizations.of(context)?.confirm ?? 'Confirm'),
+              child: Text(AppLocalizations.of(context).confirm),
             ),
           ],
         );
@@ -2095,7 +1816,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
             const SizedBox(width: DesignTokens.spacingM),
             Text(
-              AppLocalizations.of(context)?.cleaningSpam ?? 'Cleaning spam...',
+              AppLocalizations.of(context).cleaningSpam,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
@@ -2143,136 +1864,41 @@ class _UserProfilePageState extends State<UserProfilePage> {
           final l10n = AppLocalizations.of(context);
           if (spamCleanResult.actions != null) {
             if (spamCleanResult.actions!['action_threads'] == true) {
-              actionsPerformed.add(l10n?.handledThreads ?? 'Handled threads');
+              actionsPerformed.add(l10n.handledThreads);
             }
             if (spamCleanResult.actions!['delete_messages'] == true) {
-              actionsPerformed.add(l10n?.deletedMessages ?? 'Deleted messages');
+              actionsPerformed.add(l10n.deletedMessages);
             }
             if (spamCleanResult.actions!['delete_conversations'] == true) {
-              actionsPerformed.add(l10n?.deletedConversations ?? 'Deleted conversations');
+              actionsPerformed.add(l10n.deletedConversations);
             }
             if (spamCleanResult.actions!['ban_user'] == true) {
-              actionsPerformed.add(l10n?.bannedUser ?? 'Banned user');
+              actionsPerformed.add(l10n.bannedUser);
             }
           }
 
           final successMessage = actionsPerformed.isNotEmpty
-              ? (l10n?.successfullyCleanedSpam(spamCleanResult.username ?? _userInfo!.username, actionsPerformed.join(', ')) ??
-                  'Successfully cleaned spam for ${spamCleanResult.username ?? _userInfo!.username}. Actions: ${actionsPerformed.join(', ')}')
-              : 'Successfully cleaned spam for ${spamCleanResult.username ?? _userInfo!.username}';
+              ? l10n.successfullyCleanedSpam(spamCleanResult.username ?? _userInfo!.username, actionsPerformed.join(', '))
+              : l10n.successfullyCleanedSpamFor(spamCleanResult.username ?? _userInfo!.username);
 
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.check_circle_outline,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      successMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onInverseSurface,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showInfo(context, successMessage);
           // Refresh entire page state to reflect all changes
           // This will cause all widgets including UserRepliedPosts to rebuild and fetch fresh data
           if (context.mounted) {
             await _refreshProfile();
           }
         } else {
-          final errorMessage = (spamCleanResult.resultText != null && spamCleanResult.resultText!.isNotEmpty) ? spamCleanResult.resultText! : 'Failed to clean spam';
+          final errorMessage = (spamCleanResult.resultText != null && spamCleanResult.resultText!.isNotEmpty) ? spamCleanResult.resultText! : AppLocalizations.of(context).failedToCleanSpam;
           AppLogger.debug('Spam clean failed for user: ${_userInfo!.id}, error: $errorMessage');
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-                  const SizedBox(width: DesignTokens.spacingM),
-                  Expanded(
-                    child: Text(
-                      errorMessage,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onErrorContainer,
-                          ),
-                    ),
-                  ),
-                ],
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              ),
-              margin: DesignTokens.paddingS,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingL,
-                vertical: DesignTokens.spacingM,
-              ),
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
     } catch (e) {
       AppLogger.debug('Exception occurred while spam cleaning user: ${_userInfo!.id}, error: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    'Failed to clean spam: ${e.toString()}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingM,
-            ),
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, '${AppLocalizations.of(context).failedToCleanSpam}: $e');
       }
     }
   }

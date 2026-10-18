@@ -4,6 +4,7 @@ import '../../utils/file_utils.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Unified attachment widget that can display both remote and local attachments
 class AttachmentWidget extends StatelessWidget {
@@ -34,7 +35,7 @@ class AttachmentWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -170,7 +171,7 @@ class AttachmentWidget extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: isImage 
-            ? colorScheme.surfaceVariant.withOpacity(0.3)
+            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
             : fileTypeColor,
         borderRadius: BorderRadius.circular(8),
       ),
@@ -333,7 +334,7 @@ class AttachmentWidget extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text('Downloading $filename...'),
+              child: Text(AppLocalizations.of(context).downloading(filename)),
             ),
           ],
         ),
@@ -350,43 +351,21 @@ class AttachmentWidget extends StatelessWidget {
         
         // On iOS, filePath will be empty after sharing
         if (filePath.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)?.openingShareSheet(filename) ?? 'Opening share sheet for $filename'),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).openingShareSheet(filename));
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
           final isInDownloads = filePath.contains('/Downloads/') || 
                                (filePath.contains('Downloads') && !filePath.contains('Containers'));
           final locationMessage = isInDownloads 
-              ? 'File saved to Downloads: $filename'
-              : 'File saved to Documents: $filename';
+              ? AppLocalizations.of(context).fileSavedToDownloads(filename)
+              : AppLocalizations.of(context).fileSavedToDocuments(filename);
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(locationMessage),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, locationMessage);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)?.errorDownloading(filename, e.toString()) ?? 'Error downloading $filename: $e'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorDownloading(filename, e.toString()));
       }
     }
   }

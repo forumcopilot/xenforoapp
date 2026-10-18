@@ -4,6 +4,7 @@ import 'package:forumcopilot_flutter/views/site_home_page.dart';
 import 'package:forumcopilot_flutter/services/site_initialization_service.dart';
 import 'package:forumcopilot_flutter/views/widgets/progress_dialog.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class SingleForumBootstrapPage extends StatefulWidget {
   const SingleForumBootstrapPage({super.key});
@@ -37,7 +38,7 @@ class _SingleForumBootstrapPageState extends State<SingleForumBootstrapPage> {
     final domain = Uri.tryParse(site.url)?.host ?? site.url;
     final progress = ProgressDialog.showWithUpdater(
       context,
-      'Connecting to $domain...',
+      AppLocalizations.of(context).connectingTo(domain),
     );
 
     try {
@@ -131,7 +132,7 @@ class _SingleForumBootstrapPageState extends State<SingleForumBootstrapPage> {
                     const CircularProgressIndicator(),
                     const SizedBox(height: 16),
                     Text(
-                      'Initializing forum…',
+                      AppLocalizations.of(context).initializingForum,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -150,7 +151,7 @@ class _SingleForumBootstrapPageState extends State<SingleForumBootstrapPage> {
                     FilledButton.icon(
                       onPressed: _initializeForum,
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Retry Connection'),
+                      label: Text(AppLocalizations.of(context).retryConnection),
                     ),
                   ],
                 ],

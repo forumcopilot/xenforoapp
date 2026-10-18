@@ -11,7 +11,6 @@ import '../../../../utils/bbcode_processor.dart';
 import '../../../widgets/custom_bb_stylesheet.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
 import '../../../../utils/time_utils.dart';
-import '../../../../utils/url_utils.dart';
 import '../../../../utils/accessibility_helpers.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../theme/design_tokens.dart';
@@ -20,11 +19,9 @@ import '../../../../utils/avatar_cache_utils.dart';
 import '../../../listitems/post_list_item_attachment.dart';
 import '../../../widgets/full_screen_image_viewer.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
-import 'package:get/get.dart';
-import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
-import 'package:forumcopilot_flutter/views/post_page.dart';
-import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
+import '../../../../utils/snackbar_helper.dart';
+import '../../../../utils/app_navigation.dart';
+import '../../../../utils/forum_links.dart';
 
 /// Icon for a conversation message's react button: the viewer's chosen
 /// reaction glyph (emoji or custom image) when they've reacted, else the heart.
@@ -111,88 +108,22 @@ class ConversationHeaderItem extends StatelessWidget {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = siteContext.ConfigData.forumType;
-        await UrlUtils.handleUrlTapWithForumDetection(
-          siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!context.mounted) return;
-              if (!siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController.attemptAutomaticLogin(siteContext);
-                if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: siteContext));
-                }
-                if (!siteContext.isLoggedIn) {
-                  AppLogger.debug('ConversationHeaderItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              }
-            });
-          },
-        );
+        await ForumLinks.open(context, cleanUrl, siteContext);
       },
       onMentionTap: (username) {
         AppLogger.debug('ConversationHeaderItem: BBCode Mention tapped: $username');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('ConversationHeaderItem: BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // An inline [IMG] picture (tapping it used to do nothing).
       onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
@@ -207,7 +138,7 @@ class ConversationHeaderItem extends StatelessWidget {
     );
 
     return Material(
-      color: isHighlighted ? colorScheme.primaryContainer.withOpacity(0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withOpacity(0.1) : colorScheme.surface),
+      color: isHighlighted ? colorScheme.primaryContainer.withValues(alpha: 0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface),
       child: InkWell(
         onTap: () {},
         child: Column(
@@ -223,17 +154,12 @@ class ConversationHeaderItem extends StatelessWidget {
                   // grey for everyone else's, whoever was online.
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
+                      AppNavigation.push(context, UserProfilePage(
                             siteContext: siteContext,
                             userId: message.userId,
                             userName: message.username,
                             profilePictureUrl: message.iconUrl,
-                          ),
-                        ),
-                      );
+                          ));
                     },
                     child: UserAvatar(
                       username: message.username,
@@ -256,17 +182,12 @@ class ConversationHeaderItem extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProfilePage(
+                            AppNavigation.push(context, UserProfilePage(
                                   siteContext: siteContext,
                                   userId: message.userId,
                                   userName: message.username,
                                   profilePictureUrl: message.iconUrl,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text(
                             message.username,
@@ -370,7 +291,7 @@ class ConversationHeaderItem extends StatelessWidget {
                   actions: _buildAttachmentActions(context),
                   context: context,
                   isInline: false,
-                  title: 'Attachments',
+                  title: AppLocalizations.of(context).attachments,
                 ),
               ),
             ],
@@ -402,7 +323,7 @@ class ConversationHeaderItem extends StatelessWidget {
                 color: colorScheme.primary,
               ),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
+              Text(AppLocalizations.of(context).edit),
             ],
           ),
         ),
@@ -433,7 +354,7 @@ class ConversationHeaderItem extends StatelessWidget {
     final bool canLike = message.canLike;
     final bool isLiked = message.isLiked;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
     final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 
@@ -542,19 +463,7 @@ class _ConversationAttachmentActions {
     }
 
     if (allImageUrls.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'No images found to display.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).noImagesToDisplay);
       return;
     }
 
@@ -572,19 +481,7 @@ class _ConversationAttachmentActions {
   }
 
   void onLoginRequired(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Please login to view this attachment',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(8),
-      ),
-    );
+    SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToViewAttachment);
   }
 }
 
@@ -643,87 +540,21 @@ class ConversationItem extends StatelessWidget {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = siteContext.ConfigData.forumType;
-        await UrlUtils.handleUrlTapWithForumDetection(
-          siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!context.mounted) return;
-              if (!siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController.attemptAutomaticLogin(siteContext);
-                if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await Get.to(() => LoginPage(siteContext: siteContext));
-                }
-                if (!siteContext.isLoggedIn) {
-                  AppLogger.debug('ConversationItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId = topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              }
-            });
-          },
-        );
+        await ForumLinks.open(context, cleanUrl, siteContext);
       },
       onMentionTap: (username) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('ConversationItem: BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       // An inline [IMG] picture (tapping it used to do nothing).
       onImageTap: (url, _, heroTag) => _buildAttachmentActions(context).onShowImage(url, context, heroTag),
@@ -739,7 +570,7 @@ class ConversationItem extends StatelessWidget {
     );
 
     return Material(
-      color: isHighlighted ? colorScheme.primaryContainer.withOpacity(0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withOpacity(0.1) : colorScheme.surface),
+      color: isHighlighted ? colorScheme.primaryContainer.withValues(alpha: 0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface),
       child: InkWell(
         onTap: () {},
         child: Column(
@@ -755,17 +586,12 @@ class ConversationItem extends StatelessWidget {
                   // grey for everyone else's, whoever was online.
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserProfilePage(
+                      AppNavigation.push(context, UserProfilePage(
                             siteContext: siteContext,
                             userId: message.userId,
                             userName: message.username,
                             profilePictureUrl: message.iconUrl,
-                          ),
-                        ),
-                      );
+                          ));
                     },
                     child: UserAvatar(
                       username: message.username,
@@ -788,17 +614,12 @@ class ConversationItem extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserProfilePage(
+                            AppNavigation.push(context, UserProfilePage(
                                   siteContext: siteContext,
                                   userId: message.userId,
                                   userName: message.username,
                                   profilePictureUrl: message.iconUrl,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text(
                             message.username,
@@ -902,7 +723,7 @@ class ConversationItem extends StatelessWidget {
                   actions: _buildAttachmentActions(context),
                   context: context,
                   isInline: false,
-                  title: 'Attachments',
+                  title: AppLocalizations.of(context).attachments,
                 ),
               ),
             ],
@@ -943,7 +764,7 @@ class ConversationItem extends StatelessWidget {
                 color: colorScheme.primary,
               ),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
+              Text(AppLocalizations.of(context).edit),
             ],
           ),
         ),
@@ -974,7 +795,7 @@ class ConversationItem extends StatelessWidget {
     final bool canLike = message.canLike;
     final bool isLiked = message.isLiked;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
+    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
     final likeCount = message.likesInfo.length;
     final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
 

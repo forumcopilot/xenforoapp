@@ -15,11 +15,25 @@ import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'global_loader_controller.dart';
 import '../models/site_visit_history.dart';
+import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
+import '../l10n/generated/app_localizations.dart';
+import '../utils/app_navigation.dart';
+import '../theme/app_theme.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
   // Observable state to track initialization
   var isInitialized = false.obs;
+
+  /// When the current site last finished initializing (its config fetched).
+  /// SiteHomePage skips its own reachability getConfig right after one.
+  DateTime? lastInitializedAt;
+
+  /// Whether the current site was initialized within [window].
+  bool initializedWithin(Duration window) {
+    final at = lastInitializedAt;
+    return at != null && DateTime.now().difference(at) < window;
+  }
   var hasError = false.obs;
   var errorMessage = ''.obs;
   var currentSite = Rxn<Site>(); // Make currentSite reactive
@@ -231,9 +245,13 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     AppLogger.info('Fetching forum configuration...');
     var configProxy = SiteProxyService.getConfigProxy();
     FCConfigResult configData;
+    bool? sessionFromConfig;
     try {
       configData = await configProxy.getConfig(initialSiteUrl, forceRefresh: true);
       AppLogger.info('Forum configuration retrieved successfully');
+      // Whether the cookie session is signed in, from this getConfig (written
+      // on the context the proxy used), for the automatic sign-in below.
+      sessionFromConfig = SiteProxyFactory.context?.lastGetConfigFcIsLogin;
     } catch (e) {
       AppLogger.error('Failed to get forum configuration: $e');
       throw Exception('Failed to connect to forum: Unable to retrieve configuration. Please check if the forum plugin is installed and the server is running.');
@@ -254,7 +272,10 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       siteContext = new SiteContext(siteType: site.siteType, site: site);
       siteContext.configDataOutput = configData;
     }
+    // The app in this forum's colours while it is open.
+    AppTheme.showForumStyle(site.pluginUrl, configData.style);
     _attachReloginHandler(siteContext);
+    siteContext.lastGetConfigFcIsLogin = sessionFromConfig;
 
     // Verify that the plugin URL is properly set after initialization
     final pluginUrl = siteContext.site.pluginUrl;
@@ -275,7 +296,12 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     AppLogger.debug('Password before auto-login: ${siteContext.password != null ? "[PRESENT]" : "[NULL]"}');
 
     final loginController = Get.find<LoginController>();
-    final loginResult = await loginController.attemptAutomaticLogin(siteContext);
+    // The getConfig above already said whether the session is signed in:
+    // opening a forum fetched its config twice.
+    final loginResult = await loginController.attemptAutomaticLogin(
+      siteContext,
+      sessionCheckedByConfig: sessionFromConfig != null,
+    );
 
     if (loginResult.success) {
       AppLogger.info('Automatic login successful');
@@ -285,7 +311,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       if (loginResult.hadCredentials) {
         if (Get.context != null) {
           AppLogger.info('Showing login screen after auto-login failure');
-          await Get.to(() => LoginPage(siteContext: siteContext));
+          await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
         } else {
           AppLogger.warning('No context available to show login screen after auto-login failure');
         }
@@ -295,13 +321,15 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
 
     siteContext.updateLoginState();
     isInitialized.value = true;
+    lastInitializedAt = DateTime.now();
 
     AppLogger.debug('Recording visit for site: ${site.name}');
     AppLogger.debug('Site details - ID: ${site.id}, URL: ${site.url}');
 
-    // Record this visit in the history
-    await SiteVisitTracker.instance.recordVisit(site);
-    AppLogger.debug('Visit recorded successfully');
+    // Record this visit in the history, without holding up the forum.
+    unawaited(SiteVisitTracker.instance.recordVisit(site).catchError((Object e) {
+      AppLogger.debug('Recording the visit failed: $e');
+    }));
 
     // Note: Site is automatically tracked in visit history, no need for separate My Forums tracking
     AppLogger.debug('Site visit tracking completed');
@@ -333,7 +361,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
         if (loginResult.hadCredentials) {
           if (Get.context != null) {
             AppLogger.info('Showing login screen after auto-login failure (initialized site)');
-            await Get.to(() => LoginPage(siteContext: siteContext));
+            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
           } else {
             AppLogger.warning('No context available to show login screen after auto-login failure (initialized site)');
           }
@@ -365,8 +393,9 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
     if (context != null) {
       // Determine if this is a timeout error
       final isTimeoutError = error.toLowerCase().contains('timeout') || error.toLowerCase().contains('timed out');
-      final title = isTimeoutError ? 'Connection Timeout' : 'Connection Failed';
-      final message = isTimeoutError ? 'The connection to ${site.name} timed out. Please check your internet connection and try again.' : 'Failed to connect to ${site.name}';
+      final l10n = AppLocalizations.of(context);
+      final title = isTimeoutError ? l10n.connectionTimeoutTitle : l10n.connectionFailed;
+      final message = isTimeoutError ? l10n.connectionTimedOutTo(site.name) : l10n.failedToConnectToSiteName(site.name);
 
       // For non-timeout errors, only show detailed error in debug mode to avoid exposing technical details
       final showDetailedError = kDebugMode && !isTimeoutError;
@@ -444,7 +473,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
                 Navigator.of(dialogContext).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(dialogContext).okButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),

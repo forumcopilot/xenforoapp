@@ -5,11 +5,12 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_attachment_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_attachment_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCAttachmentProxy
 /// Handles attachment operations for XenForo forums
 class XenForoAttachmentProxy extends BaseXenForoProxy implements IFCAttachmentProxy {
-  XenForoAttachmentProxy(SiteContext context) : super(context);
+  XenForoAttachmentProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCAttachmentRemoveResult> removeAttachmentAsync(String attachmentId, String forumId, String groupId, String postId) async {

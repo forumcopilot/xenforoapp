@@ -20,9 +20,14 @@ import 'package:forumcopilot_flutter/core/errors/error_handling_mixins.dart';
 import 'package:forumcopilot_flutter/core/errors/app_exceptions.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_sdk/services/fc_http_overrides.dart';
+import '../utils/snackbar_helper.dart';
 import 'package:forumcopilot_flutter/utils/passkey_platform_stub.dart'
     if (dart.library.io) 'package:forumcopilot_flutter/utils/passkey_platform_io.dart'
     as _passkey_platform;
+import '../l10n/generated/app_localizations.dart';
+import '../utils/l10n_now.dart';
+import '../services/browser_login.dart';
+import 'package:forumcopilot_sdk/interfaces/i_fc_browser_login.dart';
 
 /// Stable reason codes for push/login diagnostics.
 abstract class PushLoginReasonCode {
@@ -65,16 +70,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     Future.microtask(() {
       final context = Get.context;
       if (context != null && context.mounted) {
-        Get.snackbar(
-          'Login result',
-          message,
-          backgroundColor: Get.theme.colorScheme.primaryContainer,
-          colorText: Get.theme.colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-          margin: const EdgeInsets.all(12),
-          borderRadius: 8,
-        );
+        if (Get.context case final ctx?) SnackbarHelper.showSuccess(ctx, message);
       }
     });
   }
@@ -113,7 +109,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -173,8 +169,8 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 tfaLoginResult.resultText?.trim().isNotEmpty == true
                     ? tfaLoginResult.resultText!
                     : (tfaLoginResult.result
-                        ? 'Login succeeded'
-                        : 'Login failed');
+                        ? l10nNow().loginSucceeded
+                        : l10nNow().loginFailed);
             if (!tfaLoginResult.result) {
               _showLoginFailureSnackbar(tfaResultMessage);
             }
@@ -216,7 +212,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               GlobalLoaderController.to.hide();
             }
             errorMessage =
-                'An error occurred during verification. Please try again.';
+                l10nNow().verificationErrorTryAgain;
             // Loop will continue to show dialog again with error message
           }
         }
@@ -282,7 +278,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           GlobalLoaderController.to.hide();
         }
 
-        String errorMessage = 'Login failed';
+        String errorMessage = l10nNow().loginFailed;
         if (loginResult.resultText != null &&
             loginResult.resultText!.trim().isNotEmpty) {
           errorMessage = loginResult.resultText!;
@@ -349,7 +345,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         }
         final message = challengeResult.resultText?.trim().isNotEmpty == true
             ? challengeResult.resultText!
-            : 'Passkey challenge could not be created';
+            : l10nNow().passkeyChallengeFailed;
         await _showLoginErrorDialog(message, Get.theme.colorScheme);
         return false;
       }
@@ -367,7 +363,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -424,7 +420,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         if (showLoader) {
           GlobalLoaderController.to.hide();
         }
-        String errorMessage = 'Login failed';
+        String errorMessage = l10nNow().loginFailed;
         if (loginResult.resultText != null &&
             loginResult.resultText!.trim().isNotEmpty) {
           errorMessage = loginResult.resultText!;
@@ -457,7 +453,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         GlobalLoaderController.to.hide();
       }
       await _showLoginErrorDialog(
-        'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+        l10nNow().passkeyNotSetUp,
         Get.theme.colorScheme,
       );
       return false;
@@ -466,7 +462,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         GlobalLoaderController.to.hide();
       }
       await _showLoginErrorDialog(
-        'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.',
+        l10nNow().noPasskeyForForum,
         Get.theme.colorScheme,
       );
       return false;
@@ -480,7 +476,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         if (msg.contains('webcredentials') ||
             msg.contains('verify') && msg.contains('association')) {
           await _showLoginErrorDialog(
-            'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+            l10nNow().passkeyNotSetUp,
             Get.theme.colorScheme,
           );
           return false;
@@ -492,7 +488,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       if (errStr.contains('rp id cannot be validated') ||
           errStr.contains('get_public_key_credential_dom_exception')) {
         await _showLoginErrorDialog(
-          'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.',
+          l10nNow().passkeyNotSetUp,
           Get.theme.colorScheme,
         );
         return false;
@@ -508,15 +504,69 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     }
   }
 
+  /// Signs in through the forum's website (BrowserLogin), any way the website
+  /// signs members in: Google, Facebook, passkeys, two-step. True when
+  /// signed in; false when the member closed the sheet or it failed (said in
+  /// a dialog).
+  Future<bool> handleBrowserLogin({required SiteContext siteContext}) async {
+    final userProxy = SiteProxyService.getUserProxy();
+    if (userProxy is! IFCBrowserLogin) return false;
+    try {
+      final code = await BrowserLogin.requestCode(siteContext);
+      if (code == null) return false;
+
+      GlobalLoaderController.to.show();
+      final loginResult = await (userProxy as IFCBrowserLogin)
+          .completeBrowserLoginAsync(code: code.code, verifier: code.verifier);
+      GlobalLoaderController.to.hide();
+
+      final user = loginResult.user;
+      if (!loginResult.result || user == null) {
+        final reason = loginResult.resultText?.trim();
+        await _showLoginErrorDialog(
+          reason != null && reason.isNotEmpty ? reason : l10nNow().browserLoginFailed,
+          Get.theme.colorScheme,
+        );
+        return false;
+      }
+
+      siteContext.loginDataOutput = loginResult;
+      // Kept signed in by the forum's remember cookie; there is no password.
+      siteContext.lastSuccessfulLoginMethod = SiteContext.loginMethodBrowser;
+      siteContext.username = user.username;
+      siteContext.password = null;
+      await siteContext.saveToDevice();
+      await _recordVisitForPasskeyLogin(siteContext, username: user.username);
+      siteContext.updateLoginState();
+
+      Future.microtask(() async {
+        final siteController = Get.find<SiteController>();
+        final site = siteController.currentSite.value;
+        if (site != null) await _registerForPushNotifications(site, loginResult);
+      });
+      return true;
+    } catch (e, stackTrace) {
+      if (GlobalLoaderController.to.isLoading) GlobalLoaderController.to.hide();
+      await handleError(e, stackTrace, context: 'LoginController.handleBrowserLogin', showToUser: false);
+      await _showLoginErrorDialog(l10nNow().browserLoginFailed, Get.theme.colorScheme);
+      return false;
+    }
+  }
+
   /// Attempts automatic login using saved credentials
   /// Returns AutoLoginResult with success status, error message (if failed), and whether credentials were attempted
   /// If credentials are invalid, removes them and demotes forum to guest access
   ///
   /// When [silentRelogin] is true (e.g. from proxy session-expired handler), only cookies and
   /// password are tried; passkey is never used so we don't show the system auth UI from background.
+  ///
+  /// When [sessionCheckedByConfig] is true, the forum's config was fetched for
+  /// [siteContext] a moment ago (opening the forum), and its fc_is_login
+  /// answers whether the cookie session is valid: no second getConfig.
   Future<AutoLoginResult> attemptAutomaticLogin(
     SiteContext siteContext, {
     bool silentRelogin = false,
+    bool sessionCheckedByConfig = false,
   }) async {
     try {
       // Step 1: Check if we have valid cookies and session first
@@ -540,13 +590,17 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             // return stale data from a previous SiteContext, leaving lastGetConfigFcIsLogin
             // null on the fresh context and causing the check below to silently fail.
             try {
-              final configProxy = SiteProxyService.getConfigProxy();
-              await configProxy.getConfig(pluginUrl, forceRefresh: true);
+              final bool isLoggedIn;
+              if (sessionCheckedByConfig && siteContext.lastGetConfigFcIsLogin != null) {
+                isLoggedIn = siteContext.lastGetConfigFcIsLogin!;
+              } else {
+                final configProxy = SiteProxyService.getConfigProxy();
+                await configProxy.getConfig(pluginUrl, forceRefresh: true);
 
-              // Prefer fc_is_login from this getConfig response. lastCallFcIsLogin reflects
-              // the last API call on SiteContext and can race when other proxies run in parallel.
-              final isLoggedIn =
-                  siteContext.lastGetConfigFcIsLogin ?? siteContext.lastCallFcIsLogin;
+                // Prefer fc_is_login from this getConfig response. lastCallFcIsLogin reflects
+                // the last API call on SiteContext and can race when other proxies run in parallel.
+                isLoggedIn = siteContext.lastGetConfigFcIsLogin ?? siteContext.lastCallFcIsLogin;
+              }
 
               if (isLoggedIn) {
                 AppLogger.info(
@@ -655,14 +709,15 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             );
           }
         } catch (e) {
+          // The keystore refused the read (the iOS Keychain around a lock
+          // change, say), which is not the same as no saved login: keep what
+          // this session knows rather than saving it as signed out. The next
+          // "session expired" reply runs a relogin that reads again.
           AppLogger.debug(
-              '🔐 [AUTO_LOGIN] Error loading credentials from SiteVisitTracker: $e');
-          siteContext.loginDataOutput = null;
-          await siteContext.saveToDevice();
-          siteContext.updateLoginState();
+              '🔐 [AUTO_LOGIN] Could not read the saved login, keeping the session as it is: $e');
           return AutoLoginResult(
             success: false,
-            hadCredentials: false,
+            hadCredentials: false, // nothing was tried; no login-failure UI
             reasonCode: PushLoginReasonCode.transientError,
           );
         }
@@ -680,7 +735,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       final loginResultMessage =
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
-              : (loginResult.result ? 'Login succeeded' : 'Login failed');
+              : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
       if (!loginResult.result) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
@@ -738,8 +793,8 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 tfaLoginResult.resultText?.trim().isNotEmpty == true
                     ? tfaLoginResult.resultText!
                     : (tfaLoginResult.result
-                        ? 'Login succeeded'
-                        : 'Login failed');
+                        ? l10nNow().loginSucceeded
+                        : l10nNow().loginFailed);
             if (!tfaLoginResult.result) {
               _showLoginFailureSnackbar(tfaResultMessage);
             }
@@ -775,7 +830,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             }
           } catch (e) {
             errorMessage =
-                'An error occurred during verification. Please try again.';
+                l10nNow().verificationErrorTryAgain;
             // Loop will continue to show dialog again with error message
           }
         }
@@ -946,7 +1001,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           challengeResult.rpId == null) {
         final message = challengeResult.resultText?.trim().isNotEmpty == true
             ? challengeResult.resultText!
-            : 'Passkey challenge could not be created';
+            : l10nNow().passkeyChallengeFailed;
         siteContext.loginDataOutput = null;
         await siteContext.saveToDevice();
         siteContext.updateLoginState();
@@ -1160,6 +1215,18 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   }
 
   /// Records visit with credentials to SiteVisitTracker for automatic login
+  /// After the password was changed in the app: the saved sign-in (used by
+  /// automatic sign-in and relogin) gets the new one, or the next automatic
+  /// sign-in would fail with the old password. Only when a password was
+  /// saved: a passkey-only sign-in stays that way.
+  Future<void> rememberNewPassword(SiteContext siteContext, String newPassword) async {
+    final username = siteContext.username ?? siteContext.loginDataOutput?.user?.username;
+    if (username == null || username.isEmpty) return;
+    if (siteContext.password == null || siteContext.password!.isEmpty) return;
+    await _recordVisitWithCredentials(username, newPassword, siteContext);
+    await siteContext.saveToDevice();
+  }
+
   Future<void> _recordVisitWithCredentials(
       String username, String password, SiteContext siteContext) async {
     try {
@@ -1442,7 +1509,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Login Info',
+                AppLocalizations.of(Get.context!).loginInfo,
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1472,7 +1539,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               ),
             ),
             child: Text(
-              'OK',
+              AppLocalizations.of(Get.context!).okButton,
               style: TextStyle(
                 color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,
@@ -1503,7 +1570,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Login Failed',
+                AppLocalizations.of(Get.context!).loginFailed,
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1533,7 +1600,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               ),
             ),
             child: Text(
-              'OK',
+              AppLocalizations.of(Get.context!).okButton,
               style: TextStyle(
                 color: colorScheme.onPrimary,
                 fontWeight: FontWeight.bold,

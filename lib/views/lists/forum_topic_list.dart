@@ -16,6 +16,8 @@ import '../listitems/forum_list_item.dart';
 import '../widgets/subforum_header_widget.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class ForumTopicList extends StatefulWidget {
   final SiteContext siteContext;
@@ -230,25 +232,12 @@ class _ForumTopicListState extends State<ForumTopicList> {
 
   Future<void> _handleNewTopic() async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to create a new topic',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToCreateTopic);
       return;
     }
 
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => NewTopicPage(
           siteContext: widget.siteContext,
           forumId: widget.forum.id,
@@ -265,20 +254,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, subscribe ? AppLocalizations.of(context).pleaseLoginToSubscribeForums : AppLocalizations.of(context).pleaseLoginToUnsubscribeForums);
       return;
     }
 
@@ -319,7 +295,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error loading content: $_error',
+              AppLocalizations.of(context).errorLoadingContent('$_error'),
               textAlign: TextAlign.center,
               style: TextStyle(color: colorScheme.error),
             ),
@@ -338,7 +314,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                 ),
                 elevation: DesignTokens.elevationMedium,
               ),
-              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              child: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -374,7 +350,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               child: Container(
                 padding: DesignTokens.paddingM,
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant,
+                  color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                 ),
                 child: Row(
@@ -387,7 +363,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                     const SizedBox(width: DesignTokens.spacingM),
                     Expanded(
                       child: Text(
-                        'You do not have permission to view topics in this subforum.',
+                        AppLocalizations.of(context).noPermissionToViewSubforumTopics,
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -403,7 +379,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               padding: DesignTokens.paddingXXL,
               child: Center(
                 child: Text(
-                  'No discussions yet.',
+                  AppLocalizations.of(context).noDiscussionsYet,
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -425,7 +401,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant.withOpacity(0.3),
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                 ),
               ),
           ],
@@ -442,15 +418,15 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
-                    Get.to(() => PostPage(
+                    AppNavigation.pushGlobal(PostPage(
                           siteContext: widget.siteContext,
                           topicId: topic.id,
                           title: topic.title,
                           isAnnouncement: true,
-                        ));
+                        ), name: '/PostPage');
                   },
                 )),
           ],
@@ -466,11 +442,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+                    AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
                   },
                 )),
           ],
@@ -487,11 +463,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).
-                    Get.to(() => PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal));
+                    AppNavigation.pushGlobal(PostPage(siteContext: widget.siteContext, topicId: topic.id, title: topic.title, mode: widget.siteContext.isLoggedIn ? PostsListMode.first_unread : PostsListMode.normal), name: '/PostPage');
                   },
                 )),
           ],

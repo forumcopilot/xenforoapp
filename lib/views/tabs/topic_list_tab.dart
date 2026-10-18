@@ -5,11 +5,14 @@ import 'package:forumcopilot_flutter/views/lists/latest_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/unread_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/participated_topics_list.dart';
 import 'package:forumcopilot_flutter/views/lists/subscribed_topics_list.dart';
-import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
-import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import 'package:forumcopilot_flutter/views/widgets/forum_masthead.dart';
+import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
+import 'package:forumcopilot_flutter/views/search_page.dart';
+import 'package:forumcopilot_flutter/utils/app_navigation.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../widgets/filter_chip_bar.dart';
 
 /// Reactive widget that observes controller changes and rebuilds topic items
 class _ReactiveTopicItems extends StatefulWidget {
@@ -104,7 +107,7 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
   late final VoidCallback _authStateListener;
 
   List<String> _getFilterLabels(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return [
       l10n.latest,
       l10n.unread,
@@ -265,45 +268,17 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
   }
 
   Widget _buildFilterChips() {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingM),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _getFilterLabels(context).length,
-          separatorBuilder: (context, index) => SizedBox(width: DesignTokens.spacingS),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            return FilterChip(
-              selected: isSelected,
-              label: Text(_getFilterLabels(context)[index]),
-              onSelected: (selected) {
-                setState(() {
-                  _selectedFilterIndex = index;
-                });
-              },
-              selectedColor: colorScheme.primaryContainer,
-              checkmarkColor: colorScheme.onPrimaryContainer,
-              labelStyle: textTheme.labelLarge?.copyWith(
-                color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? DesignTokens.fontWeightSemiBold : DesignTokens.fontWeightNormal,
-              ),
-              backgroundColor: colorScheme.surfaceVariant,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingM,
-                vertical: DesignTokens.spacingS,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-            );
-          },
-        ),
-      ),
+    // The shared chip row (from the Discourse app): Material 3 filter chips
+    // that grow with the text size instead of clipping in a 40dp row.
+    return FilterChipBar(
+      options: [for (final label in _getFilterLabels(context)) FilterChipOption(label: label)],
+      selectedIndex: _selectedFilterIndex,
+      onSelected: (index) {
+        setState(() {
+          _selectedFilterIndex = index;
+        });
+      },
     );
   }
 
@@ -412,6 +387,27 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
     }
   }
 
+  /// The forum's header, which collapses into this tab's app bar.
+  Widget _buildMasthead() {
+    final siteContext = widget.siteContext;
+    final l10n = AppLocalizations.of(context);
+    return ForumMasthead(
+      siteContext: siteContext,
+      boardStats: widget.boardStats,
+      onSearch: ForumActions.canSearch(siteContext)
+          ? () => AppNavigation.push(context, SearchPage(siteContext: siteContext))
+          : null,
+      actions: [
+        if (siteContext.isLoggedIn)
+          IconButton(
+            icon: const Icon(Icons.done_all_rounded),
+            tooltip: l10n.markForumRead,
+            onPressed: () => ForumActions.confirmMarkAllRead(context),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Always build the hidden widgets first to ensure they're initialized
@@ -422,14 +418,11 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
     if (errorWidget != null) {
       return Stack(
         children: [
-          Column(
-            children: [
-              ForumHeaderWidget(
-                boardStats: widget.boardStats,
-                extendUnderAppBar: true,
-              ),
-              _buildFilterChips(),
-              Expanded(child: errorWidget),
+          CustomScrollView(
+            slivers: [
+              _buildMasthead(),
+              SliverToBoxAdapter(child: _buildFilterChips()),
+              SliverFillRemaining(child: errorWidget),
             ],
           ),
           hiddenWidgets,
@@ -443,16 +436,12 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
       children: [
         RefreshIndicator(
           onRefresh: _handleRefresh,
+          // Below the collapsed header, not behind it.
+          edgeOffset: MediaQuery.paddingOf(context).top + ForumMasthead.collapsedHeight,
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
-              // Forum Header
-              SliverToBoxAdapter(
-                child: ForumHeaderWidget(
-                  boardStats: widget.boardStats,
-                  extendUnderAppBar: true,
-                ),
-              ),
+              _buildMasthead(),
               // Filter Chips
               SliverToBoxAdapter(child: _buildFilterChips()),
               // Empty state or topic items, as a sliver

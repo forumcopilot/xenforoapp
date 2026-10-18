@@ -3,11 +3,12 @@ import 'package:forumcopilot_sdk/interfaces/i_fc_private_message_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_message_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCPrivateMessageProxy
 /// Handles private message operations for XenForo forums
 class XenForoPrivateMessageProxy extends BaseXenForoProxy implements IFCPrivateMessageProxy {
-  XenForoPrivateMessageProxy(SiteContext context) : super(context);
+  XenForoPrivateMessageProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCReportPMResult> reportPmAsync(String msgId, String? reason) async {

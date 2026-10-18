@@ -15,8 +15,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../theme/design_tokens.dart';
-import '../../theme/style_builders.dart';
 import '../../utils/error_dialog.dart';
+import '../../utils/snackbar_helper.dart';
 
 class PostsList extends StatefulWidget {
   const PostsList({
@@ -479,48 +479,8 @@ class _PostsState extends State<PostsList> {
       // Show user-friendly error message
       if (mounted) {
         final errorMessage = extractErrorMessage(e);
-        // Capture ScaffoldMessengerState and theme to avoid using context after unmount
-        final scaffoldMessenger = ScaffoldMessenger.of(context);
-        final theme = Theme.of(context);
-        final errorContainerColor = theme.colorScheme.errorContainer;
-        final onErrorContainerColor = theme.colorScheme.onErrorContainer;
 
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: onErrorContainerColor,
-                ),
-                const SizedBox(width: DesignTokens.spacingM),
-                Expanded(
-                  child: Text(
-                    errorMessage,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: onErrorContainerColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: errorContainerColor,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-            ),
-            margin: DesignTokens.paddingS,
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingL - DesignTokens.spacingXS,
-            ),
-            duration: const Duration(seconds: 4),
-            // A close icon, not a "Dismiss" action: since Flutter 3.38 a snackbar
-            // with an action stays until tapped and queues later messages behind it.
-            showCloseIcon: true,
-            closeIconColor: onErrorContainerColor,
-          ),
-        );
+        SnackbarHelper.showInfo(context, errorMessage);
       }
 
       // Still rethrow to allow upper layers to handle if needed
@@ -1112,7 +1072,7 @@ class _PostsState extends State<PostsList> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Jump to Post',
+            AppLocalizations.of(context).jumpToPost,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -1150,7 +1110,7 @@ class _PostsState extends State<PostsList> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -1228,7 +1188,7 @@ class _PostsState extends State<PostsList> {
                 await _loadInitialPosts(startNum, lastNum, PostsListMode.goto_page, gotoPost: selectedPostIndex);
               },
               child: Text(
-                'Jump',
+                AppLocalizations.of(context).jump,
                 style: TextStyle(color: colorScheme.primary),
               ),
             ),
@@ -1245,10 +1205,10 @@ class _PostsState extends State<PostsList> {
       bottom: 0,
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, -2),
             ),
@@ -1265,12 +1225,12 @@ class _PostsState extends State<PostsList> {
                 IconButton(
                   icon: const Icon(Icons.arrow_upward),
                   onPressed: _jumpToFirstPost,
-                  tooltip: AppLocalizations.of(context)?.goToTop ?? 'Go to top',
+                  tooltip: AppLocalizations.of(context).goToTop,
                 ),
                 IconButton(
                   icon: const Icon(Icons.arrow_downward),
                   onPressed: _jumpToLastPost,
-                  tooltip: AppLocalizations.of(context)?.goToBottom ?? 'Go to bottom',
+                  tooltip: AppLocalizations.of(context).goToBottom,
                 ),
                 SizedBox(width: DesignTokens.spacingS),
                 GestureDetector(
@@ -1292,10 +1252,7 @@ class _PostsState extends State<PostsList> {
                       _postActionsHandler.handleReply(context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost);
                     },
                     icon: const Icon(Icons.reply),
-                    label: Text(AppLocalizations.of(context)?.reply ?? 'Reply'),
-                    style: StyleBuilders.extendedFilledButtonStyle(
-                      colorScheme: Theme.of(context).colorScheme,
-                    ),
+                    label: Text(AppLocalizations.of(context).reply),
                   ),
               ],
             ),
@@ -1345,7 +1302,7 @@ class _PostsState extends State<PostsList> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
-                            'End of the discussion',
+                            AppLocalizations.of(context).endOfDiscussion,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontStyle: FontStyle.italic,

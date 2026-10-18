@@ -137,7 +137,7 @@ class ReactionSummary extends StatelessWidget {
 
     return Semantics(
       label: reactionCountLabel(context, total),
-      hint: onTap != null ? AppLocalizations.of(context)?.showWhoReacted : null,
+      hint: onTap != null ? AppLocalizations.of(context).showWhoReacted : null,
       button: onTap != null,
       excludeSemantics: true,
       child: InkWell(

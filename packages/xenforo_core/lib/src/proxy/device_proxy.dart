@@ -2,12 +2,13 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_device_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_device_result.dart';
 import '../base_xenforo_proxy.dart';
+import '../network/xenforo_client.dart';
 
 /// XenForo implementation of [IFCDeviceProxy].
 /// Hits ForumCopilot's standard `forumcopilot.php` endpoint with the
 /// `registerDevice` / `unregisterDevice` / `updateDeviceToken` methods.
 class XenForoDeviceProxy extends BaseXenForoProxy implements IFCDeviceProxy {
-  XenForoDeviceProxy(SiteContext context) : super(context);
+  XenForoDeviceProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
   Future<FCDeviceResult> registerDeviceAsync({

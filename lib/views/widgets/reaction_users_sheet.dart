@@ -120,7 +120,7 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
                           child: Text(
                             total > 0
                                 ? reactionCountLabel(context, total)
-                                : (l10n?.reactedBy ?? 'Reacted by'),
+                                : l10n.reactedBy,
                             style: textTheme.titleMedium,
                           ),
                         ),
@@ -158,8 +158,8 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
                           onReact();
                         },
                         child: Text(mine != null
-                            ? (l10n?.changeYourReaction ?? 'Change your reaction')
-                            : (l10n?.react ?? 'React')),
+                            ? l10n.changeYourReaction
+                            : l10n.react),
                       ),
                     ),
                   ),
@@ -173,7 +173,7 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
 
   Widget _buildFilters(BuildContext context, List<ReactionGroup> groups, int total) {
     final l10n = AppLocalizations.of(context);
-    final all = l10n?.reactionsAll ?? 'All';
+    final all = l10n.reactionsAll;
 
     Widget chip({
       required Object? filter,
@@ -216,7 +216,7 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
                   Text('${g.count}'),
                 ],
               ),
-              semantics: l10n?.reactionFilterSemantics(g.name, g.count) ?? '${g.name}, ${g.count}',
+              semantics: l10n.reactionFilterSemantics(g.name, g.count),
             ),
         ],
       ),
@@ -252,7 +252,7 @@ class _UserRow extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final FCReaction glyph = reactionGlyphFor(like.reactionId, like);
     return Semantics(
-      label: l10n?.viewProfileOfUser(like.username) ?? like.username,
+      label: l10n.viewProfileOfUser(like.username),
       button: true,
       child: Material(
         color: isYou ? colorScheme.primaryContainer.withValues(alpha: 0.45) : Colors.transparent,
@@ -289,7 +289,7 @@ class _UserRow extends StatelessWidget {
                             border: Border.all(color: colorScheme.primary),
                           ),
                           child: Text(
-                            l10n?.reactionYou ?? 'You',
+                            l10n.reactionYou,
                             style: textTheme.labelSmall?.copyWith(color: colorScheme.primary),
                           ),
                         ),

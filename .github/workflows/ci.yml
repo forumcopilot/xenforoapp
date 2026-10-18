@@ -24,6 +24,13 @@ jobs:
       - name: Generate SDK code and localizations
         run: ./buildlib.sh
 
+      - name: No deprecated colour APIs
+        # withOpacity and surfaceVariant were migrated to withValues(alpha:)
+        # and surfaceContainerHighest; keep them from coming back.
+        run: |
+          if git grep -n '\.withOpacity(' -- 'lib/*.dart' 'test/*.dart'; then exit 1; fi
+          if git grep -nw 'surfaceVariant' -- 'lib/*.dart' 'test/*.dart'; then exit 1; fi
+
       - name: Analyze
         # Warnings are fatal. Scoped to lib/ and test/ because packages/ is a
         # byte-identical sync of the canonical SDK copy and must not be edited

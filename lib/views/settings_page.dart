@@ -7,6 +7,13 @@ import 'package:forumcopilot_flutter/utils/error_dialog.dart';
 import '../theme/design_tokens.dart';
 import 'settings_category_page.dart' show ForumSettingsCategoryPage;
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
+import 'package:forumcopilot_sdk/interfaces/interfaces.dart';
+import 'package:get/get.dart';
+import '../controllers/login_controller.dart';
+import 'dialogs/delete_account_dialog.dart';
+import 'site_home_page.dart';
 
 class ForumSettingsPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -57,7 +64,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error loading settings: ${e.toString()}';
+          _error = AppLocalizations.of(context).errorLoadingSettings('$e');
           _isLoading = false;
         });
         showErrorDialogFromException(e);
@@ -73,7 +80,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.forumSettings ?? 'Forum Settings',
+          AppLocalizations.of(context).forumSettings,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -118,7 +125,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
               FilledButton.icon(
                 onPressed: _loadCategories,
                 icon: Icon(Icons.refresh),
-                label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+                label: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),
@@ -142,14 +149,14 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
                 ),
                 SizedBox(height: DesignTokens.spacingL),
                 Text(
-                  AppLocalizations.of(context)?.noSettingsAvailable ?? 'No settings available',
+                  AppLocalizations.of(context).noSettingsAvailable,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 SizedBox(height: DesignTokens.spacingS),
                 Text(
-                  AppLocalizations.of(context)?.settingsCategoriesWillAppearHere ?? 'Settings categories will appear here when available.',
+                  AppLocalizations.of(context).settingsCategoriesWillAppearHere,
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -188,7 +195,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -225,15 +232,10 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
           color: colorScheme.onSurfaceVariant,
         ),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ForumSettingsCategoryPage(
+          AppNavigation.push(context, ForumSettingsCategoryPage(
                 siteContext: widget.siteContext,
                 category: category,
-              ),
-            ),
-          );
+              ));
         },
       ),
     );
@@ -264,7 +266,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
         side: BorderSide(
-          color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
           width: DesignTokens.borderWidthThin,
         ),
       ),
@@ -274,7 +276,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Delete Account',
+              AppLocalizations.of(context).deleteAccount,
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightSemiBold,
@@ -282,7 +284,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
             ),
             SizedBox(height: DesignTokens.spacingS),
             Text(
-              'Remove your account from this forum.',
+              AppLocalizations.of(context).deleteAccountDescription,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -293,13 +295,8 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
               style: FilledButton.styleFrom(
                 backgroundColor: colorScheme.error,
                 foregroundColor: colorScheme.onError,
-                padding: DesignTokens.paddingExtendedButton,
-                elevation: DesignTokens.elevationMedium,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusExtendedButton),
-                ),
               ),
-              child: const Text('Delete Account'),
+              child: Text(AppLocalizations.of(context).deleteAccount),
             ),
           ],
         ),
@@ -307,21 +304,39 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+  /// Deletes the account in the app where the forum lets members (add-on
+  /// getConfig accountDeletion), then signs out; otherwise sends them to the
+  /// forum's staff, as before.
+  Future<void> _showDeleteAccountDialog(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) async {
+    final siteContext = widget.siteContext;
+    final proxy = SiteProxyFactory.getAccountProxy();
+    if (siteContext.isLoggedIn && siteContext.configDataOutput?.accountDeletion == true && proxy is IFCAccountDeletion) {
+      final deleted = await showDeleteAccountDialog(context, siteContext: siteContext, proxy: proxy as IFCAccountDeletion);
+      if (!deleted || !context.mounted) return;
+      final l10n = AppLocalizations.of(context);
+      // Saved password, push registration and the app's session go too.
+      if (!Get.isRegistered<LoginController>()) Get.put(LoginController());
+      await Get.find<LoginController>().handleLogout(siteContext);
+      if (!context.mounted) return;
+      SnackbarHelper.showSuccess(context, l10n.accountDeleted);
+      if (!SiteHomePage.showTab(SiteHomePage.homeTab)) Navigator.of(context).maybePop();
+      return;
+    }
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: colorScheme.surface,
           title: Text(
-            'Delete Account',
+            AppLocalizations.of(context).deleteAccount,
             style: textTheme.titleLarge?.copyWith(
               color: colorScheme.onSurface,
               fontWeight: DesignTokens.fontWeightMedium,
             ),
           ),
           content: Text(
-            'Your account is managed by the forum. Please contact the forum directly for account removal. Use the Contact Us button at the bottom of the forum home page.',
+            AppLocalizations.of(context).deleteAccountContactForumMessage,
             style: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurface,
             ),
@@ -330,7 +345,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(
-                AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                AppLocalizations.of(context).cancel,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -342,7 +357,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
                 await _openForumHomePage(context);
               },
               child: Text(
-                'Continue',
+                AppLocalizations.of(context).continueButton,
                 style: textTheme.labelLarge?.copyWith(
                   color: colorScheme.primary,
                 ),
@@ -357,19 +372,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
   Future<void> _openForumHomePage(BuildContext context) async {
     final url = widget.siteContext.site.url;
     if (url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Forum URL is unavailable.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context).forumUrlUnavailable);
       return;
     }
 
@@ -377,19 +380,7 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Could not open forum URL.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.errorContainer,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(8),
-        ),
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context).couldNotOpenForumUrl);
     }
   }
 }

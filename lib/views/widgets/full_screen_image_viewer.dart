@@ -6,6 +6,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:forumcopilot_flutter/views/widgets/cached_redirect_image.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
 
 class FullScreenImageViewer extends StatefulWidget {
   final List<String> imageUrls;
@@ -77,20 +78,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
       if (!hasPermission) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Permission denied to save image',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.all(8),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context).permissionDeniedToSaveImage);
         }
         return;
       }
@@ -115,43 +103,13 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              result.isSuccess 
-                ? (AppLocalizations.of(context)?.imageSavedToGallery ?? 'Image saved to gallery!')
-                : (AppLocalizations.of(context)?.failedToSaveImage(result.errorMessage ?? "Unknown error") ?? 'Failed to save image: ${result.errorMessage ?? "Unknown error"}'),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: result.isSuccess
-                        ? Theme.of(context).colorScheme.onInverseSurface
-                        : Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: result.isSuccess
-                ? Theme.of(context).colorScheme.inverseSurface
-                : Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(8),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackbarHelper.showError(context, result.isSuccess 
+                ? AppLocalizations.of(context).imageSavedToGallery
+                : AppLocalizations.of(context).failedToSaveImage(result.errorMessage ?? "Unknown error"));
       }
     } catch (e) {
       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)?.failedToSaveImage(e.toString()) ?? 'Failed to save image: ${e.toString()}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              margin: const EdgeInsets.all(8),
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSaveImage(e.toString()));
       }
     } finally {
       if (mounted) {
@@ -169,7 +127,6 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

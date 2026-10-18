@@ -8,8 +8,8 @@ import '../../utils/error_dialog.dart';
 import '../../utils/forum_navigation.dart';
 import '../listitems/forum_list_item.dart';
 
-import '../widgets/forum_header_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../utils/snackbar_helper.dart';
 
 class ForumListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -149,20 +149,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
       if (e is FCApiException && e.message.toLowerCase().contains('security locked')) {
         final errorMessage = extractErrorMessage(e);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                errorMessage,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onErrorContainer,
-                    ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              behavior: SnackBarBehavior.floating,
-              margin: DesignTokens.paddingS,
-              duration: const Duration(seconds: 5),
-            ),
-          );
+          SnackbarHelper.showError(context, errorMessage);
         }
       }
       // Don't show error for subscribed forums otherwise, just keep the previous value
@@ -223,20 +210,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
           _isLoading = false;
         });
         // Show error to user via SnackBar for important errors
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              errorMessage,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onErrorContainer,
-                  ),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            behavior: SnackBarBehavior.floating,
-            margin: DesignTokens.paddingS,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        SnackbarHelper.showError(context, errorMessage);
       }
     }
   }
@@ -244,20 +218,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to ${subscribe ? 'subscribe to' : 'unsubscribe from'} forums',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: DesignTokens.paddingS,
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, subscribe ? AppLocalizations.of(context).pleaseLoginToSubscribeForums : AppLocalizations.of(context).pleaseLoginToUnsubscribeForums);
       return;
     }
 
@@ -320,7 +281,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
             ),
             const SizedBox(height: DesignTokens.spacingL),
             Text(
-              'Unable to Load Forums',
+              AppLocalizations.of(context).unableToLoadForums,
               textAlign: TextAlign.center,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.error,
@@ -342,7 +303,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
             FilledButton.icon(
               onPressed: _loadForums,
               icon: const Icon(Icons.refresh_rounded),
-              label: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
+              label: Text(AppLocalizations.of(context).retry),
             ),
           ],
         ),
@@ -356,10 +317,6 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
         },
         child: ListView(
           children: [
-            // Forum Header - Always show even when no forums
-            ForumHeaderWidget(
-              boardStats: widget.boardStats,
-            ),
             // Empty state message
             Center(
               child: Padding(
@@ -375,7 +332,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                     ),
                     const SizedBox(height: DesignTokens.spacingXL),
                     Text(
-                      "No Forums Available",
+                      AppLocalizations.of(context).noForumsAvailable,
                       style: textTheme.headlineSmall?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: DesignTokens.fontWeightBold,
@@ -384,7 +341,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                     ),
                     const SizedBox(height: DesignTokens.spacingS),
                     Text(
-                      'There are no forums to display. This might be due to permissions or the forum structure.',
+                      AppLocalizations.of(context).noForumsToDisplay,
                       style: textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -405,11 +362,8 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
       },
       child: ListView(
         children: [
-          // Forum Header
-          ForumHeaderWidget(
-            boardStats: widget.boardStats,
-            extendUnderAppBar: true,
-          ),
+          // The forum's header is on Home (ForumMasthead); this tab is its
+          // forums.
           if (widget.siteContext.isLoggedIn && _subscribedForums != null && _subscribedForums!.isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.fromLTRB(
@@ -427,7 +381,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                   ),
                   const SizedBox(width: DesignTokens.spacingS),
                   Text(
-                    'Subscribed Forums',
+                    AppLocalizations.of(context).subscribedForums,
                     style: StyleBuilders.titleTextStyle(
                       colorScheme: colorScheme,
                       textTheme: textTheme,
@@ -518,7 +472,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
             Container(
               height: 8,
               decoration: BoxDecoration(
-                color: colorScheme.outlineVariant.withOpacity(0.3),
+                color: colorScheme.outlineVariant.withValues(alpha: 0.3),
               ),
             ),
           );

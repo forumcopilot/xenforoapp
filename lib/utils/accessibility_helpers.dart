@@ -24,17 +24,23 @@ class AccessibilityHelpers {
     bool isSelected = false,
     BuildContext? context,
     double? minSize,
+    VoidCallback? onLongPress,
   }) {
     final effectiveMinSize = minSize ?? 48.0; // Minimum touch target size
-    
+
     return Semantics(
       label: label,
       hint: hint,
       button: true,
       enabled: onTap != null,
       selected: isSelected,
-      child: GestureDetector(
+      // InkResponse hit-tests the whole 48dp target and shows a ripple; the
+      // GestureDetector over a colourless Container only answered on the
+      // icon's own pixels, with no feedback.
+      child: InkResponse(
         onTap: onTap,
+        onLongPress: onLongPress,
+        radius: effectiveMinSize / 2,
         child: Container(
           constraints: BoxConstraints(
             minWidth: effectiveMinSize,
@@ -95,40 +101,40 @@ class AccessibilityHelpers {
   /// Creates an accessibility label for like button.
   static String getLikeButtonLabel(BuildContext context, bool isLiked, int? count) {
     if (isLiked) {
-      return 'Unlike post';
+      return AppLocalizations.of(context).unlikePost;
     } else {
-      return 'Like post';
+      return AppLocalizations.of(context).likePost;
     }
   }
 
   /// Creates an accessibility label for quote button.
   static String getQuoteButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return localizations?.quote ?? 'Quote';
+    return localizations.quote;
   }
 
   /// Creates an accessibility label for reply button.
   static String getReplyButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return localizations?.reply ?? 'Reply';
+    return localizations.reply;
   }
 
   /// Creates an accessibility label for edit button.
   static String getEditButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return localizations?.edit ?? 'Edit';
+    return localizations.edit;
   }
 
   /// Creates an accessibility label for delete button.
   static String getDeleteButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return localizations?.delete ?? 'Delete';
+    return localizations.delete;
   }
 
   /// Creates an accessibility label for share button.
   static String getShareButtonLabel(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return localizations?.share ?? 'Share';
+    return localizations.share;
   }
 
   /// Creates an accessibility label for image with context.
@@ -140,7 +146,7 @@ class AccessibilityHelpers {
       return description;
     }
     final localizations = AppLocalizations.of(context);
-    return localizations?.image ?? 'Image';
+    return localizations.image;
   }
 
   /// Creates an accessibility hint for showing likes.

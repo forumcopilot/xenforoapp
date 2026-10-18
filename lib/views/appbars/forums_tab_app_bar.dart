@@ -4,7 +4,10 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../search_page.dart';
 import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
+/// The Forums tab's bar. Search is offered to guests where the forum lets
+/// them search; New Topic is the floating button.
 class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
   final SiteContext siteContext;
@@ -18,15 +21,16 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context);
 
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context)?.forums ?? 'Forums',
+        l10n.forums,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,
@@ -35,70 +39,19 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: false,
       actions: [
-        if (isLoggedIn) _buildSearchButton(context, colorScheme),
-        if (isLoggedIn) _buildMarkReadButton(context, colorScheme),
+        if (ForumActions.canSearch(siteContext))
+          IconButton(
+            icon: const Icon(Icons.manage_search_rounded),
+            tooltip: l10n.search,
+            onPressed: () => AppNavigation.push(context, SearchPage(siteContext: siteContext)),
+          ),
+        if (isLoggedIn)
+          IconButton(
+            icon: const Icon(Icons.done_all_rounded),
+            tooltip: l10n.markForumRead,
+            onPressed: () => ForumActions.confirmMarkAllRead(context),
+          ),
       ],
-    );
-  }
-
-  Widget _buildSearchButton(BuildContext context, ColorScheme colorScheme) {
-    return IconButton(
-      icon: const Icon(Icons.manage_search_rounded),
-      tooltip: AppLocalizations.of(context)?.search ?? 'Search',
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => SearchPage(siteContext: siteContext)),
-      ),
-    );
-  }
-
-  Widget _buildMarkReadButton(BuildContext context, ColorScheme colorScheme) {
-    return IconButton(
-      icon: const Icon(Icons.done_all_rounded),
-      tooltip: AppLocalizations.of(context)?.markForumRead ?? 'Mark Forum Read',
-      onPressed: () => _showMarkReadConfirmation(context),
-    );
-  }
-
-  void _showMarkReadConfirmation(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          AppLocalizations.of(context)?.markAllForumsAsRead ?? 'Mark All Forums as Read?',
-          style: textTheme.titleLarge?.copyWith(
-            color: colorScheme.onSurface,
-          ),
-        ),
-        content: Text(
-          AppLocalizations.of(context)?.markAllForumsAsReadMessage ?? 'This will mark all forums and topics as read. This action cannot be undone.',
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              AppLocalizations.of(context)?.cancel ?? 'Cancel',
-              style: TextStyle(color: colorScheme.onSurfaceVariant),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ForumActions().markAllAsRead(context, '0');
-            },
-            child: Text(
-              AppLocalizations.of(context)?.markAsRead ?? 'Mark as Read',
-              style: TextStyle(color: colorScheme.primary),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

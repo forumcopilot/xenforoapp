@@ -11,6 +11,9 @@ import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_flutter/utils/avatar_color_utils.dart';
 import 'package:forumcopilot_flutter/theme/style_builders.dart';
 import 'dart:math' as math;
+import '../../utils/snackbar_helper.dart';
+import '../widgets/sheet_title.dart';
+import '../../utils/app_navigation.dart';
 
 class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget {
   final SiteContext siteContext;
@@ -150,7 +153,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         builder: (context) => Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -169,7 +172,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: colorScheme.outlineVariant.withOpacity(DesignTokens.opacityMediumLow),
+                color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityMediumLow),
                 width: DesignTokens.borderWidthThin,
               ),
             ),
@@ -188,7 +191,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                         children: [
                           // Base background color
                           Container(
-                            color: colorScheme.surfaceVariant,
+                            color: colorScheme.surfaceContainerHighest,
                           ),
                           // Pattern image with theme color tint
                           ColorFiltered(
@@ -196,7 +199,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                               (isDarkMode 
                                 ? _getDarkModePatternColor(_getBackgroundThemeColor(context))
                                 : _getBackgroundThemeColor(context)
-                              ).withOpacity(
+                              ).withValues(alpha: 
                                 isDarkMode ? DesignTokens.opacityHigh : DesignTokens.opacityMediumLow,
                               ),
                               isDarkMode 
@@ -213,8 +216,8 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                           // Text readability overlay
                           Container(
                             color: isDarkMode 
-                              ? Colors.black.withOpacity(DesignTokens.opacityMediumLow)
-                              : Colors.white.withOpacity(DesignTokens.opacityMedium),
+                              ? Colors.black.withValues(alpha: DesignTokens.opacityMediumLow)
+                              : Colors.white.withValues(alpha: DesignTokens.opacityMedium),
                           ),
                         ],
                       ),
@@ -259,7 +262,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                       if (participantCount > 0) ...[
                         const SizedBox(height: DesignTokens.spacingS),
                         Text(
-                          '$participantCount ${participantCount == 1 ? 'participant' : 'participants'}',
+                          AppLocalizations.of(context).participantCount(participantCount),
                           style: StyleBuilders.titleTextStyle(
                             colorScheme: colorScheme,
                             textTheme: textTheme,
@@ -289,7 +292,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -297,7 +300,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
               Icons.people_rounded,
               color: colorScheme.onSurfaceVariant,
             ),
-            tooltip: AppLocalizations.of(context)?.participants(participantCount) ?? 'Participants ($participantCount)',
+            tooltip: AppLocalizations.of(context).participants(participantCount),
             onPressed: () {
               showParticipantsBottomSheet(
                 context,
@@ -315,7 +318,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
+            color: colorScheme.surface.withValues(alpha: 0.9),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -323,7 +326,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
               Icons.mark_email_unread_rounded,
               color: colorScheme.onSurfaceVariant,
             ),
-            tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+            tooltip: AppLocalizations.of(context).markAsUnread,
             onPressed: onMarkUnread,
           ),
         ),
@@ -331,7 +334,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
       Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: colorScheme.surface.withOpacity(0.9),
+          color: colorScheme.surface.withValues(alpha: 0.9),
           shape: BoxShape.circle,
         ),
         child: PopupMenuButton<String>(
@@ -339,7 +342,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
             Icons.more_vert,
             color: colorScheme.onSurfaceVariant,
           ),
-          tooltip: AppLocalizations.of(context)!.moreOptions,
+          tooltip: AppLocalizations.of(context).moreOptions,
           onSelected: (value) {
             switch (value) {
               case 'leave':
@@ -364,7 +367,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      AppLocalizations.of(context)!.leaveConversation,
+                      AppLocalizations.of(context).leaveConversation,
                       style: TextStyle(
                         color: colorScheme.error,
                       ),
@@ -385,7 +388,7 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      AppLocalizations.of(context)!.reportConversation,
+                      AppLocalizations.of(context).reportConversation,
                       style: TextStyle(
                         color: colorScheme.error,
                       ),
@@ -410,9 +413,6 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-      ),
       builder: (context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -421,30 +421,22 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           expand: false,
           builder: (context, scrollController) {
             return Container(
-              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL, horizontal: DesignTokens.spacingL),
+              // The theme's drag handle sits above; rows line up with the title.
+              padding: EdgeInsets.only(bottom: DesignTokens.spacingL),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.people_rounded, color: Theme.of(context).colorScheme.primary),
-                      SizedBox(width: DesignTokens.spacingS),
-                      Text(AppLocalizations.of(context)!.participants(participants.length), style: Theme.of(context).textTheme.titleMedium),
-                      const Spacer(),
-                      if (canInvite && conversationId != null)
-                        IconButton(
-                          icon: Icon(Icons.person_add_rounded, color: Theme.of(context).colorScheme.primary),
-                          tooltip: AppLocalizations.of(context)?.invite ?? 'Invite',
-                          onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
-                        ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
+                  SheetTitle(
+                    AppLocalizations.of(context).participants(participants.length),
+                    trailing: canInvite && conversationId != null
+                        ? IconButton(
+                            icon: const Icon(Icons.person_add_rounded),
+                            tooltip: AppLocalizations.of(context).invite,
+                            onPressed: () => _handleInvite(context, participants, siteContext, conversationId, onInviteSuccess),
+                          )
+                        : null,
                   ),
-                  SizedBox(height: DesignTokens.spacingL),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,
@@ -456,17 +448,12 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
                           child: GestureDetector(
                             onTap: () {
                               Navigator.pop(context); // Close bottom sheet
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserProfilePage(
+                              AppNavigation.push(context, UserProfilePage(
                                     siteContext: siteContext,
                                     userId: participant.userId,
                                     userName: participant.username,
                                     profilePictureUrl: participant.iconUrl,
-                                  ),
-                                ),
-                              );
+                                  ));
                             },
                             child: Row(
                               children: [
@@ -550,34 +537,19 @@ class ConversationAppBar extends StatelessWidget implements PreferredSizeWidget 
           Navigator.pop(context);
           
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context)!.usernameHasBeenInvited(username)),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).usernameHasBeenInvited(username));
 
           // Refresh conversation data
           onInviteSuccess?.call();
         } else {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(inviteResult.resultText ?? 'Failed to invite user'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          SnackbarHelper.showError(context, inviteResult.resultText ?? 'Failed to invite user');
         }
       } catch (e) {
         if (!context.mounted) return;
         Navigator.pop(context); // Close loading dialog
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorInvitingUser(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context).errorInvitingUser(e.toString()));
       }
     }
   }

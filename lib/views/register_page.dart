@@ -16,6 +16,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
+import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
 
 class RegisterPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -307,7 +309,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.createAccount,
+          AppLocalizations.of(context).createAccount,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -411,7 +413,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           ),
           const SizedBox(height: DesignTokens.spacingXL),
           Text(
-            AppLocalizations.of(context)!.registrationNotAvailable,
+            AppLocalizations.of(context).registrationNotAvailable,
             style: StyleBuilders.titleTextStyle(
               colorScheme: colorScheme,
               textTheme: textTheme,
@@ -422,7 +424,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           ),
           const SizedBox(height: DesignTokens.spacingL),
           Text(
-            AppLocalizations.of(context)!.registrationNotAvailableMessage,
+            AppLocalizations.of(context).registrationNotAvailableMessage,
             style: StyleBuilders.bodyTextStyle(
               colorScheme: colorScheme,
               textTheme: textTheme,
@@ -450,7 +452,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           ),
           const SizedBox(height: DesignTokens.spacingXL),
           Text(
-            AppLocalizations.of(context)!.webRegistrationRequired,
+            AppLocalizations.of(context).webRegistrationRequired,
             style: StyleBuilders.titleTextStyle(
               colorScheme: colorScheme,
               textTheme: textTheme,
@@ -461,7 +463,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           ),
           const SizedBox(height: DesignTokens.spacingL),
           Text(
-            AppLocalizations.of(context)!.webRegistrationRequiredMessage,
+            AppLocalizations.of(context).webRegistrationRequiredMessage,
             style: StyleBuilders.bodyTextStyle(
               colorScheme: colorScheme,
               textTheme: textTheme,
@@ -472,7 +474,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           FilledButton.icon(
             onPressed: () => _openRegistrationUrl(regUrl),
             icon: const Icon(Icons.open_in_new),
-            label: Text(AppLocalizations.of(context)!.openRegistrationPage),
+            label: Text(AppLocalizations.of(context).openRegistrationPage),
             style: FilledButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingXL),
             ),
@@ -549,7 +551,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           const SizedBox(width: DesignTokens.spacingL),
           Expanded(
             child: Text(
-              AppLocalizations.of(context)!.loadingAdditionalFields,
+              AppLocalizations.of(context).loadingAdditionalFields,
               style: StyleBuilders.bodyTextStyle(
                 colorScheme: colorScheme,
                 textTheme: textTheme,
@@ -579,7 +581,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             elevation: DesignTokens.elevationNone,
           ),
           child: Text(
-            AppLocalizations.of(context)!.continueButton,
+            AppLocalizations.of(context).continueButton,
             style: textTheme.titleMedium?.copyWith(
               color: colorScheme.onPrimary,
               fontWeight: DesignTokens.fontWeightSemiBold,
@@ -599,7 +601,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             elevation: DesignTokens.elevationNone,
           ),
           child: Text(
-            AppLocalizations.of(context)!.createAccount,
+            AppLocalizations.of(context).createAccount,
             style: textTheme.titleMedium?.copyWith(
               color: colorScheme.onPrimary,
               fontWeight: DesignTokens.fontWeightSemiBold,
@@ -614,7 +616,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Text(
-            AppLocalizations.of(context)!.credentialsSentToDomain(domain),
+            AppLocalizations.of(context).credentialsSentToDomain(domain),
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
               fontSize: DesignTokens.fontSizeXS,
@@ -629,7 +631,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            AppLocalizations.of(context)!.alreadyHaveAccount,
+            AppLocalizations.of(context).alreadyHaveAccount,
             style: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -638,16 +640,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             onPressed: () {
               Get.off(() => LoginPage(siteContext: widget.siteContext));
             },
-            style: StyleBuilders.textButtonStyle(
-              colorScheme: colorScheme,
-              padding: EdgeInsets.symmetric(
-                horizontal: DesignTokens.spacingS,
-                vertical: DesignTokens.spacingXS,
-              ),
-              borderRadius: DesignTokens.radiusS,
-            ),
             child: Text(
-              AppLocalizations.of(context)!.logIn,
+              AppLocalizations.of(context).logIn,
               style: textTheme.bodyLarge?.copyWith(
                 color: colorScheme.primary,
                 fontWeight: DesignTokens.fontWeightSemiBold,
@@ -677,7 +671,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     }
 
     // Navigate to Additional Information page
-    await Get.to(() => AdditionalInformationPage(
+    await AppNavigation.pushGlobal(AdditionalInformationPage(
           registrationRequirements: _registrationRequirements!,
           customFields: _customFields,
           customFieldControllers: _customFieldControllers,
@@ -717,7 +711,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             _setAdditionalInfoError = setErrorCallback;
           },
           siteUrl: widget.siteContext.site.url,
-        ));
+        ), name: '/AdditionalInformationPage');
   }
 
   /// Determines if an error is related to basic registration fields
@@ -747,7 +741,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Wait for navigation to complete before showing dialog
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          _showErrorDialog(AppLocalizations.of(context)!.registrationError, errorMessage, colorScheme);
+          _showErrorDialog(AppLocalizations.of(context).registrationError, errorMessage, colorScheme);
         }
       });
     } else {
@@ -784,9 +778,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Date of Birth if required
       if (req.dateOfBirth != null && (req.dateOfBirth!.required || req.dateOfBirth!.requireDob == true)) {
         if (_selectedDateOfBirth == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseSelectDateOfBirth)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseSelectDateOfBirth);
           return;
         }
       }
@@ -794,9 +786,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Location if required
       if (req.location != null && (req.location!.required || req.location!.requireLocation == true)) {
         if (_locationController.text.trim().isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterLocation)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseEnterLocation);
           return;
         }
       }
@@ -804,9 +794,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Validate Email Choice if required
       if (req.emailChoice != null && (req.emailChoice!.required || req.emailChoice!.requireEmailChoice == true)) {
         if (_emailChoice == null || _emailChoice == false) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.pleaseIndicateEmailPreference)),
-          );
+          SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseIndicateEmailPreference);
           return;
         }
       }
@@ -819,16 +807,12 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           if (controller != null) {
             final value = controller.text.trim();
             if (value.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillAllRequiredFields)),
-              );
+              SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseFillAllRequiredFields);
               return;
             }
           } else {
             // Controller not found for required field
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(AppLocalizations.of(context)?.pleaseFillInAllRequiredFields ?? 'Please fill in all required fields')),
-            );
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseFillInAllRequiredFields);
             return;
           }
         }
@@ -836,15 +820,11 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
       // Validate policies if required
       if (req.termsOfService?.required == true && !_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.pleaseAcceptTermsOfService)),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptTermsOfService);
         return;
       }
       if (req.privacyPolicy?.required == true && !_acceptPrivacy) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.pleaseAcceptPrivacyPolicy)),
-        );
+        SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseAcceptPrivacyPolicy);
         return;
       }
     }
@@ -919,7 +899,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         // Check if we're on Additional Information page (callback is set)
         if (_setAdditionalInfoError != null) {
           debugPrint('[RegisterPage] Error occurred on Additional Information page, showing error there');
-          _setAdditionalInfoError!(result.resultText ?? AppLocalizations.of(context)!.registrationFailed);
+          _setAdditionalInfoError!(result.resultText ?? AppLocalizations.of(context).registrationFailed);
           return;
         }
 
@@ -932,8 +912,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         }
 
         _showErrorDialog(
-          AppLocalizations.of(context)!.registrationFailed,
-          result.resultText ?? AppLocalizations.of(context)!.registrationFailedTryAgain,
+          AppLocalizations.of(context).registrationFailed,
+          result.resultText ?? AppLocalizations.of(context).registrationFailedTryAgain,
           colorScheme,
           showOpenWebsiteButton: true,
         );
@@ -945,13 +925,13 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       // Check if we're on Additional Information page (callback is set)
       if (_setAdditionalInfoError != null) {
         debugPrint('[RegisterPage] Exception occurred on Additional Information page, showing error there');
-        _setAdditionalInfoError!('${AppLocalizations.of(context)!.registrationFailedTryAgain}\n\n${e.toString()}');
+        _setAdditionalInfoError!('${AppLocalizations.of(context).registrationFailedTryAgain}\n\n${e.toString()}');
         return;
       }
 
       _showErrorDialog(
-        AppLocalizations.of(context)!.registrationError,
-        '${AppLocalizations.of(context)!.registrationFailedTryAgain}\n\n${e.toString()}',
+        AppLocalizations.of(context).registrationError,
+        '${AppLocalizations.of(context).registrationFailedTryAgain}\n\n${e.toString()}',
         colorScheme,
         showOpenWebsiteButton: true,
       );
@@ -977,7 +957,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context)!.registrationInfo,
+                  AppLocalizations.of(context).registrationInfo,
                   style: TextStyle(
                     color: colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
@@ -999,7 +979,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -1057,7 +1037,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 Navigator.of(context).pop();
               },
               child: Text(
-                'OK',
+                AppLocalizations.of(context).okButton,
                 style: TextStyle(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -1071,7 +1051,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                   _openSiteWebsite(baseUrl);
                 },
                 icon: const Icon(Icons.open_in_new),
-                label: Text(AppLocalizations.of(context)!.openWebsite),
+                label: Text(AppLocalizations.of(context).openWebsite),
                 style: FilledButton.styleFrom(
                   backgroundColor: colorScheme.primary,
                   foregroundColor: colorScheme.onPrimary,
@@ -1093,15 +1073,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       );
     } catch (e) {
       debugPrint('[RegisterPage] Failed to open website: $e');
-      Get.snackbar(
-        AppLocalizations.of(context)!.errorTitle,
-        AppLocalizations.of(context)!.couldNotOpenForumWebsite(url),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        colorText: Theme.of(context).colorScheme.onErrorContainer,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      SnackbarHelper.showError(context, AppLocalizations.of(context).couldNotOpenForumWebsite(url));
     }
   }
 
@@ -1117,7 +1089,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
     // Handle different user states
     if (userState == 'email_confirm' || requiresEmailConfirmation) {
       // Email confirmation required - use server message if available, otherwise fallback
-      final message = serverMessage ?? AppLocalizations.of(context)!.registrationSuccessfulEmailConfirm;
+      final message = serverMessage ?? AppLocalizations.of(context).registrationSuccessfulEmailConfirm;
       await _showRegistrationInfoDialog(message, colorScheme);
       Get.offAll(() => LoginPage(siteContext: widget.siteContext));
       return;
@@ -1125,7 +1097,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
     if (userState == 'moderated' || requiresManualApproval) {
       // Manual approval required - use server message if available, otherwise fallback
-      final message = serverMessage ?? AppLocalizations.of(context)!.registrationSuccessfulPendingApproval;
+      final message = serverMessage ?? AppLocalizations.of(context).registrationSuccessfulPendingApproval;
       await _showRegistrationInfoDialog(message, colorScheme);
       Get.offAll(() => LoginPage(siteContext: widget.siteContext));
       return;
@@ -1148,21 +1120,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         debugPrint('[RegisterPage] Automatic login successful');
         Get.offAll(() => const SiteHomePage());
         // Use server message if available, otherwise use default success message
-        final successMessage = serverMessage ?? AppLocalizations.of(context)!.registrationSuccessfulAutoLogin;
-        Get.snackbar(
-          AppLocalizations.of(context)!.welcome,
-          successMessage,
-          backgroundColor: colorScheme.primaryContainer,
-          colorText: colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          duration: const Duration(seconds: 3),
-          icon: Icon(
-            Icons.check_circle_rounded,
-            color: colorScheme.onPrimaryContainer,
-          ),
-        );
+        final successMessage = serverMessage ?? AppLocalizations.of(context).registrationSuccessfulAutoLogin;
+        SnackbarHelper.showSuccess(context, successMessage);
       } else {
         debugPrint('[RegisterPage] Automatic login failed, redirecting to manual login');
         // Show server message in dialog if available, otherwise show snackbar
@@ -1175,15 +1134,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
           return const SiteHomePage();
         });
         if (serverMessage == null || serverMessage.isEmpty) {
-          Get.snackbar(
-            AppLocalizations.of(context)!.registrationSuccessful,
-            AppLocalizations.of(context)!.pleaseLoginWithNewAccount,
-            backgroundColor: colorScheme.primaryContainer,
-            colorText: colorScheme.onPrimaryContainer,
-            snackPosition: SnackPosition.BOTTOM,
-            margin: const EdgeInsets.all(16),
-            borderRadius: 12,
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).pleaseLoginWithNewAccount);
         }
       }
     } catch (e) {
@@ -1198,15 +1149,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
         return const SiteHomePage();
       });
       if (serverMessage == null || serverMessage.isEmpty) {
-        Get.snackbar(
-          'Registration Successful',
-          'Please log in with your new account.',
-          backgroundColor: colorScheme.primaryContainer,
-          colorText: colorScheme.onPrimaryContainer,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-        );
+        SnackbarHelper.showSuccess(context, AppLocalizations.of(context).pleaseLoginWithNewAccount);
       }
     }
   }

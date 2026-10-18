@@ -38,7 +38,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(0.3),
+      shadowColor: colorScheme.shadow.withValues(alpha: 0.3),
       surfaceTintColor: colorScheme.surfaceTint,
       iconTheme: IconThemeData(
         color: colorScheme.onSurface,
@@ -52,7 +52,6 @@ class TraditionalPMAppBar extends BaseForumAppBar {
         ),
       ),
       actions: buildActions(context),
-      centerTitle: true,
     );
   }
 
@@ -70,7 +69,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onMarkUnread,
-          tooltip: AppLocalizations.of(context)?.markAsUnread ?? 'Mark as unread',
+          tooltip: AppLocalizations.of(context).markAsUnread,
         ),
 
       // Reply buttons - only show if user can send PMs
@@ -81,7 +80,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onReply,
-          tooltip: AppLocalizations.of(context)?.reply ?? 'Reply',
+          tooltip: AppLocalizations.of(context).reply,
         ),
         IconButton(
           icon: Icon(
@@ -89,7 +88,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onReplyAll,
-          tooltip: AppLocalizations.of(context)?.replyAll ?? 'Reply All',
+          tooltip: AppLocalizations.of(context).replyAll,
         ),
         IconButton(
           icon: Icon(
@@ -97,7 +96,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
             color: colorScheme.onSurfaceVariant,
           ),
           onPressed: onForward,
-          tooltip: AppLocalizations.of(context)?.forward ?? 'Forward',
+          tooltip: AppLocalizations.of(context).forward,
         ),
       ],
 
@@ -107,7 +106,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
           Icons.more_vert,
           color: colorScheme.onSurfaceVariant,
         ),
-        tooltip: AppLocalizations.of(context)?.moreOptions ?? 'More options',
+        tooltip: AppLocalizations.of(context).moreOptions,
         onSelected: (value) {
           switch (value) {
             case 'delete':
@@ -130,7 +129,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
                 ),
                 const SizedBox(width: DesignTokens.spacingM),
                 Text(
-                  'Delete',
+                  AppLocalizations.of(context).delete,
                   style: TextStyle(
                     color: colorScheme.error,
                   ),
@@ -149,7 +148,7 @@ class TraditionalPMAppBar extends BaseForumAppBar {
                 ),
                 const SizedBox(width: DesignTokens.spacingM),
                 Text(
-                  'Report User',
+                  AppLocalizations.of(context).reportUser,
                   style: TextStyle(
                     color: colorScheme.error,
                   ),

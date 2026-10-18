@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
@@ -48,6 +49,8 @@ Future<void> _pump(WidgetTester tester, String bbcode,
         onAttachmentImageTap}) async {
   final att = _photo();
   await tester.pumpWidget(MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(
       body: Builder(
         builder: (context) => BBCodeText(

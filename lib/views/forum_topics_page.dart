@@ -6,6 +6,9 @@ import 'package:forumcopilot_flutter/views/appbars/forum_topics_app_bar.dart';
 import 'package:forumcopilot_flutter/views/lists/forum_topic_list.dart';
 import 'package:forumcopilot_flutter/views/new_topic_page.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
+import '../utils/snackbar_helper.dart';
+import '../utils/app_navigation.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class ForumTopicsPage extends StatefulWidget {
   final FCForum forum;
@@ -32,25 +35,12 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
 
   Future<void> _handleNewTopic() async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to create a new topic',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToCreateTopic);
       return;
     }
 
     final result = await Navigator.of(context).push(
-      MaterialPageRoute(
+      FormPageRoute(
         builder: (context) => NewTopicPage(
           siteContext: widget.siteContext,
           forumId: widget.forum.id,
@@ -66,20 +56,7 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
 
   Future<void> _handleSubscribe() async {
     if (!widget.siteContext.isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Please login to subscribe to forums',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-          margin: const EdgeInsets.all(8),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToSubscribeForums);
       return;
     }
 

@@ -3,6 +3,7 @@ import 'package:forumcopilot_flutter/views/widgets/custom_field_widget.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_custom_field_definition.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
+import '../l10n/generated/app_localizations.dart';
 
 class CustomFieldsPage extends StatefulWidget {
   final List<FCCustomFieldDefinition> customFields;
@@ -35,7 +36,7 @@ class _CustomFieldsPageState extends State<CustomFieldsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Additional Information',
+          AppLocalizations.of(context).additionalInformation,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
             fontWeight: DesignTokens.fontWeightMedium,
@@ -99,7 +100,7 @@ class _CustomFieldsPageState extends State<CustomFieldsPage> {
               _handleContinue();
             }
           },
-          validator: (value) => CustomFieldValidator.validateField(field, value),
+          validator: (value) => CustomFieldValidator.validateField(field, value, AppLocalizations.of(context)),
         ),
       );
 
@@ -125,7 +126,7 @@ class _CustomFieldsPageState extends State<CustomFieldsPage> {
           elevation: DesignTokens.elevationNone,
         ),
         child: Text(
-          'Create Account',
+          AppLocalizations.of(context).createAccount,
           style: StyleBuilders.titleTextStyle(
             colorScheme: colorScheme,
             textTheme: textTheme,

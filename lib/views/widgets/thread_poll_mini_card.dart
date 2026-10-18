@@ -26,16 +26,16 @@ class ThreadPollMiniCard extends StatelessWidget {
     final voterCount = poll.voterCount;
     final optionCount = poll.responses.length;
     final subtitle = voterCount != null && voterCount > 0
-        ? (l10n?.votesCount(voterCount) ?? '$voterCount votes')
-        : (l10n?.pollOptionsCount(optionCount) ?? '$optionCount options');
+        ? l10n.votesCount(voterCount)
+        : l10n.pollOptionsCount(optionCount);
 
-    final viewFullPoll = l10n?.viewFullPoll ?? 'View full poll';
+    final viewFullPoll = l10n.viewFullPoll;
 
     return Tooltip(
       message: viewFullPoll,
       child: Semantics(
         label: viewFullPoll,
-        hint: l10n?.goToTop ?? 'Go to top',
+        hint: l10n.goToTop,
         button: true,
         child: Material(
         color: Colors.transparent,

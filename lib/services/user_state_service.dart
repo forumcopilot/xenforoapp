@@ -136,7 +136,7 @@ class UserStateService extends GetxService {
 
   /// Get the message to display for a given user state
   String getMessageForState(String? userState, BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (userState) {
       case 'moderated':
         return l10n.accountPendingApproval;
@@ -251,7 +251,7 @@ class UserStateService extends GetxService {
 
   /// Get action text for the banner (if any)
   String? getActionTextForState(String? userState, BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (userState) {
       case 'email_bounce':
         return l10n.updateEmail;

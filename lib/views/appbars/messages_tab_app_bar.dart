@@ -3,6 +3,7 @@ import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../members_page.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class MessagesTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   final SiteContext siteContext;
@@ -21,11 +22,11 @@ class MessagesTabAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: colorScheme.surface,
       elevation: 3,
-      shadowColor: colorScheme.shadow.withOpacity(DesignTokens.opacityLow),
+      shadowColor: colorScheme.shadow.withValues(alpha: DesignTokens.opacityLow),
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context)?.messages ?? 'Messages',
+        AppLocalizations.of(context).messages,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,
@@ -42,11 +43,8 @@ class MessagesTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget _buildMembersButton(BuildContext context, ColorScheme colorScheme) {
     return IconButton(
       icon: const Icon(Icons.people_alt_rounded),
-      tooltip: AppLocalizations.of(context)?.members ?? 'Members',
-      onPressed: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MembersPage(siteContext: siteContext)),
-      ),
+      tooltip: AppLocalizations.of(context).members,
+      onPressed: () => AppNavigation.push(context, MembersPage(siteContext: siteContext)),
     );
   }
 

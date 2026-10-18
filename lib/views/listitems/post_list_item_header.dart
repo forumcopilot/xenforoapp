@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
-import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/utils/time_utils.dart';
 import '../user_profile_page.dart';
 // import '../widgets/cached_redirect_image.dart';
@@ -11,6 +10,8 @@ import '../login_page.dart';
 import '../../utils/avatar_cache_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../utils/app_navigation.dart';
 // import '../../utils/avatar_color_utils.dart';
 
 class PostListItemHeader extends StatelessWidget {
@@ -107,17 +108,12 @@ class PostListItemHeader extends StatelessWidget {
                         }
 
                         // Navigate to user profile if logged in
-                        Navigator.push(
-                          this.context,
-                          MaterialPageRoute(
-                            builder: (context) => UserProfilePage(
+                        AppNavigation.push(this.context, UserProfilePage(
                               siteContext: siteContext,
                               userName: post.authorName,
                               userId: post.authorId,
                               profilePictureUrl: post.authorIconUrl,
-                            ),
-                          ),
-                        );
+                            ));
                       },
                       child: Text(
                         post.authorName,
@@ -137,7 +133,7 @@ class PostListItemHeader extends StatelessWidget {
                           vertical: DesignTokens.spacingXS / 2,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.errorContainer.withOpacity(DesignTokens.opacityHigh),
+                          color: colorScheme.errorContainer.withValues(alpha: DesignTokens.opacityHigh),
                           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                         ),
                         child: Row(
@@ -150,7 +146,7 @@ class PostListItemHeader extends StatelessWidget {
                             ),
                             SizedBox(width: DesignTokens.spacingXS),
                             Text(
-                              'BANNED',
+                              AppLocalizations.of(context).banned,
                               style: StyleBuilders.badgeTextStyle(
                                 colorScheme: colorScheme,
                                 textTheme: textTheme,
@@ -169,7 +165,7 @@ class PostListItemHeader extends StatelessWidget {
                           vertical: DesignTokens.spacingXS / 2,
                         ),
                         decoration: BoxDecoration(
-                          color: colorScheme.outline.withOpacity(DesignTokens.opacityLow),
+                          color: colorScheme.outline.withValues(alpha: DesignTokens.opacityLow),
                           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
                         ),
                         child: Row(
@@ -182,7 +178,7 @@ class PostListItemHeader extends StatelessWidget {
                             ),
                             SizedBox(width: DesignTokens.spacingXS),
                             Text(
-                              'DELETED',
+                              AppLocalizations.of(context).deletedBadge,
                               style: StyleBuilders.badgeTextStyle(
                                 colorScheme: colorScheme,
                                 textTheme: textTheme,
@@ -209,7 +205,7 @@ class PostListItemHeader extends StatelessWidget {
                       SizedBox(width: DesignTokens.spacingS),
                     ],
                     Text(
-                      post.timestamp != null ? formatSmartDateTime(post.timestamp!, context) : 'Unknown date',
+                      post.timestamp != null ? formatSmartDateTime(post.timestamp!, context) : AppLocalizations.of(context).unknownDate,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         letterSpacing: DesignTokens.letterSpacingWide,
@@ -243,13 +239,13 @@ class PostListItemHeader extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Login Required',
+          AppLocalizations.of(context).loginRequired,
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
         content: Text(
-          'Please login to view user profiles.',
+          AppLocalizations.of(context).pleaseLoginToViewProfiles,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface,
           ),
@@ -258,17 +254,17 @@ class PostListItemHeader extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              AppLocalizations.of(context).cancel,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Get.to(() => LoginPage(siteContext: siteContext));
+              AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
             },
             child: Text(
-              'Login',
+              AppLocalizations.of(context).loginTitle,
               style: TextStyle(color: colorScheme.primary),
             ),
           ),

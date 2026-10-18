@@ -15,6 +15,7 @@ import 'package:forumcopilot_sdk/models/results/fc_subscription_result.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/app_navigation.dart';
 
 class SubscribedTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -235,20 +236,20 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await Get.to(() => LoginPage(siteContext: widget.siteContext));
+                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
               }
             }
             final int pageSize = SettingsContext.instance.pagePerSize.value;
             final int totalPostNum = topic.replyCount + 1;
             final int gotoPage = (totalPostNum - 1) ~/ pageSize + 1;
-            Get.to(() => PostPage(
+            AppNavigation.pushGlobal(PostPage(
                   siteContext: widget.siteContext,
                   topicId: topic.id,
                   title: topic.title,
                   mode: PostsListMode.first_unread,
                   gotoPage: gotoPage,
                   forumId: topic.forumId,
-                ));
+                ), name: '/PostPage');
           },
         ),
       );
@@ -290,7 +291,7 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
             ),
             SizedBox(height: DesignTokens.spacingXL - DesignTokens.spacingXS), // 20px - matches NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noSubscribedTopics,
+              AppLocalizations.of(context).noSubscribedTopics,
               style: textTheme.titleLarge?.copyWith(
                 color: colorScheme.onSurface,
                 fontWeight: DesignTokens.fontWeightBold,
@@ -300,7 +301,7 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
             ),
             SizedBox(height: DesignTokens.spacingS), // Match NotSignedInView
             Text(
-              AppLocalizations.of(context)!.noSubscribedTopicsMessage,
+              AppLocalizations.of(context).noSubscribedTopicsMessage,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: DesignTokens.fontSizeS, // Match NotSignedInView message size
@@ -318,8 +319,8 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
     if (!widget.siteContext.isLoggedIn) {
       return NotSignedInView(
         siteContext: widget.siteContext,
-        title: AppLocalizations.of(context)!.signInToViewSubscribedTopics,
-        message: AppLocalizations.of(context)!.youNeedToBeSignedInToViewSubscribedTopics,
+        title: AppLocalizations.of(context).signInToViewSubscribedTopics,
+        message: AppLocalizations.of(context).youNeedToBeSignedInToViewSubscribedTopics,
         icon: Icons.bookmark_outline_rounded,
       );
     }
@@ -328,8 +329,8 @@ class SubscribedTopicsListState extends FCStatefulWidget<SubscribedTopicsList> w
       if (errorMessage.contains('not logged in') || errorMessage.contains('do not have permission') || errorMessage.contains('permission to do this action')) {
         return NotSignedInView(
           siteContext: widget.siteContext,
-          title: AppLocalizations.of(context)?.signInToViewSubscribedTopics ?? 'Sign in to view subscribed topics',
-          message: AppLocalizations.of(context)?.youNeedToBeSignedInToViewSubscribedTopics ?? 'You need to be signed in to view your subscribed topics.',
+          title: AppLocalizations.of(context).signInToViewSubscribedTopics,
+          message: AppLocalizations.of(context).youNeedToBeSignedInToViewSubscribedTopics,
           icon: Icons.bookmark_outline_rounded,
         );
       }

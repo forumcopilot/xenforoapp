@@ -79,11 +79,16 @@ class FCAlertResult extends FCBaseResult with FCAlertResultMappable {
   /// List of alerts
   List<FCAlert> items;
 
+  /// Whether another page follows this one. Null when the backend can't
+  /// tell: then guess from whether the page came back full.
+  bool? hasMore;
+
   FCAlertResult({
     required bool result,
     String? resultText,
     required this.total,
     required this.items,
+    this.hasMore,
   }) : super(result: result, resultText: resultText);
 }
 

@@ -6,6 +6,8 @@ import '../../utils/file_utils.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import '../../theme/design_tokens.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/snackbar_helper.dart';
+import '../../utils/app_navigation.dart';
 
 class PostListItemAttachment extends StatelessWidget {
   final List<FCAttachment> attachments;
@@ -46,11 +48,11 @@ class PostListItemAttachment extends StatelessWidget {
         padding: DesignTokens.paddingS,
         decoration: BoxDecoration(
           color:
-              colorScheme.surfaceVariant.withOpacity(DesignTokens.opacityLow),
+              colorScheme.surfaceContainerHighest.withValues(alpha: DesignTokens.opacityLow),
           borderRadius: BorderRadius.circular(DesignTokens.radiusS),
           border: Border.all(
             color:
-                colorScheme.outlineVariant.withOpacity(DesignTokens.opacityLow),
+                colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
             width: DesignTokens.borderWidthThin,
           ),
         ),
@@ -76,16 +78,10 @@ class PostListItemAttachment extends StatelessWidget {
                             ? () {
                                 if (isVideoFile(att.filename) ||
                                     isVideoFile(att.url)) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          FullScreenVideoViewer(
+                                  AppNavigation.push(context, FullScreenVideoViewer(
                                         videoUrl: att.url,
                                         title: att.filename,
-                                      ),
-                                    ),
-                                  );
+                                      ));
                                 } else {
                                   _downloadAttachment(
                                       context, att.url, att.filename);
@@ -117,8 +113,7 @@ class PostListItemAttachment extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(AppLocalizations.of(context)?.downloading(filename) ??
-                  'Downloading $filename...'),
+              child: Text(AppLocalizations.of(context).downloading(filename)),
             ),
           ],
         ),
@@ -135,51 +130,23 @@ class PostListItemAttachment extends StatelessWidget {
 
         // On iOS, filePath will be empty after sharing
         if (filePath.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)?.openingShareSheet(filename) ??
-                    'Opening share sheet for $filename',
-              ),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, AppLocalizations.of(context).openingShareSheet(filename));
         } else {
           // Determine if file was saved to Downloads or Documents (fallback)
           final isInDownloads = filePath.contains('/Downloads/') ||
               (filePath.contains('Downloads') &&
                   !filePath.contains('Containers'));
           final locationMessage = isInDownloads
-              ? (AppLocalizations.of(context)?.fileSavedToDownloads(filename) ??
-                  'File saved to Downloads: $filename')
-              : (AppLocalizations.of(context)?.fileSavedToDocuments(filename) ??
-                  'File saved to Documents: $filename');
+              ? AppLocalizations.of(context).fileSavedToDownloads(filename)
+              : AppLocalizations.of(context).fileSavedToDocuments(filename);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(locationMessage),
-              behavior: SnackBarBehavior.floating,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              duration: const Duration(seconds: 4),
-            ),
-          );
+          SnackbarHelper.showSuccess(context, locationMessage);
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)
-                    ?.errorDownloading(filename, e.toString()) ??
-                'Error downloading $filename: $e'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        SnackbarHelper.showError(context, AppLocalizations.of(context)
+                    .errorDownloading(filename, e.toString()));
       }
     }
   }

@@ -17,6 +17,7 @@ import '../../utils/bbcode_processor.dart';
 import '../../utils/url_utils.dart';
 import '../../utils/file_utils.dart';
 import '../../theme/design_tokens.dart';
+import '../../utils/accessibility_helpers.dart';
 import '../../theme/style_builders.dart';
 import 'post_list_item_header.dart';
 import 'post_list_item_attachment.dart';
@@ -26,15 +27,13 @@ import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../user_profile_page.dart';
-import 'package:get/get.dart';
-import '../../controllers/login_controller.dart';
-import '../login_page.dart';
-import '../post_page.dart';
-import '../lists/posts_list.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/gestures.dart' show GestureRecognizer;
 import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/utils/preview_selection.dart';
+import '../../utils/app_navigation.dart';
+import '../../utils/forum_links.dart';
+import '../../utils/snackbar_helper.dart';
 
 /// Everything a post's body needs that is derived from its text and its
 /// attachment lists. Immutable, and shared through [_postContentCache].
@@ -549,69 +548,7 @@ class _PostListItemState extends State<PostListItem> {
         // address, a social media handle) used to open a forum profile instead;
         // real mentions arrive as [USER] tags or as links reading "@name".
         final cleanUrl = url.trim().replaceAll('"', '');
-        final site = widget.siteContext.site;
-        final forumUrl = site.pluginUrl;
-        final forumType = widget.siteContext.ConfigData.forumType;
-        UrlUtils.handleUrlTapWithForumDetection(
-          widget.siteContext,
-          cleanUrl,
-          context,
-          forumUrl: forumUrl,
-          forumType: forumType,
-          onForumNavigation: (topicId, postId, forumId) {
-            Future.microtask(() async {
-              if (!mounted) return;
-              if (!widget.siteContext.isLoggedIn) {
-                if (!Get.isRegistered<LoginController>()) {
-                  Get.put(LoginController());
-                }
-                final loginController = Get.find<LoginController>();
-                final loginResult = await loginController
-                    .attemptAutomaticLogin(widget.siteContext);
-                if (!loginResult.success &&
-                    loginResult.hadCredentials &&
-                    Get.currentRoute != '/LoginPage') {
-                  await Get.to(
-                      () => LoginPage(siteContext: widget.siteContext));
-                }
-                if (!widget.siteContext.isLoggedIn) {
-                  AppLogger.debug(
-                      'PostListItem: proceeding to thread as guest after login screen');
-                }
-              }
-              if (postId != null) {
-                final String effectiveTopicId =
-                    topicId.isNotEmpty ? topicId : postId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: widget.siteContext,
-                      topicId: effectiveTopicId,
-                      title: '',
-                      mode: PostsListMode.thread_by_post,
-                      anchorPostId: postId,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              } else if (topicId.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostPage(
-                      siteContext: widget.siteContext,
-                      topicId: topicId,
-                      title: '',
-                      mode: PostsListMode.normal,
-                      forumId: forumId,
-                    ),
-                  ),
-                );
-              }
-            });
-          },
-        );
+        ForumLinks.open(context, cleanUrl, widget.siteContext);
       },
       // Viewable image attachments arrive here with the Hero tag they were
       // rendered with, so the viewer can fly from them like [img] images.
@@ -631,28 +568,18 @@ class _PostListItemState extends State<PostListItem> {
       },
       onMentionTap: (username) {
         AppLogger.debug('BBCode Mention tapped: $username');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onUserTap: (username, userId) {
         AppLogger.debug('BBCode User tapped: $username (userId: $userId)');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserProfilePage(
+        AppNavigation.push(context, UserProfilePage(
               siteContext: widget.siteContext,
               userId: userId,
               userName: username,
-            ),
-          ),
-        );
+            ));
       },
       onAttachmentTap: (String url, bool isImage, bool canView) {
         if (canView) {
@@ -664,12 +591,7 @@ class _PostListItemState extends State<PostListItem> {
               AppLogger.debug('No onShowImage action defined');
             }
           } else if (isVideoFile(url)) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FullScreenVideoViewer(videoUrl: url),
-              ),
-            );
+            AppNavigation.push(context, FullScreenVideoViewer(videoUrl: url));
           } else {
             UrlUtils.handleUrlTap(url, context);
           }
@@ -775,8 +697,8 @@ class _PostListItemState extends State<PostListItem> {
               margin: EdgeInsets.only(bottom: DesignTokens.spacingS),
               decoration: BoxDecoration(
                 color: widget.isTranslating && widget.translatedContent == null
-                    ? colorScheme.secondaryContainer.withOpacity(0.5)
-                    : colorScheme.primaryContainer.withOpacity(0.5),
+                    ? colorScheme.secondaryContainer.withValues(alpha: 0.5)
+                    : colorScheme.primaryContainer.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(DesignTokens.radiusXS),
               ),
               child: Row(
@@ -802,10 +724,8 @@ class _PostListItemState extends State<PostListItem> {
                   const SizedBox(width: DesignTokens.spacingXS),
                   Text(
                     widget.isTranslating && widget.translatedContent == null
-                        ? (AppLocalizations.of(context)?.translating ??
-                            'Translating...')
-                        : (AppLocalizations.of(context)?.translated ??
-                            'Translated'),
+                        ? AppLocalizations.of(context).translating
+                        : AppLocalizations.of(context).translated,
                     style: textTheme.labelSmall?.copyWith(
                       color: widget.isTranslating &&
                               widget.translatedContent == null
@@ -868,7 +788,7 @@ class _PostListItemState extends State<PostListItem> {
               actions: widget.actions,
               context: context,
               isInline: false,
-              title: AppLocalizations.of(context)?.attachments ?? 'Attachments',
+              title: AppLocalizations.of(context).attachments,
             ),
           ],
           if (data.filteredInlineAttachments.isNotEmpty) ...[
@@ -886,6 +806,9 @@ class _PostListItemState extends State<PostListItem> {
             currentReaction: _currentReaction,
             isLoggedIn: widget.siteContext.isLoggedIn,
             onLike: _handleLikeAction,
+            onLongPressLike: ReactionRegistry.instance.isAvailable && widget.siteContext.isLoggedIn
+                ? _handleReactionPicker
+                : null,
             onShowLikes: _showLikesBottomSheet,
             trailing: (widget.siteContext.isLoggedIn &&
                     (_postsController.threadDataOutput.value?.topic.canReply ??
@@ -916,7 +839,7 @@ class _PostListItemState extends State<PostListItem> {
     // Determine background color based on highlight state
     // Use a more visible highlight color
     final backgroundColor = widget.isHighlighted
-        ? colorScheme.primaryContainer.withOpacity(0.4)
+        ? colorScheme.primaryContainer.withValues(alpha: 0.4)
         : colorScheme.surface;
 
     final body = Material(
@@ -951,11 +874,11 @@ class _PostListItemState extends State<PostListItem> {
 
   Widget _buildReplyButtonWithMenu(
       BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor =
-        colorScheme.onSurfaceVariant.withOpacity(isDarkMode ? 0.4 : 0.5);
-
-    return GestureDetector(
+    // The shared 48dp icon button with a ripple, in full-strength
+    // onSurfaceVariant (at 40-50% it read as disabled).
+    return AccessibilityHelpers.accessibleIconButton(
+      label: AppLocalizations.of(context).reply,
+      context: context,
       onTap: () {
         showDialog(
           context: context,
@@ -965,7 +888,7 @@ class _PostListItemState extends State<PostListItem> {
                 borderRadius: BorderRadius.circular(DesignTokens.radiusL),
               ),
               title: Text(
-                AppLocalizations.of(context)?.replyOptions ?? 'Reply Options',
+                AppLocalizations.of(context).replyOptions,
                 style: textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                 ),
@@ -977,7 +900,7 @@ class _PostListItemState extends State<PostListItem> {
                     leading:
                         Icon(Icons.reply_rounded, color: colorScheme.primary),
                     title: Text(
-                      AppLocalizations.of(context)?.reply ?? 'Reply',
+                      AppLocalizations.of(context).reply,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -991,8 +914,7 @@ class _PostListItemState extends State<PostListItem> {
                     leading: Icon(Icons.format_quote_rounded,
                         color: colorScheme.primary),
                     title: Text(
-                      AppLocalizations.of(context)?.replyWithQuote ??
-                          'Reply with Quote',
+                      AppLocalizations.of(context).replyWithQuote,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                       ),
@@ -1008,9 +930,9 @@ class _PostListItemState extends State<PostListItem> {
           },
         );
       },
-      child: Icon(
+      icon: Icon(
         Icons.reply_rounded,
-        color: iconColor,
+        color: colorScheme.onSurfaceVariant,
         size: DesignTokens.iconSizeMedium,
       ),
     );
@@ -1028,6 +950,12 @@ class _PostListItemState extends State<PostListItem> {
       case 'report':
         _handleReport();
         break;
+      case 'copyLink':
+        _handleCopyLink();
+        break;
+      case 'share':
+        _handleShare();
+        break;
       default:
         break;
     }
@@ -1036,6 +964,26 @@ class _PostListItemState extends State<PostListItem> {
   // Builds the popup menu items for the post header
   List<PopupMenuEntry<String>> _buildPopupMenuItems(BuildContext context) {
     final items = <PopupMenuEntry<String>>[];
+    final l10n = AppLocalizations.of(context);
+    if (ForumLinks.postUrl(widget.siteContext.site, widget.post.id) != null) {
+      for (final (value, icon, label) in [
+        ('copyLink', Icons.link, l10n.copyLink),
+        ('share', Icons.share_outlined, l10n.share),
+      ]) {
+        items.add(
+          PopupMenuItem<String>(
+            value: value,
+            child: Row(
+              children: [
+                Icon(icon, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: DesignTokens.spacingM),
+                Text(label),
+              ],
+            ),
+          ),
+        );
+      }
+    }
     if (widget.siteContext.isLoggedIn && widget.post.canEdit) {
       items.add(
         PopupMenuItem<String>(
@@ -1046,7 +994,7 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.edit ?? 'Edit'),
+              Text(AppLocalizations.of(context).edit),
             ],
           ),
         ),
@@ -1062,7 +1010,7 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.error),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
+              Text(AppLocalizations.of(context).delete),
             ],
           ),
         ),
@@ -1078,13 +1026,32 @@ class _PostListItemState extends State<PostListItem> {
                   size: DesignTokens.iconSizeM,
                   color: Theme.of(context).colorScheme.secondary),
               const SizedBox(width: DesignTokens.spacingM),
-              Text(AppLocalizations.of(context)?.report ?? 'Report'),
+              Text(AppLocalizations.of(context).report),
             ],
           ),
         ),
       );
     }
     return items;
+  }
+
+  /// Copies a link to this post (it opens the thread at the post).
+  Future<void> _handleCopyLink() async {
+    final url = ForumLinks.postUrl(widget.siteContext.site, widget.post.id);
+    if (url == null) return;
+    await UrlUtils.copyUrlToClipboard(url);
+    if (mounted) SnackbarHelper.showSuccess(context, AppLocalizations.of(context).linkCopied);
+  }
+
+  /// Shares a link to this post through the system share sheet.
+  Future<void> _handleShare() async {
+    final url = ForumLinks.postUrl(widget.siteContext.site, widget.post.id);
+    if (url == null) return;
+    final box = context.findRenderObject() as RenderBox?;
+    await UrlUtils.shareUrl(
+      url,
+      sharePositionOrigin: box != null && box.hasSize ? box.localToGlobal(Offset.zero) & box.size : null,
+    );
   }
 
   void _handleQuote() async {
@@ -1140,9 +1107,36 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
+  /// A tap on the react button. On a forum with reactions it likes with the
+  /// main reaction, or takes your reaction back if you have one; the picker
+  /// is a long press ([_handleReactionPicker]). Every Like used to take two
+  /// taps there, as the tap opened the picker.
   void _handleLikeAction() async {
+    if (ReactionRegistry.instance.isAvailable && widget.siteContext.isLoggedIn) {
+      final reactionId = _visitorReactionId ?? ReactionRegistry.instance.defaultReaction?.id;
+      if (reactionId != null) {
+        await _postActionsHandler.handleReaction(
+          context: context,
+          siteContext: widget.siteContext,
+          post: widget.post,
+          reactionId: reactionId,
+          currentReactionId: _visitorReactionId,
+          setIsLiked: (val) => setState(() => _isLiked = val),
+          setLikeCount: (val) => setState(() => _likeCount = val),
+          setVisitorReaction: (val) => setState(() => _visitorReactionId = val),
+        );
+        return;
+      }
+    }
+    await _handleReactionPickerOrLike();
+  }
+
+  /// A long press on the react button: the reaction picker.
+  void _handleReactionPicker() => _handleReactionPickerOrLike();
+
+  Future<void> _handleReactionPickerOrLike() async {
     // Multi-reaction path: if the forum exposes a reaction set (newer plugin),
-    // tapping opens the chooser. Picking the current reaction toggles it off.
+    // this opens the chooser. Picking the current reaction toggles it off.
     if (ReactionRegistry.instance.isAvailable) {
       if (!widget.siteContext.isLoggedIn) {
         _postActionsHandler.handleLike(

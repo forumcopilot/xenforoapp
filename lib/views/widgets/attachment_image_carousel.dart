@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'cached_redirect_image.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// A carousel widget for displaying multiple image attachments
 class AttachmentImageCarousel extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -65,7 +66,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
               ),
               const SizedBox(width: 6),
               Text(
-                'Images (${widget.attachments.length})',
+                AppLocalizations.of(context).imagesCount(widget.attachments.length),
                 style: textTheme.titleSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -104,7 +105,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
                     height: 8,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _currentIndex == index ? colorScheme.primary : colorScheme.onSurfaceVariant.withOpacity(0.3),
+                      color: _currentIndex == index ? colorScheme.primary : colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -192,10 +193,10 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
       margin: const EdgeInsets.symmetric(horizontal: 4), // Reduced margin since spacing is handled by ListView
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: colorScheme.surfaceVariant.withOpacity(0.3),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -226,11 +227,11 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
                   errorWidget: (context, error, stackTrace) {
                     // If thumbnail failed to load, show placeholder
                     return Container(
-                      color: colorScheme.surfaceVariant.withOpacity(0.5),
+                      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                       child: Icon(
                         Icons.broken_image,
                         size: 48,
-                        color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                     );
                   },
@@ -250,7 +251,7 @@ class _AttachmentImageCarouselState extends State<AttachmentImageCarousel> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: colorScheme.error.withOpacity(0.9),
+                    color: colorScheme.error.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(

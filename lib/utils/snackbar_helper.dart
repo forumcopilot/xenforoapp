@@ -91,7 +91,7 @@ class SnackbarHelper {
   /// Surface a positive confirmation (e.g. "Saved", "Posted"). Uses
   /// `colorScheme.tertiaryContainer` so success reads visually
   /// distinct from both errors (errorContainer) and neutral info
-  /// (surfaceVariant) on Material 3 themes.
+  /// (surfaceContainerHighest) on Material 3 themes.
   static void showSuccess(
     BuildContext context,
     String message, {

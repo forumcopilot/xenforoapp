@@ -56,6 +56,15 @@ class FCConfigResult
     /** @var array<int, array<string, mixed>> Active reactions the forum has configured */
     public $availableReactions = [];
 
+    /** @var array<string, mixed>|null The default style's colours and logo, light and dark (ConfigController::getStyleInfo) */
+    public $style;
+
+    /** @var bool Members can delete their account from the app (deleteAccount) */
+    public $accountDeletion = false;
+
+    /** @var string[] App schemes the website may hand a browser sign-in to; empty when it is off */
+    public $browserLoginSchemes = [];
+
     public function __construct($data = [])
     {
         // Set all properties from data array

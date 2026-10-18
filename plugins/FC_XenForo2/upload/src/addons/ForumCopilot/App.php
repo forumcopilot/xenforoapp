@@ -191,6 +191,14 @@ class App extends \XF\App
             'forgotPassword' => 'AccountController@actionForgotPassword',
             'updatePassword' => 'AccountController@actionUpdatePassword',
             'updateEmail' => 'AccountController@actionUpdateEmail',
+            'deleteAccount' => 'AccountController@actionDeleteAccount',
+            'completeBrowserLogin' => 'AccountController@actionCompleteBrowserLogin',
+
+            // Drafts (XenForo's own, shared with the web editor)
+            'getDraft' => 'DraftController@actionGetDraft',
+            'saveDraft' => 'DraftController@actionSaveDraft',
+            'deleteDraft' => 'DraftController@actionDeleteDraft',
+            'getDrafts' => 'DraftController@actionGetDrafts',
             'updateProfile' => 'AccountController@actionUpdateProfile',
             'getPasskeyChallenge' => 'AccountController@actionGetPasskeyChallenge',
             

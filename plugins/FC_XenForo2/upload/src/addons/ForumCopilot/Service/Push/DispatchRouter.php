@@ -27,6 +27,13 @@ class DispatchRouter
      */
     public function dispatch(array $userIds, string $title, string $body, string $url, array $data = []): void
     {
+        // The notification channel (messages, replies, reactions, other), for
+        // the app to file the push under.
+        if (empty($data['channel']))
+        {
+            $data['channel'] = Channel::forData($data);
+        }
+
         $contentType = $data['content_type'] ?? 'unknown';
         $action = $data['action'] ?? 'unknown';
 

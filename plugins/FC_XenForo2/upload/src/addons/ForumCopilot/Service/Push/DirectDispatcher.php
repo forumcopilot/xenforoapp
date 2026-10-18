@@ -112,7 +112,7 @@ class DirectDispatcher
             'android' => [
                 'priority'     => 'high',
                 'notification' => [
-                    'channel_id'   => 'forum_copilot_channel',
+                    'channel_id'   => Channel::androidId($stringData['channel'] ?? Channel::forData($stringData)),
                     'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                 ],
             ],

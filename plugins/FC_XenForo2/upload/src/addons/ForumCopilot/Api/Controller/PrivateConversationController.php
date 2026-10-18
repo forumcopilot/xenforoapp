@@ -208,10 +208,13 @@ class PrivateConversationController extends AbstractController
             $finder->with('Master.Starter'); // Load starter user for avatar/username
             $finder->with('Master.LastMessageUser'); // Load last message user for avatar/username
             
-            // Calculate pagination
-            $perPage = $lastNum - $startNum + 1;
-            // For limitByPage, calculate correct page number (page 1 = startNum 1-20, page 2 = startNum 21-40, etc.)
-            $page = (int)ceil($startNum / $perPage);
+            // Calculate pagination. The app documents startNum as 0-based
+            // (0-19, 20-39), like the other list endpoints here; ceil() read it
+            // as 1-based, so startNum 20 gave page 1 again. floor() + 1 gives
+            // the right page for 0-based ranges and for 1-based ones (1-20,
+            // 21-40), which newer apps send to cope with older add-ons.
+            $perPage = max(1, $lastNum - $startNum + 1);
+            $page = (int)floor($startNum / $perPage) + 1;
             $finder->limitByPage($page, $perPage);
             
             // Fetch ConversationUser entities (not ConversationMaster directly)
@@ -464,6 +467,9 @@ class PrivateConversationController extends AbstractController
             // Get messages
             $messageRepo = $this->repository('XF:ConversationMessage');
             $finder = $messageRepo->findMessagesForConversationView($conversation);
+            // Then by ID: messages posted in the same second keep one order
+            // from page to page, the order getMessagePosition() numbers.
+            $finder->order('message_id');
             // Note: findMessagesForConversationView already includes 'full' which has User
             // Attachments relation is already configured with 'with' => 'Data' in the entity structure
             // So we don't need to explicitly add it here
@@ -694,11 +700,8 @@ class PrivateConversationController extends AbstractController
             // Get lastRead timestamp
             $lastRead = $userConv->Recipient ? $userConv->Recipient->last_read_date : 0;
 
-            // Calculate message position by counting messages before this one
             $messageRepo = $this->repository('XF:ConversationMessage');
-            $positionFinder = $messageRepo->findMessagesForConversationView($conversation);
-            $positionFinder->where('message_date', '<=', $message->message_date);
-            $position = $positionFinder->total();
+            $position = $this->getMessagePosition($message, $conversation);
 
             // Calculate pagination to center around the target message
             $startNum = max(1, $position - floor($messagesPerRequest / 2));
@@ -731,6 +734,7 @@ class PrivateConversationController extends AbstractController
 
             // Get messages using same logic as actionGetConversation
             $messageFinder = $messageRepo->findMessagesForConversationView($conversation);
+            $messageFinder->order('message_id');
             
             // Calculate pagination - ensure valid values
             $perPage = max(1, $lastNum - $startNum + 1);

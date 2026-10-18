@@ -6,6 +6,15 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon (v1.8.12 → v1.9.0, not released yet; installed on the staging test forum)
+- Sign the app in through the forum's website (Google, Facebook, passkeys, two-step). A public `forumcopilot-app-login` page hands the app a one-time code through a URL scheme listed in the new option `fc_app_login_schemes` (default `forumcopilot`, the official app's scheme); `getConfig` reports the list as `browserLoginSchemes`.
+- Drafts in XenForo's own draft store, shared with the web editor: `getDraft`, `saveDraft`, `deleteDraft`, `getDrafts`.
+- `deleteAccount`, so members can delete their account in the app. The new option `fc_account_deletion` (on by default) turns it off; `getConfig` reports it as `accountDeletion`.
+- Pushes name their notification channel (messages, replies, reactions, other), so the app can file them separately.
+- `getConfig` sends the forum's colours and logo as `style`.
+- Fixed: `getConversations` returned the wrong page from the second load onwards; direct messages posted in the same second now get their own numbers; changing the password from the app keeps the app signed in.
+- The phrases and templates added for these were stamped 1.8.12 on their branch; 1.8.12 shipped without them, so they are stamped 1.9.0, the version that brings them.
+
 ### Bundled addon (v1.8.11 → v1.8.12, published 2026-10-16 as the `addon-v1.8.12` release)
 - `replyPost` and `newTopic` report a post or thread held for moderator approval as `state: 1`. They returned `$thread->canView() ? 0 : 1`, and XenForo lets the author view their own moderated content, so a reply or thread waiting for approval always came back as `state: 0` and the app treated it as published. They now read the post's `message_state` and the thread's `discussion_state`. Verified on 2.2.19 through `forumcopilot.php` as a regular member in a forum set to moderate new threads and replies: with 1.8.11 the reply and the thread were stored as `moderated` and both answers said `state: 0`; with this change both say `state: 1`, and a reply in an unmoderated forum still says `state: 0`. On 2.3.7 the change was deployed and `getConfig` answered; no member account there to post with. No new error-log rows on either. The test posts were removed by restoring the database.
 - Verified by building the release archive (a zip of `upload/`, the same 191 files as 1.8.11) and upgrading 1.8.11 → 1.8.12 on 2.2.19 and 2.3.7 with `xf-addon:upgrade`: XenForo's file health check passes for every add-on file on both, and the web-root `forumcopilot.php` matches the archive. Live basic suite on 2.2.19: 49/49. The only new error-log rows are the test forum's push attempts, blocked on purpose during the run.

@@ -8,19 +8,22 @@ A release lives in two places:
 
 Both must be updated together. Total time per release: ~10 minutes.
 
-Pushing `main` of the marketing repo deploys production directly (there is
-no staging branch); see `docs/REPOSITORIES.md` for the full picture of how
-the repositories relate.
+`main` of the marketing repo is production. Since the move to new servers
+(2026-10-14) a push alone does not deploy it: run its deploy workflow by hand
+afterwards. See `docs/REPOSITORIES.md` for the full picture of how the
+repositories relate.
 
 ## Versioning
 
-We follow [Semantic Versioning](https://semver.org/). Pre-1.0 (which we are):
+We follow [Semantic Versioning](https://semver.org/). Since 1.0 (2026-10-19) the version tells a fork what an update costs it:
 
 | Bump | When |
 |---|---|
-| **Patch** (`v0.6.0` → `v0.6.1`) | Bug fixes, small UX tweaks, documentation |
-| **Minor** (`v0.6.x` → `v0.7.0`) | New features, breaking config changes |
-| **Major** (`v0.x.x` → `v1.0.0`) | When we're ready to commit to backward compatibility going forward |
+| **Patch** (`v1.0.0` → `v1.0.1`) | Bug fixes, small UX tweaks, documentation |
+| **Minor** (`v1.0.x` → `v1.1.0`) | New features. A fork's existing `lib/config/app_forum_config.dart` and build steps keep working; a new config field has a default, and a feature that needs a newer add-on stays off with an older one |
+| **Major** (`v1.x.x` → `v2.0.0`) | A fork has to change something to keep building or working: a config field renamed or removed, a new required setup step, or a newer minimum add-on version |
+
+The add-on has its own version line (1.8.x, 1.9.0, …); see [Releasing the XenForo add-on](#releasing-the-xenforo-add-on).
 
 We do not tag every commit. Tag when at least one of these is true:
 - A user-visible feature has landed
@@ -99,7 +102,7 @@ git commit -m "Publish xenForo app v0.6.1"
 git push origin main
 ```
 
-The site redeploys automatically (CI/CD). Within a few minutes, `https://forumcopilot.com/github-notice` shows the new release in the "Release history" section below the GitHub-redirect notice, with the latest-version overview cards refreshed.
+Then deploy it by hand: `gh workflow run deploy.yml --repo forumcopilot/siteowners --ref main`, and wait for the run to finish (`gh run list --workflow deploy.yml --repo forumcopilot/siteowners` shows the sha it deployed). Within a few minutes of that, `https://forumcopilot.com/github-notice` shows the new release in the "Release history" section below the GitHub-redirect notice, with the latest-version overview cards refreshed.
 
 ## Releasing the XenForo add-on
 

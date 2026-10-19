@@ -231,6 +231,31 @@ class QuickReplyBarState extends State<QuickReplyBar> {
   }
 }
 
+/// The list above a [QuickReplyBar]: dragging it puts the keyboard away,
+/// as in Messages. iOS has no back gesture for that, so the keyboard used to
+/// stay up until the reply was sent. Drags past either end count too: a
+/// conversation is usually at its newest message, where there is no further
+/// to go.
+class DismissKeyboardOnDrag extends StatelessWidget {
+  const DismissKeyboardOnDrag({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          final dragged = switch (notification) {
+            ScrollUpdateNotification(:final dragDetails) => dragDetails != null,
+            OverscrollNotification(:final dragDetails) => dragDetails != null,
+            _ => false,
+          };
+          if (dragged) FocusManager.instance.primaryFocus?.unfocus();
+          return false;
+        },
+        child: child,
+      );
+}
+
 class _SendButton extends StatelessWidget {
   const _SendButton({
     required this.enabled,

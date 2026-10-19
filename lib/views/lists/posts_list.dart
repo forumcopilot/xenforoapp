@@ -1311,7 +1311,8 @@ class _PostsState extends State<PostsList> {
         final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
         final stack = Stack(
           children: [
-            RefreshIndicator(
+            DismissKeyboardOnDrag(
+              child: RefreshIndicator(
               onRefresh: _refreshCurrentPage,
               child: ScrollablePositionedList.builder(
                 itemScrollController: _itemScrollController,
@@ -1355,6 +1356,7 @@ class _PostsState extends State<PostsList> {
                   return const SizedBox.shrink();
                 },
               ),
+            ),
             ),
             if (hasPoll)
               Positioned(

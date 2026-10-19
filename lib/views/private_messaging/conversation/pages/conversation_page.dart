@@ -992,7 +992,8 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         Expanded(
           child: Stack(
             children: [
-              RefreshIndicator(
+              DismissKeyboardOnDrag(
+                child: RefreshIndicator(
                 onRefresh: _loadConversation,
                 // Content that grows while the reader is at the newest message
                 // (images loading, reactions) keeps the newest message in view;
@@ -1128,6 +1129,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                   ),
                 ),
                 ),
+              ),
               ),
               _buildNavigator(context, bottom: navigatorBottom),
             ],

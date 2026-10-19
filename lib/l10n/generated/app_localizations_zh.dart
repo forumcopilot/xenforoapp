@@ -2832,4 +2832,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get trustThisDeviceHint => '下次在此设备上登录时不再要求输入验证码';
+
+  @override
+  String get passkeyNotOnThisDevice => '此设备上没有该论坛的通行密钥。请选择其他方式，或先在论坛网站上添加通行密钥。';
+
+  @override
+  String get passkeyStepNotSetUp => '该论坛尚未在此应用中设置通行密钥。请选择其他方式。';
 }

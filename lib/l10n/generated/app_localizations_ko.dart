@@ -2867,4 +2867,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get trustThisDeviceHint => '다음에 이 기기에서 로그인할 때 코드를 묻지 않음';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      '이 기기에는 이 포럼의 패스키가 없습니다. 다른 방법을 선택하거나 먼저 포럼 웹사이트에서 패스키를 추가하세요.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      '이 포럼은 아직 이 앱에서 패스키를 사용할 수 있도록 설정되지 않았습니다. 다른 방법을 선택하세요.';
 }

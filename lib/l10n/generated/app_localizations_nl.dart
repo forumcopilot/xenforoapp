@@ -3005,4 +3005,12 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Bij de volgende keer inloggen op dit apparaat niet om een code vragen';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Er is op dit apparaat geen toegangssleutel voor dit forum. Kies een andere methode of voeg eerst een toegangssleutel toe op de website van het forum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Dit forum is in deze app nog niet ingesteld voor toegangssleutels. Kies een andere methode.';
 }

@@ -1337,5 +1337,7 @@
   "replyCountLabel": "{count, plural, one{{count} ответ} few{{count} ответа} many{{count} ответов} other{{count} ответа}}",
   "subForumCountLabel": "{count, plural, one{{count} подфорум} few{{count} подфорума} many{{count} подфорумов} other{{count} подфорума}}",
   "trustThisDevice": "Доверять этому устройству",
-  "trustThisDeviceHint": "Не запрашивать код при следующем входе на этом устройстве"
+  "trustThisDeviceHint": "Не запрашивать код при следующем входе на этом устройстве",
+  "passkeyNotOnThisDevice": "На этом устройстве нет ключа доступа для этого форума. Выберите другой способ или сначала добавьте ключ доступа на сайте форума.",
+  "passkeyStepNotSetUp": "Этот форум ещё не настроен для ключей доступа в этом приложении. Выберите другой способ."
 }

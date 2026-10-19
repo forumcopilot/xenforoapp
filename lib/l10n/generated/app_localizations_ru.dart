@@ -3043,4 +3043,12 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Не запрашивать код при следующем входе на этом устройстве';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'На этом устройстве нет ключа доступа для этого форума. Выберите другой способ или сначала добавьте ключ доступа на сайте форума.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Этот форум ещё не настроен для ключей доступа в этом приложении. Выберите другой способ.';
 }

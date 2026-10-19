@@ -5077,6 +5077,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t ask for a code the next time you sign in on this device'**
   String get trustThisDeviceHint;
+
+  /// Two-step verification with a passkey, when the device has none for the forum
+  ///
+  /// In en, this message translates to:
+  /// **'There\'s no passkey for this forum on this device. Choose another method, or add a passkey on the forum\'s website first.'**
+  String get passkeyNotOnThisDevice;
+
+  /// Two-step verification with a passkey, when the forum's domain does not list the app
+  ///
+  /// In en, this message translates to:
+  /// **'This forum is not yet set up for passkeys in this app. Choose another method.'**
+  String get passkeyStepNotSetUp;
 }
 
 class _AppLocalizationsDelegate

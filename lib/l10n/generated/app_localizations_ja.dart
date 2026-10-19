@@ -2875,4 +2875,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get trustThisDeviceHint => '次回このデバイスでサインインするときにコードを求めない';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'このデバイスにはこのフォーラムのパスキーがありません。別の方法を選ぶか、先にフォーラムのウェブサイトでパスキーを追加してください。';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'このフォーラムはまだこのアプリでのパスキーに対応していません。別の方法を選んでください。';
 }

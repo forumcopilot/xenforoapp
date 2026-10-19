@@ -3014,4 +3014,12 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Não pedir um código na próxima vez que você entrar neste dispositivo';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Não há chave de acesso para este fórum neste dispositivo. Escolha outro método ou adicione primeiro uma chave de acesso no site do fórum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Este fórum ainda não está configurado para chaves de acesso neste app. Escolha outro método.';
 }

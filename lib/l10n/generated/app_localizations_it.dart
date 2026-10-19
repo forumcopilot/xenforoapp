@@ -3019,4 +3019,12 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Non chiedere un codice al prossimo accesso da questo dispositivo';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Su questo dispositivo non c\'è una passkey per questo forum. Scegli un altro metodo o aggiungi prima una passkey sul sito del forum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Questo forum non è ancora configurato per le passkey in questa app. Scegli un altro metodo.';
 }

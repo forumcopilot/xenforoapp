@@ -3045,4 +3045,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Ne pas demander de code lors de la prochaine connexion sur cet appareil';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Aucune clé d\'accès pour ce forum sur cet appareil. Choisissez une autre méthode, ou ajoutez d\'abord une clé d\'accès sur le site du forum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Ce forum n\'est pas encore configuré pour les clés d\'accès dans cette app. Choisissez une autre méthode.';
 }

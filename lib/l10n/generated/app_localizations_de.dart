@@ -3048,4 +3048,12 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'Beim nächsten Anmelden auf diesem Gerät nicht nach einem Code fragen';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Auf diesem Gerät gibt es keinen Passkey für dieses Forum. Wähle eine andere Methode oder füge zuerst auf der Website des Forums einen Passkey hinzu.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Dieses Forum ist in dieser App noch nicht für Passkeys eingerichtet. Wähle eine andere Methode.';
 }

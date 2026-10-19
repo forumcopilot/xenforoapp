@@ -1785,5 +1785,7 @@
   "replyCountLabel": "{count, plural, one{{count} reactie} other{{count} reacties}}",
   "subForumCountLabel": "{count, plural, one{{count} subforum} other{{count} subforums}}",
   "trustThisDevice": "Dit apparaat vertrouwen",
-  "trustThisDeviceHint": "Bij de volgende keer inloggen op dit apparaat niet om een code vragen"
+  "trustThisDeviceHint": "Bij de volgende keer inloggen op dit apparaat niet om een code vragen",
+  "passkeyNotOnThisDevice": "Er is op dit apparaat geen toegangssleutel voor dit forum. Kies een andere methode of voeg eerst een toegangssleutel toe op de website van het forum.",
+  "passkeyStepNotSetUp": "Dit forum is in deze app nog niet ingesteld voor toegangssleutels. Kies een andere methode."
 }

@@ -3029,4 +3029,12 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get trustThisDeviceHint =>
       'No pedir un código la próxima vez que inicies sesión en este dispositivo';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'No hay ninguna clave de acceso para este foro en este dispositivo. Elige otro método o añade primero una clave de acceso en el sitio web del foro.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Este foro aún no está configurado para claves de acceso en esta app. Elige otro método.';
 }

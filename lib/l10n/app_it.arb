@@ -1337,5 +1337,7 @@
   "replyCountLabel": "{count, plural, one{{count} risposta} other{{count} risposte}}",
   "subForumCountLabel": "{count, plural, one{{count} sottoforum} other{{count} sottoforum}}",
   "trustThisDevice": "Considera attendibile questo dispositivo",
-  "trustThisDeviceHint": "Non chiedere un codice al prossimo accesso da questo dispositivo"
+  "trustThisDeviceHint": "Non chiedere un codice al prossimo accesso da questo dispositivo",
+  "passkeyNotOnThisDevice": "Su questo dispositivo non c'è una passkey per questo forum. Scegli un altro metodo o aggiungi prima una passkey sul sito del forum.",
+  "passkeyStepNotSetUp": "Questo forum non è ancora configurato per le passkey in questa app. Scegli un altro metodo."
 }

@@ -1313,5 +1313,7 @@
   "replyCountLabel": "{count, plural, other{{count} 件の返信}}",
   "subForumCountLabel": "{count, plural, other{{count} 件のサブフォーラム}}",
   "trustThisDevice": "このデバイスを信頼する",
-  "trustThisDeviceHint": "次回このデバイスでサインインするときにコードを求めない"
+  "trustThisDeviceHint": "次回このデバイスでサインインするときにコードを求めない",
+  "passkeyNotOnThisDevice": "このデバイスにはこのフォーラムのパスキーがありません。別の方法を選ぶか、先にフォーラムのウェブサイトでパスキーを追加してください。",
+  "passkeyStepNotSetUp": "このフォーラムはまだこのアプリでのパスキーに対応していません。別の方法を選んでください。"
 }

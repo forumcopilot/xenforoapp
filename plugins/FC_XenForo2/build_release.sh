@@ -71,9 +71,12 @@ for name in ("smartbanner.js", "smartbanner.css", "smartbanner-icon.png"):
 
 with open(hashes_path, "w") as f:
     json.dump(hashes, f, indent=2, sort_keys=True)
+    f.write("\n")
 PY
 
-(cd "$STAGE" && zip -u "$ZIP" "$HASH_PATH")
+# Replace, not update (-u): -u skips the entry when the patched copy is not
+# newer than the packed one, which within the same second it is not.
+(cd "$STAGE" && zip "$ZIP" "$HASH_PATH")
 
 echo "Done."
 echo "Final zip layout (upload/js + hashes):"

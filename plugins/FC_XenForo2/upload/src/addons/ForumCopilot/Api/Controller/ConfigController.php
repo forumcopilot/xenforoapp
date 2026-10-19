@@ -102,6 +102,9 @@ class ConfigController extends AbstractController
             'getParticipatedForum' => false,
             'updateProfile' => true,
             'userId' => '',
+            // The signed-in member's state (valid, email_confirm, moderated,
+            // ...), so the app sees a new member's account become ready.
+            'userState' => $visitor->user_id ? (string)$visitor->user_state : '',
             'alert' => true,
             'searchUser' => true,
             'ignoreUser' => false,

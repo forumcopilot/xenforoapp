@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phrases>
+  <phrase title="fc_app_login_confirm" version_id="1090000" version_string="1.9.0"><![CDATA[Sign the {board} app in as <b>{name}</b>?]]></phrase>
+  <phrase title="fc_app_login_continue" version_id="1090000" version_string="1.9.0"><![CDATA[Continue]]></phrase>
+  <phrase title="fc_app_login_continue_in_app" version_id="1100000" version_string="1.10.0"><![CDATA[Continue in the app]]></phrase>
+  <phrase title="fc_app_login_invalid" version_id="1090000" version_string="1.9.0"><![CDATA[This sign-in link is not valid. Please start again from the app.]]></phrase>
+  <phrase title="fc_app_login_not_you" version_id="1100000" version_string="1.10.0"><![CDATA[Not you? Sign out]]></phrase>
+  <phrase title="fc_app_login_title" version_id="1090000" version_string="1.9.0"><![CDATA[Sign in to the app]]></phrase>
   <phrase title="fc_forum_information" version_id="1000000" version_string="1.0.0"><![CDATA[
         Forum Information]]></phrase>
   <phrase title="fc_push" version_id="1000000" version_string="1.0.0"><![CDATA[
         Forum Copilot Mobile App]]></phrase>
   <phrase title="fc_push_notifications" version_id="1000000" version_string="1.0.0"><![CDATA[
         Push Notifications]]></phrase>
+  <phrase title="fc_register_on_website" version_id="1100000" version_string="1.10.0"><![CDATA[Please create your account on the forum's website.]]></phrase>
   <phrase title="fc_register_site" version_id="1000000" version_string="1.0.0"><![CDATA[
         Register Site / Retry]]></phrase>
   <phrase title="fc_register_site_explain" version_id="1000000" version_string="1.0.0"><![CDATA[
@@ -15,10 +22,6 @@
   <phrase title="fc_smart_banner" version_id="1000000" version_string="1.0.0"><![CDATA[
         Smart Banner]]></phrase>
   <phrase title="option.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Members can delete their account in the app]]></phrase>
-  <phrase title="fc_app_login_confirm" version_id="1090000" version_string="1.9.0"><![CDATA[Sign the {board} app in as <b>{name}</b>?]]></phrase>
-  <phrase title="fc_app_login_continue" version_id="1090000" version_string="1.9.0"><![CDATA[Continue]]></phrase>
-  <phrase title="fc_app_login_invalid" version_id="1090000" version_string="1.9.0"><![CDATA[This sign-in link is not valid. Please start again from the app.]]></phrase>
-  <phrase title="fc_app_login_title" version_id="1090000" version_string="1.9.0"><![CDATA[Sign in to the app]]></phrase>
   <phrase title="option.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[App sign-in schemes]]></phrase>
   <phrase title="option.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
         Diagnostic logging]]></phrase>
@@ -48,6 +51,8 @@
         Banner icon URL]]></phrase>
   <phrase title="option.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
         iOS App Store ID]]></phrase>
+  <phrase title="option_explain.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Apple requires apps that let people sign up to let them delete their account in the app. When on, a member can delete their own account from the app after entering their password (or their user name, for accounts without a password), as if an administrator deleted it: their posts stay, as a guest's. Administrators and moderators cannot. When off, the app tells members to contact the forum's staff.]]></phrase>
+  <phrase title="option_explain.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[Members can sign an app in through this website, with any way they sign in here (Google, Facebook, passkeys, two-step). These are the URL schemes of the apps the website may hand the sign-in to, separated by commas: "forumcopilot" for the Forum Copilot app, plus your own app's scheme if you publish one. Leave empty to turn browser sign-in off.]]></phrase>
   <phrase title="option_explain.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
         Write a trace of every push decision ("[FC DEBUG]", "[FC PM]") to the server error log. XenForo has no log level below error, so these lines show up as ErrorException entries even though nothing failed. Leave this off in normal operation; turn it on only while troubleshooting push delivery with Forum Copilot support, then turn it off again. Genuine failures are always logged regardless of this setting.]]></phrase>
   <phrase title="option_explain.fc_mobile_activity_label" version_id="1080100" version_string="1.8.1"><![CDATA[
@@ -62,8 +67,6 @@
         Absolute filesystem path on this server to the Firebase service-account JSON file for your Firebase project. Generate this file in the Firebase Console under Project Settings → Service accounts → "Generate new private key", then upload it to this server (outside your web root for security) and paste the full path here. Required for "Direct push" to actually dispatch.]]></phrase>
   <phrase title="option_explain.fc_push_direct_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[
         Dispatch push notifications directly to Firebase Cloud Messaging using your own Firebase project credentials (set the path below). Use this if you ship a white-label mobile app built from the Forum Copilot Open Source codebase. When enabled but the credentials path is empty, this option is silently ignored — no errors, no log spam. Both this and "Hosted push" can be enabled simultaneously: each device is routed through whichever path it registered with.]]></phrase>
-  <phrase title="option_explain.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Apple requires apps that let people sign up to let them delete their account in the app. When on, a member can delete their own account from the app after entering their password (or their user name, for accounts without a password), as if an administrator deleted it: their posts stay, as a guest's. Administrators and moderators cannot. When off, the app tells members to contact the forum's staff.]]></phrase>
-  <phrase title="option_explain.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[Members can sign an app in through this website, with any way they sign in here (Google, Facebook, passkeys, two-step). These are the URL schemes of the apps the website may hand the sign-in to, separated by commas: "forumcopilot" for the Forum Copilot app, plus your own app's scheme if you publish one. Leave empty to turn browser sign-in off.]]></phrase>
   <phrase title="option_explain.fc_push_enabled" version_id="1003005" version_string="1.3.5"><![CDATA[
         Master kill switch for ALL push notifications. When off, no pushes are dispatched regardless of the Hosted/Direct settings below. Turn off to temporarily disable push delivery without losing your configuration.]]></phrase>
   <phrase title="option_explain.fc_push_hosted_enabled" version_id="1003004" version_string="1.3.4"><![CDATA[

@@ -40,11 +40,13 @@ class ForumCopilotPubApp extends PubApp
     /**
      * Methods behind the sign-in screens. Like XenForo's login, register and
      * lost-password pages they only refuse banned IPs, so a visitor without
-     * "View the board" can still reach the login form.
+     * "View the board" can still reach the login form. That includes a new
+     * member waiting for email confirmation or approval, who has the guests'
+     * permissions until then and can still resend the confirmation email.
      */
     protected const SIGN_IN_METHODS = [
         'getConfig', 'login', 'register', 'prefetchAccount', 'forgotPassword', 'getPasskeyChallenge',
-        'completeBrowserLogin',
+        'completeBrowserLogin', 'resendEmailConfirmation',
     ];
 
     /**
@@ -136,6 +138,7 @@ class ForumCopilotPubApp extends PubApp
             'updateEmail' => 'AccountController@actionUpdateEmail',
             'deleteAccount' => 'AccountController@actionDeleteAccount',
             'completeBrowserLogin' => 'AccountController@actionCompleteBrowserLogin',
+            'resendEmailConfirmation' => 'AccountController@actionResendEmailConfirmation',
 
             // Drafts (XenForo's own, shared with the web editor)
             'getDraft' => 'DraftController@actionGetDraft',

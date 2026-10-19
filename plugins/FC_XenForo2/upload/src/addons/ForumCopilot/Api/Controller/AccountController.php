@@ -25,6 +25,12 @@ class AccountController extends AbstractController
 {
     protected const NO_BOARD_ACCESS_MESSAGE = 'Your account does not currently have access to this forum';
 
+    /**
+     * Session key: when prefetchAccount opened the app's sign-up form, for
+     * XenForo's registration timer.
+     */
+    protected const REGISTER_START_KEY = 'fcRegisterStart';
+
     public function actionLogin(ParameterBag $params)
     {
         // Check for passkey-only login (webauthn_payload present)
@@ -48,21 +54,9 @@ class AccountController extends AbstractController
                     $challengeService->clearStoredChallenge($this->session());
                     return $this->apiError('Could not identify user from passkey');
                 }
-                if ($user->is_banned) {
+                if ($refusal = $this->signInRefusal($user)) {
                     $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError('Account is banned');
-                }
-                if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError('Account is not available');
-                }
-                if ($user->security_lock) {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError('Your account is currently security locked');
-                }
-                if (!$user->hasPermission('general', 'view')) {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
+                    return $this->apiError($refusal);
                 }
                 $challengeService->clearStoredChallenge($this->session());
                 $challengeService->updatePasskeyLastUse($passkey, $this->request->getIp());
@@ -119,25 +113,8 @@ class AccountController extends AbstractController
                 return $this->apiError($error ?: 'Invalid username or password');
             }
 
-            // Check if user is banned
-            if ($user->is_banned) {
-                return $this->apiError('Account is banned');
-            }
-
-            // Check if user is disabled or rejected (these states should block login)
-            if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
-                return $this->apiError('Account is not available');
-            }
-
-            // Check for security lock
-            if ($user->security_lock) {
-                return $this->apiError('Your account is currently security locked');
-            }
-
-            // Every other API method refuses members without "View the board"
-            // (see checkBoardAccess), so say so here instead of signing them in
-            if (!$user->hasPermission('general', 'view')) {
-                return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
+            if ($refusal = $this->signInRefusal($user)) {
+                return $this->apiError($refusal);
             }
 
             // Check if user has two-factor authentication enabled
@@ -302,17 +279,8 @@ class AccountController extends AbstractController
                 $loginPlugin = $this->getLoginPlugin();
                 $loginPlugin->clearTfaSessionCheck();
                 
-                // Optionally handle trusted device - hard coded to trust forever
-                $trustDevice = $fcParams->trustDevice;
-                if ($trustDevice) {
-                    // Create trusted key with "forever" expiration (year 2100 timestamp)
-                    // This is effectively permanent for practical purposes
-                    $tfaTrustRepo = $this->getUserTfaTrustedRepository();
-                    $trustedUntil = 4102444800; // January 1, 2100 00:00:00 UTC - effectively "forever"
-                    $key = $tfaTrustRepo->createTrustedKey($user->user_id, $trustedUntil);
-                    
-                    // Set cookie with very long expiration (also year 2100)
-                    $this->app->response()->setCookie('tfa_trust', $key, $trustedUntil - \XF::$time, null, true);
+                if ($fcParams->trustDevice) {
+                    $this->trustThisDevice($user);
                 }
             }
 
@@ -373,6 +341,49 @@ class AccountController extends AbstractController
     protected function supportsPasskeys(): bool
     {
         return class_exists(\XF\Entity\Passkey::class);
+    }
+
+    /**
+     * Why [$user] may not sign the app in, or null if they may; the same for
+     * every way in (password, passkey, website).
+     */
+    protected function signInRefusal(\XF\Entity\User $user): ?string
+    {
+        if ($user->is_banned) {
+            return 'Account is banned';
+        }
+        if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
+            return 'Account is not available';
+        }
+        if ($user->security_lock) {
+            return 'Your account is currently security locked';
+        }
+
+        // Every other API method refuses members without "View the board"
+        // (see checkBoardAccess), so say so here instead of signing them in.
+        // Except new members waiting for their email confirmation or for
+        // approval: XenForo gives them the guest permissions, so on a forum
+        // guests cannot view they lack it too. They sign in, and until their
+        // account is ready the API answers them getConfig,
+        // resendEmailConfirmation and logout, and tells them why otherwise.
+        if (!$user->hasPermission('general', 'view') && !$this->isAwaitingMember($user)) {
+            return self::NO_BOARD_ACCESS_MESSAGE;
+        }
+
+        return null;
+    }
+
+    /**
+     * Gives this device a two-step trust cookie (tfa_trust), as "Trust this
+     * device" does on the website, for good: the app holds no code to answer
+     * two-step with when XenForo next signs its session in from the remember
+     * cookie (XF\Pub\App::loginFromRememberCookie).
+     */
+    protected function trustThisDevice(\XF\Entity\User $user): void
+    {
+        $trustedUntil = 4102444800; // 2100-01-01, so in effect for good
+        $key = $this->getUserTfaTrustedRepository()->createTrustedKey($user->user_id, $trustedUntil);
+        $this->app->response()->setCookie('tfa_trust', $key, $trustedUntil - \XF::$time, null, true);
     }
 
     /**
@@ -520,154 +531,134 @@ class AccountController extends AbstractController
         ], true); // true = replace on duplicate key (updates last_seen)
     }
 
+    /**
+     * Signs up a new member with the app's own form (older app builds and the
+     * template app). Newer apps send members to the forum's register page
+     * instead (XF\Pub\Controller\Register extension), which has everything
+     * XenForo and the forum's add-ons put on the form.
+     *
+     * XenForo's RegistrationService does the work, with its spam checks
+     * (StopForumSpam and the like, banned names and emails). Of what XenForo's
+     * web form adds, this applies what an app can: discouraged IP addresses
+     * are refused, as on the web; the registration timer runs from
+     * prefetchAccount in this session; and a forum that shows guests a
+     * captcha is refused, as the app cannot show one (canRegisterViaAPI).
+     * The web form's hidden honeypot fields have no equivalent here.
+     *
+     * An error's resultText has every message; errors has those XenForo ties
+     * to a field (username, email, password, dob, location, timezone,
+     * custom_field_<id>), plus acceptTerms and acceptPrivacy.
+     */
     public function actionRegister(ParameterBag $params)
     {
-        // Existing required parameters (backward compatible)
-        $username = $params->get('username', '');
-        $password = $params->get('password', '');
-        $email = $params->get('email', '');
-        
-        // New optional parameters
-        $passwordConfirm = $params->get('passwordConfirm', '');
-        $timezone = $params->get('timezone', '');
-        $location = $params->get('location', '');
-        
-        // Extract and parse dateOfBirth parameter (format: YYYY-MM-DD)
-        $dateOfBirth = $params->get('dateOfBirth', '');
-        $dobDay = 0;
-        $dobMonth = 0;
-        $dobYear = 0;
-        
-        if (!empty($dateOfBirth)) {
-            $dateTime = \DateTime::createFromFormat('Y-m-d', $dateOfBirth);
-            if ($dateTime && $dateTime->format('Y-m-d') === $dateOfBirth) {
-                // Valid date, extract components
-                $dobYear = (int)$dateTime->format('Y');
-                $dobMonth = (int)$dateTime->format('m');
-                $dobDay = (int)$dateTime->format('d');
-            }
-        }
-        $emailChoice = $params->get('emailChoice', null);
-        $customFields = $params->get('customFields', []);
-        $captchaToken = $params->get('captchaToken', '');
-        $acceptTerms = $params->get('acceptTerms', false);
-        $acceptPrivacy = $params->get('acceptPrivacy', false);
-
-        // Validate required fields
-        if (empty($username) || empty($password) || empty($email)) {
-            return $this->apiError('Username, password, and email are required');
-        }
-
         try {
             $options = $this->app()->options();
-            
-            // Check registration enabled
-            if (!$options->registrationSetup['enabled']) {
-                return $this->apiError('Registration is disabled');
+
+            if ($refusal = $this->registrationRefusal()) {
+                return $this->apiError($refusal);
             }
-            
-            // Validate email format
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return $this->apiError('Invalid email format');
-            }
-            
-            // CAPTCHA validation is bypassed for API registration since webview-based CAPTCHAs
-            // (reCAPTCHA, hCaptcha, Turnstile, KeyCaptcha) require webview rendering which is
-            // too complex for mobile apps. Other spam protection mechanisms (DNSBL, Project 
-            // Honey Pot, registration timer) in RegistrationService still apply.
-            // Note: Web registration still requires CAPTCHA validation.
-            
-            // Validate TOS/Privacy acceptance
-            $privacyUrl = $this->app->container('privacyPolicyUrl');
-            $tosUrl = $this->app->container('tosUrl');
-            if (($privacyUrl || $tosUrl) && (!($acceptTerms && $acceptPrivacy))) {
-                if ($privacyUrl && $tosUrl) {
-                    return $this->apiError('You must accept the terms and privacy policy');
-                } else if ($tosUrl) {
-                    return $this->apiError('You must accept the terms and rules');
-                } else {
-                    return $this->apiError('You must accept the privacy policy');
-                }
+            if (!$this->canRegisterViaAPI()) {
+                return $this->apiError($this->plainText(\XF::phrase('fc_register_on_website')));
             }
 
-            // Use XenForo's Registration service
+            // XenForo's registration timer, from when prefetchAccount opened
+            // the form in this session (as the web form's own start time).
+            $startTime = (int)$this->session()->get(self::REGISTER_START_KEY);
+            if (!$startTime) {
+                return $this->apiError($this->plainText(\XF::phrase('something_went_wrong_please_try_again')));
+            }
+            if ($startTime + (int)$options->registrationTimer > \XF::$time) {
+                return $this->apiError($this->plainText(\XF::phrase('sorry_you_must_wait_longer_to_create_account')));
+            }
+
+            // Only the policies the forum has. XenForo's form has one box for
+            // both; the app has one for each.
+            $privacyUrl = $this->app->container('privacyPolicyUrl');
+            $tosUrl = $this->app->container('tosUrl');
+            $policyErrors = [];
+            if ($tosUrl && !$params->get('acceptTerms')) {
+                $policyErrors['acceptTerms'] = true;
+            }
+            if ($privacyUrl && !$params->get('acceptPrivacy')) {
+                $policyErrors['acceptPrivacy'] = true;
+            }
+            if ($policyErrors) {
+                if ($privacyUrl && $tosUrl) {
+                    $message = \XF::phrase('please_read_and_accept_our_terms_and_privacy_policy_before_continuing');
+                } else if ($tosUrl) {
+                    $message = \XF::phrase('please_read_and_accept_our_terms_and_rules_before_continuing');
+                } else {
+                    $message = \XF::phrase('please_read_and_accept_our_privacy_policy_before_continuing');
+                }
+                return $this->registrationErrors(array_fill_keys(array_keys($policyErrors), $message));
+            }
+
+            // The form's fields as XenForo's own register form sends them
+            // (Pub\Controller\Register::getRegistrationInput); XenForo checks
+            // each one and says which is wrong.
+            $password = (string)$params->get('password', '');
+            $passwordConfirm = (string)$params->get('passwordConfirm', '');
+            if ($passwordConfirm !== '' && $passwordConfirm !== $password) {
+                return $this->registrationErrors(['password' => \XF::phrase('passwords_did_not_match')]);
+            }
+
+            $input = [
+                'username' => (string)$params->get('username', ''),
+                'email' => (string)$params->get('email', ''),
+                'password' => $password,
+            ];
+            if ($timezone = (string)$params->get('timezone', '')) {
+                $input['timezone'] = $timezone;
+            }
+            if ($location = (string)$params->get('location', '')) {
+                $input['location'] = $location;
+            }
+
+            // dateOfBirth: YYYY-MM-DD
+            $dateOfBirth = (string)$params->get('dateOfBirth', '');
+            $dob = $dateOfBirth !== '' ? \DateTime::createFromFormat('Y-m-d', $dateOfBirth) : false;
+            if ($dob && $dob->format('Y-m-d') === $dateOfBirth) {
+                $input['dob_day'] = (int)$dob->format('d');
+                $input['dob_month'] = (int)$dob->format('m');
+                $input['dob_year'] = (int)$dob->format('Y');
+            }
+
+            $customFields = $params->get('customFields', []);
+            if (is_array($customFields) && $customFields) {
+                $input['custom_fields'] = $customFields;
+            }
+
+            // Also sets the activity summary email, as on the web.
+            $emailChoice = $params->get('emailChoice', null);
+            if ($options->registrationSetup['requireEmailChoice'] && $emailChoice !== null) {
+                $input['email_choice'] = (bool)$emailChoice;
+            }
+
             /** @var \XF\Service\User\Registration $registration */
             $registration = $this->service('XF:User\Registration');
-            
-            // Set basic fields
-            $mappedFields = [
-                'username' => $username,
-                'email' => $email,
-            ];
-            if ($timezone) {
-                $mappedFields['timezone'] = $timezone;
-            }
-            if ($location) {
-                $mappedFields['location'] = $location;
-            }
-            $registration->setMapped($mappedFields);
-            
-            // Set password (with confirmation if provided)
-            $registration->setPassword(
-                $password, 
-                $passwordConfirm ?: $password, 
-                !empty($passwordConfirm)
-            );
-            
-            // Set date of birth if provided
-            if ($dobDay && $dobMonth && $dobYear) {
-                $registration->setDob($dobDay, $dobMonth, $dobYear);
-            }
-            
-            // Set custom fields if provided
-            if (!empty($customFields) && is_array($customFields)) {
-                $registration->setCustomFields($customFields);
-            }
-            
-            // Set email choice if required
-            if ($options->registrationSetup['requireEmailChoice'] && $emailChoice !== null) {
-                $registration->setReceiveAdminEmail($emailChoice);
-            }
-            
-            // Check for spam (automatic)
+            $registration->setFromInput($input);
             $registration->checkForSpam();
-            
-            // Validate before saving
+
             if (!$registration->validate($errors)) {
-                // Format errors as readable message
-                if (is_array($errors)) {
-                    $errorMessages = [];
-                    foreach ($errors as $key => $error) {
-                        $errorMsg = is_string($error) ? $error : (string)$error;
-                        $errorMessages[] = $errorMsg;
-                    }
-                    $errorMessage = 'Validation failed: ' . implode(', ', $errorMessages);
-                } else {
-                    $errorMessage = is_string($errors) ? $errors : 'Validation failed';
-                }
-                return $this->apiError($errorMessage);
+                return $this->registrationErrors(is_array($errors) ? $errors : [$errors]);
             }
-            
-            // Save user
+
             $user = $registration->save();
             $setup = $options->registrationSetup;
-            
-            // Generate user-friendly message based on user state (matches web registration)
-            // These messages match what users see on the web registration complete page
-            $message = null;
+
+            // One start for one account. Zeroed, not removed: XenForo does
+            // not save a session left with no data, so the start would stay.
+            $this->session()->set(self::REGISTER_START_KEY, 0);
+
+            // What register/complete says on the website.
             if ($user->user_state === 'email_confirm') {
-                // Message for email confirmation required (matches register_complete template)
-                $message = 'Thanks for registering. In order to complete your registration, you must follow the link in the email that has been sent to you.';
+                $message = \XF::phrase('thanks_for_registering_to_complete_registration_follow_link');
             } else if ($user->user_state === 'moderated') {
-                // Message for manual approval required (matches register_complete template)
-                $message = 'Thanks for registering. Your registration must now be approved by an administrator. You will receive an email once a decision has been made.';
+                $message = \XF::phrase('thanks_for_registering_registration_must_be_approved');
             } else {
-                // Message for successful registration (user state is 'valid')
-                // This matches the template message for completed registration
-                $message = 'Thanks for registering. Your registration is now complete.';
+                $message = \XF::phrase('thanks_for_registering_complete');
             }
-            
-            // Build enhanced response
+
             $result = new FCRegisterResult(
                 true,
                 null,
@@ -677,7 +668,7 @@ class AccountController extends AbstractController
                 $user->user_state,
                 ($setup['emailConfirmation'] && $user->user_state === 'email_confirm'),
                 ($user->user_state === 'moderated'),
-                $message
+                $this->plainText($message)
             );
 
             return $this->apiSuccess($result);
@@ -685,6 +676,65 @@ class AccountController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiError('Registration failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * A failed registration: all of [$errors] in resultText, one per line,
+     * and those keyed by a field name in errors.
+     */
+    protected function registrationErrors(array $errors)
+    {
+        $messages = [];
+        $byField = [];
+        foreach ($errors as $field => $error) {
+            $text = $this->plainText($error);
+            $messages[] = $text;
+            if (is_string($field)) {
+                $byField[$field] = $text;
+            }
+        }
+
+        return $this->apiResponse(false, implode("\n", $messages), $byField ? ['errors' => $byField] : []);
+    }
+
+    /**
+     * Why a visitor may not sign up now, as XenForo says it on the website,
+     * or null: the board is closed, registration is off, or the visitor's IP
+     * address is discouraged and the forum keeps those from registering
+     * (Pub\Controller\Register::assertRegistrationActive).
+     */
+    protected function registrationRefusal(): ?string
+    {
+        $options = $this->app()->options();
+        if (!$options->boardActive) {
+            return $this->plainText($options->boardInactiveMessage);
+        }
+        if (empty($options->registrationSetup['enabled'])
+            || ($options->preventDiscouragedRegistration && $this->isDiscouragedIp())
+        ) {
+            return $this->plainText(\XF::phrase('new_registrations_currently_not_being_accepted'));
+        }
+
+        return null;
+    }
+
+    /**
+     * Whether the visitor's IP address is on the discouraged list
+     * (Pub\Controller\AbstractController::isDiscouraged, which the API
+     * controllers do not inherit).
+     */
+    protected function isDiscouragedIp(): bool
+    {
+        $visitor = \XF::visitor();
+        if ($visitor->user_id && $visitor->Option && $visitor->Option->is_discouraged) {
+            return true;
+        }
+
+        $discouragedIps = $this->app->container('discouragedIps');
+        if (empty($discouragedIps['data'])) {
+            return false;
+        }
+        return (bool)\XF\Util\Ip::checkIpsAgainstBinaryRangeList($this->request->getAllIps(), $discouragedIps['data']);
     }
 
     public function actionUpdatePassword(ParameterBag $params)
@@ -743,6 +793,13 @@ class AccountController extends AbstractController
      * one-time code the website handed to the app (Pub\Controller\AppLogin)
      * with the PKCE verifier, and signs this session in as that member,
      * remembered, as a password sign-in does.
+     *
+     * A member with two-step passed it on the website (or used a browser
+     * the website trusts), so the app gets a trust cookie too, as when
+     * signing in with the app's own form and "Trust this device". Without
+     * it XenForo would ask for two-step again once the app's session lapses
+     * and the remember cookie signs it back in, and the app has no way to
+     * answer: the member was signed out.
      */
     public function actionCompleteBrowserLogin(ParameterBag $params)
     {
@@ -758,20 +815,14 @@ class AccountController extends AbstractController
         if (!$user) {
             return $this->apiError('The sign-in has expired. Please try again.');
         }
-        if ($user->is_banned) {
-            return $this->apiError('Account is banned');
-        }
-        if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
-            return $this->apiError('Account is not available');
-        }
-        if ($user->security_lock) {
-            return $this->apiError('Your account is currently security locked');
-        }
-        if (!$user->hasPermission('general', 'view')) {
-            return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE);
+        if ($refusal = $this->signInRefusal($user)) {
+            return $this->apiError($refusal);
         }
 
         try {
+            if ($this->getTfaRepository()->isUserTfaConfirmationRequired($user, $this->request->getCookie('tfa_trust'))) {
+                $this->trustThisDevice($user);
+            }
             $this->getLoginPlugin()->completeLogin($user, true);
             $this->markUserHasApp($user->user_id);
             return $this->apiSuccess($this->loginSuccessResult($user));
@@ -1225,14 +1276,15 @@ class AccountController extends AbstractController
         $options = $this->app()->options();
         $setup = $options->registrationSetup;
         
-        // Check if registration is open (forum must be open AND registration enabled)
-        $registrationOpen = $options->boardActive && !empty($setup['enabled']);
+        // Registration is open: the board is open, registration is on, and
+        // XenForo would let this visitor sign up (discouraged IP addresses).
+        $registrationOpen = $this->registrationRefusal() === null;
         
         // Check if API registration is possible (only if registration is open)
         $canRegister = $registrationOpen && $this->canRegisterViaAPI();
         
-        // Always include registration URL
-        $registerViaWebUrl = $options->boardUrl . '/register';
+        // The register page, with or without friendly URLs.
+        $registerViaWebUrl = $this->buildLink('canonical:register');
         
         // Get custom fields for registration
         $customFields = $this->getRegistrationCustomFields();
@@ -1240,6 +1292,9 @@ class AccountController extends AbstractController
         // Build registration requirements if registration is possible
         $requirements = null;
         if ($canRegister) {
+            // The app's form opens now: XenForo's registration timer starts.
+            $this->session()->set(self::REGISTER_START_KEY, \XF::$time);
+
             $requirements = [
                 'username' => [
                     'required' => true,
@@ -1253,7 +1308,8 @@ class AccountController extends AbstractController
                 ],
                 'dateOfBirth' => [
                     'required' => (bool)$setup['requireDob'],
-                    'minimumAge' => (int)($setup['minimumAge'] ?: 13),
+                    // 0: no minimum
+                    'minimumAge' => (int)($setup['minimumAge'] ?? 0),
                     'requireDob' => (bool)$setup['requireDob']
                 ],
                 'location' => [
@@ -1287,7 +1343,10 @@ class AccountController extends AbstractController
     }
 
     /**
-     * Get custom fields that are shown during registration
+     * The custom fields XenForo's own register form shows: those set to show
+     * during registration that a new member may fill in (a field that is
+     * never editable by the member is left out, as XenForo would drop its
+     * value).
      * 
      * @return array Array of custom field definitions
      */
@@ -1296,12 +1355,20 @@ class AccountController extends AbstractController
         $customFields = [];
         
         try {
+            // The same selection as RegistrationService::setCustomFields.
+            /** @var \XF\CustomField\Set $fieldSet */
+            $fieldSet = $this->em()->create('XF:UserProfile')->custom_fields;
+            $shown = $fieldSet->getDefinitionSet()
+                ->filterEditable($fieldSet, 'user')
+                ->filter('registration')
+                ->getFieldDefinitions();
+
             /** @var \XF\Repository\UserFieldRepository $userFieldRepo */
             $userFieldRepo = $this->repository('XF:UserField');
             $userFields = $userFieldRepo->findFieldsForList()->fetch();
             
             foreach ($userFields as $field) {
-                if ($field->show_registration) {
+                if (isset($shown[$field->field_id])) {
                     // Skip color fields - not supported in API
                     if ($field->field_type === 'color' || $field->match_type === 'color') {
                         continue;
@@ -1345,133 +1412,86 @@ class AccountController extends AbstractController
 
 
     /**
-     * Get privacy policy configuration
+     * The privacy policy, if the forum has one: required means it exists
+     * and must be accepted (acceptPrivacy).
      * 
      * @return array Privacy policy configuration
      */
     protected function getPrivacyPolicyConfig()
     {
-        $privacyPolicyUrl = $this->app->container('privacyPolicyUrl');
+        $privacyPolicyUrl = $this->policyUrl('privacyPolicyUrl', 'help/privacy-policy/');
         
         return [
-            'required' => !empty($privacyPolicyUrl),
-            'url' => $privacyPolicyUrl ?: ''
+            'required' => $privacyPolicyUrl !== '',
+            'url' => $privacyPolicyUrl
         ];
     }
 
     /**
-     * Get terms of service configuration
+     * The terms and rules, if the forum has them: required means they exist
+     * and must be accepted (acceptTerms).
      * 
      * @return array Terms of service configuration
      */
     protected function getTermsOfServiceConfig()
     {
-        $tosUrl = $this->app->container('tosUrl');
+        $tosUrl = $this->policyUrl('tosUrl', 'help/terms/');
         
         return [
-            'required' => !empty($tosUrl),
-            'url' => $tosUrl ?: ''
+            'required' => $tosUrl !== '',
+            'url' => $tosUrl
         ];
     }
 
     /**
-     * Validate CAPTCHA token for API registration
-     * 
-     * @param string $token The CAPTCHA token from the client
-     * @return bool True if CAPTCHA is valid or not required
+     * A policy's full address: XenForo's own help page as a canonical link
+     * (its container gives a relative one, which the app cannot place on a
+     * forum in a folder), or the forum's custom address. Empty when the
+     * forum has none.
      */
-    protected function validateCaptchaToken($token)
+    protected function policyUrl(string $option, string $helpRoute): string
     {
-        $options = $this->app()->options();
-        $captcha = $options->captcha;
-        
-        // If no CAPTCHA configured, always pass
-        if (!$captcha) {
-            return true;
+        $url = (string)$this->app->container($option);
+        if ($url === '') {
+            return '';
         }
-        
-        // If visitor wouldn't normally see CAPTCHA, pass
-        $visitor = \XF::visitor();
-        if (!$visitor->isShownCaptcha()) {
-            return true;
+        if (($this->app()->options()->{$option}['type'] ?? '') === 'default') {
+            return $this->buildLink('canonical:' . $helpRoute);
         }
-        
-        // If no token provided, fail validation
-        if (empty($token)) {
-            return false;
-        }
-        
-        // For API, we need to inject the token into the request
-        // The CAPTCHA classes read from request, so we temporarily set it
-        $paramName = null;
-        $originalValue = null;
-        
-        // Map generic captchaToken to the appropriate request parameter based on CAPTCHA type
-        switch ($captcha) {
-            case 'ReCaptcha':
-                $paramName = 'g-recaptcha-response';
-                break;
-            case 'HCaptcha':
-                $paramName = 'h-captcha-response';
-                break;
-            case 'Turnstile':
-                $paramName = 'cf-turnstile-response';
-                break;
-            case 'TextCaptcha':
-                $paramName = 'captcha_textcaptcha';
-                break;
-            case 'KeyCaptcha':
-                $paramName = 'capchachallenge';
-                break;
-            default:
-                // Unknown CAPTCHA type - try to validate anyway
-                return false;
-        }
-        
-        if ($paramName) {
-            // Store original value if it exists
-            try {
-                $originalValue = $this->request->filter($paramName, 'str');
-            } catch (\Exception $e) {
-                $originalValue = null;
-            }
-            
-            // Set the token in the request
-            $this->request->set($paramName, $token);
-        }
-        
+        return $this->getAbsoluteUrl($url);
+    }
+
+    /**
+     * Sends the confirmation email again, for a member waiting to confirm
+     * their email address (the app's "Resend" on its banner and waiting
+     * screen). XenForo's own resend page asks for a captcha when the last
+     * email went out within the hour; the app cannot show one, so it may
+     * resend once every ten minutes instead.
+     */
+    public function actionResendEmailConfirmation(ParameterBag $params)
+    {
+        if ($error = $this->assertRegisteredUser()) { return $error; }
+
         try {
-            // Validate using XenForo's captcha system
-            $isValid = $this->captchaIsValid(true);
-            
-            // Restore original request value
-            if ($paramName !== null) {
-                if ($originalValue !== null) {
-                    $this->request->set($paramName, $originalValue);
-                } else {
-                    // Remove the parameter if it didn't exist before
-                    $input = $this->request->getInput();
-                    if (isset($input[$paramName])) {
-                        unset($input[$paramName]);
-                        // Request doesn't have an easy way to remove, so set to empty string
-                        $this->request->set($paramName, '');
-                    }
-                }
+            $visitor = \XF::visitor();
+
+            /** @var \XF\Service\User\EmailConfirmation $emailConfirmation */
+            $emailConfirmation = $this->service('XF:User\EmailConfirmation', $visitor);
+            if (!$emailConfirmation->canTriggerConfirmation($error)) {
+                return $this->apiError($this->plainText($error));
             }
-            
-            return $isValid;
+
+            if ($floodError = $this->checkFlooding('fcResendConfirmation', 600)) {
+                return $floodError;
+            }
+
+            $emailConfirmation->triggerConfirmation();
+
+            return $this->apiSuccess([
+                'message' => $this->plainText(\XF::phrase('confirmation_email_has_been_resent')),
+            ]);
         } catch (\Exception $e) {
-            // Restore original request value on error
-            if ($paramName !== null) {
-                if ($originalValue !== null) {
-                    $this->request->set($paramName, $originalValue);
-                } else {
-                    $this->request->set($paramName, '');
-                }
-            }
-            // Log error and fail validation
-            \XF::logError('ForumCopilot: CAPTCHA validation error: ' . $e->getMessage());
-            return false;
+            return $this->apiError('Could not resend the email: ' . $e->getMessage());
         }
     }
 

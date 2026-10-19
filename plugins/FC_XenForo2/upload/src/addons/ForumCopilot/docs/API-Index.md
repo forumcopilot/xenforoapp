@@ -49,10 +49,15 @@ apply to every request: banned IP, banned / rejected / disabled account, the
 verification and security lock. A refused call returns HTTP 200 with
 `result: false` and XenForo's message in `resultText`.
 
-- `getConfig`, `login`, `register`, `prefetchAccount`, `forgotPassword` and
-  `getPasskeyChallenge` only refuse banned IPs, like XenForo's login page.
+- `getConfig`, `login`, `register`, `prefetchAccount`, `forgotPassword`,
+  `getPasskeyChallenge`, `completeBrowserLogin` and `resendEmailConfirmation`
+  only refuse banned IPs, like XenForo's login page.
 - `logout` and `unregisterDevice` are never refused.
-- `login` itself refuses an account without **View the board**.
+- `login` and `completeBrowserLogin` themselves refuse an account without
+  **View the board**, except a new member waiting for email confirmation or
+  approval (XenForo gives them the guests' permissions until then). They sign
+  in; the methods above answer them, and the others say why they cannot
+  (XenForo's "awaiting confirmation" or "awaiting approval" message).
 
 ## Config
 
@@ -61,6 +66,9 @@ verification and security lock. A refused call returns HTTP 200 with
 - **Auth:** `none`
 - **Description:** Returns public config and environment info.
 - **Params:** none
+- **Response** (among others):
+  - `browserLoginSchemes` (string[]) — App schemes the website may hand a sign-in to (see "Signing in and up on the website"); empty when that is off.
+  - `userState` (string) — The signed-in member's XenForo state (`valid`, `email_confirm`, `moderated`, ...); empty for a guest.
 
 ## Account
 
@@ -130,19 +138,77 @@ verification and security lock. A refused call returns HTTP 200 with
 ### `register`
 
 - **Auth:** `none`
-- **Description:** Create a new user.
+- **Description:** Create a new user with the app's own form, through XenForo's
+  registration service and its spam checks. Refused when `prefetchAccount`
+  says `canRegisterViaAPI: false` (among others, whenever guests are shown a
+  captcha: those forums sign up on the website), for discouraged IP addresses
+  when the forum keeps them from registering, and until XenForo's
+  registration timer has run since `prefetchAccount` in the same session
+  (session cookie required; one `prefetchAccount` per account).
 - **Params:** (registration fields depend on XenForo config)
   - `username` (string, required)
   - `email` (string, required)
   - `password` (string, required)
-  - `customFields` (object, optional)
-  - `profile` (object, optional)
+  - `passwordConfirm` (string, optional) — Must match when sent.
+  - `dateOfBirth` (string, optional) — `YYYY-MM-DD`.
+  - `location`, `timezone` (string, optional) — `timezone` is a PHP time zone name.
+  - `customFields` (object, optional) — Field id to value (a list for multiple choices).
+  - `emailChoice` (bool, optional) — Used when the forum asks; sets both staff emails and the activity summary.
+  - `acceptTerms`, `acceptPrivacy` (bool) — Each required only when the forum has that policy.
+- **Response:** `userId`, `username`, `userState`, `requiresEmailConfirmation`,
+  `requiresManualApproval`, and `message` (XenForo's own "Thanks for
+  registering" text). On error, `resultText` has every message, one per line,
+  and `errors` maps a field to its message: `username`, `email`, `password`,
+  `dob`, `location`, `timezone`, `custom_field_<id>`, `acceptTerms`,
+  `acceptPrivacy`.
 
 ### `prefetchAccount`
 
 - **Auth:** `none`
-- **Description:** Returns registration requirements and custom fields.
+- **Description:** Returns whether registration is open and possible in the
+  app, its requirements and custom fields (those a new member may fill in),
+  and starts XenForo's registration timer for `register`.
 - **Params:** none
+- **Response:** `registrationOpen`, `canRegisterViaAPI`, `registerViaWebUrl`
+  (the canonical register page), `customRegisterFields`, and
+  `registrationRequirements` (when possible): `dateOfBirth.minimumAge` (0 when
+  none), `privacyPolicy` / `termsOfService` (`required` when the forum has it,
+  `url` as a full address), `emailChoice`, `location`, `username`.
+
+### `resendEmailConfirmation`
+
+- **Auth:** `required`
+- **Description:** Sends the confirmation email again, for a member waiting to
+  confirm their email address. At most once every ten minutes (XenForo's own
+  page asks for a captcha instead).
+- **Params:** none
+- **Response:** `message` — XenForo's "The confirmation email has been resent."
+
+### `completeBrowserLogin`
+
+- **Auth:** `none`
+- **Description:** Signs the app in with the one-time code the website handed
+  to the app's scheme (see below), remembered. A member with two-step gets a
+  `tfa_trust` cookie too, so the remember cookie can sign the app back in
+  after its session lapses.
+- **Params:**
+  - `code` (string, required) — From `<scheme>://login?code=…&state=…`.
+  - `verifier` (string, required) — The PKCE verifier whose S256 challenge the app sent.
+
+### Signing in and up on the website
+
+Not API methods: pages of the forum the app opens in the system browser sheet.
+
+- `index.php?forumcopilot-app-login/&scheme=…&state=…&challenge=…` — a guest
+  goes to XenForo's login page and comes back; a signed-in member confirms
+  "Continue as {name}" (or "Not you? Sign out", which signs the browser out
+  and returns here), and the page hands a code to `<scheme>://login`.
+- `index.php?register/&_xfRedirect=<that address>` — XenForo's register page.
+  The request is kept in XenForo's session for half an hour (also when a
+  guest goes from the login page to Register, or signs up with Google or
+  Facebook), and `register/complete` then shows "Continue in the app", which
+  hands over a code the same way. A member already signed in on the website
+  goes straight to the confirmation page.
 
 ### `forgotPassword`
 

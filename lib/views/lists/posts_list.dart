@@ -1059,13 +1059,17 @@ class _PostsState extends State<PostsList> {
   }
 
   void _showJumpToPostDialog(BuildContext context, ThreadViewData data) {
+    // One post: nothing to jump to. A slider from 1 to 1 (no divisions)
+    // fails to lay out, and a release build drew the failure as a grey
+    // block spilling out of the dialog.
+    if (data.totalPosts < 2) return;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     // Dialog-local, seeded from the current position. Dragging the slider used
     // to write straight into the thread's visible-post state, which both moved
     // the bottom-bar counter while the dialog was still open and rebuilt the
     // list behind it on every drag tick.
-    int selectedPostNumber = _currentVisiblePostIndex.value + 1;
+    int selectedPostNumber = (_currentVisiblePostIndex.value + 1).clamp(1, data.totalPosts);
 
     showDialog(
       context: context,
@@ -1234,9 +1238,10 @@ class _PostsState extends State<PostsList> {
                 ),
                 SizedBox(width: DesignTokens.spacingS),
                 GestureDetector(
-                  onTap: () {
-                    _showJumpToPostDialog(context, data);
-                  },
+                  // Nothing to jump to in a one-post thread.
+                  onTap: data.totalPosts > 1
+                      ? () => _showJumpToPostDialog(context, data)
+                      : null,
                   child: ValueListenableBuilder<int>(
                     valueListenable: _currentVisiblePostIndex,
                     builder: (context, index, _) => Text(

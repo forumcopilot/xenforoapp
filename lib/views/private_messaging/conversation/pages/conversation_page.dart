@@ -1326,11 +1326,16 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
   void _showJumpToMessageDialog(BuildContext context) {
     if (_conversation == null) return;
+    final totalMessages = _conversation!.totalMessageNum ?? _conversation!.list.length;
+    // One message: nothing to jump to. A slider from 1 to 1 (no divisions)
+    // fails to lay out, and a release build drew the failure as a grey
+    // block spilling out of the dialog.
+    if (totalMessages < 2) return;
 
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final totalMessages = _conversation!.totalMessageNum ?? _conversation!.list.length;
-    int selectedMessagePosition = _currentVisibleMessagePosition;
+    // Within the slider's range, even if the count is behind the messages.
+    int selectedMessagePosition = _currentVisibleMessagePosition.clamp(1, totalMessages);
 
     showDialog(
       context: context,
@@ -1357,7 +1362,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     value: selectedMessagePosition.toDouble(),
                     min: 1,
                     max: totalMessages.toDouble(),
-                    divisions: math.max(0, totalMessages - 1),
+                    divisions: totalMessages - 1,
                     label: '$selectedMessagePosition',
                     onChanged: (double value) {
                       setState(() {
@@ -1532,11 +1537,12 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
             ),
             Semantics(
               label: l10n.messagePositionOf(position, total),
-              hint: l10n.tapToJumpToMessage,
-              button: true,
+              hint: total > 1 ? l10n.tapToJumpToMessage : null,
+              button: total > 1,
               excludeSemantics: true,
               child: InkWell(
-                onTap: () => _showJumpToMessageDialog(context),
+                // Nothing to jump to in a one-message conversation.
+                onTap: total > 1 ? () => _showJumpToMessageDialog(context) : null,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
                   child: Padding(

@@ -63,6 +63,11 @@ void runAccountProxyTests(IFCAccountProxy accountProxy, TestConfig config) {
       }
       final result = await accountProxy.updatePassword(config.password, 'newpassword123');
       helper.assertResultTrue(result, 'updatePassword');
+      // Put it back: updateEmail below and the next run sign in with the
+      // configured password. It used to stay changed, so updateEmail failed
+      // with "Password is incorrect" and the forum kept the new password.
+      final restored = await accountProxy.updatePassword('newpassword123', config.password);
+      helper.assertResultTrue(restored, 'updatePassword (restoring the password)');
       } on UnimplementedError {
         print('⚠️  Skipping updatePassword - updatePassword is not implemented by this platform');
         helper.tracker.recordNotImplemented('updatePassword', methodName: 'updatePassword');

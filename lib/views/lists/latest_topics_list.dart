@@ -45,6 +45,13 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
     // Initialize controller when tab becomes active
     final tabJustBecameActive = !oldWidget.isActive && widget.isActive;
     if (tabJustBecameActive) {
+      // Back on a list already shown (its chip again, or the Home tab):
+      // load it afresh. This used to set _isInitialLoading and load
+      // nothing, so the list stayed a spinner.
+      if (_hasLoaded) {
+        refreshList();
+        return;
+      }
       _isInitialLoading = true;
       if (mounted) {
         setState(() {});
@@ -61,7 +68,9 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
 
     // Load data if tab is active and we haven't loaded yet
     // Parent (TopicListTab) handles credential changes and calls resetList()
-    if (widget.isActive && !_hasLoaded) {
+    // Not when it just became active: that load is under way already, and
+    // a second one went out with it.
+    if (!tabJustBecameActive && widget.isActive && !_hasLoaded) {
       if (_latestTopicController != null) {
         _initializeData();
       }

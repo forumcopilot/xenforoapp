@@ -54,6 +54,13 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
     AppLogger.debug('  - tabJustBecameActive: $tabJustBecameActive');
 
     if (tabJustBecameActive && widget.siteContext.isLoggedIn) {
+      // Back on a list already shown (its chip again, or the Home tab):
+      // load it afresh. This used to set _isInitialLoading and load
+      // nothing, so the list stayed a spinner.
+      if (_hasLoaded) {
+        refreshList();
+        return;
+      }
       _isInitialLoading = true;
       if (mounted) {
         setState(() {});
@@ -83,7 +90,9 @@ class UnreadTopicsListState extends FCStatefulWidget<UnreadTopicsList> with FCLi
     }
 
     // Load data if tab is active, user is logged in, and we haven't loaded yet
-    if (widget.isActive && !_hasLoaded && widget.siteContext.isLoggedIn) {
+    // Not when it just became active: that load is under way already, and
+    // a second one went out with it.
+    if (!tabJustBecameActive && widget.isActive && !_hasLoaded && widget.siteContext.isLoggedIn) {
       if (_unreadTopicController != null) {
         AppLogger.debug('  → Tab is active but data not loaded, initializing data...');
         _initializeData();

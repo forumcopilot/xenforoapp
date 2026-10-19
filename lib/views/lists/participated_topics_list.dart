@@ -42,6 +42,13 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
     // Initialize controller when tab becomes active
     final tabJustBecameActive = !oldWidget.isActive && widget.isActive;
     if (tabJustBecameActive && widget.siteContext.isLoggedIn) {
+      // Back on a list already shown (its chip again, or the Home tab):
+      // load it afresh. This used to set _isInitialLoading and load
+      // nothing, so the list stayed a spinner.
+      if (_hasLoaded) {
+        refreshList();
+        return;
+      }
       _isInitialLoading = true;
       if (mounted) {
         setState(() {});
@@ -58,7 +65,9 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
 
     // Load data if tab is active, user is logged in, and we haven't loaded yet
     // Parent (TopicListTab) handles credential changes and calls resetList()
-    if (widget.isActive && !_hasLoaded && widget.siteContext.isLoggedIn) {
+    // Not when it just became active: that load is under way already, and
+    // a second one went out with it.
+    if (!tabJustBecameActive && widget.isActive && !_hasLoaded && widget.siteContext.isLoggedIn) {
       if (_participatedTopicController != null) {
         _initializeData();
       }

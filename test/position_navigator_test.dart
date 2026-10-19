@@ -22,7 +22,8 @@ void main() {
         body: Stack(children: [
           const SizedBox.expand(),
           PositionNavigator.place(
-            navigator: PositionNavigator(
+            navigator: HiddenWhileTyping(
+              child: PositionNavigator(
               position: position,
               total: total,
               positionLabel: 'Post $position of $total',
@@ -32,6 +33,7 @@ void main() {
               onFirst: () => calls.add('first'),
               onLast: () => calls.add('last'),
               onJump: () => calls.add('jump'),
+              ),
             ),
           ),
         ]),
@@ -54,5 +56,24 @@ void main() {
     await pump(tester, position: 1, total: 1);
     expect(find.text('1 / 1'), findsNothing);
     expect(find.byIcon(Icons.arrow_upward), findsNothing);
+  });
+
+  testWidgets('out of the way while the keyboard is up, even under a Scaffold', (tester) async {
+    await pump(tester, position: 3, total: 12);
+    expect(find.text('3 / 12'), findsOneWidget);
+    // The keyboard: the Scaffold's body sees no insets, the window does.
+    tester.view.viewInsets = const FakeViewPadding(bottom: 800);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pump();
+    expect(find.text('3 / 12'), findsNothing);
+    tester.view.resetViewInsets();
+    await tester.pump();
+    expect(find.text('3 / 12'), findsOneWidget);
+  });
+
+  testWidgets('at the bottom left, clear of the footers\' actions on the right', (tester) async {
+    await pump(tester, position: 3, total: 12);
+    final pill = tester.getRect(find.byType(PositionNavigator));
+    expect(pill.left, lessThan(tester.view.physicalSize.width / tester.view.devicePixelRatio / 2));
   });
 }

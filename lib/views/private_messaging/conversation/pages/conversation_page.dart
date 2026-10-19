@@ -936,8 +936,6 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     // Without the composer under the list, the navigator sits clear of the
     // system bar itself.
     final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
-    // The keyboard is up: the room is for the messages and the composer.
-    final showNavigator = MediaQuery.viewInsetsOf(context).bottom == 0;
 
     return Column(
       children: [
@@ -1131,7 +1129,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                 ),
                 ),
               ),
-              if (showNavigator) _buildNavigator(context, bottom: navigatorBottom),
+              _buildNavigator(context, bottom: navigatorBottom),
             ],
           ),
         ),
@@ -1507,15 +1505,16 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
   }
 
   /// First and newest message, and the position (tap to jump to one),
-  /// floating over the messages at the bottom right; nothing in a
-  /// one-message conversation.
+  /// floating over the messages at the bottom left; out of the way while
+  /// the keyboard is up, and nothing in a one-message conversation.
   Widget _buildNavigator(BuildContext context, {required double bottom}) {
     final l10n = AppLocalizations.of(context);
     final total = _conversation!.totalMessageNum ?? _conversation!.list.length;
     final position = _currentVisibleMessagePosition;
     return PositionNavigator.place(
       bottom: bottom,
-      navigator: PositionNavigator(
+      navigator: HiddenWhileTyping(
+        child: PositionNavigator(
       position: position,
       total: total,
       positionLabel: l10n.messagePositionOf(position, total),
@@ -1525,6 +1524,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
       onFirst: _jumpToFirstMessage,
       onLast: _jumpToLastMessage,
       onJump: () => _showJumpToMessageDialog(context),
+        ),
       ),
     );
   }

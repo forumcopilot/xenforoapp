@@ -4,11 +4,13 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../theme/design_tokens.dart';
 
 /// The first and last item and where the reader is ("4 / 12", a tap to
-/// jump to one), as a small pill floating at the bottom right of a
-/// conversation or a thread, over the list and above its reply bar.
+/// jump to one), as a small pill floating at the bottom left of a
+/// conversation or a thread, over the list and above its reply bar. Left,
+/// because posts' and messages' actions (react, reply, quote) end their
+/// footers on the right, where it covered them.
 ///
-/// Put it in a [Stack] over the list with [place]. With fewer than two
-/// items there is nowhere to go, so it draws nothing.
+/// Put it in a [Stack] over the list with [place], inside [HiddenWhileTyping].
+/// With fewer than two items there is nowhere to go, so it draws nothing.
 class PositionNavigator extends StatelessWidget {
   const PositionNavigator({
     super.key,
@@ -39,10 +41,10 @@ class PositionNavigator extends StatelessWidget {
   final VoidCallback onLast;
   final VoidCallback onJump;
 
-  /// [navigator] at the bottom right of the [Stack] it is in; [bottom] is
+  /// [navigator] at the bottom left of the [Stack] it is in; [bottom] is
   /// the system bar's height where no reply bar sits under the list.
   static Widget place({required Widget navigator, double bottom = 0}) => Positioned(
-        right: DesignTokens.spacingM,
+        left: DesignTokens.spacingM,
         bottom: bottom + DesignTokens.spacingS,
         child: navigator,
       );
@@ -107,4 +109,40 @@ class PositionNavigator extends StatelessWidget {
       ),
     );
   }
+}
+
+/// [child], left out while the keyboard is up: the room is for the list and
+/// the reply being written. A page's body cannot tell from its MediaQuery,
+/// which its Scaffold takes the keyboard out of (the thread's navigator
+/// stayed up over the keyboard), so this reads the window's own insets and
+/// rebuilds, alone, as they change.
+class HiddenWhileTyping extends StatefulWidget {
+  const HiddenWhileTyping({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<HiddenWhileTyping> createState() => _HiddenWhileTypingState();
+}
+
+class _HiddenWhileTypingState extends State<HiddenWhileTyping> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) => View.of(context).viewInsets.bottom > 0 ? const SizedBox.shrink() : widget.child;
 }

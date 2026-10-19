@@ -1196,14 +1196,13 @@ class _PostsState extends State<PostsList> {
   final GlobalKey<QuickReplyBarState> _quickReplyKey = GlobalKey<QuickReplyBarState>();
 
   /// The first and last post and where the reader is, floating at the
-  /// bottom right above the reply bar (as in a conversation). Out of the way
+  /// bottom left above the reply bar (as in a conversation). Out of the way
   /// while the keyboard is up; nothing in a one-post thread.
   Widget _buildNavigator(ThreadViewData data) {
     final l10n = AppLocalizations.of(context);
     // Only this rebuilds as the keyboard moves, not the list.
-    return Builder(builder: (context) {
-      if (MediaQuery.viewInsetsOf(context).bottom > 0) return const SizedBox.shrink();
-      return ValueListenableBuilder<int>(
+    return HiddenWhileTyping(
+      child: ValueListenableBuilder<int>(
         valueListenable: _currentVisiblePostIndex,
         builder: (context, index, _) => PositionNavigator(
           position: index + 1,
@@ -1216,8 +1215,8 @@ class _PostsState extends State<PostsList> {
           onLast: _jumpToLastPost,
           onJump: () => _showJumpToPostDialog(context, data),
         ),
-      );
-    });
+      ),
+    );
   }
 
   /// Posts the quick-reply bar's text, as the full Reply page would (with

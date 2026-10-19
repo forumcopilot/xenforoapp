@@ -192,5 +192,7 @@ void main() {
     expect(ReplyPage.withQuote('', '[QUOTE]x[/QUOTE]\n'), '[QUOTE]x[/QUOTE]\n');
     expect(ReplyPage.withQuote('  ', '[QUOTE]x[/QUOTE]\n'), '[QUOTE]x[/QUOTE]\n');
     expect(ReplyPage.withQuote('Typed\n', '[QUOTE]x[/QUOTE]\n'), 'Typed\n\n[QUOTE]x[/QUOTE]\n');
+    // XenForo's quote ends at [/QUOTE]: a new line to write on.
+    expect(ReplyPage.withQuote('', '[QUOTE]x[/QUOTE]'), '[QUOTE]x[/QUOTE]\n');
   });
 }

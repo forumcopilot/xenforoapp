@@ -42,9 +42,12 @@ class ReplyPage extends StatefulWidget {
     this.contentController,
   });
 
-  /// [typed] in the quick-reply bar, then [quote] below it to write under.
-  static String withQuote(String typed, String quote) =>
-      typed.trim().isEmpty ? quote : '${typed.trimRight()}\n\n$quote';
+  /// [typed] in the quick-reply bar, then [quote] below it, and a new line
+  /// to write on, as XenForo's editor leaves it.
+  static String withQuote(String typed, String quote) {
+    final quoted = quote.endsWith('\n') ? quote : '$quote\n';
+    return typed.trim().isEmpty ? quoted : '${typed.trimRight()}\n\n$quoted';
+  }
 
   @override
   State<ReplyPage> createState() => _ReplyPageState();
@@ -76,6 +79,22 @@ class _ReplyPageState extends State<ReplyPage> {
     // Cache the future so it's only called once
     if (widget.isQuote && widget.postId != null) {
       _quoteFuture = SiteProxyFactory.getPostProxy().getQuotePostAsync(widget.postId!);
+      final shared = widget.contentController;
+      if (shared != null) {
+        // The quick-reply bar's text, with the quote after it, set once the
+        // quote arrives rather than by the editor while it builds: the bar
+        // under this page listens to the same text, and changing it during
+        // a build is an error (debug builds stopped on it, and the bar was
+        // left with its hint over the text and Send off).
+        _quoteFuture!.then((result) {
+          final quote = result.quoteContent;
+          if (!mounted || quote == null || quote.isEmpty) return;
+          shared.text = ReplyPage.withQuote(_typedBefore, quote);
+          shared.selection = TextSelection.collapsed(offset: shared.text.length);
+        }, onError: (Object _) {
+          // The page shows that the quote failed to load.
+        });
+      }
     }
   }
 
@@ -220,7 +239,9 @@ class _ReplyPageState extends State<ReplyPage> {
             contentController: shared,
             draftKey: shared == null ? null : _draftKey,
             serverDraftKey: shared == null ? null : XenForoDraftProxy.replyKey(widget.threadId),
-            initialContent: quoteContent == null || shared == null ? quoteContent : ReplyPage.withQuote(_typedBefore, quoteContent),
+            // With the bar's text, the quote is put in it as it arrives
+            // (initState), not here.
+            initialContent: shared == null ? quoteContent : null,
             contentHint: AppLocalizations.of(context).writeYourReply,
             onSubmit: _handleSubmit,
             onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,

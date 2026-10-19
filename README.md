@@ -4,6 +4,8 @@ This repository is an open-source Flutter template for building a **single-forum
 
 The app connects directly to one XenForo forum through the Forum Copilot add-on endpoint (for example `forumcopilot.php`) and does not require `forumcopilot.com` runtime APIs.
 
+**Current release: 1.0** (October 2026), the same app as the official Forum Copilot app 1.0, for add-on 1.9.0. What changed: [CHANGELOG.md](CHANGELOG.md).
+
 ## Forum Copilot: the only full-featured mobile app built specifically for XenForo
 
 [**forumcopilot.com**](https://forumcopilot.com) is the home of this project. Forum Copilot is not a generic forum reader with a XenForo adapter bolted on: it speaks XenForo's own API through a purpose-built add-on, so threads, reactions, polls, attachments, conversations, alerts, custom profile fields, passkeys and push notifications all work the way your members expect. There are two ways to give your community that experience:
@@ -30,7 +32,7 @@ Project links:
 
 Whichever path you choose, your forum needs the **Forum Copilot Mobile App API** add-on. It exposes the `forumcopilot.php` endpoint the app talks to, handles device registration for push, and adds the smart banner that invites web visitors to open the app. The add-on is MIT licensed and its source ships in this repository under [`plugins/FC_XenForo2/`](plugins/FC_XenForo2/); the [add-on changelog](https://forumcopilot.com/addon-changelog) lists the latest version.
 
-1. **Get the add-on.** Download the ZIP attached to the newest `addon-v…` release on [GitHub Releases](https://github.com/forumcopilot/xenforoapp/releases). Or build it yourself: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
+1. **Get the add-on.** Download the ZIP attached to the newest `addon-v…` release on [GitHub Releases](https://github.com/forumcopilot/xenforoapp/releases). App 1.0 is built for add-on 1.9.0 or newer; with an older add-on it still works, but sign-in on the website, account deletion, drafts shared with the web editor, notification channels and the forum's colours stay off. Or build it yourself: the source is in [`plugins/FC_XenForo2/upload/`](plugins/FC_XenForo2/upload/); zip that `upload/` folder so the archive contains `upload/src/addons/ForumCopilot/` and `upload/js/ForumCopilot/`.
 2. **Install it in XenForo.** In the Admin Control Panel go to **Add-ons**, click **Install/upgrade from archive**, and upload the ZIP. Upgrading an existing install works the same way. (XenForo 2.2 or newer is required, and you need a valid XenForo licence from XenForo Ltd.)
 3. **Open the add-on's option page.** Go to **Options → ForumCopilot Options**. The first visit copies `forumcopilot.php` into your forum root, registers your forum with forumcopilot.com, and shows a success or error message plus a single-sign-on link to your forum's page on forumcopilot.com, where you can edit how it is listed in the hosted app (name, description, logo). Push and the smart banner are configured on this options page, not on forumcopilot.com.
 4. **Check the endpoint.** It only accepts JSON over POST:
@@ -48,47 +50,47 @@ Whichever path you choose, your forum needs the **Forum Copilot Mobile App API**
 This app provides a full-featured forum experience for a single XenForo site:
 
 ### Browsing & discovery
-- **Forums** – Browse forum list and nodes; view subscribed forums.
+- **Forums** – Browse the forum list, sub-forums and your subscribed forums. A forum's page has a header with its description and topic and post counts, its sub-forums as compact rows, and New Topic as a floating button.
 - **Topics** – Latest, unread, subscribed, and participated topic lists with infinite scroll.
 - **Search** – Forum-wide search (topics and posts).
 - **Members** – Member list and member search.
 
 ### Reading & content
-- **Thread view** – Read threads with post list, BBCode rendering, and rich content (tables, code, quotes).
+- **Thread view** – Read threads with post list, BBCode rendering, and rich content (tables, code, quotes). A floating navigator goes to the first or last post, or jumps to any post.
 - **Attachments** – View images and files; full-screen image viewer and attachment carousel.
 - **Polls** – View and vote in thread polls.
 - **Link previews** – Inline link preview cards (Twitter/YouTube degrade to normal links in standalone mode).
 
 ### Posting & participation
 - **New topic** – Create threads with optional poll.
-- **Reply** – Reply to threads with BBCode editor.
+- **Reply** – Reply from the quick reply bar under a thread, or in the full BBCode editor; Reply on a post quotes it. Drafts are kept on the forum too, shared with the web editor (add-on 1.9.0).
 - **Edit post** – Edit your own posts.
-- **Reactions** – React to posts and direct messages with the forum's own reactions, change or remove your reaction, and see which reactions were used and who gave them. Forums on an add-on older than 1.8.0 get a single Like.
+- **Reactions** – A tap likes, a long press picks one of the forum's own reactions, on posts and direct messages; see which reactions were used and who gave them. Forums on an add-on older than 1.8.0 get a single Like.
 - **Attachments** – Add images (camera/gallery) and files (e.g. PDFs) when composing; image compression and file picker (including native macOS file picker).
 
 ### Private messaging
-- **Conversations** – Modern conversation-style private messages (when enabled by forum).
+- **Conversations** – Conversation-style direct messages with a reply bar, reactions, and new messages arriving while one is open.
 - **Traditional PM** – Inbox/sent style private messages.
 - **Compose** – New conversation or PM, reply, edit; attachments and BBCode.
 
 ### Account & profile
-- **Login / logout** – Session with optional “remember me”.
+- **Login / logout** – Username and password, with two-step verification (authenticator app, email, backup codes or a passkey) and “Trust this device”.
 - **Registration** – Create account with custom registration fields when enabled.
 - **Forgot password** – Password reset flow.
 - **Profile** – View profile, avatar, recent posts, and custom profile fields.
 - **Profile picture** – Change avatar from device or camera.
-- **Passkeys** – Sign in with passkeys where supported (requires Android/iOS app and assetlinks/AASA configured; on iOS, your forum's domain in two files, see [step 5 of the checklist](#open-source-safety-checklist)).
+- **Passkeys** – Sign in with a passkey on the phone, or on another phone by QR code (requires Android/iOS app and assetlinks/AASA configured; on iOS, your forum's domain in two files, see [step 5 of the checklist](#open-source-safety-checklist)).
 - **Sign in on the website** – For members who use Google, Facebook or another way your website offers (see [Configure your forum](#3-configure-your-forum)).
 - **Delete account** – In Settings, where the add-on allows it (App Store guideline 5.1.1(v)).
 
 ### Notifications & alerts
 - **Alerts** – In-app alerts list (when enabled by forum).
-- **Push notifications** – Optional Firebase-based push (disabled by default; requires config).
+- **Push notifications** – Optional, through your own Firebase project (see [Push notifications](#push-notifications-optional)); on Android each kind of notification has its own channel (add-on 1.9.0).
 
 ### Settings & UX
 - **Forum settings** – Per-category settings from XenForo (when provided by add-on).
 - **Localization** – 11 languages (English, German, Spanish, French, Italian, Japanese, Korean, Dutch, Portuguese, Russian, Chinese) via `gen-l10n`.
-- **Theme** – Material Design with forum-aware styling.
+- **Theme** – Material 3 in the forum's own colours and logo (add-on 1.9.0), light and dark.
 
 ### Technical
 - **Single-forum** – No forum chooser; app is tied to one forum via config.
@@ -148,7 +150,7 @@ static const String pluginEndpoint = 'forumcopilot.php';
 
 Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed. Push has its own section: [Push notifications](#push-notifications-optional).
 
-Members who sign in on your website with Google, Facebook, a passkey or two-step have no password to type into the app; they sign in through the website instead ("Sign in on the forum's website", in the system browser sheet). For that, give the app a URL scheme of its own in `browserLoginScheme` (not `forumcopilot`, which the official app uses), put the same scheme in `android/app/src/main/AndroidManifest.xml` (the `flutter_web_auth_2` CallbackActivity), and add it to the add-on option **App sign-in schemes** in your admin panel (Options > Forum Copilot). The button shows once the forum lists the app's scheme.
+Members who sign in on your website with Google, Facebook, a passkey or two-step have no password to type into the app; they sign in through the website instead ("Sign in on the forum's website", in the system browser sheet). For that, give the app a URL scheme of its own in `browserLoginScheme` (not `forumcopilot`, which the official app uses), put the same scheme in `android/app/src/main/AndroidManifest.xml` (the `flutter_web_auth_2` CallbackActivity), and add it to the add-on option **App sign-in schemes** in your admin panel (Options > ForumCopilot Options). The button shows once the forum lists the app's scheme.
 
 `forumName` and `forumBaseUrl` can also be overridden at build time without editing the file, which is handy for a CI build, a preview against a staging forum, or the benchmark harness:
 

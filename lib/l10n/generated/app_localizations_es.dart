@@ -289,7 +289,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'No te has suscrito a ningún tema. Toca el botón de estrella en un tema para suscribirte y recibir notificaciones de nuevas actualizaciones.';
+      'Aún no estás suscrito a ningún tema. Abre un tema y elige Suscribirse en su menú ⋮ para recibir avisos de nuevas respuestas.';
 
   @override
   String get noParticipatedTopics => 'No hay temas participados';
@@ -2983,4 +2983,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get jumpToLastPost => 'Ir a la última publicación';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get postAction => 'Publicar';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensajes',
+      one: '$count mensaje',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count respuestas',
+      one: '$count respuesta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count subforos',
+      one: '$count subforo',
+    );
+    return '$_temp0';
+  }
 }

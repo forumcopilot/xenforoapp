@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Devi accedere per visualizzare i tuoi argomenti non letti",
   
   "noSubscribedTopics": "Nessun argomento sottoscritto",
-  "noSubscribedTopicsMessage": "Non ti sei iscritto ad alcun argomento. Tocca il pulsante stella su un argomento per iscriverti e ricevere notifiche per nuovi aggiornamenti.",
+  "noSubscribedTopicsMessage": "Non sei ancora iscritto ad alcun argomento. Apri un argomento e scegli Iscriviti nel suo menu ⋮ per ricevere notifiche delle nuove risposte.",
   "signInToViewSubscribedTopics": "Accedi per visualizzare gli argomenti sottoscritti",
   "youNeedToBeSignedInToViewSubscribedTopics": "Devi accedere per visualizzare i tuoi argomenti sottoscritti",
   
@@ -1330,5 +1330,10 @@
   "postPositionOf": "Post {position} di {total}",
   "tapToJumpToPost": "Tocca per andare a un post specifico",
   "jumpToFirstPost": "Vai al primo post",
-  "jumpToLastPost": "Vai all'ultimo post"
+  "jumpToLastPost": "Vai all'ultimo post",
+  "send": "Invia",
+  "postAction": "Pubblica",
+  "messageCountLabel": "{count, plural, one{{count} messaggio} other{{count} messaggi}}",
+  "replyCountLabel": "{count, plural, one{{count} risposta} other{{count} risposte}}",
+  "subForumCountLabel": "{count, plural, one{{count} sottoforum} other{{count} sottoforum}}"
 }

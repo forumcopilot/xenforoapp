@@ -289,7 +289,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Sie haben keine Themen abonniert. Tippen Sie auf die Stern-Schaltfläche bei einem Thema, um es zu abonnieren und Benachrichtigungen für neue Updates zu erhalten.';
+      'Du hast noch keine Themen abonniert. Öffne ein Thema und wähle im ⋮-Menü „Abonnieren“, um über neue Antworten benachrichtigt zu werden.';
 
   @override
   String get noParticipatedTopics => 'Keine teilgenommenen Themen';
@@ -3002,4 +3002,43 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get jumpToLastPost => 'Zum letzten Beitrag springen';
+
+  @override
+  String get send => 'Senden';
+
+  @override
+  String get postAction => 'Veröffentlichen';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Nachrichten',
+      one: '$count Nachricht',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Antworten',
+      one: '$count Antwort',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Unterforen',
+      one: '$count Unterforum',
+    );
+    return '$_temp0';
+  }
 }

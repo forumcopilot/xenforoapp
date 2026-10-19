@@ -22,7 +22,12 @@ class QuickReplyBar extends StatefulWidget {
     this.onOpenFullEditor,
     this.siteContext,
     this.serverDraftKey,
+    this.sendLabel,
   });
+
+  /// The send button's tooltip and screen-reader label; Send Message by
+  /// default (a conversation), Post in a thread.
+  final String? sendLabel;
 
   final String draftKey;
 
@@ -216,7 +221,7 @@ class QuickReplyBarState extends State<QuickReplyBar> {
             _SendButton(
               enabled: canSend,
               sending: _sending,
-              tooltip: l10n.sendMessage,
+              tooltip: widget.sendLabel ?? l10n.sendMessage,
               onPressed: _submit,
             ),
           ],

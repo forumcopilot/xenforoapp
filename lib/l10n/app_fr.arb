@@ -89,7 +89,7 @@
   "signInToViewUnreadTopics": "Connectez-vous pour voir les sujets non lus",
   "youNeedToBeSignedInToViewUnreadTopics": "Vous devez être connecté pour voir vos sujets non lus",
   "noSubscribedTopics": "Aucun sujet abonné",
-  "noSubscribedTopicsMessage": "Vous ne vous êtes abonné à aucun sujet. Appuyez sur le bouton étoile sur un sujet pour vous abonner et recevoir des notifications pour les nouvelles mises à jour.",
+  "noSubscribedTopicsMessage": "Vous n'êtes abonné à aucun sujet pour l'instant. Ouvrez un sujet et choisissez S'abonner dans son menu ⋮ pour être averti des nouvelles réponses.",
   "signInToViewSubscribedTopics": "Connectez-vous pour voir les sujets abonnés",
   "youNeedToBeSignedInToViewSubscribedTopics": "Vous devez être connecté pour voir vos sujets abonnés",
   "noParticipatedTopics": "Aucun sujet participé",
@@ -1306,5 +1306,10 @@
   "postPositionOf": "Message {position} sur {total}",
   "tapToJumpToPost": "Touchez pour aller à un message précis",
   "jumpToFirstPost": "Aller au premier message",
-  "jumpToLastPost": "Aller au dernier message"
+  "jumpToLastPost": "Aller au dernier message",
+  "send": "Envoyer",
+  "postAction": "Publier",
+  "messageCountLabel": "{count, plural, one{{count} message} other{{count} messages}}",
+  "replyCountLabel": "{count, plural, one{{count} réponse} other{{count} réponses}}",
+  "subForumCountLabel": "{count, plural, one{{count} sous-forum} other{{count} sous-forums}}"
 }

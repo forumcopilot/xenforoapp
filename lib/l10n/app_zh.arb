@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "您需要登录才能查看未读主题",
   
   "noSubscribedTopics": "无订阅主题",
-  "noSubscribedTopicsMessage": "您没有订阅任何主题。点击主题上的星形按钮以订阅并接收新更新通知。",
+  "noSubscribedTopicsMessage": "你还没有订阅任何主题。打开一个主题，在其 ⋮ 菜单中选择“订阅”，即可收到新回复的通知。",
   "signInToViewSubscribedTopics": "登录以查看订阅主题",
   "youNeedToBeSignedInToViewSubscribedTopics": "您需要登录才能查看订阅主题",
   
@@ -1330,5 +1330,10 @@
   "postPositionOf": "第 {position} 楼，共 {total} 楼",
   "tapToJumpToPost": "点按以跳转到指定帖子",
   "jumpToFirstPost": "跳转到第一个帖子",
-  "jumpToLastPost": "跳转到最后一个帖子"
+  "jumpToLastPost": "跳转到最后一个帖子",
+  "send": "发送",
+  "postAction": "发布",
+  "messageCountLabel": "{count, plural, other{{count} 条消息}}",
+  "replyCountLabel": "{count, plural, other{{count} 条回复}}",
+  "subForumCountLabel": "{count, plural, other{{count} 个子论坛}}"
 }

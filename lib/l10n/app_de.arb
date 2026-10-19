@@ -89,7 +89,7 @@
   "signInToViewUnreadTopics": "Melden Sie sich an, um ungelesene Themen anzuzeigen",
   "youNeedToBeSignedInToViewUnreadTopics": "Sie müssen angemeldet sein, um Ihre ungelesenen Themen anzuzeigen",
   "noSubscribedTopics": "Keine abonnierten Themen",
-  "noSubscribedTopicsMessage": "Sie haben keine Themen abonniert. Tippen Sie auf die Stern-Schaltfläche bei einem Thema, um es zu abonnieren und Benachrichtigungen für neue Updates zu erhalten.",
+  "noSubscribedTopicsMessage": "Du hast noch keine Themen abonniert. Öffne ein Thema und wähle im ⋮-Menü „Abonnieren“, um über neue Antworten benachrichtigt zu werden.",
   "signInToViewSubscribedTopics": "Melden Sie sich an, um abonnierte Themen anzuzeigen",
   "youNeedToBeSignedInToViewSubscribedTopics": "Sie müssen angemeldet sein, um Ihre abonnierten Themen anzuzeigen",
   "noParticipatedTopics": "Keine teilgenommenen Themen",
@@ -1306,5 +1306,10 @@
   "postPositionOf": "Beitrag {position} von {total}",
   "tapToJumpToPost": "Tippen, um zu einem bestimmten Beitrag zu springen",
   "jumpToFirstPost": "Zum ersten Beitrag springen",
-  "jumpToLastPost": "Zum letzten Beitrag springen"
+  "jumpToLastPost": "Zum letzten Beitrag springen",
+  "send": "Senden",
+  "postAction": "Veröffentlichen",
+  "messageCountLabel": "{count, plural, one{{count} Nachricht} other{{count} Nachrichten}}",
+  "replyCountLabel": "{count, plural, one{{count} Antwort} other{{count} Antworten}}",
+  "subForumCountLabel": "{count, plural, one{{count} Unterforum} other{{count} Unterforen}}"
 }

@@ -5,6 +5,7 @@ import '../settings_context.dart';
 import '../theme/app_theme.dart';
 import '../theme/design_tokens.dart';
 import '../l10n/generated/app_localizations.dart';
+import 'widgets/sheet_title.dart';
 
 class AppSettingsPage extends StatefulWidget {
   const AppSettingsPage({Key? key}) : super(key: key);
@@ -43,22 +44,74 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
     );
   }
 
-  Widget _buildLanguageSection(ColorScheme colorScheme, TextTheme textTheme) {
-    // Map of locale codes to display names
-    final Map<String, String> languageNames = {
-      'en': 'English',
-      'es': 'Español',
-      'it': 'Italiano',
-      'pt': 'Português',
-      'fr': 'Français',
-      'de': 'Deutsch',
-      'nl': 'Nederlands',
-      'ja': '日本語',
-      'ko': '한국어',
-      'zh': '中文',
-      'ru': 'Русский',
-    };
+  /// The languages the app speaks, each in its own language.
+  static const Map<String, String> _languageNames = {
+    'en': 'English',
+    'es': 'Español',
+    'it': 'Italiano',
+    'pt': 'Português',
+    'fr': 'Français',
+    'de': 'Deutsch',
+    'nl': 'Nederlands',
+    'ja': '日本語',
+    'ko': '한국어',
+    'zh': '中文',
+    'ru': 'Русский',
+  };
 
+  void _setLocale(Locale? value) {
+    SettingsContext.instance.locale.value = value;
+    SettingsContext.instance.saveToDevice();
+    // Apply at once; System Default (null) follows the device.
+    Get.updateLocale(value ?? Get.deviceLocale ?? const Locale('en'));
+  }
+
+  /// The language list in a sheet: twelve radio rows filled the page, and
+  /// pushed Appearance and Posting below the fold.
+  void _pickLanguage(ColorScheme colorScheme, TextTheme textTheme) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext);
+        return DraggableScrollableSheet(
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) => RadioGroup<Locale?>(
+            groupValue: SettingsContext.instance.locale.value,
+            onChanged: (value) {
+              Navigator.of(sheetContext).pop();
+              _setLocale(value);
+            },
+            child: ListView(
+              controller: scrollController,
+              children: [
+                SheetTitle(l10n.language),
+                RadioListTile<Locale?>(
+                  title: Text(l10n.systemDefault, style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+                  subtitle: Text(
+                    l10n.followSystemLanguage,
+                    style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                  value: null,
+                ),
+                for (final entry in _languageNames.entries)
+                  RadioListTile<Locale?>(
+                    title: Text(entry.value, style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface)),
+                    value: Locale(entry.key),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageSection(ColorScheme colorScheme, TextTheme textTheme) {
     return Card(
       elevation: 0,
       color: colorScheme.surfaceContainerLowest,
@@ -71,6 +124,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
           width: DesignTokens.borderWidthThin,
         ),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -84,47 +138,24 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
               ),
             ),
           ),
+          // The current choice; a tap opens the list.
           Obx(() {
-            final currentLocale = SettingsContext.instance.locale.value;
-            return RadioGroup<Locale?>(
-              groupValue: currentLocale,
-              onChanged: (value) {
-                SettingsContext.instance.locale.value = value;
-                SettingsContext.instance.saveToDevice();
-                // Apply at once; System Default (null) follows the device.
-                Get.updateLocale(value ?? Get.deviceLocale ?? const Locale('en'));
-              },
-              child: Column(
-              children: [
-                RadioListTile<Locale?>(
-                  title: Text(
-                    AppLocalizations.of(context).systemDefault,
-                    style: textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                  subtitle: Text(
-                    AppLocalizations.of(context).followSystemLanguage,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  value: null,
-                ),
-                ...languageNames.entries.map((entry) {
-                  final locale = Locale(entry.key);
-                  return RadioListTile<Locale?>(
-                    title: Text(
-                      entry.value,
-                      style: textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    value: locale,
-                  );
-                }),
-              ],
+            final current = SettingsContext.instance.locale.value;
+            final l10n = AppLocalizations.of(context);
+            final name = current == null ? null : _languageNames[current.languageCode];
+            return ListTile(
+              title: Text(
+                name ?? l10n.systemDefault,
+                style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface),
               ),
+              subtitle: name == null
+                  ? Text(
+                      l10n.followSystemLanguage,
+                      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                    )
+                  : null,
+              trailing: Icon(Icons.chevron_right_rounded, color: colorScheme.onSurfaceVariant),
+              onTap: () => _pickLanguage(colorScheme, textTheme),
             );
           }),
         ],

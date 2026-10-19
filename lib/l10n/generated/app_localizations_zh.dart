@@ -261,7 +261,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noSubscribedTopics => '无订阅主题';
 
   @override
-  String get noSubscribedTopicsMessage => '您没有订阅任何主题。点击主题上的星形按钮以订阅并接收新更新通知。';
+  String get noSubscribedTopicsMessage =>
+      '你还没有订阅任何主题。打开一个主题，在其 ⋮ 菜单中选择“订阅”，即可收到新回复的通知。';
 
   @override
   String get noParticipatedTopics => '无参与主题';
@@ -2789,4 +2790,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get jumpToLastPost => '跳转到最后一个帖子';
+
+  @override
+  String get send => '发送';
+
+  @override
+  String get postAction => '发布';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条消息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条回复',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个子论坛',
+    );
+    return '$_temp0';
+  }
 }

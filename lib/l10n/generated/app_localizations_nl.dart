@@ -283,7 +283,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.';
+      'Je bent nog op geen onderwerpen geabonneerd. Open een onderwerp en kies Abonneren in het ⋮-menu om meldingen van nieuwe reacties te krijgen.';
 
   @override
   String get noParticipatedTopics =>
@@ -2959,4 +2959,43 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get jumpToLastPost => 'Naar laatste bericht gaan';
+
+  @override
+  String get send => 'Versturen';
+
+  @override
+  String get postAction => 'Plaatsen';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count berichten',
+      one: '$count bericht',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reacties',
+      one: '$count reactie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count subforums',
+      one: '$count subforum',
+    );
+    return '$_temp0';
+  }
 }

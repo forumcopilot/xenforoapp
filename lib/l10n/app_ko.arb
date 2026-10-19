@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "읽지 않은 주제를 보려면 로그인해야 합니다",
   
   "noSubscribedTopics": "구독한 주제 없음",
-  "noSubscribedTopicsMessage": "주제를 구독하지 않았습니다. 주제의 별 버튼을 탭하여 구독하고 새 업데이트 알림을 받으세요.",
+  "noSubscribedTopicsMessage": "아직 구독한 주제가 없습니다. 주제를 열고 ⋮ 메뉴에서 구독을 선택하면 새 답글 알림을 받을 수 있습니다.",
   "signInToViewSubscribedTopics": "구독한 주제를 보려면 로그인하세요",
   "youNeedToBeSignedInToViewSubscribedTopics": "구독한 주제를 보려면 로그인해야 합니다",
   
@@ -1330,5 +1330,10 @@
   "postPositionOf": "게시물 {position}/{total}",
   "tapToJumpToPost": "탭하여 특정 게시물로 이동",
   "jumpToFirstPost": "첫 게시물로 이동",
-  "jumpToLastPost": "마지막 게시물로 이동"
+  "jumpToLastPost": "마지막 게시물로 이동",
+  "send": "보내기",
+  "postAction": "게시",
+  "messageCountLabel": "{count, plural, other{메시지 {count}개}}",
+  "replyCountLabel": "{count, plural, other{답글 {count}개}}",
+  "subForumCountLabel": "{count, plural, other{하위 포럼 {count}개}}"
 }

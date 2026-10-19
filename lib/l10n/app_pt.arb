@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Você precisa estar conectado para ver seus tópicos não lidos",
   
   "noSubscribedTopics": "Sem tópicos inscritos",
-  "noSubscribedTopicsMessage": "Você não se inscreveu em nenhum tópico. Toque no botão de estrela em um tópico para se inscrever e receber notificações de novas atualizações.",
+  "noSubscribedTopicsMessage": "Você ainda não se inscreveu em nenhum tópico. Abra um tópico e escolha Inscrever-se no menu ⋮ para ser avisado de novas respostas.",
   "signInToViewSubscribedTopics": "Faça login para ver tópicos inscritos",
   "youNeedToBeSignedInToViewSubscribedTopics": "Você precisa estar conectado para ver seus tópicos inscritos",
   
@@ -1330,5 +1330,10 @@
   "postPositionOf": "Publicação {position} de {total}",
   "tapToJumpToPost": "Toque para ir a uma publicação específica",
   "jumpToFirstPost": "Ir para a primeira publicação",
-  "jumpToLastPost": "Ir para a última publicação"
+  "jumpToLastPost": "Ir para a última publicação",
+  "send": "Enviar",
+  "postAction": "Publicar",
+  "messageCountLabel": "{count, plural, one{{count} mensagem} other{{count} mensagens}}",
+  "replyCountLabel": "{count, plural, one{{count} resposta} other{{count} respostas}}",
+  "subForumCountLabel": "{count, plural, one{{count} subfórum} other{{count} subfóruns}}"
 }

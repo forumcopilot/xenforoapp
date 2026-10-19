@@ -264,9 +264,10 @@ class ConversationAppBar extends BaseForumAppBar {
                       itemCount: participants.length,
                       itemBuilder: (context, index) {
                         final participant = participants[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingS),
-                          child: GestureDetector(
+                        // A list row, as in the Thanked By sheet: the
+                        // sheet's margins, a ripple and a full-width
+                        // target. The avatars sat against the screen edge.
+                        return ListTile(
                             onTap: () {
                               Navigator.pop(context); // Close bottom sheet
                               AppNavigation.push(context, UserProfilePage(
@@ -276,9 +277,7 @@ class ConversationAppBar extends BaseForumAppBar {
                                     profilePictureUrl: participant.iconUrl,
                                   ));
                             },
-                            child: Row(
-                              children: [
-                                UserAvatar(
+                            leading: UserAvatar(
                                   username: participant.username,
                                   iconUrl: participant.iconUrl,
                                   radius: DesignTokens.avatarRadiusM,
@@ -290,11 +289,7 @@ class ConversationAppBar extends BaseForumAppBar {
                                         )
                                       : null,
                                 ),
-                                SizedBox(width: DesignTokens.spacingM),
-                                Text(participant.username, style: Theme.of(context).textTheme.bodyLarge),
-                              ],
-                            ),
-                          ),
+                            title: Text(participant.username, style: Theme.of(context).textTheme.bodyLarge),
                         );
                       },
                     ),

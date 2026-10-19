@@ -66,14 +66,15 @@ class PositionNavigator extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Semantics(
-            label: l10n.goToTop,
-            hint: firstHint,
-            button: true,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_upward),
-              onPressed: onFirst,
-              tooltip: l10n.goToTop,
+          // One node: the button's tooltip as its label, with the hint.
+          MergeSemantics(
+            child: Semantics(
+              hint: firstHint,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_upward),
+                onPressed: onFirst,
+                tooltip: l10n.goToTop,
+              ),
             ),
           ),
           Semantics(
@@ -95,14 +96,15 @@ class PositionNavigator extends StatelessWidget {
               ),
             ),
           ),
-          Semantics(
-            label: l10n.goToBottom,
-            hint: lastHint,
-            button: true,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_downward),
-              onPressed: onLast,
-              tooltip: l10n.goToBottom,
+          // One node: the button's tooltip as its label, with the hint.
+          MergeSemantics(
+            child: Semantics(
+              hint: lastHint,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_downward),
+                onPressed: onLast,
+                tooltip: l10n.goToBottom,
+              ),
             ),
           ),
         ],

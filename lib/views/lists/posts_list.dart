@@ -1389,6 +1389,7 @@ class _PostsState extends State<PostsList> {
                 serverDraftKey: XenForoDraftProxy.replyKey(replyTopicId),
                 onSend: _sendQuickReply,
                 onOpenFullEditor: _openFullReply,
+                sendLabel: AppLocalizations.of(context).postAction,
               ),
           ],
         );

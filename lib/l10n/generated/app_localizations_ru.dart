@@ -289,7 +289,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Вы не подписались ни на одну тему. Нажмите кнопку звездочки на теме, чтобы подписаться и получать уведомления о новых обновлениях.';
+      'Вы пока не подписаны ни на одну тему. Откройте тему и выберите «Подписаться» в меню ⋮, чтобы получать уведомления о новых ответах.';
 
   @override
   String get noParticipatedTopics => 'Нет тем с участием';
@@ -2991,4 +2991,49 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get jumpToLastPost => 'Перейти к последнему сообщению';
+
+  @override
+  String get send => 'Отправить';
+
+  @override
+  String get postAction => 'Опубликовать';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сообщения',
+      many: '$count сообщений',
+      few: '$count сообщения',
+      one: '$count сообщение',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ответа',
+      many: '$count ответов',
+      few: '$count ответа',
+      one: '$count ответ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подфорума',
+      many: '$count подфорумов',
+      few: '$count подфорума',
+      one: '$count подфорум',
+    );
+    return '$_temp0';
+  }
 }

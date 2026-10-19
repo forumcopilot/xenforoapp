@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSubscribedTopicsMessage.
   ///
   /// In en, this message translates to:
-  /// **'You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.'**
+  /// **'You aren\'t subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.'**
   String get noSubscribedTopicsMessage;
 
   /// No description provided for @noParticipatedTopics.
@@ -5035,6 +5035,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jump to last post'**
   String get jumpToLastPost;
+
+  /// Label of a send button: a direct message, a quick reply in a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// Label of the button that posts a reply or a new topic
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get postAction;
+
+  /// Screen reader: how many messages a conversation has
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} message} other{{count} messages}}'**
+  String messageCountLabel(int count);
+
+  /// Screen reader: how many replies a topic has
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} reply} other{{count} replies}}'**
+  String replyCountLabel(int count);
+
+  /// Screen reader: how many sub-forums a forum row lists
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} sub-forum} other{{count} sub-forums}}'**
+  String subForumCountLabel(int count);
 }
 
 class _AppLocalizationsDelegate

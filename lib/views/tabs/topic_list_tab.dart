@@ -13,6 +13,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../widgets/filter_chip_bar.dart';
+import '../widgets/not_signed_in_view.dart';
 
 /// Reactive widget that observes controller changes and rebuilds topic items
 class _ReactiveTopicItems extends StatefulWidget {
@@ -307,7 +308,7 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
   Widget? _buildErrorOrNotSignedInWidget() {
     switch (_selectedFilterIndex) {
       case 0:
-        return _latestTopicsKey.currentState?.buildErrorOrNotSignedInWidget();
+        return _latestTopicsKey.currentState?.buildErrorOrNotSignedInWidget() ?? _guestSeesNoTopics();
       case 1:
         return _unreadTopicsKey.currentState?.buildErrorOrNotSignedInWidget();
       case 2:
@@ -317,6 +318,23 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
       default:
         return _latestTopicsKey.currentState?.buildErrorOrNotSignedInWidget();
     }
+  }
+
+  /// A forum that keeps its topics from guests can answer Latest with none
+  /// at all rather than refuse: the add-on lists only the forums a visitor
+  /// may view. The tab then said "no recent topics, check back later" on a
+  /// forum whose header counts hundreds. With topics counted and none
+  /// listed, a guest is asked to sign in instead.
+  Widget? _guestSeesNoTopics() {
+    if (widget.siteContext.isLoggedIn) return null;
+    if ((widget.boardStats?.totalThreads ?? 0) <= 0) return null;
+    if (_latestTopicsKey.currentState?.buildEmptyState() == null) return null;
+    return NotSignedInView(
+      siteContext: widget.siteContext,
+      title: AppLocalizations.of(context).signInToViewLatestTopics,
+      message: AppLocalizations.of(context).youNeedToBeSignedInToViewLatestTopics,
+      icon: Icons.lock_outline_rounded,
+    );
   }
 
   // Build empty state widget

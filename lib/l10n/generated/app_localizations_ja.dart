@@ -273,7 +273,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'トピックを購読していません。トピックの星ボタンをタップして購読し、新しい更新の通知を受け取ります。';
+      'まだトピックを購読していません。トピックを開き、⋮ メニューの「購読」を選ぶと、新しい返信の通知を受け取れます。';
 
   @override
   String get noParticipatedTopics => '参加トピックなし';
@@ -2833,4 +2833,40 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get jumpToLastPost => '最後の投稿へ移動';
+
+  @override
+  String get send => '送信';
+
+  @override
+  String get postAction => '投稿';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のメッセージ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の返信',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のサブフォーラム',
+    );
+    return '$_temp0';
+  }
 }

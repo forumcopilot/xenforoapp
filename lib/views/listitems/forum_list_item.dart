@@ -132,7 +132,11 @@ class ForumListItem extends StatelessWidget {
                             runSpacing: DesignTokens.spacingXS,
                             children: [
                               if ((forum.childForums.length) != 0) ...[
-                                Container(
+                                // "3 sub-forums" to a screen reader, not a bare 3.
+                                Semantics(
+                                  label: AppLocalizations.of(context).subForumCountLabel(forum.childForums.length),
+                                  excludeSemantics: true,
+                                  child: Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: DesignTokens.spacingS,
                                     vertical: DesignTokens.spacingXS,
@@ -161,6 +165,7 @@ class ForumListItem extends StatelessWidget {
                                         ),
                                       ),
                                     ],
+                                  ),
                                   ),
                                 ),
                               ],

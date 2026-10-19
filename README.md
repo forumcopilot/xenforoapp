@@ -77,7 +77,7 @@ This app provides a full-featured forum experience for a single XenForo site:
 - **Forgot password** – Password reset flow.
 - **Profile** – View profile, avatar, recent posts, and custom profile fields.
 - **Profile picture** – Change avatar from device or camera.
-- **Passkeys** – Sign in with passkeys where supported (requires Android/iOS app and assetlinks/AASA configured).
+- **Passkeys** – Sign in with passkeys where supported (requires Android/iOS app and assetlinks/AASA configured; on iOS, your forum's domain in two files, see [step 5 of the checklist](#open-source-safety-checklist)).
 - **Sign in on the website** – For members who use Google, Facebook or another way your website offers (see [Configure your forum](#3-configure-your-forum)).
 - **Delete account** – In Settings, where the add-on allows it (App Store guideline 5.1.1(v)).
 
@@ -335,7 +335,7 @@ Before publishing your app:
 2. Confirm the Firebase files come from your own Firebase project, and keep them out of version control (they are gitignored).
 3. Set your own bundle/application IDs for Android/iOS/macOS ([where](#1-settle-your-app-identifiers)).
 4. Set your Apple Development Team in Xcode project settings before signing.
-5. Configure passkey association files (`assetlinks.json`, `apple-app-site-association`) with your package/team IDs and certificate fingerprints.
+5. Configure passkey association files (`assetlinks.json`, `apple-app-site-association`) with your package/team IDs and certificate fingerprints. On iOS, also replace `forum.example.com` in `webcredentials:forum.example.com` with your forum's host (exactly as in `forumBaseUrl`, `www.` included) in **both** `ios/Runner/Runner.entitlements` (`com.apple.developer.associated-domains`) and `ios/Runner/Info.plist` (`AssociatedDomainsList`). iOS reads the entitlements; the login page checks the forum against the copy in Info.plist, because an iOS app cannot read its own entitlements. Xcode's **Signing & Capabilities** edits only the entitlements, so a domain added there alone gets "Passkey is currently not available in this forum (code: 3)" on the login page although iOS would allow the passkey. `test/ios_passkey_domains_test.dart` fails when the two lists differ.
 
 ---
 

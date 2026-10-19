@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/utils/forum_navigation.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
-import 'package:forumcopilot_flutter/views/new_topic_page.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../listitems/topic_list_item.dart';
@@ -25,12 +24,17 @@ class ForumTopicList extends StatefulWidget {
   final bool showSubforumHeader;
   final void Function(VoidCallback)? onRefreshAvailable;
 
+  /// Room below the last topic for the page's floating New Topic button,
+  /// so it never covers that topic.
+  final bool clearFloatingButton;
+
   const ForumTopicList({
     super.key,
     required this.siteContext,
     required this.forum,
     this.showSubforumHeader = false,
     this.onRefreshAvailable,
+    this.clearFloatingButton = false,
   });
 
   @override
@@ -230,27 +234,6 @@ class _ForumTopicListState extends State<ForumTopicList> {
     }
   }
 
-  Future<void> _handleNewTopic() async {
-    if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToCreateTopic);
-      return;
-    }
-
-    final result = await Navigator.of(context).push(
-      FormPageRoute(
-        builder: (context) => NewTopicPage(
-          siteContext: widget.siteContext,
-          forumId: widget.forum.id,
-          forumName: widget.forum.name,
-        ),
-      ),
-    );
-
-    if (result == true) {
-      _loadTopics();
-    }
-  }
-
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
@@ -335,14 +318,14 @@ class _ForumTopicListState extends State<ForumTopicList> {
       onRefresh: _loadTopics,
       child: ListView(
         controller: _scrollController,
+        // An extended FAB (56) and its margins (16 each side).
+        padding: widget.clearFloatingButton
+            ? const EdgeInsets.only(bottom: 56 + 2 * kFloatingActionButtonMargin)
+            : null,
         children: [
           // Subforum header (icon, name, description) - scrolls with content
           if (widget.showSubforumHeader)
-            SubforumHeaderWidget(
-              forum: widget.forum,
-              siteContext: widget.siteContext,
-              onNewTopic: _handleNewTopic,
-            ),
+            SubforumHeaderWidget(forum: widget.forum),
           // Show permission message if user cannot view content
           if (!canViewContent)
             Padding(

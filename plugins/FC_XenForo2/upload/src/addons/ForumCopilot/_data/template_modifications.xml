@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<template_modifications/>
+<template_modifications>
+  <modification type="public" template="register_complete" modification_key="fc_register_complete_app_login" description="Continue in the app, for members who signed up from the Forum Copilot app" execution_order="10" enabled="1" action="str_replace">
+    <find><![CDATA[<xf:if is="{$xf.session.preRegContentUrl}">]]></find>
+    <replace><![CDATA[<xf:if is="$fcAppLogin">
+		<xf:form action="{{ link('forumcopilot-app-login') }}" style="margin-top: 1em">
+			<xf:button type="submit" class="button--primary" icon="login">{{ phrase('fc_app_login_continue_in_app') }}</xf:button>
+			<xf:hiddenval name="scheme">{$fcAppLogin.scheme}</xf:hiddenval>
+			<xf:hiddenval name="state">{$fcAppLogin.state}</xf:hiddenval>
+			<xf:hiddenval name="challenge">{$fcAppLogin.challenge}</xf:hiddenval>
+		</xf:form>
+	</xf:if>
+
+	$0]]></replace>
+  </modification>
+</template_modifications>

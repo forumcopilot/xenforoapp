@@ -65,6 +65,9 @@ class FCConfigResult
     /** @var string[] App schemes the website may hand a browser sign-in to; empty when it is off */
     public $browserLoginSchemes = [];
 
+    /** @var string The signed-in member's state (valid, email_confirm, moderated, ...); empty for a guest */
+    public $userState = '';
+
     public function __construct($data = [])
     {
         // Set all properties from data array

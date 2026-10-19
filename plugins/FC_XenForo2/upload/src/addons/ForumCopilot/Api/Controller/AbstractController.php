@@ -236,6 +236,14 @@ abstract class AbstractController extends Controller
         }
 
         if (!$visitor->hasPermission('general', 'view')) {
+            // A new member waiting for confirmation or approval has the
+            // guests' permissions; say why rather than "no permission".
+            if ($visitor->user_id && $this->isAwaitingMember($visitor)) {
+                return $this->apiError($this->plainText($visitor->isAwaitingEmailConfirmation()
+                    ? \XF::phrase('your_account_is_currently_awaiting_confirmation_confirmation_sent_to_x', ['email' => $visitor->email])
+                    : \XF::phrase('your_account_is_currently_awaiting_approval_by_administrator')
+                ));
+            }
             return $this->apiError($this->plainText(
                 \XF::phrase($visitor->user_id ? 'do_not_have_permission' : 'login_required')
             ));
@@ -262,6 +270,15 @@ abstract class AbstractController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * A new member waiting for their email confirmation or for approval.
+     * XenForo gives them the guests' permissions until then.
+     */
+    protected function isAwaitingMember(\XF\Entity\User $user): bool
+    {
+        return in_array($user->user_state, ['email_confirm', 'email_confirm_edit', 'moderated'], true);
     }
 
     /**
@@ -1577,11 +1594,12 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Checks if registration via API is supported
-     * Returns true only if:
-     * 1. Registration is enabled
-     * 2. The registration process is not too complex for in-app registration
-     * 
+     * Whether the app's own sign-up form may be used (prefetchAccount says so
+     * in canRegisterViaAPI, and register refuses otherwise): the board is
+     * open, registration is on, guests are not shown a captcha, and no
+     * registration field needs what the app cannot do. Otherwise members
+     * sign up on the forum's website.
+     *
      * @return bool
      */
     protected function canRegisterViaAPI()
@@ -1599,19 +1617,15 @@ abstract class AbstractController extends Controller
             return false;
         }
 
-        // Note: CAPTCHA validation is bypassed for API registration since webview-based
-        // CAPTCHAs (reCAPTCHA, hCaptcha, Turnstile, KeyCaptcha) are too complex for mobile apps.
-        // Other spam protection mechanisms (DNSBL, Project Honey Pot, registration timer) 
-        // in RegistrationService still apply.
-        // Question CAPTCHA is still blocked as it requires custom admin-defined questions.
-        $captcha = $options->captcha;
-        if ($captcha === 'Question') {
-            // Question & Answer CAPTCHA requires custom questions defined by admin
-            // This is too complex for in-app registration
+        // Third check: no captcha. The app cannot show one, and skipping it
+        // would let a script sign up with one request. Forums that show
+        // guests a captcha (any kind, Q&A included) are signed up on the
+        // website, where it works.
+        if ($this->repository('XF:User')->getGuestUser()->isShownCaptcha() && $this->app()->captcha()) {
             return false;
         }
 
-        // Third check: No unsupported custom field types during registration
+        // Fourth check: No unsupported custom field types during registration
         /** @var \XF\Repository\UserFieldRepository $userFieldRepo */
         $userFieldRepo = $this->repository('XF:UserField');
         $userFields = $userFieldRepo->findFieldsForList()->fetch();

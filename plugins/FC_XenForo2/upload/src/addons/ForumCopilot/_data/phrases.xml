@@ -17,8 +17,11 @@
   <phrase title="option.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Members can delete their account in the app]]></phrase>
   <phrase title="fc_app_login_confirm" version_id="1090000" version_string="1.9.0"><![CDATA[Sign the {board} app in as <b>{name}</b>?]]></phrase>
   <phrase title="fc_app_login_continue" version_id="1090000" version_string="1.9.0"><![CDATA[Continue]]></phrase>
+  <phrase title="fc_app_login_continue_in_app" version_id="1100000" version_string="1.10.0"><![CDATA[Continue in the app]]></phrase>
   <phrase title="fc_app_login_invalid" version_id="1090000" version_string="1.9.0"><![CDATA[This sign-in link is not valid. Please start again from the app.]]></phrase>
+  <phrase title="fc_app_login_not_you" version_id="1100000" version_string="1.10.0"><![CDATA[Not you? Sign out]]></phrase>
   <phrase title="fc_app_login_title" version_id="1090000" version_string="1.9.0"><![CDATA[Sign in to the app]]></phrase>
+  <phrase title="fc_register_on_website" version_id="1100000" version_string="1.10.0"><![CDATA[Please create your account on the forum's website.]]></phrase>
   <phrase title="option.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[App sign-in schemes]]></phrase>
   <phrase title="option.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
         Diagnostic logging]]></phrase>

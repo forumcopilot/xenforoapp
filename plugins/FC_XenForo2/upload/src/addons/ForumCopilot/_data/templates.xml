@@ -92,13 +92,16 @@
 		})();
 	</script>
 </xf:formrow>]]></template>
-  <template type="public" title="fc_app_login_confirm" version_id="1090000" version_string="1.9.0"><![CDATA[<xf:title>{{ phrase('fc_app_login_title') }}</xf:title>
+  <template type="public" title="fc_app_login_confirm" version_id="1100000" version_string="1.10.0"><![CDATA[<xf:title>{{ phrase('fc_app_login_title') }}</xf:title>
 
 <xf:form action="{{ link('forumcopilot-app-login') }}" class="block">
 	<div class="block-container">
 		<div class="block-body">
 			<xf:inforow rowtype="confirm">
 				{{ phrase('fc_app_login_confirm', {'name': $xf.visitor.username, 'board': $xf.options.boardTitle}) }}
+				<div style="margin-top: .5em">
+					<a href="{{ link('forumcopilot-app-login/sign-out', null, {'t': csrf_token(), 'scheme': $scheme, 'state': $state, 'challenge': $challenge}) }}">{{ phrase('fc_app_login_not_you') }}</a>
+				</div>
 			</xf:inforow>
 		</div>
 		<xf:submitrow submit="{{ phrase('fc_app_login_continue') }}" icon="login" />

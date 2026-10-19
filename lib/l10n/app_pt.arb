@@ -1326,5 +1326,9 @@
   "signInOnWebsite": "Entrar pelo site do fórum",
   "signInOnWebsiteHint": "Para Google, Facebook e as outras formas de entrar lá",
   "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente.",
-  "subForums": "Subfóruns"
+  "subForums": "Subfóruns",
+  "postPositionOf": "Publicação {position} de {total}",
+  "tapToJumpToPost": "Toque para ir a uma publicação específica",
+  "jumpToFirstPost": "Ir para a primeira publicação",
+  "jumpToLastPost": "Ir para a última publicação"
 }

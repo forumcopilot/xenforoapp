@@ -876,60 +876,14 @@ class _PostListItemState extends State<PostListItem> {
       BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
     // The shared 48dp icon button with a ripple, in full-strength
     // onSurfaceVariant (at 40-50% it read as disabled).
+    //
+    // A reply to this post, quoting it, as XenForo's Reply does: a plain
+    // reply is the quick-reply bar under the thread. It asked "Reply or
+    // Reply with quote" first.
     return AccessibilityHelpers.accessibleIconButton(
-      label: AppLocalizations.of(context).reply,
+      label: AppLocalizations.of(context).replyWithQuote,
       context: context,
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-              ),
-              title: Text(
-                AppLocalizations.of(context).replyOptions,
-                style: textTheme.titleLarge?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading:
-                        Icon(Icons.reply_rounded, color: colorScheme.primary),
-                    title: Text(
-                      AppLocalizations.of(context).reply,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _handleReply();
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.format_quote_rounded,
-                        color: colorScheme.primary),
-                    title: Text(
-                      AppLocalizations.of(context).replyWithQuote,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _handleQuote();
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      onTap: _handleQuote,
       icon: Icon(
         Icons.reply_rounded,
         color: colorScheme.onSurfaceVariant,
@@ -1059,13 +1013,6 @@ class _PostListItemState extends State<PostListItem> {
       AppLogger.debug('Post Quote action: ${widget.post.id}');
       await widget.actions!.onQuote!(
           widget.post.id, widget.post.authorName, widget.post.content);
-    }
-  }
-
-  void _handleReply() async {
-    AppLogger.debug('Post Reply action: ${widget.post.id}');
-    if (widget.actions?.onReply != null) {
-      await widget.actions!.onReply!(widget.post.id);
     }
   }
 

@@ -2811,4 +2811,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get subForums => '하위 포럼';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return '게시물 $position/$total';
+  }
+
+  @override
+  String get tapToJumpToPost => '탭하여 특정 게시물로 이동';
+
+  @override
+  String get jumpToFirstPost => '첫 게시물로 이동';
+
+  @override
+  String get jumpToLastPost => '마지막 게시물로 이동';
 }

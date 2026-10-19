@@ -14,9 +14,13 @@ import 'package:forumcopilot_flutter/views/widgets/thread_poll_mini_card.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
-import '../../theme/design_tokens.dart';
 import '../../utils/error_dialog.dart';
 import '../../utils/snackbar_helper.dart';
+import '../../utils/network_utils.dart';
+import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
+import 'package:forumcopilot_flutter/views/widgets/position_navigator.dart';
+import 'package:forumcopilot_flutter/views/widgets/quick_reply_bar.dart';
+import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 
 class PostsList extends StatefulWidget {
   const PostsList({
@@ -998,16 +1002,6 @@ class _PostsState extends State<PostsList> {
   }
 
   /// Calculates the height of the bottom toolbar to ensure proper padding
-  double _getBottomToolbarHeight(BuildContext context) {
-    // IconButton height: 48px
-    // Vertical padding: DesignTokens.spacingS * 2 = 16px
-    // SafeArea bottom padding: varies by device
-    const double iconButtonHeight = 48.0;
-    const double verticalPadding = DesignTokens.spacingS * 2;
-    final double safeAreaBottom = MediaQuery.of(context).padding.bottom;
-    return iconButtonHeight + verticalPadding + safeAreaBottom;
-  }
-
   Widget _buildPostItem(BuildContext context, FCPost post, int postIndex, int postsListLength, ThreadViewData data, {bool isHighlighted = false}) {
     final avatarActions = _avatarActions;
     final imageActions = _imageActions;
@@ -1030,7 +1024,7 @@ class _PostsState extends State<PostsList> {
       onVoteSuccess: (p) => _postsController.updateThreadPoll(p),
       actions: PostActions(
         onReply: (postId) => postActionsHandler.handleReply(context, postId, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
-        onQuote: (postId, authorName, postText) => postActionsHandler.handleQuote(context, postId, authorName, postText, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
+        onQuote: _quoteInReply,
         onEdit:
             post.canEdit ? (postId, currentText) => postActionsHandler.handleEdit(context, postId, currentText, widget.topicTitle, widget.topicId, data.topic.forumId, _refreshCurrentPage) : null,
         onDelete: post.canDelete ? (postId) => postActionsHandler.handleDelete(context, postId) : null,
@@ -1040,17 +1034,6 @@ class _PostsState extends State<PostsList> {
         onLoginRequired: (context) => postActionsHandler.showPostLoginPrompt(context, onRefresh: _refreshCurrentPage),
       ),
     );
-    if (postIndex == postsListLength - 1) {
-      // Add padding equal to the toolbar height so the last post can scroll above it
-      final double toolbarHeight = _getBottomToolbarHeight(context);
-      postWidget = Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          postWidget,
-          SizedBox(height: toolbarHeight),
-        ],
-      );
-    }
     // Key the OUTERMOST widget for this index. Without this the unkeyed Column
     // above (and index-based matching in general) hands a post's element to a
     // different post when the list is prepended to, forcing a full rebuild of
@@ -1202,69 +1185,100 @@ class _PostsState extends State<PostsList> {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, ThreadViewData data) {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 4,
-              offset: const Offset(0, -2),
-            ),
-          ],
+  /// The thread's quick-reply bar, which [_quoteInReply] hands its text to.
+  final GlobalKey<QuickReplyBarState> _quickReplyKey = GlobalKey<QuickReplyBarState>();
+
+  /// The first and last post and where the reader is, floating at the
+  /// bottom right above the reply bar (as in a conversation). Out of the way
+  /// while the keyboard is up; nothing in a one-post thread.
+  Widget _buildNavigator(ThreadViewData data) {
+    final l10n = AppLocalizations.of(context);
+    // Only this rebuilds as the keyboard moves, not the list.
+    return Builder(builder: (context) {
+      if (MediaQuery.viewInsetsOf(context).bottom > 0) return const SizedBox.shrink();
+      return ValueListenableBuilder<int>(
+        valueListenable: _currentVisiblePostIndex,
+        builder: (context, index, _) => PositionNavigator(
+          position: index + 1,
+          total: data.totalPosts,
+          positionLabel: l10n.postPositionOf(index + 1, data.totalPosts),
+          jumpHint: l10n.tapToJumpToPost,
+          firstHint: l10n.jumpToFirstPost,
+          lastHint: l10n.jumpToLastPost,
+          onFirst: _jumpToFirstPost,
+          onLast: _jumpToLastPost,
+          onJump: () => _showJumpToPostDialog(context, data),
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: DesignTokens.spacingL,
-              vertical: DesignTokens.spacingS,
-            ),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_upward),
-                  onPressed: _jumpToFirstPost,
-                  tooltip: AppLocalizations.of(context).goToTop,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_downward),
-                  onPressed: _jumpToLastPost,
-                  tooltip: AppLocalizations.of(context).goToBottom,
-                ),
-                SizedBox(width: DesignTokens.spacingS),
-                GestureDetector(
-                  // Nothing to jump to in a one-post thread.
-                  onTap: data.totalPosts > 1
-                      ? () => _showJumpToPostDialog(context, data)
-                      : null,
-                  child: ValueListenableBuilder<int>(
-                    valueListenable: _currentVisiblePostIndex,
-                    builder: (context, index, _) => Text(
-                      '${index + 1} / ${data.totalPosts}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-                if (widget.siteContext.isLoggedIn && data.topic.canReply)
-                  FilledButton.icon(
-                    onPressed: () {
-                      _postActionsHandler.handleReply(context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost);
-                    },
-                    icon: const Icon(Icons.reply),
-                    label: Text(AppLocalizations.of(context).reply),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+      );
+    });
+  }
+
+  /// Posts the quick-reply bar's text, as the full Reply page would (with
+  /// the app's signature when the settings ask for it), then shows the new
+  /// post. True when it was posted, which empties the bar.
+  Future<bool> _sendQuickReply(String text) async {
+    final l10n = AppLocalizations.of(context);
+    final data = _postsController.threadDataOutput.value;
+    final topicId = data?.topic.id ?? '';
+    final forumId = data?.topic.forumId ?? widget.forumId ?? '';
+    if (topicId.isEmpty || forumId.isEmpty) {
+      SnackbarHelper.showInfo(context, l10n.pleaseWaitForThreadToLoad);
+      return false;
+    }
+    try {
+      final result = await SiteProxyFactory.getPostProxy()
+          .replyPostAsync(forumId, topicId, '', text, null, null, false);
+      if (!mounted) return false;
+      if (!result.result) {
+        final message = result.resultText?.trim();
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(message)
+              ? l10n.errorNetwork
+              : (message != null && message.isNotEmpty ? message : l10n.failedToPostReply),
+        );
+        return false;
+      }
+      if (result.state == 1) {
+        // Held for a moderator: nothing to show yet.
+        SnackbarHelper.showInfo(context, l10n.postAwaitingApproval);
+        return true;
+      }
+      final postId = result.postId;
+      if (postId != null && postId.isNotEmpty) {
+        _refreshWithOptionalScrollToPost(postId);
+      } else {
+        unawaited(_jumpToLastPost());
+      }
+      return true;
+    } catch (e) {
+      if (mounted) {
+        SnackbarHelper.showError(
+          context,
+          NetworkUtils.isUnreachable(e.toString()) ? l10n.errorNetwork : l10n.failedToPostReply,
+        );
+      }
+      return false;
+    }
+  }
+
+  /// The full Reply page (attachments, formatting) on the bar's text.
+  Future<bool> _openFullReply(TextEditingController controller) => _postActionsHandler.handleReply(
+      context, "", widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost,
+      contentController: controller);
+
+  /// Reply on a post: the full Reply page quoting it, after whatever is in
+  /// the quick-reply bar (or on its own, where there is no bar).
+  Future<void> _quoteInReply(String postId, String authorName, String postText) async {
+    Future<bool> quote({TextEditingController? controller}) => _postActionsHandler.handleQuote(
+        context, postId, authorName, postText, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost,
+        contentController: controller);
+    final bar = _quickReplyKey.currentState;
+    if (bar == null) {
+      await quote();
+    } else {
+      await bar.openEditor((controller) => quote(controller: controller));
+    }
   }
 
   @override
@@ -1281,6 +1295,14 @@ class _PostsState extends State<PostsList> {
         // The scroll-driven half of that condition lives in a
         // ValueListenableBuilder below so it does not rebuild the list.
         final hasPoll = data.topic.hasPoll && data.topic.poll != null;
+        // XenForo's quick reply, as in a conversation: under the list, in
+        // its own space, for a reader who may reply. The thread's draft is
+        // the full Reply page's, here and on the forum.
+        final replyTopicId = data.topic.id;
+        final canReply = widget.siteContext.isLoggedIn && data.topic.canReply && replyTopicId.isNotEmpty;
+        // Without the bar under the list, the navigator sits clear of the
+        // system bar itself.
+        final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
         final stack = Stack(
           children: [
             RefreshIndicator(
@@ -1297,13 +1319,15 @@ class _PostsState extends State<PostsList> {
                   }
                   int postIndex = index - (_isLoadingMore && _pagingDirection == _PagingDirection.earlier ? 1 : 0);
                   if (postIndex == postsList.length) {
+                    // Room under the last post for the navigator over it.
+                    final clearance = SizedBox(height: PositionNavigator.clearance + navigatorBottom);
                     if (_isLoadingMore && _pagingDirection == _PagingDirection.later) {
-                      return _buildLoadingCard(context);
+                      return Column(children: [_buildLoadingCard(context), clearance]);
                     } else if (_hasMorePosts) {
-                      return const SizedBox.shrink();
+                      return clearance;
                     } else {
                       // End of discussion indicator
-                      return Padding(
+                      return Column(mainAxisSize: MainAxisSize.min, children: [Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
@@ -1314,7 +1338,7 @@ class _PostsState extends State<PostsList> {
                                 ),
                           ),
                         ),
-                      );
+                      ), clearance]);
                     }
                   }
                   if (postIndex < postsList.length) {
@@ -1345,7 +1369,21 @@ class _PostsState extends State<PostsList> {
                   },
                 ),
               ),
-            _buildBottomBar(context, data),
+            PositionNavigator.place(bottom: navigatorBottom, navigator: _buildNavigator(data)),
+          ],
+        );
+        final page = Column(
+          children: [
+            Expanded(child: stack),
+            if (canReply)
+              QuickReplyBar(
+                key: _quickReplyKey,
+                draftKey: 'reply_draft:${widget.siteContext.site.pluginUrl}:$replyTopicId',
+                siteContext: widget.siteContext,
+                serverDraftKey: XenForoDraftProxy.replyKey(replyTopicId),
+                onSend: _sendQuickReply,
+                onOpenFullEditor: _openFullReply,
+              ),
           ],
         );
 
@@ -1356,7 +1394,7 @@ class _PostsState extends State<PostsList> {
           });
         }
 
-        return stack;
+        return page;
       } else {
         return _buildInitialShimmerList(context);
       }

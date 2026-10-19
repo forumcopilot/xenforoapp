@@ -23,6 +23,11 @@ class ReplyPage extends StatefulWidget {
   final String? postId;
   final bool isQuote;
 
+  /// The thread's quick-reply text, which this page then edits in place (a
+  /// quote goes after what was already typed), so nothing typed in the bar
+  /// is lost; the bar clears it once the reply is posted.
+  final TextEditingController? contentController;
+
   const ReplyPage({
     super.key,
     required this.siteContext,
@@ -34,7 +39,12 @@ class ReplyPage extends StatefulWidget {
     this.quoteAuthor,
     this.postId,
     this.isQuote = false,
+    this.contentController,
   });
+
+  /// [typed] in the quick-reply bar, then [quote] below it to write under.
+  static String withQuote(String typed, String quote) =>
+      typed.trim().isEmpty ? quote : '${typed.trimRight()}\n\n$quote';
 
   @override
   State<ReplyPage> createState() => _ReplyPageState();
@@ -53,9 +63,16 @@ class _ReplyPageState extends State<ReplyPage> {
   String? _createdPostId; // Store the created post ID
   Future<forumcopilot_sdk.FCQuotePostResult>? _quoteFuture;
 
+  /// What the quick-reply bar held when this page opened.
+  String _typedBefore = '';
+
+  /// The thread's reply draft, here and on the forum (the bar's too).
+  String get _draftKey => 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}';
+
   @override
   void initState() {
     super.initState();
+    _typedBefore = widget.contentController?.text ?? '';
     // Cache the future so it's only called once
     if (widget.isQuote && widget.postId != null) {
       _quoteFuture = SiteProxyFactory.getPostProxy().getQuotePostAsync(widget.postId!);
@@ -192,12 +209,18 @@ class _ReplyPageState extends State<ReplyPage> {
           
           // Create the compose widget once and reuse it across all states
           // Use a stable key based on postId to preserve widget state (including attachments)
+          // With the quick-reply bar's text, the quote goes after it and
+          // the whole is the thread's draft, as for a plain reply.
+          final shared = widget.contentController;
           Widget compose = MessageComposePage(
             key: ValueKey('reply_with_quote_${widget.postId}'),
             siteContext: widget.siteContext,
             title: AppLocalizations.of(context).reply,
             showTitleField: false,
-            initialContent: quoteContent,
+            contentController: shared,
+            draftKey: shared == null ? null : _draftKey,
+            serverDraftKey: shared == null ? null : XenForoDraftProxy.replyKey(widget.threadId),
+            initialContent: quoteContent == null || shared == null ? quoteContent : ReplyPage.withQuote(_typedBefore, quoteContent),
             contentHint: AppLocalizations.of(context).writeYourReply,
             onSubmit: _handleSubmit,
             onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
@@ -240,9 +263,11 @@ class _ReplyPageState extends State<ReplyPage> {
         onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
         topicTitle: widget.topicTitle,
         onRemoveAttachment: _uploader.remove,
+        // The quick-reply bar's text, when opened from it.
+        contentController: widget.contentController,
         // The reply is kept as a draft, on this device and on the forum (where
         // the web editor shows it), until it is posted.
-        draftKey: 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}',
+        draftKey: _draftKey,
         serverDraftKey: XenForoDraftProxy.replyKey(widget.threadId),
         onSuccess: (success) {
           // Never null on success: the caller reads null as "closed without posting".

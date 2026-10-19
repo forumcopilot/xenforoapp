@@ -2959,4 +2959,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get subForums => 'Sottoforum';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Post $position di $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Tocca per andare a un post specifico';
+
+  @override
+  String get jumpToFirstPost => 'Vai al primo post';
+
+  @override
+  String get jumpToLastPost => 'Vai all\'ultimo post';
 }

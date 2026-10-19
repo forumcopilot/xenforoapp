@@ -5011,6 +5011,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sub-forums'**
   String get subForums;
+
+  /// Screen reader: where the reader is in a thread, on its navigator
+  ///
+  /// In en, this message translates to:
+  /// **'Post {position} of {total}'**
+  String postPositionOf(int position, int total);
+
+  /// Screen-reader hint on the thread navigator's position
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to jump to a specific post'**
+  String get tapToJumpToPost;
+
+  /// No description provided for @jumpToFirstPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to first post'**
+  String get jumpToFirstPost;
+
+  /// No description provided for @jumpToLastPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to last post'**
+  String get jumpToLastPost;
 }
 
 class _AppLocalizationsDelegate

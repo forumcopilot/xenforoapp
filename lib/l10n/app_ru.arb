@@ -1326,5 +1326,9 @@
   "signInOnWebsite": "Войти на сайте форума",
   "signInOnWebsiteHint": "Для Google, Facebook и других способов входа на сайте",
   "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз.",
-  "subForums": "Подфорумы"
+  "subForums": "Подфорумы",
+  "postPositionOf": "Сообщение {position} из {total}",
+  "tapToJumpToPost": "Нажмите, чтобы перейти к сообщению",
+  "jumpToFirstPost": "Перейти к первому сообщению",
+  "jumpToLastPost": "Перейти к последнему сообщению"
 }

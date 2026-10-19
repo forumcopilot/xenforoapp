@@ -2819,4 +2819,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get subForums => 'サブフォーラム';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return '投稿 $position/$total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'タップして特定の投稿へ移動';
+
+  @override
+  String get jumpToFirstPost => '最初の投稿へ移動';
+
+  @override
+  String get jumpToLastPost => '最後の投稿へ移動';
 }

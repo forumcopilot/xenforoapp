@@ -1302,5 +1302,9 @@
   "signInOnWebsite": "Auf der Website des Forums anmelden",
   "signInOnWebsiteHint": "Für Google, Facebook und andere Anmeldearten dort",
   "browserLoginFailed": "Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.",
-  "subForums": "Unterforen"
+  "subForums": "Unterforen",
+  "postPositionOf": "Beitrag {position} von {total}",
+  "tapToJumpToPost": "Tippen, um zu einem bestimmten Beitrag zu springen",
+  "jumpToFirstPost": "Zum ersten Beitrag springen",
+  "jumpToLastPost": "Zum letzten Beitrag springen"
 }

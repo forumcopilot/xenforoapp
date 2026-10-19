@@ -1302,5 +1302,9 @@
   "signInOnWebsite": "フォーラムのウェブサイトでログイン",
   "signInOnWebsiteHint": "Google、Facebook など、サイトで使っている方法でログインできます",
   "browserLoginFailed": "ウェブサイトでのログインに失敗しました。もう一度お試しください。",
-  "subForums": "サブフォーラム"
+  "subForums": "サブフォーラム",
+  "postPositionOf": "投稿 {position}/{total}",
+  "tapToJumpToPost": "タップして特定の投稿へ移動",
+  "jumpToFirstPost": "最初の投稿へ移動",
+  "jumpToLastPost": "最後の投稿へ移動"
 }

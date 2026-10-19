@@ -2987,4 +2987,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get subForums => 'Unterforen';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Beitrag $position von $total';
+  }
+
+  @override
+  String get tapToJumpToPost =>
+      'Tippen, um zu einem bestimmten Beitrag zu springen';
+
+  @override
+  String get jumpToFirstPost => 'Zum ersten Beitrag springen';
+
+  @override
+  String get jumpToLastPost => 'Zum letzten Beitrag springen';
 }

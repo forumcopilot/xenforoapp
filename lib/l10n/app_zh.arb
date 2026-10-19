@@ -1326,5 +1326,9 @@
   "signInOnWebsite": "在论坛网站上登录",
   "signInOnWebsiteHint": "适用于 Google、Facebook 及你在网站上使用的其他登录方式",
   "browserLoginFailed": "网站登录未成功，请重试。",
-  "subForums": "子论坛"
+  "subForums": "子论坛",
+  "postPositionOf": "第 {position} 楼，共 {total} 楼",
+  "tapToJumpToPost": "点按以跳转到指定帖子",
+  "jumpToFirstPost": "跳转到第一个帖子",
+  "jumpToLastPost": "跳转到最后一个帖子"
 }

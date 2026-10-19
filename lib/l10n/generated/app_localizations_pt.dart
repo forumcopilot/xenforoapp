@@ -2954,4 +2954,18 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get subForums => 'Subfóruns';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Publicação $position de $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Toque para ir a uma publicação específica';
+
+  @override
+  String get jumpToFirstPost => 'Ir para a primeira publicação';
+
+  @override
+  String get jumpToLastPost => 'Ir para a última publicação';
 }

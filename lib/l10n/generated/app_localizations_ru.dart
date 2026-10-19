@@ -2977,4 +2977,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get subForums => 'Подфорумы';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Сообщение $position из $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Нажмите, чтобы перейти к сообщению';
+
+  @override
+  String get jumpToFirstPost => 'Перейти к первому сообщению';
+
+  @override
+  String get jumpToLastPost => 'Перейти к последнему сообщению';
 }

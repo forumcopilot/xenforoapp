@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
-import 'package:forumcopilot_flutter/views/private_messaging/conversation/widgets/conversation_quick_reply_bar.dart';
+import 'package:forumcopilot_flutter/views/reply_page.dart';
+import 'package:forumcopilot_flutter/views/widgets/quick_reply_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// The composer at the bottom of a conversation: sends in place, keeps the
-/// text when sending fails, and shares the reply draft with the full Reply
-/// page.
+/// The composer at the bottom of a conversation or a thread: sends in
+/// place, keeps the text when sending fails, and shares the reply draft with
+/// the full Reply page.
 void main() {
   const key = 'dm_reply_draft:test:42';
 
@@ -17,6 +18,7 @@ void main() {
     WidgetTester tester, {
     required Future<bool> Function(String text) onSend,
     Future<bool> Function(TextEditingController controller)? onOpenFullEditor,
+    GlobalKey<QuickReplyBarState>? barKey,
   }) async {
     await tester.pumpWidget(MaterialApp(
       locale: const Locale('en'),
@@ -30,7 +32,8 @@ void main() {
       home: Scaffold(
         body: Align(
           alignment: Alignment.bottomCenter,
-          child: ConversationQuickReplyBar(
+          child: QuickReplyBar(
+            key: barKey,
             draftKey: key,
             onSend: onSend,
             onOpenFullEditor: onOpenFullEditor,
@@ -164,5 +167,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(fieldText(tester), isEmpty);
     expect(prefs.getString(key), isNull);
+  });
+
+  testWidgets('another editor (a quote) takes the text, and the bar empties once it posts', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final barKey = GlobalKey<QuickReplyBarState>();
+    await pumpBar(tester, onSend: (_) async => true, barKey: barKey);
+    await tester.enterText(find.byType(TextField), 'I agree');
+
+    // Closed without posting: the quote and the text stay, as the draft.
+    await barKey.currentState!.openEditor((controller) async {
+      controller.text = ReplyPage.withQuote(controller.text, '[QUOTE="Ann"]Hi[/QUOTE]\n');
+      return false;
+    });
+    await tester.pumpAndSettle();
+    expect(fieldText(tester), 'I agree\n\n[QUOTE="Ann"]Hi[/QUOTE]\n');
+
+    await barKey.currentState!.openEditor((controller) async => true);
+    await tester.pumpAndSettle();
+    expect(fieldText(tester), isEmpty);
+  });
+
+  test('a quote goes after what was typed, or on its own', () {
+    expect(ReplyPage.withQuote('', '[QUOTE]x[/QUOTE]\n'), '[QUOTE]x[/QUOTE]\n');
+    expect(ReplyPage.withQuote('  ', '[QUOTE]x[/QUOTE]\n'), '[QUOTE]x[/QUOTE]\n');
+    expect(ReplyPage.withQuote('Typed\n', '[QUOTE]x[/QUOTE]\n'), 'Typed\n\n[QUOTE]x[/QUOTE]\n');
   });
 }

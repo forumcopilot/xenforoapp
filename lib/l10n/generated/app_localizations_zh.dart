@@ -2775,4 +2775,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get subForums => '子论坛';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return '第 $position 楼，共 $total 楼';
+  }
+
+  @override
+  String get tapToJumpToPost => '点按以跳转到指定帖子';
+
+  @override
+  String get jumpToFirstPost => '跳转到第一个帖子';
+
+  @override
+  String get jumpToLastPost => '跳转到最后一个帖子';
 }

@@ -1929,5 +1929,11 @@
   "signInOnWebsiteHint": "For Google, Facebook and the other ways you sign in there",
   "browserLoginFailed": "Signing in on the website didn't work. Please try again.",
   "subForums": "Sub-forums",
-  "@subForums": {"description": "Heading above a forum's sub-forums, before its topics"}
+  "@subForums": {"description": "Heading above a forum's sub-forums, before its topics"},
+  "postPositionOf": "Post {position} of {total}",
+  "@postPositionOf": {"description": "Screen reader: where the reader is in a thread, on its navigator", "placeholders": {"position": {"type": "int"}, "total": {"type": "int"}}},
+  "@tapToJumpToPost": {"description": "Screen-reader hint on the thread navigator's position"},
+  "tapToJumpToPost": "Tap to jump to a specific post",
+  "jumpToFirstPost": "Jump to first post",
+  "jumpToLastPost": "Jump to last post"
 }

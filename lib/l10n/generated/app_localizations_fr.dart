@@ -2985,4 +2985,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get subForums => 'Sous-forums';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Message $position sur $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Touchez pour aller à un message précis';
+
+  @override
+  String get jumpToFirstPost => 'Aller au premier message';
+
+  @override
+  String get jumpToLastPost => 'Aller au dernier message';
 }

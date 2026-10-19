@@ -13,9 +13,9 @@ import 'edit_conversation_page.dart';
 import 'edit_conversation_message_page.dart';
 import '../widgets/conversation_item.dart';
 import '../widgets/conversation_header_widget.dart';
-import '../widgets/conversation_quick_reply_bar.dart';
+import '../../../widgets/quick_reply_bar.dart';
+import '../../../widgets/position_navigator.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import '../../../../theme/design_tokens.dart';
 import 'package:get/get.dart';
 import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
@@ -1125,7 +1125,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                           },
                         ),
                       // Room for the navigator over the last message.
-                      SizedBox(height: 72 + navigatorBottom),
+                      SizedBox(height: PositionNavigator.clearance + navigatorBottom),
                     ],
                   ),
                 ),
@@ -1136,7 +1136,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
           ),
         ),
         if (canReply)
-          ConversationQuickReplyBar(
+          QuickReplyBar(
             draftKey: _replyDraftKey,
             siteContext: widget.siteContext,
             serverDraftKey: XenForoDraftProxy.conversationReplyKey(widget.conversationId),
@@ -1507,66 +1507,24 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
   }
 
   /// First and newest message, and the position (tap to jump to one),
-  /// floating over the messages at the bottom right.
+  /// floating over the messages at the bottom right; nothing in a
+  /// one-message conversation.
   Widget _buildNavigator(BuildContext context, {required double bottom}) {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
     final total = _conversation!.totalMessageNum ?? _conversation!.list.length;
     final position = _currentVisibleMessagePosition;
-
-    return Positioned(
-      right: DesignTokens.spacingM,
-      bottom: bottom + DesignTokens.spacingS,
-      child: Material(
-        color: colorScheme.surfaceContainerHigh,
-        elevation: 2,
-        shape: const StadiumBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Semantics(
-              label: l10n.goToTop,
-              hint: l10n.jumpToFirstMessage,
-              button: true,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_upward),
-                onPressed: _jumpToFirstMessage,
-                tooltip: l10n.goToTop,
-              ),
-            ),
-            Semantics(
-              label: l10n.messagePositionOf(position, total),
-              hint: total > 1 ? l10n.tapToJumpToMessage : null,
-              button: total > 1,
-              excludeSemantics: true,
-              child: InkWell(
-                // Nothing to jump to in a one-message conversation.
-                onTap: total > 1 ? () => _showJumpToMessageDialog(context) : null,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingXS),
-                    child: Center(
-                      widthFactor: 1,
-                      child: Text('$position / $total', style: Theme.of(context).textTheme.bodyMedium),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Semantics(
-              label: l10n.goToBottom,
-              hint: l10n.jumpToLastMessage,
-              button: true,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_downward),
-                onPressed: _jumpToLastMessage,
-                tooltip: l10n.goToBottom,
-              ),
-            ),
-          ],
-        ),
+    return PositionNavigator.place(
+      bottom: bottom,
+      navigator: PositionNavigator(
+      position: position,
+      total: total,
+      positionLabel: l10n.messagePositionOf(position, total),
+      jumpHint: l10n.tapToJumpToMessage,
+      firstHint: l10n.jumpToFirstMessage,
+      lastHint: l10n.jumpToLastMessage,
+      onFirst: _jumpToFirstMessage,
+      onLast: _jumpToLastMessage,
+      onJump: () => _showJumpToMessageDialog(context),
       ),
     );
   }

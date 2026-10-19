@@ -78,5 +78,5 @@ macOS-only utilities:
 - **Linting.** `analysis_options.yaml` extends `package:flutter_lints/flutter.yaml` and excludes `Original/**` and `docs/xenforo_api_docs/**`.
 
 ## Known issues
-- None open. `flutter analyze --no-fatal-infos` over the whole tree should report no errors and no warnings (CI runs exactly that, with warnings fatal). `packages/` is synced byte-identical from `/Volumes/CRUCIAL/tapatalk_flutter` (last two-way sync 2026-09-22); fix SDK defects there first, then re-sync, rather than patching `packages/` here.
+- None open. `flutter analyze --no-fatal-infos` over the whole tree should report no errors and no warnings (CI runs exactly that, with warnings fatal). `packages/` is synced byte-identical from `/Volumes/CRUCIAL/tapatalk_flutter` (last two-way sync 2026-09-22; synced from canonical again 2026-10-19); fix SDK defects there first, then re-sync, rather than patching `packages/` here.
 - `packages/xenforo_core` codegen: `dart run build_runner build` fails with "Failed to compile build script" when pub resolves build_runner 2.15.x. The tracked canonical lock file (build_runner 2.11.1) works; `packages/xenforo_core/pubspec.lock` is gitignored here, so on a fresh checkout copy it from canonical or pin build_runner if this bites.

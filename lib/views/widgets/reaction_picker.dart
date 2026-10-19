@@ -130,6 +130,18 @@ class _ReactionChoice extends StatelessWidget {
   }
 }
 
+/// The colour of a liked heart: the Discourse app's "love" pink, a shade
+/// darker on light surfaces so it keeps its contrast there.
+Color reactionLoveColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFFFA6C8D)
+        : const Color(0xFFD6336C);
+
+/// [base] grown with the reader's text size, capped at 1.3x as in the
+/// Discourse app, so reaction icons keep pace with the counts beside them.
+double reactionIconSize(BuildContext context, double base) =>
+    MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3).scale(base);
+
 /// Renders a reaction as native emoji when available, else its image.
 class ReactionGlyph extends StatelessWidget {
   final FCReaction reaction;
@@ -153,9 +165,9 @@ class ReactionGlyph extends StatelessWidget {
         cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).round(),
         cacheHeight: (size * MediaQuery.devicePixelRatioOf(context)).round(),
         errorBuilder: (_, __, ___) =>
-            Icon(Icons.favorite, size: size, color: Colors.redAccent),
+            Icon(Icons.favorite, size: size, color: reactionLoveColor(context)),
       );
     }
-    return Icon(Icons.favorite, size: size, color: Colors.redAccent);
+    return Icon(Icons.favorite, size: size, color: reactionLoveColor(context));
   }
 }

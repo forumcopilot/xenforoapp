@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
+import 'package:forumcopilot_flutter/views/widgets/react_button.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_summary.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 
-/// The reaction summary beside the react button and the who-reacted sheet,
-/// both ported from the Discourse app.
+/// The react button, the reaction summary beside it and the who-reacted
+/// sheet, all ported from the Discourse app.
 
 FCLike _like(String username, int? reactionId, {String? emoji}) => FCLike(
       userId: username.hashCode.toString(),
@@ -82,10 +83,13 @@ void main() {
       expect(groups.single.glyph.emoji, '🤯');
     });
 
-    test('the total is the higher of the server count and the list', () {
-      // Add-ons before 1.8.11 send reaction_score: 0 for a lone Wow.
+    test('the total is the people listed, else the server count', () {
+      // Add-ons before 1.8.11 send reaction_score: 0 for a lone Wow, and 3
+      // for a Like plus a reaction worth 2.
       expect(reactionTotal([_like('a', 4)], 0), 1);
-      expect(reactionTotal([_like('a', 1)], 7), 7);
+      expect(reactionTotal([_like('a', 1), _like('b', 5)], 3), 2);
+      // Nobody listed (the REST API without the add-on): the server's count.
+      expect(reactionTotal(const [], 7), 7);
       expect(reactionTotal(const [], 0), 0);
     });
   });
@@ -168,7 +172,6 @@ void main() {
       WidgetTester tester, {
       required List<FCLike> likes,
       String? viewer,
-      VoidCallback? onReact,
     }) async {
       // A Pixel 4a's screen: the sheet opens at half height, which on the
       // default 800x600 test surface fits only three rows.
@@ -182,7 +185,6 @@ void main() {
             siteContext: _siteContext(viewer: viewer),
             likes: likes,
             count: likes.length,
-            onReact: onReact,
           ),
           child: const Text('open'),
         ),
@@ -200,7 +202,7 @@ void main() {
 
     testWidgets('title with the count, a chip per reaction, you first', (tester) async {
       _loadReactionSet();
-      await open(tester, likes: mixed, viewer: 'Me', onReact: () {});
+      await open(tester, likes: mixed, viewer: 'Me');
 
       expect(find.text('4 reactions'), findsOneWidget);
       expect(find.text('All 4'), findsOneWidget);
@@ -211,7 +213,6 @@ void main() {
       final names = ['Me', 'Alice', 'Bob', 'Carol'];
       final ys = [for (final n in names) tester.getTopLeft(find.text(n)).dy];
       expect(ys, orderedEquals([...ys]..sort()), reason: 'the reader leads, then server order');
-      expect(find.text('Change your reaction'), findsOneWidget);
     });
 
     testWidgets('a chip filters the list', (tester) async {
@@ -236,22 +237,106 @@ void main() {
       expect(find.text('2 reactions'), findsOneWidget);
     });
 
-    testWidgets('React closes the sheet and opens the picker', (tester) async {
+    testWidgets('only who reacted: no React or Change button', (tester) async {
       _loadReactionSet();
-      var reacted = 0;
-      await open(tester, likes: [_like('Alice', 1)], viewer: 'Me', onReact: () => reacted++);
-      expect(find.text('React'), findsOneWidget);
-      await tester.tap(find.text('React'));
-      await tester.pumpAndSettle();
-      expect(reacted, 1);
-      expect(find.text('Alice'), findsNothing);
+      await open(tester, likes: mixed, viewer: 'Me');
+      expect(find.byType(OutlinedButton), findsNothing);
+      expect(find.text('React'), findsNothing);
+      expect(find.text('Change your reaction'), findsNothing);
     });
 
-    testWidgets('no button when the reader may not react; Like wording without a reaction set',
-        (tester) async {
+    testWidgets('Like wording without a reaction set', (tester) async {
       await open(tester, likes: [_like('Alice', null)]);
-      expect(find.byType(OutlinedButton), findsNothing);
       expect(find.text('1 like'), findsOneWidget);
+    });
+  });
+
+  group('ReactButton', () {
+    Widget button({
+      required bool isReacted,
+      FCReaction? reaction,
+      VoidCallback? onTap,
+      VoidCallback? onLongPress,
+    }) =>
+        _app(ReactButton(
+          isReacted: isReacted,
+          reaction: reaction,
+          onTap: onTap ?? () {},
+          onLongPress: onLongPress,
+          label: 'Like',
+        ));
+
+    testWidgets('not reacted: an outline heart', (tester) async {
+      await tester.pumpWidget(button(isReacted: false));
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+      expect(find.byIcon(Icons.favorite), findsNothing);
+    });
+
+    testWidgets('a classic Like: a filled heart', (tester) async {
+      await tester.pumpWidget(button(isReacted: true));
+      expect(find.byIcon(Icons.favorite), findsOneWidget);
+      expect(find.byIcon(Icons.favorite_border), findsNothing);
+    });
+
+    testWidgets("the forum's Like (XenForo's 👍): a filled heart, not a chip", (tester) async {
+      _loadReactionSet();
+      await tester.pumpWidget(button(isReacted: true, reaction: ReactionRegistry.instance.byId(1)));
+      expect(find.byIcon(Icons.favorite), findsOneWidget);
+      expect(find.text('👍'), findsNothing);
+    });
+
+    testWidgets('a reaction: its emoji on a tinted chip', (tester) async {
+      _loadReactionSet();
+      await tester.pumpWidget(button(isReacted: true, reaction: ReactionRegistry.instance.byId(4)));
+      expect(find.text('😮'), findsOneWidget);
+      expect(find.byIcon(Icons.favorite), findsNothing);
+      final chip = tester.widget<DecoratedBox>(find.ancestor(
+        of: find.text('😮'),
+        matching: find.byWidgetPredicate((w) => w is DecoratedBox && w.decoration is ShapeDecoration),
+      ));
+      expect((chip.decoration as ShapeDecoration).shape, isA<CircleBorder>());
+      final box = tester.getSize(find.byWidget(chip));
+      expect(box.width, box.height, reason: 'a circle, not a tall oval');
+    });
+
+    testWidgets('a reaction left over after taking it back is not drawn', (tester) async {
+      _loadReactionSet();
+      await tester.pumpWidget(button(isReacted: false, reaction: ReactionRegistry.instance.byId(4)));
+      expect(find.text('😮'), findsNothing);
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    });
+
+    testWidgets('a tap likes, a long press picks', (tester) async {
+      var taps = 0, holds = 0;
+      await tester.pumpWidget(button(
+        isReacted: false,
+        onTap: () => taps++,
+        onLongPress: () => holds++,
+      ));
+      await tester.tap(find.byType(ReactButton));
+      await tester.longPress(find.byType(ReactButton));
+      expect(taps, 1);
+      expect(holds, 1);
+    });
+  });
+
+  group('viewerReaction', () {
+    test("the reader's reaction, matched without case", () {
+      _loadReactionSet();
+      final likes = [_like('Alice', 1), _like('Me', 4)];
+      expect(viewerReaction(likes, 'me')?.emoji, '😮');
+      expect(viewerReaction(likes, 'Alice')?.emoji, '👍');
+    });
+
+    test('null when the reader has not reacted, or for a classic Like', () {
+      _loadReactionSet();
+      expect(viewerReaction([_like('Alice', 1)], 'Me'), isNull);
+      expect(viewerReaction([_like('Me', null)], 'Me'), isNull);
+      expect(viewerReaction([_like('Me', 1)], null), isNull);
+    });
+
+    test('a reaction the forum does not list uses the entry\'s emoji', () {
+      expect(viewerReaction([_like('Me', 9, emoji: '🦄')], 'Me')?.emoji, '🦄');
     });
   });
 }

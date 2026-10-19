@@ -1055,6 +1055,9 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                           participants: _conversation!.participants,
                           onQuote: () => _onQuoteMessage(_conversation!.list[0]),
                           onLike: () => _onLikeMessage(_conversation!.list[0]),
+                          onLongPressLike: _canPickReaction
+                              ? () => _onPickMessageReaction(_conversation!.list[0])
+                              : null,
                           onEdit: () => _onEditMessage(_conversation!.list[0]),
                           isHighlighted: _highlightedMessageId == _conversation!.list[0].messageId,
                           isClosed: _conversation!.isClosed ?? false,
@@ -1070,6 +1073,9 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                             isLast: i == _conversation!.list.length - 2,
                             onQuote: () => _onQuoteMessage(msg),
                             onLike: () => _onLikeMessage(msg),
+                            onLongPressLike: _canPickReaction
+                                ? () => _onPickMessageReaction(msg)
+                                : null,
                             onEdit: () => _onEditMessage(msg),
                             isHighlighted: _highlightedMessageId == msg.messageId,
                             isClosed: _conversation!.isClosed ?? false,
@@ -1595,23 +1601,28 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     }
   }
 
+  /// Whether a long press on a message's react button can open the
+  /// reaction picker: the forum sends its reaction set (add-on 1.8.0+).
+  bool get _canPickReaction => ReactionRegistry.instance.isAvailable;
+
+  /// A tap on a message's react button, as on a post: a Like, or your
+  /// reaction taken back (sending the current reaction toggles it off).
+  /// Every Like used to take two taps, through the picker.
   Future<void> _onLikeMessage(FCConversationMessage message) async {
     if (!widget.siteContext.isLoggedIn) {
       SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
       return;
     }
 
-    // Multi-reaction path: if the forum exposes a reaction set, tapping opens
-    // the chooser (same as posts). Falls through to the legacy single-Like
-    // toggle below when no reaction set is available (older plugin).
+    // Multi-reaction path. Falls through to the legacy single-Like toggle
+    // below when no reaction set is available (older plugin).
     if (ReactionRegistry.instance.isAvailable) {
       final currentReactionId = _visitorReactionIdFor(message);
-      final selected = await showReactionPicker(
-        context,
-        currentReactionId: currentReactionId,
+      await _applyMessageReaction(
+        message,
+        currentReactionId ?? (ReactionRegistry.instance.defaultReaction?.id ?? 1),
+        currentReactionId,
       );
-      if (selected == null) return; // dismissed
-      await _applyMessageReaction(message, selected.id, currentReactionId);
       return;
     }
 
@@ -1730,6 +1741,22 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     .failedToLikeOrUnlikeMessage(wasLiked ? AppLocalizations.of(context).unlike : AppLocalizations.of(context).like, e.toString()));
       }
     }
+  }
+
+  /// A long press on a message's react button: the reaction picker.
+  /// Picking the current reaction takes it back.
+  Future<void> _onPickMessageReaction(FCConversationMessage message) async {
+    if (!widget.siteContext.isLoggedIn) {
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
+      return;
+    }
+    final currentReactionId = _visitorReactionIdFor(message);
+    final selected = await showReactionPicker(
+      context,
+      currentReactionId: currentReactionId,
+    );
+    if (selected == null || !mounted) return; // dismissed
+    await _applyMessageReaction(message, selected.id, currentReactionId);
   }
 
   /// The viewer's current reaction id on a conversation message, from their

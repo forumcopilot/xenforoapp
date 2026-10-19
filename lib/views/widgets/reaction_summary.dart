@@ -4,7 +4,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../theme/design_tokens.dart';
-import 'reaction_picker.dart' show ReactionGlyph, reactionCountLabel;
+import 'reaction_picker.dart' show ReactionGlyph, reactionCountLabel, reactionIconSize;
 
 /// One kind of reaction on a post or message, and who gave it.
 class ReactionGroup {
@@ -77,11 +77,14 @@ FCReaction reactionGlyphFor(int? id, FCLike like) {
   );
 }
 
-/// How many reactions to show: the server's count, or the number of people
-/// listed when that is higher. Add-ons before 1.8.11 count XenForo's
-/// reaction score, which is 0 for a Wow, Sad or Angry.
+/// How many reactions to show: the number of people listed, whenever the
+/// server lists them, else the server's count. The add-on lists every
+/// reaction on the post or message, while add-ons before 1.8.11 send
+/// XenForo's reaction score as the count (0 for a Wow, Sad or Angry, more
+/// than 1 for a custom reaction worth more). Using the score showed "3
+/// reactions" over a list of two, with chips adding up to 2.
 int reactionTotal(List<FCLike> likes, int serverCount) =>
-    likes.length > serverCount ? likes.length : serverCount;
+    likes.isNotEmpty ? likes.length : serverCount;
 
 /// The reactions on a post or message, beside its react button: up to
 /// three emoji (most used first) and how many reacted, as the Discourse
@@ -124,6 +127,7 @@ class ReactionSummary extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final groups = groupReactions(likes);
+    final glyphSize = reactionIconSize(context, DesignTokens.iconSizeM);
     final onlyLikes = groups.every((g) => g.isDefaultLike);
     final List<FCReaction> glyphs;
     if (onlyLikes && besideReactButton) {
@@ -154,10 +158,17 @@ class ReactionSummary extends StatelessWidget {
                 start: DesignTokens.spacingS, end: DesignTokens.spacingXS),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              // End-aligned, so the count sits against the react button it
+              // counts for. Centred in the 48dp target, a lone "1" floated
+              // well away from the heart (as the Discourse app once did).
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 for (final glyph in glyphs) ...[
-                  ReactionGlyph(reaction: glyph, size: DesignTokens.iconSizeM),
+                  // [glyphSize] already follows the text size; the emoji
+                  // would scale again on top of it.
+                  MediaQuery.withNoTextScaling(
+                    child: ReactionGlyph(reaction: glyph, size: glyphSize),
+                  ),
                   const SizedBox(width: 2),
                 ],
                 if (glyphs.isNotEmpty) const SizedBox(width: DesignTokens.spacingXS - 2),

@@ -1090,20 +1090,13 @@ class _PostListItemState extends State<PostListItem> {
     }
   }
 
-  /// Who reacted, in the sheet ported from the Discourse app. Its React
-  /// button opens the picker, for a reader who may react on a forum with a
-  /// reaction set.
+  /// Who reacted, in the sheet ported from the Discourse app.
   void _showLikesBottomSheet() {
     ReactionUsersSheet.show(
       context: context,
       siteContext: widget.siteContext,
       likes: widget.post.likesInfo,
       count: _likeCount,
-      onReact: (widget.siteContext.isLoggedIn &&
-              widget.post.canLike &&
-              ReactionRegistry.instance.isAvailable)
-          ? _handleLikeAction
-          : null,
     );
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
-import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
+import 'package:forumcopilot_flutter/views/widgets/react_button.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_summary.dart';
 import '../../utils/accessibility_helpers.dart';
 import '../../theme/design_tokens.dart';
@@ -20,9 +20,9 @@ class PostListItemSocial extends StatelessWidget {
   final VoidCallback? onShowLikes;
   final Widget? trailing;
 
-  /// The viewer's current reaction (multi-reaction). When set, the react
-  /// button renders it (native emoji, or the reaction's image for custom
-  /// reactions) instead of the default heart icon.
+  /// The viewer's current reaction (multi-reaction). Any reaction other
+  /// than the forum's Like shows on the react button (native emoji, or the
+  /// reaction's image for custom reactions) instead of the filled heart.
   final FCReaction? currentReaction;
 
   const PostListItemSocial({
@@ -40,7 +40,6 @@ class PostListItemSocial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final showReactButton = isLoggedIn && post.canLike;
     final showSummary = reactionTotal(post.likesInfo, likeCount) > 0;
     return Column(
@@ -85,41 +84,19 @@ class PostListItemSocial extends StatelessWidget {
               ),
             ],
             // Show like button only if logged in and can like
-            if (showReactButton) ...[
-              Builder(
-                builder: (context) {
-                  // Full-strength onSurfaceVariant when not liked: at 40-50%
-                  // it read as disabled (Material's disabled is 38%).
-                  final iconColor = isLiked ? colorScheme.error : colorScheme.onSurfaceVariant;
-                  // When the viewer has a specific reaction, render it (native
-                  // emoji or the reaction's image for custom reactions);
-                  // otherwise fall back to the heart icon (liked = filled).
-                  final Widget reactIcon = (isLiked && currentReaction != null)
-                      ? ReactionGlyph(
-                          reaction: currentReaction!,
-                          size: DesignTokens.iconSizeMedium,
-                        )
-                      : Icon(
-                          Icons.favorite,
-                          color: iconColor,
-                          size: DesignTokens.iconSizeMedium,
-                        );
-                  // A tap likes (or takes your reaction back); a long press
-                  // opens the picker, so a Like is one tap on any forum.
-                  return AccessibilityHelpers.accessibleIconButton(
-                    icon: reactIcon,
-                    onTap: onLike,
-                    onLongPress: onLongPressLike,
-                    label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount),
-                    hint: onLongPressLike == null
-                        ? null
-                        : AppLocalizations.of(context).reactionHoldHint,
-                    isSelected: isLiked,
-                    context: context,
-                  );
-                },
+            if (showReactButton)
+              ReactButton(
+                isReacted: isLiked,
+                reaction: isLiked ? currentReaction : null,
+                // A tap likes (or takes your reaction back); a long press
+                // opens the picker, so a Like is one tap on any forum.
+                onTap: onLike,
+                onLongPress: onLongPressLike,
+                label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount),
+                hint: onLongPressLike == null
+                    ? null
+                    : AppLocalizations.of(context).reactionHoldHint,
               ),
-            ],
             // Reply last, as in the Discourse app.
             if (trailing != null) trailing!,
           ],

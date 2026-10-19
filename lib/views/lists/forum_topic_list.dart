@@ -333,8 +333,10 @@ class _ForumTopicListState extends State<ForumTopicList> {
                 : EdgeInsets.zero,
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-          // Show permission message if user cannot view content
-          if (!canViewContent)
+          // Show permission message if user cannot view content. Not on a
+          // category's page: XenForo categories hold forums, never topics,
+          // and say so as "cannot view content".
+          if (!canViewContent && !widget.forum.isSubForumContainer)
             Padding(
               padding: DesignTokens.paddingL,
               child: Container(

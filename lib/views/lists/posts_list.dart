@@ -565,17 +565,24 @@ class _PostsState extends State<PostsList> {
     final int leadingOffset =
         (_isLoadingMore && _pagingDirection == _PagingDirection.earlier) ? 1 : 0;
 
-    double bestVisible = 0;
+    // At the end of the thread (its closing line on screen, nothing more to
+    // load) the reader is at the last post, even where a longer post above
+    // fills more of the screen: "57 / 59" there read as two posts to go.
+    final endIndex = data.posts.length + leadingOffset;
+    if (!_hasMorePosts && itemPositions.any((p) => p.index == endIndex && p.itemLeadingEdge < 1)) {
+      _currentVisiblePostIndex.value = (data.posts.last.postNumber ?? data.totalPosts) - 1;
+      return;
+    }
+
+    // The post being read: the topmost one still on screen, unless only its
+    // last fifth is left. The one filling most of the screen read "2 / 9"
+    // at the top of a thread, under post #1, wherever #2 was the longer.
     int? bestPostIndex;
     for (final position in itemPositions) {
       final postIndex = position.index - leadingOffset;
       if (postIndex < 0 || postIndex >= data.posts.length) continue;
-      final visible = position.itemTrailingEdge.clamp(0.0, 1.0) -
-          position.itemLeadingEdge.clamp(0.0, 1.0);
-      if (visible > bestVisible) {
-        bestVisible = visible;
-        bestPostIndex = postIndex;
-      }
+      if (position.itemTrailingEdge <= 0.2 || position.itemLeadingEdge >= 1) continue;
+      if (bestPostIndex == null || postIndex < bestPostIndex) bestPostIndex = postIndex;
     }
     if (bestPostIndex == null) return;
 

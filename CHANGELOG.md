@@ -6,6 +6,17 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+Ships with bundled ForumCopilot addon **v1.10.0**.
+
+### Bundled addon (v1.9.0 → v1.10.0, published 2026-10-19 as the `addon-v1.10.0` release)
+- Signing up on the forum's website from the app comes back signed in. The app's sign-in request is kept in XenForo's session (from `forumcopilot-app-login`, or the app's `_xfRedirect` on the register page or a connected-account sign-up), and `register/complete` shows "Continue in the app", which hands the app a code as the sign-in page does. Used once, ignored after half an hour.
+- "Not you? Sign out" on the app sign-in confirmation page (`forumcopilot-app-login/sign-out`).
+- `completeBrowserLogin` gives two-step members a `tfa_trust` cookie, so the remember cookie signs the app back in after its session lapses; before, those members were signed out.
+- In-app `register` no longer skips the forum's spam protection: refused whenever guests are shown a captcha (`prefetchAccount` says `canRegisterViaAPI: false`), for discouraged IP addresses, and until XenForo's registration timer has run since `prefetchAccount`. Only the policies that exist are required; policy links and `registerViaWebUrl` are canonical; errors come keyed by field (`errors`) besides `resultText`; messages are XenForo phrases.
+- `resendEmailConfirmation`, and members waiting for email confirmation or approval may sign in on forums guests cannot view; `getConfig` reports `userState`.
+- `build_release.sh` now keeps its `hashes.json` patch for the smart-banner assets (it could be silently dropped).
+- Verified by building the release ZIP (197 files, identical to `upload/`) and upgrading the published 1.9.0 → 1.10.0 on 2.2.19 and 2.3.7 with `xf-addon:upgrade`: every add-on file matches `hashes.json`, the web-root `forumcopilot.php` matches the archive, and `getConfig` reports 1.10.0. No database changes; one template modification and one class extension. Each change exercised through `forumcopilot.php` and the web pages on both forums; live suites on both: basic 49/49, interface 100/100. The test data was removed by restoring the databases.
+
 ## [1.0.0] - 2026-10-19
 
 The 1.0 release, the same app as the official Forum Copilot app 1.0. Since 0.10.2 it has taken the official app's 0.10.3 to 1.0: the reactions and Material 3 work from the Discourse-app review, the forum's own header and colours, reply bars in threads and conversations, sign-in on the forum's website, two-step and passkeys from another phone, account deletion, drafts shared with the web editor, notification channels, and the fixes from reviewing every screen on a Pixel 4a and an iPhone 17. Ships with bundled ForumCopilot addon **v1.9.0**; the features that need it stay off with an older add-on. From this release on, versions follow the rules in [RELEASING.md](RELEASING.md#versioning).

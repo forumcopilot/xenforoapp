@@ -2982,4 +2982,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'La connexion via le site n’a pas abouti. Veuillez réessayer.';
+
+  @override
+  String get subForums => 'Sous-forums';
 }

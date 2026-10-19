@@ -1325,5 +1325,6 @@
   "accountDeleted": "Tu cuenta se ha eliminado.",
   "signInOnWebsite": "Iniciar sesión en el sitio web del foro",
   "signInOnWebsiteHint": "Para Google, Facebook y las demás formas de entrar allí",
-  "browserLoginFailed": "No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo."
+  "browserLoginFailed": "No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo.",
+  "subForums": "Subforos"
 }

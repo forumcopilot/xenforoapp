@@ -2956,4 +2956,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'L’accesso dal sito non è riuscito. Riprova.';
+
+  @override
+  String get subForums => 'Sottoforum';
 }

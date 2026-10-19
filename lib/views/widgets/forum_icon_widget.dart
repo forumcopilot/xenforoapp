@@ -195,12 +195,14 @@ class ForumListItemIconWidget extends StatelessWidget {
   final String? logoUrl;
   final IconData? fallbackIcon;
   final String? forumName;
+  final double size;
 
   const ForumListItemIconWidget({
     super.key,
     this.logoUrl,
     this.fallbackIcon,
     this.forumName,
+    this.size = 56,
   });
 
   @override
@@ -208,8 +210,8 @@ class ForumListItemIconWidget extends StatelessWidget {
     return ForumIconWidget(
       logoUrl: logoUrl,
       fallbackIcon: fallbackIcon,
-      size: 56,
-      borderRadius: BorderRadius.circular(12),
+      size: size,
+      borderRadius: BorderRadius.circular(size * 12 / 56),
       context: 'subforum',
       siteName: forumName,
     );

@@ -12,7 +12,7 @@ import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../listitems/topic_list_item.dart';
 import '../listitems/forum_list_item.dart';
-import '../widgets/subforum_header_widget.dart';
+import '../widgets/subforum_masthead.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
@@ -21,7 +21,9 @@ import '../../utils/app_navigation.dart';
 class ForumTopicList extends StatefulWidget {
   final SiteContext siteContext;
   final FCForum forum;
-  final bool showSubforumHeader;
+  /// The page's header, a sliver above the list (the forum's masthead);
+  /// it stays through loading and errors, so the page keeps its bar.
+  final Widget? header;
   final void Function(VoidCallback)? onRefreshAvailable;
 
   /// Room below the last topic for the page's floating New Topic button,
@@ -32,7 +34,7 @@ class ForumTopicList extends StatefulWidget {
     super.key,
     required this.siteContext,
     required this.forum,
-    this.showSubforumHeader = false,
+    this.header,
     this.onRefreshAvailable,
     this.clearFloatingButton = false,
   });
@@ -269,11 +271,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
     final textTheme = Theme.of(context).textTheme;
 
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return _withHeader(const Center(child: CircularProgressIndicator()));
     }
 
     if (_error != null) {
-      return Center(
+      return _withHeader(Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -301,7 +303,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
             ),
           ],
         ),
-      );
+      ));
     }
 
     // Use separate lists for forums and topics
@@ -314,18 +316,23 @@ class _ForumTopicListState extends State<ForumTopicList> {
     final stickyTopics = topics.where((topic) => topic.isPinned == true && topic.isAnnouncement != true).toList();
     final regularTopics = topics.where((topic) => topic.isAnnouncement != true && topic.isPinned != true).toList();
 
+    final header = widget.header;
     return RefreshIndicator(
       onRefresh: _loadTopics,
-      child: ListView(
+      // Below the collapsed header, not behind it.
+      edgeOffset: header == null ? 0 : MediaQuery.paddingOf(context).top + SubforumMasthead.collapsedHeight,
+      child: CustomScrollView(
         controller: _scrollController,
-        // An extended FAB (56) and its margins (16 each side).
-        padding: widget.clearFloatingButton
-            ? const EdgeInsets.only(bottom: 56 + 2 * kFloatingActionButtonMargin)
-            : null,
-        children: [
-          // Subforum header (icon, name, description) - scrolls with content
-          if (widget.showSubforumHeader)
-            SubforumHeaderWidget(forum: widget.forum),
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          if (header != null) header,
+          SliverPadding(
+            // An extended FAB (56) and its margins (16 each side).
+            padding: widget.clearFloatingButton
+                ? const EdgeInsets.only(bottom: 56 + 2 * kFloatingActionButtonMargin)
+                : EdgeInsets.zero,
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
           // Show permission message if user cannot view content
           if (!canViewContent)
             Padding(
@@ -371,12 +378,33 @@ class _ForumTopicListState extends State<ForumTopicList> {
               ),
             ),
           if (forums.isNotEmpty) ...[
+            // Named where the forum has topics of its own below them; a
+            // category's page is only its forums.
+            if (!widget.forum.isSubForumContainer)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  DesignTokens.spacingL,
+                  DesignTokens.spacingM,
+                  DesignTokens.spacingL,
+                  DesignTokens.spacingXS,
+                ),
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    AppLocalizations.of(context).subForums,
+                    style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ),
             ...forums.map((forum) => ForumListItem(
                   siteContext: widget.siteContext,
                   forum: forum,
-                  onSubscriptionChanged: (subscribe) => _handleSubscription(forum.id.isEmpty ? "0" : forum.id, subscribe),
+                  compact: !widget.forum.isSubForumContainer,
+                  onSubscriptionChanged: (subscribe) => _handleSubscription(
+                      forum.id.isEmpty ? "0" : forum.id, subscribe),
                   onTap: () {
-                    pushForumOrLinkForum(context, forum, widget.siteContext);
+                    pushForumOrLinkForum(context, forum, widget.siteContext,
+                        parent: widget.forum, openedFromParent: true);
                   },
                 )),
             // Separator between Forums and Topics
@@ -459,8 +487,23 @@ class _ForumTopicListState extends State<ForumTopicList> {
               padding: DesignTokens.paddingS,
               child: Center(child: CircularProgressIndicator()),
             ),
+              ]),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  /// [body] under the page's header, filling the rest of the screen.
+  Widget _withHeader(Widget body) {
+    final header = widget.header;
+    if (header == null) return body;
+    return CustomScrollView(
+      slivers: [
+        header,
+        SliverFillRemaining(hasScrollBody: false, child: body),
+      ],
     );
   }
 

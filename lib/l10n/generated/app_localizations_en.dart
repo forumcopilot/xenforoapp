@@ -2930,4 +2930,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Signing in on the website didn\'t work. Please try again.';
+
+  @override
+  String get subForums => 'Sub-forums';
 }

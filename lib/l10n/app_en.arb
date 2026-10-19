@@ -1927,5 +1927,7 @@
   "accountDeleted": "Your account has been deleted.",
   "signInOnWebsite": "Sign in on the forum's website",
   "signInOnWebsiteHint": "For Google, Facebook and the other ways you sign in there",
-  "browserLoginFailed": "Signing in on the website didn't work. Please try again."
+  "browserLoginFailed": "Signing in on the website didn't work. Please try again.",
+  "subForums": "Sub-forums",
+  "@subForums": {"description": "Heading above a forum's sub-forums, before its topics"}
 }

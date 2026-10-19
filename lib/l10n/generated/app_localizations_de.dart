@@ -2984,4 +2984,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.';
+
+  @override
+  String get subForums => 'Unterforen';
 }

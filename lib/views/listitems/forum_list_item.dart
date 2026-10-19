@@ -6,6 +6,8 @@ import 'package:forumcopilot_flutter/views/widgets/forum_icon_widget.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../widgets/forum_stats.dart';
+import '../widgets/unread_badge.dart';
 
 class ForumListItem extends StatelessWidget {
   final FCForum forum;
@@ -13,12 +15,17 @@ class ForumListItem extends StatelessWidget {
   final VoidCallback? onTap;
   final Function(bool)? onSubscriptionChanged;
 
+  /// A forum's sub-forums above its topics: a smaller icon, one line of
+  /// description and less padding, so its topics start higher.
+  final bool compact;
+
   const ForumListItem({
     Key? key,
     required this.siteContext,
     required this.forum,
     this.onTap,
     this.onSubscriptionChanged,
+    this.compact = false,
   }) : super(key: key);
 
   void _handleTap(BuildContext context) {
@@ -43,6 +50,7 @@ class ForumListItem extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final hasDescription = forum.description != null && forum.description!.isNotEmpty;
+    final stats = forumStatsLine(context, forum);
 
     return Material(
       color: colorScheme.surface,
@@ -52,22 +60,29 @@ class ForumListItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: compact ? 12 : 16),
               child: Row(
-                crossAxisAlignment: hasDescription ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                crossAxisAlignment: hasDescription || stats != null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
                 children: [
                   ForumListItemIconWidget(
                     logoUrl: forum.logoUrl,
                     fallbackIcon: Icons.forum_rounded,
                     forumName: forum.name,
+                    size: compact ? 40 : 56,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: compact ? 12 : 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
+                            // New posts since the reader's last visit, marked
+                            // as on a topic's row.
+                            if (forum.hasNewPosts) ...[
+                              UnreadBadge(semanticLabel: AppLocalizations.of(context).unread),
+                              const SizedBox(width: DesignTokens.spacingS),
+                            ],
                             Expanded(
                               child: Text(
                                 forum.name,
@@ -88,13 +103,25 @@ class ForumListItem extends StatelessWidget {
                           ],
                         ),
                         if (forum.description != null && forum.description!.isNotEmpty) ...[
-                          const SizedBox(height: 8),
+                          SizedBox(height: compact ? 4 : 8),
                           Text(
                             forum.description!,
                             style: textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
-                            maxLines: 2,
+                            maxLines: compact ? 1 : 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        // How big it is, as the forum's own header says it.
+                        if (stats != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            stats,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],

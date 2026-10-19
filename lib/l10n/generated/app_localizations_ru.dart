@@ -2974,4 +2974,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Не удалось войти через сайт. Попробуйте ещё раз.';
+
+  @override
+  String get subForums => 'Подфорумы';
 }

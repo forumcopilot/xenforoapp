@@ -1301,5 +1301,6 @@
   "accountDeleted": "Votre compte a été supprimé.",
   "signInOnWebsite": "Se connecter sur le site du forum",
   "signInOnWebsiteHint": "Pour Google, Facebook et les autres façons de vous y connecter",
-  "browserLoginFailed": "La connexion via le site n’a pas abouti. Veuillez réessayer."
+  "browserLoginFailed": "La connexion via le site n’a pas abouti. Veuillez réessayer.",
+  "subForums": "Sous-forums"
 }

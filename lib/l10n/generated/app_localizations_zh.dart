@@ -2772,4 +2772,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get browserLoginFailed => '网站登录未成功，请重试。';
+
+  @override
+  String get subForums => '子论坛';
 }

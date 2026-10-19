@@ -1325,5 +1325,6 @@
   "accountDeleted": "Il tuo account è stato eliminato.",
   "signInOnWebsite": "Accedi dal sito del forum",
   "signInOnWebsiteHint": "Per Google, Facebook e gli altri modi in cui accedi lì",
-  "browserLoginFailed": "L’accesso dal sito non è riuscito. Riprova."
+  "browserLoginFailed": "L’accesso dal sito non è riuscito. Riprova.",
+  "subForums": "Sottoforum"
 }

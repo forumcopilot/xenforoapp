@@ -2966,4 +2966,7 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo.';
+
+  @override
+  String get subForums => 'Subforos';
 }

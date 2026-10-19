@@ -2942,4 +2942,7 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Inloggen via de website is niet gelukt. Probeer het opnieuw.';
+
+  @override
+  String get subForums => 'Subforums';
 }

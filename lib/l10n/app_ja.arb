@@ -1301,5 +1301,6 @@
   "accountDeleted": "アカウントを削除しました。",
   "signInOnWebsite": "フォーラムのウェブサイトでログイン",
   "signInOnWebsiteHint": "Google、Facebook など、サイトで使っている方法でログインできます",
-  "browserLoginFailed": "ウェブサイトでのログインに失敗しました。もう一度お試しください。"
+  "browserLoginFailed": "ウェブサイトでのログインに失敗しました。もう一度お試しください。",
+  "subForums": "サブフォーラム"
 }

@@ -1325,5 +1325,6 @@
   "accountDeleted": "Sua conta foi excluída.",
   "signInOnWebsite": "Entrar pelo site do fórum",
   "signInOnWebsiteHint": "Para Google, Facebook e as outras formas de entrar lá",
-  "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente."
+  "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente.",
+  "subForums": "Subfóruns"
 }

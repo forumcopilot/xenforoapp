@@ -5005,6 +5005,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signing in on the website didn\'t work. Please try again.'**
   String get browserLoginFailed;
+
+  /// Heading above a forum's sub-forums, before its topics
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-forums'**
+  String get subForums;
 }
 
 class _AppLocalizationsDelegate

@@ -1301,5 +1301,6 @@
   "accountDeleted": "Dein Konto wurde gelöscht.",
   "signInOnWebsite": "Auf der Website des Forums anmelden",
   "signInOnWebsiteHint": "Für Google, Facebook und andere Anmeldearten dort",
-  "browserLoginFailed": "Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut."
+  "browserLoginFailed": "Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.",
+  "subForums": "Unterforen"
 }

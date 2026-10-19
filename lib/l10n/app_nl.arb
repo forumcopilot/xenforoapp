@@ -1774,5 +1774,6 @@
   "accountDeleted": "Je account is verwijderd.",
   "signInOnWebsite": "Inloggen op de website van het forum",
   "signInOnWebsiteHint": "Voor Google, Facebook en de andere manieren waarop je daar inlogt",
-  "browserLoginFailed": "Inloggen via de website is niet gelukt. Probeer het opnieuw."
+  "browserLoginFailed": "Inloggen via de website is niet gelukt. Probeer het opnieuw.",
+  "subForums": "Subforums"
 }

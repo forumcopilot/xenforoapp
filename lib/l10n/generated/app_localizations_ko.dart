@@ -2808,4 +2808,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get browserLoginFailed => '웹사이트 로그인에 실패했습니다. 다시 시도하세요.';
+
+  @override
+  String get subForums => '하위 포럼';
 }

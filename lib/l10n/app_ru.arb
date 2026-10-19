@@ -1325,5 +1325,6 @@
   "accountDeleted": "Ваш аккаунт удалён.",
   "signInOnWebsite": "Войти на сайте форума",
   "signInOnWebsiteHint": "Для Google, Facebook и других способов входа на сайте",
-  "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз."
+  "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз.",
+  "subForums": "Подфорумы"
 }

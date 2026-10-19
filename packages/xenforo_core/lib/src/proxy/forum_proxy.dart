@@ -189,7 +189,7 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
 
     // Determine if this is a sub-forum container
     // A category or forum with children but no threads/posts is a container
-    final threadCount = forumData['threadCount'] as int? ?? 0;
+    final threadCount = _count(forumData['threadCount']);
     final isSubForumContainer = childForums.isNotEmpty && threadCount == 0;
 
     return FCForum(
@@ -209,6 +209,14 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
       isLinkForum: forumData['isLinkForum'] == true,
       isSubForumContainer: isSubForumContainer,
       childForums: childForums,
+      // XenForo's own counts for the node, which the add-on sends as
+      // threadCount / postCount (its "Threads" and "Messages").
+      topicCount: threadCount,
+      postCount: _count(forumData['postCount']),
     );
   }
+
+  /// A count from the add-on's JSON: an int, or a numeric string.
+  static int _count(Object? value) =>
+      value is int ? value : int.tryParse('${value ?? ''}') ?? 0;
 }

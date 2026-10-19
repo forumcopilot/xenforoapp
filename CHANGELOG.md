@@ -89,6 +89,7 @@ Most need the add-on changes on the `addon/next` branch (not released yet); with
   - Saved passwords survive a locked iOS Keychain (a push tapped on the lock screen), an update and a restore: encrypted Android storage with `resetOnError`, iOS `first_unlock` (existing entries are moved once), a refused read is retried and never read as signed out, and the secure-storage file is excluded from Android backup and device transfer.
   - `packages/` re-synced: a reply to a request from before a sign-in or sign-out, or one that never reached the forum (offline), no longer changes the login state; `XenForoProxyFactory(client:)` takes a scripted client, with offline tests for the main paths; XenForo `updateEmail` / `updatePassword`.
   - 1,322 dead `?? 'English'` fallbacks and 267 duplicate ARB keys removed.
+- `packages/xenforo_core` re-synced from the official app: forums carry their topic and post counts (`FCForum.topicCount` / `postCount`, from the add-on's `threadCount` / `postCount`, which it already sent). The official app shows them on forum rows and in a forum's header; this app does not show them yet.
 
 ### Fixed
 - Reactions, from the canonical SDK (`packages/` re-synced, which also brings canonical's SDK changes since 2026-09-22: the WebView's real User-Agent instead of a hard-coded Chrome/131, poll and author fields on `FCPost` and `FCConversationMessage`, `FCSearchPersonal.messages`, no request headers in Cloudflare-challenge logs):

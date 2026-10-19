@@ -2,9 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
-The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases below 1.0 should not be assumed backward-compatible across minor bumps.
+The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases below 1.0 should not be assumed backward-compatible across minor bumps; from 1.0 on, what each kind of release may change for a fork is in [RELEASING.md](RELEASING.md#versioning).
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-10-19
+
+The 1.0 release, the same app as the official Forum Copilot app 1.0. Since 0.10.2 it has taken the official app's 0.10.3 to 1.0: the reactions and Material 3 work from the Discourse-app review, the forum's own header and colours, reply bars in threads and conversations, sign-in on the forum's website, two-step and passkeys from another phone, account deletion, drafts shared with the web editor, notification channels, and the fixes from reviewing every screen on a Pixel 4a and an iPhone 17. Ships with bundled ForumCopilot addon **v1.9.0**; the features that need it stay off with an older add-on. From this release on, versions follow the rules in [RELEASING.md](RELEASING.md#versioning).
 
 ### Bundled addon (v1.8.12 → v1.9.0, published 2026-10-19 as the `addon-v1.9.0` release)
 - Sign the app in through the forum's website (Google, Facebook, passkeys, two-step). A public `forumcopilot-app-login` page hands the app a one-time code through a URL scheme listed in the new option `fc_app_login_schemes` (default `forumcopilot`, the official app's scheme); `getConfig` reports the list as `browserLoginSchemes`.
@@ -60,7 +64,7 @@ From a review of every screen on a Pixel 4a and an iPhone 17 (MoleDJ/tapatalk_fl
 - Fixed: going back to one of Home's topic chips (Latest, Unread, Subscribed, Participated) left it a spinner, and a chip's first visit asked the forum twice; the jump dialog of a one-message conversation; no "Login failed" flash before two-step; a category page showed a permission banner; Members said "No members found" on a forum that hides its member list; Search runs one search per query, not three; dates in the past week read "Wed, 11:17 PM"; App Settings' language picker fits a screen; screen readers name the composer's send buttons and read counts and arrows once.
 
 ### Added (ported from the official app's 0.12, phase 3)
-Most need the add-on changes on the `addon/next` branch (not released yet); with an older add-on the app behaves as before.
+Most need add-on 1.9.0; with an older add-on the app behaves as before.
 - Home opens with the forum's own header: logo (whole, SVG included), name, a line about the forum, compact translated stats, its banner picture and a search field, collapsing into the app bar on scroll. The bars no longer say "Home"; search is offered to guests where the forum allows guest search.
 - The app in the forum's own colours: the add-on sends the default style's colours and logo (light, and dark on XenForo 2.3), the app seeds its colour scheme from the forum's link colour (kept readable) and draws the header in the forum's header colours.
 - Conversations have a reply bar at the bottom (the text stays when sending fails; the same draft as the full Reply page) and check for new messages every 30 seconds while open.
@@ -117,6 +121,8 @@ Most need the add-on changes on the `addon/next` branch (not released yet); with
   - Unticked poll choices no longer look ticked; polls without a limit get checkboxes.
   - Release macOS builds can reach the network (`network.client` in Release.entitlements).
   - Response headers are no longer logged.
+
+[1.0.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.0.0
 
 ## [0.10.2] - 2026-09-22
 
@@ -276,5 +282,5 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v0.10.2...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v1.0.0...HEAD
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

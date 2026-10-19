@@ -4,29 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../services/server_draft.dart';
+import '../../core/logging/app_logger.dart';
+import '../../services/server_draft.dart';
 
-import '../../../../l10n/generated/app_localizations.dart';
-import '../../../../theme/design_tokens.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../theme/design_tokens.dart';
 
-/// The composer at the bottom of a conversation: type and send without
-/// leaving it. The text stays when sending fails, and is kept on this device
-/// under [draftKey] (the full Reply page keeps its draft under the same key,
-/// so the two share one draft).
-class ConversationQuickReplyBar extends StatefulWidget {
-  const ConversationQuickReplyBar({
+/// The composer at the bottom of a conversation or a thread: type and send
+/// without leaving it, as XenForo's quick reply. The text stays when sending
+/// fails, and is kept on this device under [draftKey] (the full Reply page
+/// keeps its draft under the same key, so the two share one draft).
+class QuickReplyBar extends StatefulWidget {
+  const QuickReplyBar({
     super.key,
     required this.draftKey,
     required this.onSend,
     this.onOpenFullEditor,
     this.siteContext,
     this.serverDraftKey,
+    this.sendLabel,
   });
+
+  /// The send button's tooltip and screen-reader label; Send Message by
+  /// default (a conversation), Post in a thread.
+  final String? sendLabel;
 
   final String draftKey;
 
-  /// The forum's own key for the draft (conversation-reply-{id}), to keep it
-  /// on the forum too, where the web editor shows it; needs [siteContext].
+  /// The forum's own key for the draft (conversation-reply-{id}, thread-{id}),
+  /// to keep it on the forum too, where the web editor shows it; needs
+  /// [siteContext].
   final String? serverDraftKey;
   final SiteContext? siteContext;
 
@@ -38,10 +45,10 @@ class ConversationQuickReplyBar extends StatefulWidget {
   final Future<bool> Function(TextEditingController controller)? onOpenFullEditor;
 
   @override
-  State<ConversationQuickReplyBar> createState() => _ConversationQuickReplyBarState();
+  State<QuickReplyBar> createState() => QuickReplyBarState();
 }
 
-class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
+class QuickReplyBarState extends State<QuickReplyBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   Timer? _draftTimer;
@@ -72,7 +79,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
       _controller.text = draft;
       _controller.selection = TextSelection.collapsed(offset: draft.length);
     } catch (e) {
-      debugPrint('ConversationQuickReplyBar: restoring the draft failed: $e');
+      AppLogger.debug('QuickReplyBar: restoring the draft failed: $e');
     }
   }
 
@@ -95,7 +102,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
         await prefs.setString(widget.draftKey, text);
       }
     } catch (e) {
-      debugPrint('ConversationQuickReplyBar: saving the draft failed: $e');
+      AppLogger.debug('QuickReplyBar: saving the draft failed: $e');
     }
   }
 
@@ -108,7 +115,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
       sent = await widget.onSend(text);
     } catch (e) {
       // [onSend] reports its own failures; the text stays either way.
-      debugPrint('ConversationQuickReplyBar: sending failed: $e');
+      AppLogger.debug('QuickReplyBar: sending failed: $e');
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -121,7 +128,16 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
 
   Future<void> _openFullEditor() async {
     final open = widget.onOpenFullEditor;
-    if (open == null || _sending) return;
+    if (open == null) return;
+    await openEditor(open);
+  }
+
+  /// Opens a full editor (the Reply page, or one quoting a post) on this
+  /// bar's text, which it edits in place; [open] is true when it posted,
+  /// and the bar is then emptied. A thread's Reply on a post comes here, so
+  /// what was typed in the bar goes with the quote instead of being lost.
+  Future<void> openEditor(Future<bool> Function(TextEditingController controller) open) async {
+    if (_sending) return;
     _draftTimer?.cancel();
     final sent = await open(_controller);
     if (!mounted) return;
@@ -205,7 +221,7 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
             _SendButton(
               enabled: canSend,
               sending: _sending,
-              tooltip: l10n.sendMessage,
+              tooltip: widget.sendLabel ?? l10n.sendMessage,
               onPressed: _submit,
             ),
           ],
@@ -213,6 +229,31 @@ class _ConversationQuickReplyBarState extends State<ConversationQuickReplyBar> {
       ),
     );
   }
+}
+
+/// The list above a [QuickReplyBar]: dragging it puts the keyboard away,
+/// as in Messages. iOS has no back gesture for that, so the keyboard used to
+/// stay up until the reply was sent. Drags past either end count too: a
+/// conversation is usually at its newest message, where there is no further
+/// to go.
+class DismissKeyboardOnDrag extends StatelessWidget {
+  const DismissKeyboardOnDrag({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          final dragged = switch (notification) {
+            ScrollUpdateNotification(:final dragDetails) => dragDetails != null,
+            OverscrollNotification(:final dragDetails) => dragDetails != null,
+            _ => false,
+          };
+          if (dragged) FocusManager.instance.primaryFocus?.unfocus();
+          return false;
+        },
+        child: child,
+      );
 }
 
 class _SendButton extends StatelessWidget {

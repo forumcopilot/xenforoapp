@@ -611,7 +611,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSubscribedTopicsMessage.
   ///
   /// In en, this message translates to:
-  /// **'You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.'**
+  /// **'You aren\'t subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.'**
   String get noSubscribedTopicsMessage;
 
   /// No description provided for @noParticipatedTopics.
@@ -5005,6 +5005,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Signing in on the website didn\'t work. Please try again.'**
   String get browserLoginFailed;
+
+  /// Heading above a forum's sub-forums, before its topics
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-forums'**
+  String get subForums;
+
+  /// Screen reader: where the reader is in a thread, on its navigator
+  ///
+  /// In en, this message translates to:
+  /// **'Post {position} of {total}'**
+  String postPositionOf(int position, int total);
+
+  /// Screen-reader hint on the thread navigator's position
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to jump to a specific post'**
+  String get tapToJumpToPost;
+
+  /// No description provided for @jumpToFirstPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to first post'**
+  String get jumpToFirstPost;
+
+  /// No description provided for @jumpToLastPost.
+  ///
+  /// In en, this message translates to:
+  /// **'Jump to last post'**
+  String get jumpToLastPost;
+
+  /// Label of a send button: a direct message, a quick reply in a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// Label of the button that posts a reply or a new topic
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get postAction;
+
+  /// Screen reader: how many messages a conversation has
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} message} other{{count} messages}}'**
+  String messageCountLabel(int count);
+
+  /// Screen reader: how many replies a topic has
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} reply} other{{count} replies}}'**
+  String replyCountLabel(int count);
+
+  /// Screen reader: how many sub-forums a forum row lists
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} sub-forum} other{{count} sub-forums}}'**
+  String subForumCountLabel(int count);
+
+  /// Switch on the two-step verification screen: XenForo's Trust this device
+  ///
+  /// In en, this message translates to:
+  /// **'Trust this device'**
+  String get trustThisDevice;
+
+  /// No description provided for @trustThisDeviceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t ask for a code the next time you sign in on this device'**
+  String get trustThisDeviceHint;
+
+  /// Two-step verification with a passkey, when the device has none for the forum
+  ///
+  /// In en, this message translates to:
+  /// **'There\'s no passkey for this forum on this device. Choose another method, or add a passkey on the forum\'s website first.'**
+  String get passkeyNotOnThisDevice;
+
+  /// Two-step verification with a passkey, when the forum's domain does not list the app
+  ///
+  /// In en, this message translates to:
+  /// **'This forum is not yet set up for passkeys in this app. Choose another method.'**
+  String get passkeyStepNotSetUp;
 }
 
 class _AppLocalizationsDelegate

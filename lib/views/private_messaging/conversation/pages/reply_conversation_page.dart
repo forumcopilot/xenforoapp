@@ -129,6 +129,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
           // Create the compose widget once and reuse it across all states
           // Use a stable key based on quotedMessageId to preserve widget state (including attachments)
           Widget compose = MessageComposePage(
+            submitLabel: AppLocalizations.of(context).send,
             key: ValueKey('reply_with_quote_${widget.quotedMessageId}'),
             siteContext: widget.siteContext,
             title: AppLocalizations.of(context).reply,
@@ -180,6 +181,7 @@ class _ReplyConversationPageState extends State<ReplyConversationPage> {
       );
     } else {
       return MessageComposePage(
+        submitLabel: AppLocalizations.of(context).send,
         siteContext: widget.siteContext,
         title: AppLocalizations.of(context).reply,
         onSubmit: _handleSubmit,

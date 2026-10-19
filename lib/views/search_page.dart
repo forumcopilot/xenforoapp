@@ -35,7 +35,9 @@ class _SearchPageState extends State<SearchPage> {
   int _selectedFilterIndex = 0; // 0 = All (Posts), 1 = Topics Only, 2 = Titles Only
   List<String> _getFilterLabels(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return [l10n.all, l10n.topicsOnly, l10n.titlesOnly];
+    // The first searches posts: "All" over "No posts found" read as if
+    // nothing matched while the topics did.
+    return [l10n.posts, l10n.topicsOnly, l10n.titlesOnly];
   }
 
   int _topicPage = 1;
@@ -66,6 +68,27 @@ class _SearchPageState extends State<SearchPage> {
     _topicScrollController.addListener(_onTopicScroll);
     _postScrollController.addListener(_onPostScroll);
     _titlesOnlyScrollController.addListener(_onTitlesOnlyScroll);
+    // Ready to type, as the page opens from a search box (the site search
+    // does the same); it took a second tap.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _currentQuery == null) _searchFocusNode.requestFocus();
+    });
+  }
+
+  /// Runs the search the chosen chip shows, once per query: the others run
+  /// when chosen. All three ran on every query, three searches where the
+  /// forum may allow one every few seconds.
+  void _fetchSelected() {
+    switch (_selectedFilterIndex) {
+      case 0:
+        if (_posts.isEmpty && _hasMorePosts) _fetchPosts();
+        break;
+      case 1:
+        if (_topics.isEmpty && _hasMoreTopics) _fetchTopics();
+        break;
+      default:
+        if (_titlesOnlyTopics.isEmpty && _hasMoreTitlesOnly) _fetchTitlesOnly();
+    }
   }
 
   @override
@@ -163,10 +186,7 @@ class _SearchPageState extends State<SearchPage> {
       _titlesOnlySearchId = null;
     });
 
-    // Fetch results
-    _fetchTopics();
-    _fetchPosts();
-    _fetchTitlesOnly();
+    _fetchSelected();
   }
 
   Future<void> _fetchTopics() async {
@@ -516,6 +536,7 @@ class _SearchPageState extends State<SearchPage> {
         setState(() {
           _selectedFilterIndex = index;
         });
+        _fetchSelected();
       },
     );
   }

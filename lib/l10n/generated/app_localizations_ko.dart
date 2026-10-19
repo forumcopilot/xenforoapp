@@ -272,7 +272,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      '주제를 구독하지 않았습니다. 주제의 별 버튼을 탭하여 구독하고 새 업데이트 알림을 받으세요.';
+      '아직 구독한 주제가 없습니다. 주제를 열고 ⋮ 메뉴에서 구독을 선택하면 새 답글 알림을 받을 수 있습니다.';
 
   @override
   String get noParticipatedTopics => '참여한 주제 없음';
@@ -2808,4 +2808,71 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get browserLoginFailed => '웹사이트 로그인에 실패했습니다. 다시 시도하세요.';
+
+  @override
+  String get subForums => '하위 포럼';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return '게시물 $position/$total';
+  }
+
+  @override
+  String get tapToJumpToPost => '탭하여 특정 게시물로 이동';
+
+  @override
+  String get jumpToFirstPost => '첫 게시물로 이동';
+
+  @override
+  String get jumpToLastPost => '마지막 게시물로 이동';
+
+  @override
+  String get send => '보내기';
+
+  @override
+  String get postAction => '게시';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '메시지 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '답글 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '하위 포럼 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustThisDevice => '이 기기 신뢰';
+
+  @override
+  String get trustThisDeviceHint => '다음에 이 기기에서 로그인할 때 코드를 묻지 않음';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      '이 기기에는 이 포럼의 패스키가 없습니다. 다른 방법을 선택하거나 먼저 포럼 웹사이트에서 패스키를 추가하세요.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      '이 포럼은 아직 이 앱에서 패스키를 사용할 수 있도록 설정되지 않았습니다. 다른 방법을 선택하세요.';
 }

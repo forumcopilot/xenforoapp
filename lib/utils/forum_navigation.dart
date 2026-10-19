@@ -9,11 +9,17 @@ import 'app_navigation.dart';
 ///
 /// If [forum] has [FCForum.isLinkForum] true and a non-empty [FCForum.externalUrl],
 /// pushes [InAppWebViewPage] with that URL. Otherwise pushes [ForumTopicsPage].
+///
+/// [parent] is the forum [forum] is in, for the page's breadcrumb, when the
+/// caller has it; [openedFromParent] says the caller is [parent]'s own page,
+/// which the breadcrumb then goes back to rather than opening it again.
 void pushForumOrLinkForum(
   BuildContext context,
   FCForum forum,
-  SiteContext siteContext,
-) {
+  SiteContext siteContext, {
+  FCForum? parent,
+  bool openedFromParent = false,
+}) {
   if (forum.isLinkForum && forum.externalUrl != null && forum.externalUrl!.isNotEmpty) {
     AppNavigation.push(context, InAppWebViewPage(
           url: forum.externalUrl!,
@@ -23,6 +29,8 @@ void pushForumOrLinkForum(
     AppNavigation.push(context, ForumTopicsPage(
           forum: forum,
           siteContext: siteContext,
+          parent: parent,
+          openedFromParent: openedFromParent,
         ));
   }
 }

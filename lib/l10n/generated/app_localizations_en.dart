@@ -286,7 +286,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'You did not subscribe to any topics. Tap the star button on a topic to subscribe and receive notifications for new updates.';
+      'You aren\'t subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.';
 
   @override
   String get noParticipatedTopics => 'No Participated Topics';
@@ -2930,4 +2930,75 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Signing in on the website didn\'t work. Please try again.';
+
+  @override
+  String get subForums => 'Sub-forums';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Post $position of $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Tap to jump to a specific post';
+
+  @override
+  String get jumpToFirstPost => 'Jump to first post';
+
+  @override
+  String get jumpToLastPost => 'Jump to last post';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get postAction => 'Post';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count messages',
+      one: '$count message',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count replies',
+      one: '$count reply',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sub-forums',
+      one: '$count sub-forum',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustThisDevice => 'Trust this device';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Don\'t ask for a code the next time you sign in on this device';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'There\'s no passkey for this forum on this device. Choose another method, or add a passkey on the forum\'s website first.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'This forum is not yet set up for passkeys in this app. Choose another method.';
 }

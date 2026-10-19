@@ -137,9 +137,15 @@ String formatSmartDateTime(DateTime dateTime, BuildContext context) {
     return timeago.format(localDateTime, clock: now, locale: timeAgoLocale);
   }
 
-  // For this week (last 7 days) use timeago with the time
+  // This past week: the weekday and the time ("Wed, 11:17 PM"), as later
+  // dates have the date and the time. It read "4 days ago 11:17 PM".
   if (difference.inDays < 7) {
-    return '${timeago.format(localDateTime, clock: now, locale: timeAgoLocale)} ${_formatUserTimeInternal(localDateTime, context)}';
+    try {
+      final weekday = DateFormat.E(locale.toString()).format(localDateTime);
+      return '$weekday, ${_formatUserTimeInternal(localDateTime, context)}';
+    } catch (e) {
+      return '${timeago.format(localDateTime, clock: now, locale: timeAgoLocale)} ${_formatUserTimeInternal(localDateTime, context)}';
+    }
   }
 
   // For this year, show date without year + time

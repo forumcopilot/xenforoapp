@@ -33,7 +33,11 @@ class PostActionsHandler {
 
   /// [onRefresh] may be called with no args (refresh current page) or with [scrollToPostId]
   /// to refresh by loading the thread at that post and scrolling to it (used after reply to stay on same screen).
-  Future<void> handleReply(BuildContext context, String postId, String topicId, String topicTitle, void Function([String? scrollToPostId]) onRefresh) async {
+  ///
+  /// [contentController] is the thread's quick-reply text, which the page
+  /// edits in place. True when the reply was posted.
+  Future<bool> handleReply(BuildContext context, String postId, String topicId, String topicTitle, void Function([String? scrollToPostId]) onRefresh,
+      {TextEditingController? contentController}) async {
     AppLogger.debug('🔵 [POST_ACTIONS] handleReply called');
     AppLogger.debug('   - postId: $postId');
     AppLogger.debug('   - topicId (parameter): $topicId');
@@ -48,17 +52,17 @@ class PostActionsHandler {
 
     // Add check for can_reply
     if (!(data?.topic.canReply ?? false)) {
-      if (!context.mounted) return;
+      if (!context.mounted) return false;
       SnackbarHelper.showError(context, AppLocalizations.of(context).youCannotReplyToThisThread);
-      return;
+      return false;
     }
 
     // Use forumId from threadDataOutput, or fallback to the provided forumId (only if not empty)
     final forumId = data?.topic.forumId ?? (fallbackForumId != null && fallbackForumId!.isNotEmpty ? fallbackForumId : null);
     if (forumId == null || forumId.isEmpty) {
-      if (!context.mounted) return;
+      if (!context.mounted) return false;
       SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-      return;
+      return false;
     }
 
     // Use actual topicId from threadDataOutput if available
@@ -72,17 +76,17 @@ class PostActionsHandler {
       if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
-        if (!context.mounted) return;
+        if (!context.mounted) return false;
         SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-        return;
+        return false;
       }
     } else {
       // threadDataOutput is null - use parameter topicId (normal mode, not thread_by_post)
       actualTopicId = topicId;
       if (actualTopicId.isEmpty) {
-        if (!context.mounted) return;
+        if (!context.mounted) return false;
         SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-        return;
+        return false;
       }
     }
 
@@ -101,6 +105,7 @@ class PostActionsHandler {
           topicTitle: topicTitle,
           postId: postId,
           isQuote: false,
+          contentController: contentController,
         ),
       ),
     );
@@ -129,10 +134,16 @@ class PostActionsHandler {
       // Show error message
       SnackbarHelper.showError(context, AppLocalizations.of(context).failedToPostReply);
     }
+    // A posted reply comes back as its id, or true; null is closed unposted.
+    return result != null && result != false;
   }
 
   /// [onRefresh] may be called with no args or with [scrollToPostId] to refresh and scroll to that post (same as handleReply).
-  Future<void> handleQuote(BuildContext context, String postId, String authorName, String postText, String topicId, String topicTitle, void Function([String? scrollToPostId]) onRefresh) async {
+  ///
+  /// [contentController] is the thread's quick-reply text: the quote goes
+  /// after it. True when the reply was posted.
+  Future<bool> handleQuote(BuildContext context, String postId, String authorName, String postText, String topicId, String topicTitle, void Function([String? scrollToPostId]) onRefresh,
+      {TextEditingController? contentController}) async {
     AppLogger.debug('🔵 [POST_ACTIONS] handleQuote called');
     AppLogger.debug('   - postId: $postId');
     AppLogger.debug('   - topicId (parameter): $topicId');
@@ -150,9 +161,9 @@ class PostActionsHandler {
     AppLogger.debug('🔵 [POST_ACTIONS] Resolved forumId: $forumId');
     if (forumId == null || forumId.isEmpty) {
       AppLogger.debug('⚠️ [POST_ACTIONS] forumId is null or empty - showing error');
-      if (!context.mounted) return;
+      if (!context.mounted) return false;
       SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-      return;
+      return false;
     }
 
     // Use actual topicId from threadDataOutput if available
@@ -165,9 +176,9 @@ class PostActionsHandler {
       if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from threadDataOutput is null or empty - showing error');
         // Thread data exists but topic.id is not loaded yet - wait for it
-        if (!context.mounted) return;
+        if (!context.mounted) return false;
         SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-        return;
+        return false;
       }
     } else {
       // threadDataOutput is null - use parameter topicId (normal mode, not thread_by_post)
@@ -175,9 +186,9 @@ class PostActionsHandler {
       AppLogger.debug('🔵 [POST_ACTIONS] Using actualTopicId from parameter (threadDataOutput is null): $actualTopicId');
       if (actualTopicId.isEmpty) {
         AppLogger.debug('⚠️ [POST_ACTIONS] actualTopicId from parameter is empty - showing error');
-        if (!context.mounted) return;
+        if (!context.mounted) return false;
         SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseWaitForThreadToLoad);
-        return;
+        return false;
       }
     }
 
@@ -199,6 +210,7 @@ class PostActionsHandler {
           topicTitle: topicTitle,
           postId: postId,
           isQuote: true,
+          contentController: contentController,
         ),
       ),
     );
@@ -223,6 +235,8 @@ class PostActionsHandler {
     // null = the composer was closed without posting (Back, or Discard):
     // nothing changed, so the thread keeps its place. Reloading here made
     // Reply with Quote followed by Back jump the thread.
+    // A posted reply comes back as its id, or true; null is closed unposted.
+    return result != null && result != false;
   }
 
   Future<void> handleEdit(BuildContext context, String postId, String currentText, String topicTitle, String topicId, String? forumId, VoidCallback onRefresh) async {

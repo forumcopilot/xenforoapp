@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
-import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart' show ReactionGlyph;
+import 'package:forumcopilot_flutter/views/widgets/react_button.dart';
+import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart'
+    show reactionIconSize;
 import 'package:forumcopilot_flutter/views/widgets/reaction_summary.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_users_sheet.dart';
 import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.dart';
@@ -23,34 +24,93 @@ import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
 import '../../../../utils/forum_links.dart';
 
-/// Icon for a conversation message's react button: the viewer's chosen
-/// reaction glyph (emoji or custom image) when they've reacted, else the heart.
-/// Shared by both message layouts (header + regular item).
-Widget buildMessageReactButtonIcon({
-  required SiteContext siteContext,
-  required FCConversationMessage message,
-  required bool isLiked,
-  required Color iconColor,
-  required ColorScheme colorScheme,
-}) {
-  FCReaction? viewer;
-  if (isLiked) {
-    final me = siteContext.currentUsername;
-    for (final like in message.likesInfo) {
-      if (like.username == me && like.reactionId != null) {
-        viewer = ReactionRegistry.instance.byId(like.reactionId);
-        break;
-      }
-    }
+/// The footer of a conversation message, shared by both message layouts
+/// (header + regular item) and laid out like a post's: the actions sit at
+/// the end of the row, the reaction summary (the emoji people used and how
+/// many; a tap lists who) packed against the react button it counts for,
+/// and Quote last, where a post has Reply.
+class _MessageSocialActions extends StatelessWidget {
+  final SiteContext siteContext;
+  final FCConversationMessage message;
+  final bool isClosed;
+  final VoidCallback? onQuote;
+  final VoidCallback? onLike;
+  final VoidCallback? onLongPressLike;
+
+  const _MessageSocialActions({
+    required this.siteContext,
+    required this.message,
+    required this.isClosed,
+    required this.onQuote,
+    required this.onLike,
+    required this.onLongPressLike,
+  });
+
+  /// Who reacted, in the sheet ported from the Discourse app.
+  void _showReactors(BuildContext context) {
+    ReactionUsersSheet.show(
+      context: context,
+      siteContext: siteContext,
+      likes: message.likesInfo,
+      count: message.likeCount,
+    );
   }
-  if (viewer != null) {
-    return ReactionGlyph(reaction: viewer, size: DesignTokens.iconSizeMedium);
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final canLike = message.canLike;
+    final isLiked = message.isLiked;
+    final total = reactionTotal(message.likesInfo, message.likeCount);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0,
+          DesignTokens.spacingL, DesignTokens.spacingL),
+      child: Row(
+        children: [
+          const Spacer(),
+          if (total > 0)
+            ReactionSummary(
+              likes: message.likesInfo,
+              count: message.likeCount,
+              besideReactButton: canLike,
+              onTap: message.likesInfo.isNotEmpty
+                  ? () => _showReactors(context)
+                  : null,
+            ),
+          if (canLike)
+            ReactButton(
+              isReacted: isLiked,
+              reaction: isLiked
+                  ? viewerReaction(message.likesInfo, siteContext.currentUsername)
+                  : null,
+              // A tap likes (or takes your reaction back); a long press
+              // opens the picker, as on a post.
+              onTap: onLike,
+              onLongPress: onLongPressLike,
+              label: AccessibilityHelpers.getLikeButtonLabel(
+                  context, isLiked, total > 0 ? total : null),
+              hint: onLongPressLike == null
+                  ? null
+                  : AppLocalizations.of(context).reactionHoldHint,
+            ),
+          // Quote, only while the conversation is open. Drawn like the other
+          // actions; it was faded to half strength before.
+          if (!isClosed)
+            AccessibilityHelpers.accessibleIconButton(
+              icon: Icon(
+                Icons.format_quote_rounded,
+                color: colorScheme.onSurfaceVariant,
+                size: reactionIconSize(context, DesignTokens.iconSizeMedium),
+              ),
+              onTap: onQuote,
+              label: AccessibilityHelpers.getQuoteButtonLabel(context),
+              context: context,
+            ),
+        ],
+      ),
+    );
   }
-  return Icon(
-    Icons.favorite,
-    color: isLiked ? colorScheme.error : iconColor,
-    size: DesignTokens.iconSizeMedium,
-  );
 }
 
 class ConversationHeaderItem extends StatelessWidget {
@@ -60,6 +120,10 @@ class ConversationHeaderItem extends StatelessWidget {
   final List<FCParticipant> participants;
   final VoidCallback? onQuote;
   final VoidCallback? onLike;
+
+  /// Long press on the react button: the reaction picker. Null on a forum
+  /// with only Like.
+  final VoidCallback? onLongPressLike;
   final VoidCallback? onEdit;
   final bool isHighlighted;
   final bool isClosed;
@@ -72,6 +136,7 @@ class ConversationHeaderItem extends StatelessWidget {
     required this.participants,
     this.onQuote,
     this.onLike,
+    this.onLongPressLike,
     this.onEdit,
     this.isHighlighted = false,
     this.isClosed = false,
@@ -336,76 +401,15 @@ class ConversationHeaderItem extends StatelessWidget {
     return items;
   }
 
-  /// Who reacted, in the sheet ported from the Discourse app.
-  void _showReactors(BuildContext context) {
-    ReactionUsersSheet.show(
-      context: context,
+  Widget _buildSocialActions(
+      BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+    return _MessageSocialActions(
       siteContext: siteContext,
-      likes: message.likesInfo,
-      count: message.likeCount,
-      onReact: (message.canLike && ReactionRegistry.instance.isAvailable)
-          ? onLike
-          : null,
-    );
-  }
-
-  Widget _buildSocialActions(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
-    // Get like data from message model
-    final bool canLike = message.canLike;
-    final bool isLiked = message.isLiked;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
-    final likeCount = message.likesInfo.length;
-    final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
-      child: Row(
-        children: [
-          // Quote button - only show if conversation is not closed
-          if (!isClosed)
-            AccessibilityHelpers.accessibleIconButton(
-              icon: Icon(
-                Icons.format_quote_rounded,
-                color: iconColor,
-                size: DesignTokens.iconSizeMedium,
-              ),
-              onTap: onQuote,
-              label: AccessibilityHelpers.getQuoteButtonLabel(context),
-              context: context,
-            ),
-          // Reactions, as in the Discourse app: the summary (the emoji
-          // people used and how many; a tap lists who) packed against the
-          // react button it counts for.
-          if (showSummary) ...[
-            if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
-            ReactionSummary(
-              likes: message.likesInfo,
-              count: message.likeCount,
-              besideReactButton: canLike,
-              onTap: message.likesInfo.isNotEmpty
-                  ? () => _showReactors(context)
-                  : null,
-            ),
-          ],
-          if (canLike) ...[
-            if (!isClosed && !showSummary) SizedBox(width: DesignTokens.spacingXL),
-            AccessibilityHelpers.accessibleIconButton(
-              icon: buildMessageReactButtonIcon(
-                siteContext: siteContext,
-                message: message,
-                isLiked: isLiked,
-                iconColor: iconColor,
-                colorScheme: colorScheme,
-              ),
-              onTap: onLike,
-              label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount > 0 ? likeCount : null),
-              isSelected: isLiked,
-              context: context,
-            ),
-          ],
-        ],
-      ),
+      message: message,
+      isClosed: isClosed,
+      onQuote: onQuote,
+      onLike: onLike,
+      onLongPressLike: onLongPressLike,
     );
   }
 
@@ -492,6 +496,10 @@ class ConversationItem extends StatelessWidget {
   final bool isLast;
   final VoidCallback? onQuote;
   final VoidCallback? onLike;
+
+  /// Long press on the react button: the reaction picker. Null on a forum
+  /// with only Like.
+  final VoidCallback? onLongPressLike;
   final VoidCallback? onEdit;
   final bool isHighlighted;
   final bool isClosed;
@@ -504,6 +512,7 @@ class ConversationItem extends StatelessWidget {
     this.isLast = false,
     this.onQuote,
     this.onLike,
+    this.onLongPressLike,
     this.onEdit,
     this.isHighlighted = false,
     this.isClosed = false,
@@ -777,76 +786,15 @@ class ConversationItem extends StatelessWidget {
     return items;
   }
 
-  /// Who reacted, in the sheet ported from the Discourse app.
-  void _showReactors(BuildContext context) {
-    ReactionUsersSheet.show(
-      context: context,
+  Widget _buildSocialActions(
+      BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+    return _MessageSocialActions(
       siteContext: siteContext,
-      likes: message.likesInfo,
-      count: message.likeCount,
-      onReact: (message.canLike && ReactionRegistry.instance.isAvailable)
-          ? onLike
-          : null,
-    );
-  }
-
-  Widget _buildSocialActions(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
-    // Get like data from message model
-    final bool canLike = message.canLike;
-    final bool isLiked = message.isLiked;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = colorScheme.onSurfaceVariant.withValues(alpha: isDarkMode ? 0.4 : 0.5);
-    final likeCount = message.likesInfo.length;
-    final showSummary = reactionTotal(message.likesInfo, message.likeCount) > 0;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingL),
-      child: Row(
-        children: [
-          // Quote button - only show if conversation is not closed
-          if (!isClosed)
-            AccessibilityHelpers.accessibleIconButton(
-              icon: Icon(
-                Icons.format_quote_rounded,
-                color: iconColor,
-                size: DesignTokens.iconSizeMedium,
-              ),
-              onTap: onQuote,
-              label: AccessibilityHelpers.getQuoteButtonLabel(context),
-              context: context,
-            ),
-          // Reactions, as in the Discourse app: the summary (the emoji
-          // people used and how many; a tap lists who) packed against the
-          // react button it counts for.
-          if (showSummary) ...[
-            if (!isClosed) SizedBox(width: DesignTokens.spacingXL),
-            ReactionSummary(
-              likes: message.likesInfo,
-              count: message.likeCount,
-              besideReactButton: canLike,
-              onTap: message.likesInfo.isNotEmpty
-                  ? () => _showReactors(context)
-                  : null,
-            ),
-          ],
-          if (canLike) ...[
-            if (!isClosed && !showSummary) SizedBox(width: DesignTokens.spacingXL),
-            AccessibilityHelpers.accessibleIconButton(
-              icon: buildMessageReactButtonIcon(
-                siteContext: siteContext,
-                message: message,
-                isLiked: isLiked,
-                iconColor: iconColor,
-                colorScheme: colorScheme,
-              ),
-              onTap: onLike,
-              label: AccessibilityHelpers.getLikeButtonLabel(context, isLiked, likeCount > 0 ? likeCount : null),
-              isSelected: isLiked,
-              context: context,
-            ),
-          ],
-        ],
-      ),
+      message: message,
+      isClosed: isClosed,
+      onQuote: onQuote,
+      onLike: onLike,
+      onLongPressLike: onLongPressLike,
     );
   }
 }

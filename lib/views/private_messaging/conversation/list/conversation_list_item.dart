@@ -166,7 +166,11 @@ class ConversationListItem extends StatelessWidget {
                 runSpacing: DesignTokens.spacingXS,
                 children: [
                   if ((conversation.participant_count ?? 0) > 0) ...[
-                    Row(
+                    // "3 participants" to a screen reader, not a bare 3.
+                    Semantics(
+                      label: AppLocalizations.of(context).participantCount(conversation.participant_count ?? 0),
+                      excludeSemantics: true,
+                      child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -184,9 +188,13 @@ class ConversationListItem extends StatelessWidget {
                         ),
                       ],
                     ),
+                    ),
                   ],
                   if (totalMessages > 0) ...[
-                    Row(
+                    Semantics(
+                      label: AppLocalizations.of(context).messageCountLabel(totalMessages),
+                      excludeSemantics: true,
+                      child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
@@ -203,6 +211,7 @@ class ConversationListItem extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
                     ),
                   ],
                   if (conversation.isClosed == true) ...[

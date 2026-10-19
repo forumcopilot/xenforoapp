@@ -98,7 +98,7 @@ class ForumMasthead extends StatelessWidget {
       title: _MastheadTitle(identity: identity),
       actions: [
         if (onSearch != null)
-          _CollapsedOnly(
+          MastheadCollapsedOnly(
             child: IconButton(
               tooltip: l10n.search,
               icon: const Icon(Icons.search),
@@ -126,8 +126,9 @@ class ForumMasthead extends StatelessWidget {
   }
 }
 
-/// How far the masthead has collapsed: 1 fully open, 0 down to its bar.
-double _openness(BuildContext context) {
+/// How far a masthead has collapsed: 1 fully open, 0 down to its bar.
+/// Shared with the forum page's ([SubforumMasthead]).
+double mastheadOpenness(BuildContext context) {
   final settings = context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
   if (settings == null) return 1;
   final range = settings.maxExtent - settings.minExtent;
@@ -147,7 +148,7 @@ class _MastheadBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = _openness(context);
+    final t = mastheadOpenness(context);
     if (t <= 0) return const SizedBox.shrink();
     return Stack(
       fit: StackFit.expand,
@@ -178,7 +179,7 @@ class _MastheadTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final wordmark = identity.wordmark;
     final Widget child;
-    if (wordmark != null && _openness(context) > 0.5) {
+    if (wordmark != null && mastheadOpenness(context) > 0.5) {
       final aspect = identity.wordmarkAspectRatio;
       child = Semantics(
         key: const ValueKey('wordmark'),
@@ -251,15 +252,16 @@ class _MastheadTitle extends StatelessWidget {
 }
 
 /// Shown only once the header has collapsed (the search button, which the
-/// open header has as a field).
-class _CollapsedOnly extends StatelessWidget {
-  const _CollapsedOnly({required this.child});
+/// open header has as a field; a forum page's icon and name, which the open
+/// header shows larger).
+class MastheadCollapsedOnly extends StatelessWidget {
+  const MastheadCollapsedOnly({super.key, required this.child});
 
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final shown = _openness(context) < 0.3;
+    final shown = mastheadOpenness(context) < 0.3;
     return AnimatedOpacity(
       opacity: shown ? 1 : 0,
       duration: const Duration(milliseconds: 150),
@@ -283,7 +285,7 @@ class _MastheadIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = _openness(context);
+    final t = mastheadOpenness(context);
     final opacity = ((t - 0.3) / 0.7).clamp(0.0, 1.0);
     final hidden = opacity < 0.5;
     final text = Theme.of(context).textTheme;

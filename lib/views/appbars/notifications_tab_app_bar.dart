@@ -24,7 +24,8 @@ class NotificationsTabAppBar extends StatelessWidget implements PreferredSizeWid
       surfaceTintColor: colorScheme.surfaceTint,
       automaticallyImplyLeading: false,
       title: Text(
-        AppLocalizations.of(context).notifications,
+        // As its tab, and as XenForo calls them: Alerts.
+        AppLocalizations.of(context).notificationsTab,
         style: textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
           fontWeight: FontWeight.w500,

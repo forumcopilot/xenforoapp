@@ -283,7 +283,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.';
+      'Je bent nog op geen onderwerpen geabonneerd. Open een onderwerp en kies Abonneren in het ⋮-menu om meldingen van nieuwe reacties te krijgen.';
 
   @override
   String get noParticipatedTopics =>
@@ -2942,4 +2942,75 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Inloggen via de website is niet gelukt. Probeer het opnieuw.';
+
+  @override
+  String get subForums => 'Subforums';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Bericht $position van $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Tik om naar een bepaald bericht te gaan';
+
+  @override
+  String get jumpToFirstPost => 'Naar eerste bericht gaan';
+
+  @override
+  String get jumpToLastPost => 'Naar laatste bericht gaan';
+
+  @override
+  String get send => 'Versturen';
+
+  @override
+  String get postAction => 'Plaatsen';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count berichten',
+      one: '$count bericht',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reacties',
+      one: '$count reactie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count subforums',
+      one: '$count subforum',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustThisDevice => 'Dit apparaat vertrouwen';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Bij de volgende keer inloggen op dit apparaat niet om een code vragen';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Er is op dit apparaat geen toegangssleutel voor dit forum. Kies een andere methode of voeg eerst een toegangssleutel toe op de website van het forum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Dit forum is in deze app nog niet ingesteld voor toegangssleutels. Kies een andere methode.';
 }

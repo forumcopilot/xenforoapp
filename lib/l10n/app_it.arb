@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Devi accedere per visualizzare i tuoi argomenti non letti",
   
   "noSubscribedTopics": "Nessun argomento sottoscritto",
-  "noSubscribedTopicsMessage": "Non ti sei iscritto ad alcun argomento. Tocca il pulsante stella su un argomento per iscriverti e ricevere notifiche per nuovi aggiornamenti.",
+  "noSubscribedTopicsMessage": "Non sei ancora iscritto ad alcun argomento. Apri un argomento e scegli Iscriviti nel suo menu ⋮ per ricevere notifiche delle nuove risposte.",
   "signInToViewSubscribedTopics": "Accedi per visualizzare gli argomenti sottoscritti",
   "youNeedToBeSignedInToViewSubscribedTopics": "Devi accedere per visualizzare i tuoi argomenti sottoscritti",
   
@@ -1325,5 +1325,19 @@
   "accountDeleted": "Il tuo account è stato eliminato.",
   "signInOnWebsite": "Accedi dal sito del forum",
   "signInOnWebsiteHint": "Per Google, Facebook e gli altri modi in cui accedi lì",
-  "browserLoginFailed": "L’accesso dal sito non è riuscito. Riprova."
+  "browserLoginFailed": "L’accesso dal sito non è riuscito. Riprova.",
+  "subForums": "Sottoforum",
+  "postPositionOf": "Post {position} di {total}",
+  "tapToJumpToPost": "Tocca per andare a un post specifico",
+  "jumpToFirstPost": "Vai al primo post",
+  "jumpToLastPost": "Vai all'ultimo post",
+  "send": "Invia",
+  "postAction": "Pubblica",
+  "messageCountLabel": "{count, plural, one{{count} messaggio} other{{count} messaggi}}",
+  "replyCountLabel": "{count, plural, one{{count} risposta} other{{count} risposte}}",
+  "subForumCountLabel": "{count, plural, one{{count} sottoforum} other{{count} sottoforum}}",
+  "trustThisDevice": "Considera attendibile questo dispositivo",
+  "trustThisDeviceHint": "Non chiedere un codice al prossimo accesso da questo dispositivo",
+  "passkeyNotOnThisDevice": "Su questo dispositivo non c'è una passkey per questo forum. Scegli un altro metodo o aggiungi prima una passkey sul sito del forum.",
+  "passkeyStepNotSetUp": "Questo forum non è ancora configurato per le passkey in questa app. Scegli un altro metodo."
 }

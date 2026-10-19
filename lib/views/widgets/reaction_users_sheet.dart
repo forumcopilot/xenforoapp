@@ -17,8 +17,11 @@ import 'user_avatar.dart';
 /// who reacted" overlay, which has a tab per reaction): a title with the
 /// count, a filter chip per reaction with its count when more than one kind
 /// was used, and one row per person with their reaction. The reader's own
-/// row comes first, marked "You". A button at the bottom opens the picker
-/// for a reader who may react.
+/// row comes first, marked "You".
+///
+/// It only shows who reacted. Reacting stays on the react button (a tap
+/// likes, a long press picks), so there is one way to do it; the sheet's
+/// own "React" / "Change your reaction" button only duplicated that.
 ///
 /// The server sends the whole list with the post or message, so the chips
 /// filter it here; nothing is fetched.
@@ -29,16 +32,11 @@ class ReactionUsersSheet extends StatefulWidget {
   /// The server's count (see [reactionTotal]).
   final int count;
 
-  /// Opens the reaction picker; null when the reader may not react (a guest,
-  /// their own post, a forum with the single Like), which hides the button.
-  final VoidCallback? onReact;
-
   const ReactionUsersSheet({
     super.key,
     required this.siteContext,
     required this.likes,
     required this.count,
-    this.onReact,
   });
 
   static Future<void> show({
@@ -46,7 +44,6 @@ class ReactionUsersSheet extends StatefulWidget {
     required SiteContext siteContext,
     required List<FCLike> likes,
     required int count,
-    VoidCallback? onReact,
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -59,7 +56,6 @@ class ReactionUsersSheet extends StatefulWidget {
         // A snapshot: the post's list changes under an open sheet otherwise.
         likes: List.of(likes),
         count: count,
-        onReact: onReact,
       ),
     );
   }
@@ -84,7 +80,6 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
     final textTheme = Theme.of(context).textTheme;
     final groups = groupReactions(widget.likes);
     final total = reactionTotal(widget.likes, widget.count);
-    final mine = widget.likes.where(_isViewer).firstOrNull;
 
     final visible = identical(_filter, _all)
         ? widget.likes
@@ -145,24 +140,6 @@ class _ReactionUsersSheetState extends State<ReactionUsersSheet> {
                     ),
                   ),
                 ),
-                if (widget.onReact != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        DesignTokens.spacingL, DesignTokens.spacingS, DesignTokens.spacingL, 0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          final onReact = widget.onReact!;
-                          Navigator.pop(context);
-                          onReact();
-                        },
-                        child: Text(mine != null
-                            ? l10n.changeYourReaction
-                            : l10n.react),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

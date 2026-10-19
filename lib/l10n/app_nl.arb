@@ -109,8 +109,7 @@
   "youAreAllCaughtUp": "U bent helemaal bij!",
   
   "noSubscribedTopics": "Geen geabonneerde onderwerpen",
-  "noSubscribedTopicsMessage": "U heeft zich op geen onderwerpen geabonneerd. Tik op de ster bij een onderwerp om te abonneren en meldingen te ontvangen.",
-  
+  "noSubscribedTopicsMessage": "Je bent nog op geen onderwerpen geabonneerd. Open een onderwerp en kies Abonneren in het ⋮-menu om meldingen van nieuwe reacties te krijgen.",
   "noParticipatedTopics": "Geen onderwerpen waaraan u hebt deelgenomen",
   "topicsYouParticipatedIn": "Onderwerpen waaraan u hebt deelgenomen worden hier getoond.",
   
@@ -1774,5 +1773,19 @@
   "accountDeleted": "Je account is verwijderd.",
   "signInOnWebsite": "Inloggen op de website van het forum",
   "signInOnWebsiteHint": "Voor Google, Facebook en de andere manieren waarop je daar inlogt",
-  "browserLoginFailed": "Inloggen via de website is niet gelukt. Probeer het opnieuw."
+  "browserLoginFailed": "Inloggen via de website is niet gelukt. Probeer het opnieuw.",
+  "subForums": "Subforums",
+  "postPositionOf": "Bericht {position} van {total}",
+  "tapToJumpToPost": "Tik om naar een bepaald bericht te gaan",
+  "jumpToFirstPost": "Naar eerste bericht gaan",
+  "jumpToLastPost": "Naar laatste bericht gaan",
+  "send": "Versturen",
+  "postAction": "Plaatsen",
+  "messageCountLabel": "{count, plural, one{{count} bericht} other{{count} berichten}}",
+  "replyCountLabel": "{count, plural, one{{count} reactie} other{{count} reacties}}",
+  "subForumCountLabel": "{count, plural, one{{count} subforum} other{{count} subforums}}",
+  "trustThisDevice": "Dit apparaat vertrouwen",
+  "trustThisDeviceHint": "Bij de volgende keer inloggen op dit apparaat niet om een code vragen",
+  "passkeyNotOnThisDevice": "Er is op dit apparaat geen toegangssleutel voor dit forum. Kies een andere methode of voeg eerst een toegangssleutel toe op de website van het forum.",
+  "passkeyStepNotSetUp": "Dit forum is in deze app nog niet ingesteld voor toegangssleutels. Kies een andere methode."
 }

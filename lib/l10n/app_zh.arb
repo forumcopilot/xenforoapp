@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "您需要登录才能查看未读主题",
   
   "noSubscribedTopics": "无订阅主题",
-  "noSubscribedTopicsMessage": "您没有订阅任何主题。点击主题上的星形按钮以订阅并接收新更新通知。",
+  "noSubscribedTopicsMessage": "你还没有订阅任何主题。打开一个主题，在其 ⋮ 菜单中选择“订阅”，即可收到新回复的通知。",
   "signInToViewSubscribedTopics": "登录以查看订阅主题",
   "youNeedToBeSignedInToViewSubscribedTopics": "您需要登录才能查看订阅主题",
   
@@ -1325,5 +1325,19 @@
   "accountDeleted": "你的账户已删除。",
   "signInOnWebsite": "在论坛网站上登录",
   "signInOnWebsiteHint": "适用于 Google、Facebook 及你在网站上使用的其他登录方式",
-  "browserLoginFailed": "网站登录未成功，请重试。"
+  "browserLoginFailed": "网站登录未成功，请重试。",
+  "subForums": "子论坛",
+  "postPositionOf": "第 {position} 楼，共 {total} 楼",
+  "tapToJumpToPost": "点按以跳转到指定帖子",
+  "jumpToFirstPost": "跳转到第一个帖子",
+  "jumpToLastPost": "跳转到最后一个帖子",
+  "send": "发送",
+  "postAction": "发布",
+  "messageCountLabel": "{count, plural, other{{count} 条消息}}",
+  "replyCountLabel": "{count, plural, other{{count} 条回复}}",
+  "subForumCountLabel": "{count, plural, other{{count} 个子论坛}}",
+  "trustThisDevice": "信任此设备",
+  "trustThisDeviceHint": "下次在此设备上登录时不再要求输入验证码",
+  "passkeyNotOnThisDevice": "此设备上没有该论坛的通行密钥。请选择其他方式，或先在论坛网站上添加通行密钥。",
+  "passkeyStepNotSetUp": "该论坛尚未在此应用中设置通行密钥。请选择其他方式。"
 }

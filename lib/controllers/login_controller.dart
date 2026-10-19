@@ -39,6 +39,9 @@ abstract class PushLoginReasonCode {
   static const String apiAuthInvalid = 'api_401_403';
   static const String transientError = 'transient_error';
   static const String loginOk = 'login_ok';
+  /// The member backed out of an automatic sign-in's second step (or its
+  /// passkey prompt) for this forum: no automatic sign-in until they sign in.
+  static const String signInDeclined = 'sign_in_declined';
 }
 
 /// Result of automatic login attempt
@@ -59,6 +62,21 @@ class AutoLoginResult {
 
 class LoginController extends GetxController with ErrorHandlingMixin {
   static LoginController get to => Get.find();
+
+  /// Forums (by site key) whose automatic sign-in the member backed out of,
+  /// at the two-step screen or the passkey prompt. Every screen that needs a
+  /// session tries an automatic sign-in (21 callers), so backing out brought
+  /// the screen straight back, again and again. Until the member signs in
+  /// themselves (form, passkey, website), those attempts stop short and the
+  /// forum is browsed signed out. For this run of the app only.
+  final Set<String> _declinedAutoSignIn = <String>{};
+
+  void _markAutoSignInDeclined(SiteContext siteContext) =>
+      _declinedAutoSignIn.add(siteContext.siteKey);
+
+  /// The member is signing in themselves: automatic sign-in may resume.
+  void _clearAutoSignInDeclined(SiteContext siteContext) =>
+      _declinedAutoSignIn.remove(siteContext.siteKey);
 
   /// True on iOS/Android where passkey APIs are available; false on web/desktop.
   static bool get isPasskeySupportedByPlatform =>
@@ -84,6 +102,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     bool showLoader = true,
     bool showSuccessMessage = false,
   }) async {
+    _clearAutoSignInDeclined(siteContext);
     if (showLoader) {
       GlobalLoaderController.to.show();
     }
@@ -110,7 +129,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -147,6 +169,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           try {
             if (tfaResult.usePasskey) {
               tfaLoginResult = await _loginWithPasskeyTfa(
+                trustDevice: tfaResult.trustDevice,
                 userProxy: userProxy,
                 loginResult: loginResult,
                 username: username.trim(),
@@ -162,7 +185,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 remember: true,
                 tfaCode: tfaResult.code,
                 tfaProvider: tfaResult.provider,
-                trustDevice: true, // Always trust device when TFA is used
+                trustDevice: tfaResult.trustDevice,
               );
             }
             final tfaResultMessage =
@@ -211,8 +234,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
             if (showLoader) {
               GlobalLoaderController.to.hide();
             }
-            errorMessage =
-                l10nNow().verificationErrorTryAgain;
+            errorMessage = _tfaErrorMessage(e);
             // Loop will continue to show dialog again with error message
           }
         }
@@ -324,6 +346,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     bool showLoader = true,
     bool showSuccessMessage = false,
   }) async {
+    _clearAutoSignInDeclined(siteContext);
     if (siteContext.siteType != 'xenforo') {
       throw PermissionException.featureNotAvailable('Passkeys');
     }
@@ -351,6 +374,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       }
 
       final payload = await _authenticateWithPasskey(
+        allowOtherDevices: true,
         challenge: challengeResult.challenge!,
         rpId: challengeResult.rpId!,
         timeout: challengeResult.timeout,
@@ -364,7 +388,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -509,6 +536,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   /// signed in; false when the member closed the sheet or it failed (said in
   /// a dialog).
   Future<bool> handleBrowserLogin({required SiteContext siteContext}) async {
+    _clearAutoSignInDeclined(siteContext);
     final userProxy = SiteProxyService.getUserProxy();
     if (userProxy is! IFCBrowserLogin) return false;
     try {
@@ -644,6 +672,17 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         }
       }
 
+      // Backed out of this forum's automatic sign-in earlier: stay signed
+      // out rather than ask again (hadCredentials false: callers then do not
+      // open the sign-in page either).
+      if (_declinedAutoSignIn.contains(siteContext.siteKey)) {
+        return AutoLoginResult(
+          success: false,
+          hadCredentials: false,
+          reasonCode: PushLoginReasonCode.signInDeclined,
+        );
+      }
+
       // Step 2: If no valid session, use the last successful login method.
       // When silentRelogin is true (proxy session-expired), skip passkey to avoid showing auth UI.
       final shouldUsePasskeyAutoLogin = !silentRelogin &&
@@ -736,7 +775,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -759,18 +801,21 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           );
 
           if (tfaResult == null) {
-            // User cancelled TFA dialog during auto-login
+            // Backed out of the second step: browse signed out, and do not ask
+            // again until they sign in themselves.
+            _markAutoSignInDeclined(siteContext);
             return AutoLoginResult(
               success: false,
               errorMessage: 'TFA verification cancelled',
-              hadCredentials: true,
-              reasonCode: PushLoginReasonCode.tfaRequired,
+              hadCredentials: false,
+              reasonCode: PushLoginReasonCode.signInDeclined,
             );
           }
 
           try {
             if (tfaResult.usePasskey) {
               tfaLoginResult = await _loginWithPasskeyTfa(
+                trustDevice: tfaResult.trustDevice,
                 userProxy: userProxy,
                 loginResult: loginResult,
                 username: siteContext.username!,
@@ -786,7 +831,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 remember: true,
                 tfaCode: tfaResult.code,
                 tfaProvider: tfaResult.provider,
-                trustDevice: true, // Always trust device when TFA is used
+                trustDevice: tfaResult.trustDevice,
               );
             }
             final tfaResultMessage =
@@ -829,8 +874,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
               // Loop will continue to show dialog again with error message
             }
           } catch (e) {
-            errorMessage =
-                l10nNow().verificationErrorTryAgain;
+            errorMessage = _tfaErrorMessage(e);
             // Loop will continue to show dialog again with error message
           }
         }
@@ -1070,11 +1114,13 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       siteContext.loginDataOutput = null;
       await siteContext.saveToDevice();
       siteContext.updateLoginState();
+      // As for the second step: no passkey prompt again until they sign in.
+      _markAutoSignInDeclined(siteContext);
       return AutoLoginResult(
         success: false,
         errorMessage: 'Passkey authentication cancelled',
-        hadCredentials: true,
-        reasonCode: PushLoginReasonCode.tfaRequired,
+        hadCredentials: false,
+        reasonCode: PushLoginReasonCode.signInDeclined,
       );
     } on DomainNotAssociatedException {
       siteContext.loginDataOutput = null;
@@ -1386,7 +1432,20 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     }
   }
 
+  /// What the two-step screen says when the second step throws. A passkey
+  /// gets the reasons the first-step passkey sign-in gives: none on this
+  /// device (an iPhone with the forum's passkey only in Google Password
+  /// Manager said "An error occurred during verification"), or the forum
+  /// not listing the app. Cancelling the passkey sheet is no error.
+  String? _tfaErrorMessage(Object e) {
+    if (e is PasskeyAuthCancelledException) return null;
+    if (e is NoCredentialsAvailableException) return l10nNow().passkeyNotOnThisDevice;
+    if (e is DomainNotAssociatedException) return l10nNow().passkeyStepNotSetUp;
+    return l10nNow().verificationErrorTryAgain;
+  }
+
   Future<FCLoginResult> _loginWithPasskeyTfa({
+    required bool trustDevice,
     required IFCUserProxy userProxy,
     required FCLoginResult loginResult,
     required String username,
@@ -1403,6 +1462,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
     }
 
     final payload = await _authenticateWithPasskey(
+      allowOtherDevices: true,
       challenge: passkeyChallenge,
       rpId: passkeyRpId,
       timeout: loginResult.passkeyTimeout,
@@ -1417,14 +1477,20 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       tfaProvider: 'passkey',
       webauthnChallenge: passkeyChallenge,
       webauthnPayload: payload,
-      trustDevice: true,
+      trustDevice: trustDevice,
     );
   }
 
+  /// [allowOtherDevices]: offer passkeys on another device too (iOS and
+  /// Android show a QR code for a phone nearby) and security keys. On for
+  /// sign-ins the member starts; off for the automatic one, which must not
+  /// put up a sheet when no passkey is on this device. It was always off, so
+  /// an iPhone whose forum passkey lived on an Android phone failed at once.
   Future<Map<String, String>> _authenticateWithPasskey({
     required String challenge,
     required String rpId,
     int? timeout,
+    bool allowOtherDevices = false,
   }) async {
     if (challenge.trim().isEmpty) {
       throw ValidationException.requiredField('passkey challenge');
@@ -1443,7 +1509,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       relyingPartyId: rpId,
       challenge: challenge,
       mediation: MediationType.Optional,
-      preferImmediatelyAvailableCredentials: true,
+      preferImmediatelyAvailableCredentials: !allowOtherDevices,
       timeout: timeout,
     );
 

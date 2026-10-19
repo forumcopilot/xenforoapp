@@ -273,7 +273,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'トピックを購読していません。トピックの星ボタンをタップして購読し、新しい更新の通知を受け取ります。';
+      'まだトピックを購読していません。トピックを開き、⋮ メニューの「購読」を選ぶと、新しい返信の通知を受け取れます。';
 
   @override
   String get noParticipatedTopics => '参加トピックなし';
@@ -2816,4 +2816,71 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get browserLoginFailed => 'ウェブサイトでのログインに失敗しました。もう一度お試しください。';
+
+  @override
+  String get subForums => 'サブフォーラム';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return '投稿 $position/$total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'タップして特定の投稿へ移動';
+
+  @override
+  String get jumpToFirstPost => '最初の投稿へ移動';
+
+  @override
+  String get jumpToLastPost => '最後の投稿へ移動';
+
+  @override
+  String get send => '送信';
+
+  @override
+  String get postAction => '投稿';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のメッセージ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の返信',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件のサブフォーラム',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustThisDevice => 'このデバイスを信頼する';
+
+  @override
+  String get trustThisDeviceHint => '次回このデバイスでサインインするときにコードを求めない';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'このデバイスにはこのフォーラムのパスキーがありません。別の方法を選ぶか、先にフォーラムのウェブサイトでパスキーを追加してください。';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'このフォーラムはまだこのアプリでのパスキーに対応していません。別の方法を選んでください。';
 }

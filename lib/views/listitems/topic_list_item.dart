@@ -217,7 +217,11 @@ class TopicListItem extends StatelessWidget {
                         ),
                       ],
                       if (topic.replyCount > 0) ...[
-                        Row(
+                        // "9 replies" to a screen reader, not a bare 9.
+                        Semantics(
+                          label: AppLocalizations.of(context).replyCountLabel(topic.replyCount),
+                          excludeSemantics: true,
+                          child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
@@ -234,6 +238,7 @@ class TopicListItem extends StatelessWidget {
                               ),
                             ),
                           ],
+                        ),
                         ),
                       ],
                       if (topic.viewCount > 0) ...[

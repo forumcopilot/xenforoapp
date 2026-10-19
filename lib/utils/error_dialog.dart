@@ -27,7 +27,10 @@ String extractErrorMessage(dynamic error) {
   return errorString;
 }
 
-void showErrorDialog(String errorMessage) {
+/// [stackTrace], in debug builds, goes into the copied text (not the
+/// dialog), so the report says where the error came from: Flutter's own
+/// messages ("Build scheduled during frame") name no widget.
+void showErrorDialog(String errorMessage, {StackTrace? stackTrace}) {
   // Show error dialog in both debug and production mode
   // Hide any active loader before showing error dialog
   try {
@@ -63,6 +66,8 @@ void showErrorDialog(String errorMessage) {
             fontWeight: FontWeight.w600,
           ),
         ),
+        // Scrolls: Flutter's long assertion texts overflowed the dialog.
+        scrollable: true,
         content: Padding(
           padding: DesignTokens.paddingS,
           child: Column(
@@ -89,7 +94,8 @@ void showErrorDialog(String errorMessage) {
                     ),
                   ),
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: errorMessage));
+                    Clipboard.setData(ClipboardData(
+                        text: stackTrace == null ? errorMessage : '$errorMessage\n\n$stackTrace'));
                     // Defer snackbar to next frame as well, for safety
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (Get.context case final ctx?) SnackbarHelper.showInfo(ctx, l10n?.errorMessageCopiedToClipboard ?? "Error message copied to clipboard");

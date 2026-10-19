@@ -289,7 +289,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Você não se inscreveu em nenhum tópico. Toque no botão de estrela em um tópico para se inscrever e receber notificações de novas atualizações.';
+      'Você ainda não se inscreveu em nenhum tópico. Abra um tópico e escolha Inscrever-se no menu ⋮ para ser avisado de novas respostas.';
 
   @override
   String get noParticipatedTopics => 'Sem tópicos participados';
@@ -2951,4 +2951,75 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get browserLoginFailed =>
       'Não foi possível entrar pelo site. Tente novamente.';
+
+  @override
+  String get subForums => 'Subfóruns';
+
+  @override
+  String postPositionOf(int position, int total) {
+    return 'Publicação $position de $total';
+  }
+
+  @override
+  String get tapToJumpToPost => 'Toque para ir a uma publicação específica';
+
+  @override
+  String get jumpToFirstPost => 'Ir para a primeira publicação';
+
+  @override
+  String get jumpToLastPost => 'Ir para a última publicação';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get postAction => 'Publicar';
+
+  @override
+  String messageCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mensagens',
+      one: '$count mensagem',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String replyCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count respostas',
+      one: '$count resposta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subForumCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count subfóruns',
+      one: '$count subfórum',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trustThisDevice => 'Confiar neste dispositivo';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Não pedir um código na próxima vez que você entrar neste dispositivo';
+
+  @override
+  String get passkeyNotOnThisDevice =>
+      'Não há chave de acesso para este fórum neste dispositivo. Escolha outro método ou adicione primeiro uma chave de acesso no site do fórum.';
+
+  @override
+  String get passkeyStepNotSetUp =>
+      'Este fórum ainda não está configurado para chaves de acesso neste app. Escolha outro método.';
 }

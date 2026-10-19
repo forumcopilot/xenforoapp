@@ -303,6 +303,7 @@ class _NewConversationPageState extends State<NewConversationPage> {
                     ),
                   )
                 : Icon(Icons.send_rounded, color: colorScheme.onSurface),
+            tooltip: AppLocalizations.of(context).send,
             onPressed: _isSubmitting
                 ? null
                 : () async {

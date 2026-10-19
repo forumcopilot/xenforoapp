@@ -23,6 +23,11 @@ class ReplyPage extends StatefulWidget {
   final String? postId;
   final bool isQuote;
 
+  /// The thread's quick-reply text, which this page then edits in place (a
+  /// quote goes after what was already typed), so nothing typed in the bar
+  /// is lost; the bar clears it once the reply is posted.
+  final TextEditingController? contentController;
+
   const ReplyPage({
     super.key,
     required this.siteContext,
@@ -34,7 +39,15 @@ class ReplyPage extends StatefulWidget {
     this.quoteAuthor,
     this.postId,
     this.isQuote = false,
+    this.contentController,
   });
+
+  /// [typed] in the quick-reply bar, then [quote] below it, and a new line
+  /// to write on, as XenForo's editor leaves it.
+  static String withQuote(String typed, String quote) {
+    final quoted = quote.endsWith('\n') ? quote : '$quote\n';
+    return typed.trim().isEmpty ? quoted : '${typed.trimRight()}\n\n$quoted';
+  }
 
   @override
   State<ReplyPage> createState() => _ReplyPageState();
@@ -53,12 +66,35 @@ class _ReplyPageState extends State<ReplyPage> {
   String? _createdPostId; // Store the created post ID
   Future<forumcopilot_sdk.FCQuotePostResult>? _quoteFuture;
 
+  /// What the quick-reply bar held when this page opened.
+  String _typedBefore = '';
+
+  /// The thread's reply draft, here and on the forum (the bar's too).
+  String get _draftKey => 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}';
+
   @override
   void initState() {
     super.initState();
+    _typedBefore = widget.contentController?.text ?? '';
     // Cache the future so it's only called once
     if (widget.isQuote && widget.postId != null) {
       _quoteFuture = SiteProxyFactory.getPostProxy().getQuotePostAsync(widget.postId!);
+      final shared = widget.contentController;
+      if (shared != null) {
+        // The quick-reply bar's text, with the quote after it, set once the
+        // quote arrives rather than by the editor while it builds: the bar
+        // under this page listens to the same text, and changing it during
+        // a build is an error (debug builds stopped on it, and the bar was
+        // left with its hint over the text and Send off).
+        _quoteFuture!.then((result) {
+          final quote = result.quoteContent;
+          if (!mounted || quote == null || quote.isEmpty) return;
+          shared.text = ReplyPage.withQuote(_typedBefore, quote);
+          shared.selection = TextSelection.collapsed(offset: shared.text.length);
+        }, onError: (Object _) {
+          // The page shows that the quote failed to load.
+        });
+      }
     }
   }
 
@@ -192,12 +228,20 @@ class _ReplyPageState extends State<ReplyPage> {
           
           // Create the compose widget once and reuse it across all states
           // Use a stable key based on postId to preserve widget state (including attachments)
+          // With the quick-reply bar's text, the quote goes after it and
+          // the whole is the thread's draft, as for a plain reply.
+          final shared = widget.contentController;
           Widget compose = MessageComposePage(
             key: ValueKey('reply_with_quote_${widget.postId}'),
             siteContext: widget.siteContext,
             title: AppLocalizations.of(context).reply,
             showTitleField: false,
-            initialContent: quoteContent,
+            contentController: shared,
+            draftKey: shared == null ? null : _draftKey,
+            serverDraftKey: shared == null ? null : XenForoDraftProxy.replyKey(widget.threadId),
+            // With the bar's text, the quote is put in it as it arrives
+            // (initState), not here.
+            initialContent: shared == null ? quoteContent : null,
             contentHint: AppLocalizations.of(context).writeYourReply,
             onSubmit: _handleSubmit,
             onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
@@ -240,9 +284,11 @@ class _ReplyPageState extends State<ReplyPage> {
         onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
         topicTitle: widget.topicTitle,
         onRemoveAttachment: _uploader.remove,
+        // The quick-reply bar's text, when opened from it.
+        contentController: widget.contentController,
         // The reply is kept as a draft, on this device and on the forum (where
         // the web editor shows it), until it is posted.
-        draftKey: 'reply_draft:${widget.siteContext.site.pluginUrl}:${widget.threadId}',
+        draftKey: _draftKey,
         serverDraftKey: XenForoDraftProxy.replyKey(widget.threadId),
         onSuccess: (success) {
           // Never null on success: the caller reads null as "closed without posting".

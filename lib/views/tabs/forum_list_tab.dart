@@ -459,7 +459,7 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
                 forum: childForum,
                 onSubscriptionChanged: (subscribe) => _handleSubscription(childForum.id.isEmpty ? "0" : childForum.id, subscribe),
                 onTap: () {
-                  pushForumOrLinkForum(context, childForum, widget.siteContext);
+                  pushForumOrLinkForum(context, childForum, widget.siteContext, parent: forum);
                 },
               );
             }),

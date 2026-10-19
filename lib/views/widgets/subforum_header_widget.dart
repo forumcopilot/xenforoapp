@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
-import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import '../../utils/safe_image.dart';
 import '../../utils/avatar_color_utils.dart';
-import '../../l10n/generated/app_localizations.dart';
 import 'forum_icon_widget.dart';
 
 /// Widget that displays subforum icon, name, and description
-/// Used in the subforum view page below the breadcrumb
+/// Used in the subforum view page below the breadcrumb. New Topic is the
+/// page's floating button, as on Home and in the Discourse app.
 class SubforumHeaderWidget extends StatelessWidget {
   final FCForum forum;
-  final SiteContext? siteContext;
-  final VoidCallback? onNewTopic;
 
   const SubforumHeaderWidget({
     super.key,
     required this.forum,
-    this.siteContext,
-    this.onNewTopic,
   });
 
   /// Gets the primary color for the background based on whether a logo is present
@@ -216,18 +211,6 @@ class SubforumHeaderWidget extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                  // New Topic button (if user is logged in and can post)
-                  if (siteContext != null && 
-                      siteContext!.isLoggedIn && 
-                      forum.canPost && 
-                      onNewTopic != null) ...[
-                    const SizedBox(height: DesignTokens.spacingL),
-                    FilledButton.icon(
-                      onPressed: onNewTopic,
-                      icon: const Icon(Icons.post_add_rounded),
-                      label: Text(AppLocalizations.of(context).newTopic),
                     ),
                   ],
                 ],

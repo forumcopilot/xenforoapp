@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Necesitas iniciar sesión para ver tus temas sin leer",
   
   "noSubscribedTopics": "No hay temas suscritos",
-  "noSubscribedTopicsMessage": "No te has suscrito a ningún tema. Toca el botón de estrella en un tema para suscribirte y recibir notificaciones de nuevas actualizaciones.",
+  "noSubscribedTopicsMessage": "Aún no estás suscrito a ningún tema. Abre un tema y elige Suscribirse en su menú ⋮ para recibir avisos de nuevas respuestas.",
   "signInToViewSubscribedTopics": "Inicia sesión para ver temas suscritos",
   "youNeedToBeSignedInToViewSubscribedTopics": "Necesitas iniciar sesión para ver tus temas suscritos",
   
@@ -1325,5 +1325,19 @@
   "accountDeleted": "Tu cuenta se ha eliminado.",
   "signInOnWebsite": "Iniciar sesión en el sitio web del foro",
   "signInOnWebsiteHint": "Para Google, Facebook y las demás formas de entrar allí",
-  "browserLoginFailed": "No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo."
+  "browserLoginFailed": "No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo.",
+  "subForums": "Subforos",
+  "postPositionOf": "Publicación {position} de {total}",
+  "tapToJumpToPost": "Toca para ir a una publicación concreta",
+  "jumpToFirstPost": "Ir a la primera publicación",
+  "jumpToLastPost": "Ir a la última publicación",
+  "send": "Enviar",
+  "postAction": "Publicar",
+  "messageCountLabel": "{count, plural, one{{count} mensaje} other{{count} mensajes}}",
+  "replyCountLabel": "{count, plural, one{{count} respuesta} other{{count} respuestas}}",
+  "subForumCountLabel": "{count, plural, one{{count} subforo} other{{count} subforos}}",
+  "trustThisDevice": "Confiar en este dispositivo",
+  "trustThisDeviceHint": "No pedir un código la próxima vez que inicies sesión en este dispositivo",
+  "passkeyNotOnThisDevice": "No hay ninguna clave de acceso para este foro en este dispositivo. Elige otro método o añade primero una clave de acceso en el sitio web del foro.",
+  "passkeyStepNotSetUp": "Este foro aún no está configurado para claves de acceso en esta app. Elige otro método."
 }

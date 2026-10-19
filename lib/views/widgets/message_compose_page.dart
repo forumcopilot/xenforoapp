@@ -65,6 +65,11 @@ class MessageComposePage extends StatefulWidget {
   // Show signature toggle for new topic editor
   final bool showSignatureToggle;
 
+  /// What the submit button says to a screen reader, and as its tooltip;
+  /// defaults to Save for the save icon (an edit), else Post. It said
+  /// nothing: the button was invisible to a screen reader.
+  final String? submitLabel;
+
   /// An edit of an existing post or message: closing with unsaved changes
   /// asks "discard your changes?" rather than "discard your post?".
   final bool isEditing;
@@ -111,6 +116,7 @@ class MessageComposePage extends StatefulWidget {
     this.onRemoveAttachment,
     this.submitIcon,
     this.showSignatureToggle = false,
+    this.submitLabel,
     this.isEditing = false,
     this.draftKey,
     this.serverDraftKey,
@@ -1678,7 +1684,12 @@ class _MessageComposePageState extends State<MessageComposePage> {
                               color: colorScheme.onSurface,
                             ),
                           )
-                        : Icon(widget.submitIcon ?? Icons.send_rounded, color: colorScheme.onSurface),
+                        : Icon(widget.submitIcon ?? Icons.send_rounded,
+                            color: colorScheme.onSurface),
+                    tooltip: widget.submitLabel ??
+                        (widget.submitIcon == Icons.save_rounded
+                            ? AppLocalizations.of(context).save
+                            : AppLocalizations.of(context).postAction),
                     onPressed: _isSubmitting ? null : _submit,
                   ),
                   const SizedBox(width: DesignTokens.spacingS),

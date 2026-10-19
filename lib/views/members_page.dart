@@ -118,6 +118,24 @@ class _MembersPageState extends State<MembersPage> {
 
       if (!mounted) return;
 
+      if (!result.result) {
+        setState(() {
+          _searchIsLoading = false;
+          _searchHasMore = false;
+          if (query.isEmpty) {
+            // The forum keeps its member list to itself ("Member list is
+            // not available"): ask for a name instead. It said "No members
+            // found, try a different username" before anything was typed.
+            _hasSearched = false;
+          } else {
+            // Its reason ("at least 2 characters", search not allowed).
+            final reason = result.resultText?.trim() ?? '';
+            _searchError = reason.isNotEmpty ? reason : AppLocalizations.of(context).searchFailed;
+          }
+        });
+        return;
+      }
+
       setState(() {
         if (_searchCurrentPage == 1) {
           _searchResults = result.list;

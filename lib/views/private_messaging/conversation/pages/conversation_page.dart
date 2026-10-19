@@ -13,9 +13,9 @@ import 'edit_conversation_page.dart';
 import 'edit_conversation_message_page.dart';
 import '../widgets/conversation_item.dart';
 import '../widgets/conversation_header_widget.dart';
-import '../widgets/conversation_quick_reply_bar.dart';
+import '../../../widgets/quick_reply_bar.dart';
+import '../../../widgets/position_navigator.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import '../../../../theme/design_tokens.dart';
 import 'package:get/get.dart';
 import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
@@ -936,8 +936,6 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     // Without the composer under the list, the navigator sits clear of the
     // system bar itself.
     final navigatorBottom = canReply ? 0.0 : MediaQuery.paddingOf(context).bottom;
-    // The keyboard is up: the room is for the messages and the composer.
-    final showNavigator = MediaQuery.viewInsetsOf(context).bottom == 0;
 
     return Column(
       children: [
@@ -994,7 +992,8 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         Expanded(
           child: Stack(
             children: [
-              RefreshIndicator(
+              DismissKeyboardOnDrag(
+                child: RefreshIndicator(
                 onRefresh: _loadConversation,
                 // Content that grows while the reader is at the newest message
                 // (images loading, reactions) keeps the newest message in view;
@@ -1055,6 +1054,9 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                           participants: _conversation!.participants,
                           onQuote: () => _onQuoteMessage(_conversation!.list[0]),
                           onLike: () => _onLikeMessage(_conversation!.list[0]),
+                          onLongPressLike: _canPickReaction
+                              ? () => _onPickMessageReaction(_conversation!.list[0])
+                              : null,
                           onEdit: () => _onEditMessage(_conversation!.list[0]),
                           isHighlighted: _highlightedMessageId == _conversation!.list[0].messageId,
                           isClosed: _conversation!.isClosed ?? false,
@@ -1070,6 +1072,9 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                             isLast: i == _conversation!.list.length - 2,
                             onQuote: () => _onQuoteMessage(msg),
                             onLike: () => _onLikeMessage(msg),
+                            onLongPressLike: _canPickReaction
+                                ? () => _onPickMessageReaction(msg)
+                                : null,
                             onEdit: () => _onEditMessage(msg),
                             isHighlighted: _highlightedMessageId == msg.messageId,
                             isClosed: _conversation!.isClosed ?? false,
@@ -1119,18 +1124,19 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                           },
                         ),
                       // Room for the navigator over the last message.
-                      SizedBox(height: 72 + navigatorBottom),
+                      SizedBox(height: PositionNavigator.clearance + navigatorBottom),
                     ],
                   ),
                 ),
                 ),
               ),
-              if (showNavigator) _buildNavigator(context, bottom: navigatorBottom),
+              ),
+              _buildNavigator(context, bottom: navigatorBottom),
             ],
           ),
         ),
         if (canReply)
-          ConversationQuickReplyBar(
+          QuickReplyBar(
             draftKey: _replyDraftKey,
             siteContext: widget.siteContext,
             serverDraftKey: XenForoDraftProxy.conversationReplyKey(widget.conversationId),
@@ -1320,11 +1326,16 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
 
   void _showJumpToMessageDialog(BuildContext context) {
     if (_conversation == null) return;
+    final totalMessages = _conversation!.totalMessageNum ?? _conversation!.list.length;
+    // One message: nothing to jump to. A slider from 1 to 1 (no divisions)
+    // fails to lay out, and a release build drew the failure as a grey
+    // block spilling out of the dialog.
+    if (totalMessages < 2) return;
 
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final totalMessages = _conversation!.totalMessageNum ?? _conversation!.list.length;
-    int selectedMessagePosition = _currentVisibleMessagePosition;
+    // Within the slider's range, even if the count is behind the messages.
+    int selectedMessagePosition = _currentVisibleMessagePosition.clamp(1, totalMessages);
 
     showDialog(
       context: context,
@@ -1351,7 +1362,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     value: selectedMessagePosition.toDouble(),
                     min: 1,
                     max: totalMessages.toDouble(),
-                    divisions: math.max(0, totalMessages - 1),
+                    divisions: totalMessages - 1,
                     label: '$selectedMessagePosition',
                     onChanged: (double value) {
                       setState(() {
@@ -1496,64 +1507,25 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
   }
 
   /// First and newest message, and the position (tap to jump to one),
-  /// floating over the messages at the bottom right.
+  /// floating over the messages at the bottom left; out of the way while
+  /// the keyboard is up, and nothing in a one-message conversation.
   Widget _buildNavigator(BuildContext context, {required double bottom}) {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
     final total = _conversation!.totalMessageNum ?? _conversation!.list.length;
     final position = _currentVisibleMessagePosition;
-
-    return Positioned(
-      right: DesignTokens.spacingM,
-      bottom: bottom + DesignTokens.spacingS,
-      child: Material(
-        color: colorScheme.surfaceContainerHigh,
-        elevation: 2,
-        shape: const StadiumBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Semantics(
-              label: l10n.goToTop,
-              hint: l10n.jumpToFirstMessage,
-              button: true,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_upward),
-                onPressed: _jumpToFirstMessage,
-                tooltip: l10n.goToTop,
-              ),
-            ),
-            Semantics(
-              label: l10n.messagePositionOf(position, total),
-              hint: l10n.tapToJumpToMessage,
-              button: true,
-              excludeSemantics: true,
-              child: InkWell(
-                onTap: () => _showJumpToMessageDialog(context),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingXS),
-                    child: Center(
-                      widthFactor: 1,
-                      child: Text('$position / $total', style: Theme.of(context).textTheme.bodyMedium),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Semantics(
-              label: l10n.goToBottom,
-              hint: l10n.jumpToLastMessage,
-              button: true,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_downward),
-                onPressed: _jumpToLastMessage,
-                tooltip: l10n.goToBottom,
-              ),
-            ),
-          ],
+    return PositionNavigator.place(
+      bottom: bottom,
+      navigator: HiddenWhileTyping(
+        child: PositionNavigator(
+      position: position,
+      total: total,
+      positionLabel: l10n.messagePositionOf(position, total),
+      jumpHint: l10n.tapToJumpToMessage,
+      firstHint: l10n.jumpToFirstMessage,
+      lastHint: l10n.jumpToLastMessage,
+      onFirst: _jumpToFirstMessage,
+      onLast: _jumpToLastMessage,
+      onJump: () => _showJumpToMessageDialog(context),
         ),
       ),
     );
@@ -1595,23 +1567,28 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
     }
   }
 
+  /// Whether a long press on a message's react button can open the
+  /// reaction picker: the forum sends its reaction set (add-on 1.8.0+).
+  bool get _canPickReaction => ReactionRegistry.instance.isAvailable;
+
+  /// A tap on a message's react button, as on a post: a Like, or your
+  /// reaction taken back (sending the current reaction toggles it off).
+  /// Every Like used to take two taps, through the picker.
   Future<void> _onLikeMessage(FCConversationMessage message) async {
     if (!widget.siteContext.isLoggedIn) {
       SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
       return;
     }
 
-    // Multi-reaction path: if the forum exposes a reaction set, tapping opens
-    // the chooser (same as posts). Falls through to the legacy single-Like
-    // toggle below when no reaction set is available (older plugin).
+    // Multi-reaction path. Falls through to the legacy single-Like toggle
+    // below when no reaction set is available (older plugin).
     if (ReactionRegistry.instance.isAvailable) {
       final currentReactionId = _visitorReactionIdFor(message);
-      final selected = await showReactionPicker(
-        context,
-        currentReactionId: currentReactionId,
+      await _applyMessageReaction(
+        message,
+        currentReactionId ?? (ReactionRegistry.instance.defaultReaction?.id ?? 1),
+        currentReactionId,
       );
-      if (selected == null) return; // dismissed
-      await _applyMessageReaction(message, selected.id, currentReactionId);
       return;
     }
 
@@ -1730,6 +1707,22 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
                     .failedToLikeOrUnlikeMessage(wasLiked ? AppLocalizations.of(context).unlike : AppLocalizations.of(context).like, e.toString()));
       }
     }
+  }
+
+  /// A long press on a message's react button: the reaction picker.
+  /// Picking the current reaction takes it back.
+  Future<void> _onPickMessageReaction(FCConversationMessage message) async {
+    if (!widget.siteContext.isLoggedIn) {
+      SnackbarHelper.showError(context, AppLocalizations.of(context).pleaseLoginToLikeMessages);
+      return;
+    }
+    final currentReactionId = _visitorReactionIdFor(message);
+    final selected = await showReactionPicker(
+      context,
+      currentReactionId: currentReactionId,
+    );
+    if (selected == null || !mounted) return; // dismissed
+    await _applyMessageReaction(message, selected.id, currentReactionId);
   }
 
   /// The viewer's current reaction id on a conversation message, from their

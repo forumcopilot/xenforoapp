@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Вам нужно войти, чтобы просмотреть ваши непрочитанные темы",
   
   "noSubscribedTopics": "Нет подписанных тем",
-  "noSubscribedTopicsMessage": "Вы не подписались ни на одну тему. Нажмите кнопку звездочки на теме, чтобы подписаться и получать уведомления о новых обновлениях.",
+  "noSubscribedTopicsMessage": "Вы пока не подписаны ни на одну тему. Откройте тему и выберите «Подписаться» в меню ⋮, чтобы получать уведомления о новых ответах.",
   "signInToViewSubscribedTopics": "Войдите, чтобы просмотреть подписанные темы",
   "youNeedToBeSignedInToViewSubscribedTopics": "Вам нужно войти, чтобы просмотреть ваши подписанные темы",
   
@@ -1325,5 +1325,19 @@
   "accountDeleted": "Ваш аккаунт удалён.",
   "signInOnWebsite": "Войти на сайте форума",
   "signInOnWebsiteHint": "Для Google, Facebook и других способов входа на сайте",
-  "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз."
+  "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз.",
+  "subForums": "Подфорумы",
+  "postPositionOf": "Сообщение {position} из {total}",
+  "tapToJumpToPost": "Нажмите, чтобы перейти к сообщению",
+  "jumpToFirstPost": "Перейти к первому сообщению",
+  "jumpToLastPost": "Перейти к последнему сообщению",
+  "send": "Отправить",
+  "postAction": "Опубликовать",
+  "messageCountLabel": "{count, plural, one{{count} сообщение} few{{count} сообщения} many{{count} сообщений} other{{count} сообщения}}",
+  "replyCountLabel": "{count, plural, one{{count} ответ} few{{count} ответа} many{{count} ответов} other{{count} ответа}}",
+  "subForumCountLabel": "{count, plural, one{{count} подфорум} few{{count} подфорума} many{{count} подфорумов} other{{count} подфорума}}",
+  "trustThisDevice": "Доверять этому устройству",
+  "trustThisDeviceHint": "Не запрашивать код при следующем входе на этом устройстве",
+  "passkeyNotOnThisDevice": "На этом устройстве нет ключа доступа для этого форума. Выберите другой способ или сначала добавьте ключ доступа на сайте форума.",
+  "passkeyStepNotSetUp": "Этот форум ещё не настроен для ключей доступа в этом приложении. Выберите другой способ."
 }

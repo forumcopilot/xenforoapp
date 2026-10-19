@@ -113,7 +113,7 @@
   "youNeedToBeSignedInToViewUnreadTopics": "Você precisa estar conectado para ver seus tópicos não lidos",
   
   "noSubscribedTopics": "Sem tópicos inscritos",
-  "noSubscribedTopicsMessage": "Você não se inscreveu em nenhum tópico. Toque no botão de estrela em um tópico para se inscrever e receber notificações de novas atualizações.",
+  "noSubscribedTopicsMessage": "Você ainda não se inscreveu em nenhum tópico. Abra um tópico e escolha Inscrever-se no menu ⋮ para ser avisado de novas respostas.",
   "signInToViewSubscribedTopics": "Faça login para ver tópicos inscritos",
   "youNeedToBeSignedInToViewSubscribedTopics": "Você precisa estar conectado para ver seus tópicos inscritos",
   
@@ -1325,5 +1325,19 @@
   "accountDeleted": "Sua conta foi excluída.",
   "signInOnWebsite": "Entrar pelo site do fórum",
   "signInOnWebsiteHint": "Para Google, Facebook e as outras formas de entrar lá",
-  "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente."
+  "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente.",
+  "subForums": "Subfóruns",
+  "postPositionOf": "Publicação {position} de {total}",
+  "tapToJumpToPost": "Toque para ir a uma publicação específica",
+  "jumpToFirstPost": "Ir para a primeira publicação",
+  "jumpToLastPost": "Ir para a última publicação",
+  "send": "Enviar",
+  "postAction": "Publicar",
+  "messageCountLabel": "{count, plural, one{{count} mensagem} other{{count} mensagens}}",
+  "replyCountLabel": "{count, plural, one{{count} resposta} other{{count} respostas}}",
+  "subForumCountLabel": "{count, plural, one{{count} subfórum} other{{count} subfóruns}}",
+  "trustThisDevice": "Confiar neste dispositivo",
+  "trustThisDeviceHint": "Não pedir um código na próxima vez que você entrar neste dispositivo",
+  "passkeyNotOnThisDevice": "Não há chave de acesso para este fórum neste dispositivo. Escolha outro método ou adicione primeiro uma chave de acesso no site do fórum.",
+  "passkeyStepNotSetUp": "Este fórum ainda não está configurado para chaves de acesso neste app. Escolha outro método."
 }

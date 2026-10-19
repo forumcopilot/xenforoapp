@@ -2826,4 +2826,10 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => '信任此设备';
+
+  @override
+  String get trustThisDeviceHint => '下次在此设备上登录时不再要求输入验证码';
 }

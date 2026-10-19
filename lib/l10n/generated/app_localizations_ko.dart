@@ -2861,4 +2861,10 @@ class AppLocalizationsKo extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => '이 기기 신뢰';
+
+  @override
+  String get trustThisDeviceHint => '다음에 이 기기에서 로그인할 때 코드를 묻지 않음';
 }

@@ -1335,5 +1335,7 @@
   "postAction": "Опубликовать",
   "messageCountLabel": "{count, plural, one{{count} сообщение} few{{count} сообщения} many{{count} сообщений} other{{count} сообщения}}",
   "replyCountLabel": "{count, plural, one{{count} ответ} few{{count} ответа} many{{count} ответов} other{{count} ответа}}",
-  "subForumCountLabel": "{count, plural, one{{count} подфорум} few{{count} подфорума} many{{count} подфорумов} other{{count} подфорума}}"
+  "subForumCountLabel": "{count, plural, one{{count} подфорум} few{{count} подфорума} many{{count} подфорумов} other{{count} подфорума}}",
+  "trustThisDevice": "Доверять этому устройству",
+  "trustThisDeviceHint": "Не запрашивать код при следующем входе на этом устройстве"
 }

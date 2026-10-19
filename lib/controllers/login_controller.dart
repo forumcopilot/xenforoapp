@@ -110,7 +110,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -147,6 +150,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           try {
             if (tfaResult.usePasskey) {
               tfaLoginResult = await _loginWithPasskeyTfa(
+                trustDevice: tfaResult.trustDevice,
                 userProxy: userProxy,
                 loginResult: loginResult,
                 username: username.trim(),
@@ -162,7 +166,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 remember: true,
                 tfaCode: tfaResult.code,
                 tfaProvider: tfaResult.provider,
-                trustDevice: true, // Always trust device when TFA is used
+                trustDevice: tfaResult.trustDevice,
               );
             }
             final tfaResultMessage =
@@ -364,7 +368,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -736,7 +743,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           loginResult.resultText?.trim().isNotEmpty == true
               ? loginResult.resultText!
               : (loginResult.result ? l10nNow().loginSucceeded : l10nNow().loginFailed);
-      if (!loginResult.result) {
+      // "Password right, now the second step" comes back as result false
+      // with tfaRequired: not a failure (a "Login failed" bar flashed before
+      // the two-step screen).
+      if (!loginResult.result && loginResult.tfaRequired != true) {
         _showLoginFailureSnackbar(loginResultMessage);
       }
 
@@ -771,6 +781,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           try {
             if (tfaResult.usePasskey) {
               tfaLoginResult = await _loginWithPasskeyTfa(
+                trustDevice: tfaResult.trustDevice,
                 userProxy: userProxy,
                 loginResult: loginResult,
                 username: siteContext.username!,
@@ -786,7 +797,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
                 remember: true,
                 tfaCode: tfaResult.code,
                 tfaProvider: tfaResult.provider,
-                trustDevice: true, // Always trust device when TFA is used
+                trustDevice: tfaResult.trustDevice,
               );
             }
             final tfaResultMessage =
@@ -1387,6 +1398,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   }
 
   Future<FCLoginResult> _loginWithPasskeyTfa({
+    required bool trustDevice,
     required IFCUserProxy userProxy,
     required FCLoginResult loginResult,
     required String username,
@@ -1417,7 +1429,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       tfaProvider: 'passkey',
       webauthnChallenge: passkeyChallenge,
       webauthnPayload: payload,
-      trustDevice: true,
+      trustDevice: trustDevice,
     );
   }
 

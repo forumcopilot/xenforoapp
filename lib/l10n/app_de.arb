@@ -1311,5 +1311,7 @@
   "postAction": "Veröffentlichen",
   "messageCountLabel": "{count, plural, one{{count} Nachricht} other{{count} Nachrichten}}",
   "replyCountLabel": "{count, plural, one{{count} Antwort} other{{count} Antworten}}",
-  "subForumCountLabel": "{count, plural, one{{count} Unterforum} other{{count} Unterforen}}"
+  "subForumCountLabel": "{count, plural, one{{count} Unterforum} other{{count} Unterforen}}",
+  "trustThisDevice": "Diesem Gerät vertrauen",
+  "trustThisDeviceHint": "Beim nächsten Anmelden auf diesem Gerät nicht nach einem Code fragen"
 }

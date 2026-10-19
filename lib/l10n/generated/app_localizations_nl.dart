@@ -2998,4 +2998,11 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Dit apparaat vertrouwen';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Bij de volgende keer inloggen op dit apparaat niet om een code vragen';
 }

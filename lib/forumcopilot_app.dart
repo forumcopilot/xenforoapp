@@ -42,7 +42,7 @@ void setupErrorHandling() {
 Future<void> handleAppError(BuildContext context, Object error, [StackTrace? stack]) async {
   // Only show error dialog in debug mode
   if (kDebugMode) {
-    showErrorDialog(error.toString());
+    showErrorDialog(error.toString(), stackTrace: stack);
   }
 }
 

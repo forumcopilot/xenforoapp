@@ -1944,5 +1944,8 @@
   "replyCountLabel": "{count, plural, one{{count} reply} other{{count} replies}}",
   "@replyCountLabel": {"description": "Screen reader: how many replies a topic has", "placeholders": {"count": {"type": "int"}}},
   "subForumCountLabel": "{count, plural, one{{count} sub-forum} other{{count} sub-forums}}",
-  "@subForumCountLabel": {"description": "Screen reader: how many sub-forums a forum row lists", "placeholders": {"count": {"type": "int"}}}
+  "@subForumCountLabel": {"description": "Screen reader: how many sub-forums a forum row lists", "placeholders": {"count": {"type": "int"}}},
+  "trustThisDevice": "Trust this device",
+  "@trustThisDevice": {"description": "Switch on the two-step verification screen: XenForo's Trust this device"},
+  "trustThisDeviceHint": "Don't ask for a code the next time you sign in on this device"
 }

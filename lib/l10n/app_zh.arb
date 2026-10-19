@@ -1335,5 +1335,7 @@
   "postAction": "发布",
   "messageCountLabel": "{count, plural, other{{count} 条消息}}",
   "replyCountLabel": "{count, plural, other{{count} 条回复}}",
-  "subForumCountLabel": "{count, plural, other{{count} 个子论坛}}"
+  "subForumCountLabel": "{count, plural, other{{count} 个子论坛}}",
+  "trustThisDevice": "信任此设备",
+  "trustThisDeviceHint": "下次在此设备上登录时不再要求输入验证码"
 }

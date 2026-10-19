@@ -5065,6 +5065,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} sub-forum} other{{count} sub-forums}}'**
   String subForumCountLabel(int count);
+
+  /// Switch on the two-step verification screen: XenForo's Trust this device
+  ///
+  /// In en, this message translates to:
+  /// **'Trust this device'**
+  String get trustThisDevice;
+
+  /// No description provided for @trustThisDeviceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t ask for a code the next time you sign in on this device'**
+  String get trustThisDeviceHint;
 }
 
 class _AppLocalizationsDelegate

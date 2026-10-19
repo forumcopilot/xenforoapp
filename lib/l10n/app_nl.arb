@@ -1783,5 +1783,7 @@
   "postAction": "Plaatsen",
   "messageCountLabel": "{count, plural, one{{count} bericht} other{{count} berichten}}",
   "replyCountLabel": "{count, plural, one{{count} reactie} other{{count} reacties}}",
-  "subForumCountLabel": "{count, plural, one{{count} subforum} other{{count} subforums}}"
+  "subForumCountLabel": "{count, plural, one{{count} subforum} other{{count} subforums}}",
+  "trustThisDevice": "Dit apparaat vertrouwen",
+  "trustThisDeviceHint": "Bij de volgende keer inloggen op dit apparaat niet om een code vragen"
 }

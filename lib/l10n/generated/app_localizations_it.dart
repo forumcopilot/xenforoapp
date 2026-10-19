@@ -3012,4 +3012,11 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Considera attendibile questo dispositivo';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Non chiedere un codice al prossimo accesso da questo dispositivo';
 }

@@ -1335,5 +1335,7 @@
   "postAction": "게시",
   "messageCountLabel": "{count, plural, other{메시지 {count}개}}",
   "replyCountLabel": "{count, plural, other{답글 {count}개}}",
-  "subForumCountLabel": "{count, plural, other{하위 포럼 {count}개}}"
+  "subForumCountLabel": "{count, plural, other{하위 포럼 {count}개}}",
+  "trustThisDevice": "이 기기 신뢰",
+  "trustThisDeviceHint": "다음에 이 기기에서 로그인할 때 코드를 묻지 않음"
 }

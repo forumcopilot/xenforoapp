@@ -1311,5 +1311,7 @@
   "postAction": "投稿",
   "messageCountLabel": "{count, plural, other{{count} 件のメッセージ}}",
   "replyCountLabel": "{count, plural, other{{count} 件の返信}}",
-  "subForumCountLabel": "{count, plural, other{{count} 件のサブフォーラム}}"
+  "subForumCountLabel": "{count, plural, other{{count} 件のサブフォーラム}}",
+  "trustThisDevice": "このデバイスを信頼する",
+  "trustThisDeviceHint": "次回このデバイスでサインインするときにコードを求めない"
 }

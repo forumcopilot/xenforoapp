@@ -2986,4 +2986,11 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Trust this device';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Don\'t ask for a code the next time you sign in on this device';
 }

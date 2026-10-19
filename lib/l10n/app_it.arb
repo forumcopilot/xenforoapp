@@ -1335,5 +1335,7 @@
   "postAction": "Pubblica",
   "messageCountLabel": "{count, plural, one{{count} messaggio} other{{count} messaggi}}",
   "replyCountLabel": "{count, plural, one{{count} risposta} other{{count} risposte}}",
-  "subForumCountLabel": "{count, plural, one{{count} sottoforum} other{{count} sottoforum}}"
+  "subForumCountLabel": "{count, plural, one{{count} sottoforum} other{{count} sottoforum}}",
+  "trustThisDevice": "Considera attendibile questo dispositivo",
+  "trustThisDeviceHint": "Non chiedere un codice al prossimo accesso da questo dispositivo"
 }

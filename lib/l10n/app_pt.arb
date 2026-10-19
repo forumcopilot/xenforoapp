@@ -1335,5 +1335,7 @@
   "postAction": "Publicar",
   "messageCountLabel": "{count, plural, one{{count} mensagem} other{{count} mensagens}}",
   "replyCountLabel": "{count, plural, one{{count} resposta} other{{count} respostas}}",
-  "subForumCountLabel": "{count, plural, one{{count} subfórum} other{{count} subfóruns}}"
+  "subForumCountLabel": "{count, plural, one{{count} subfórum} other{{count} subfóruns}}",
+  "trustThisDevice": "Confiar neste dispositivo",
+  "trustThisDeviceHint": "Não pedir um código na próxima vez que você entrar neste dispositivo"
 }

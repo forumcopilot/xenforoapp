@@ -3038,4 +3038,11 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Faire confiance à cet appareil';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Ne pas demander de code lors de la prochaine connexion sur cet appareil';
 }

@@ -3022,4 +3022,11 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Confiar en este dispositivo';
+
+  @override
+  String get trustThisDeviceHint =>
+      'No pedir un código la próxima vez que inicies sesión en este dispositivo';
 }

@@ -2869,4 +2869,10 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'このデバイスを信頼する';
+
+  @override
+  String get trustThisDeviceHint => '次回このデバイスでサインインするときにコードを求めない';
 }

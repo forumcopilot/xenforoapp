@@ -3036,4 +3036,11 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get trustThisDevice => 'Доверять этому устройству';
+
+  @override
+  String get trustThisDeviceHint =>
+      'Не запрашивать код при следующем входе на этом устройстве';
 }

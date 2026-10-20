@@ -17,6 +17,9 @@ Ships with bundled ForumCopilot addon **v1.10.0**.
 - `build_release.sh` now keeps its `hashes.json` patch for the smart-banner assets (it could be silently dropped).
 - Verified by building the release ZIP (197 files, identical to `upload/`) and upgrading the published 1.9.0 → 1.10.0 on 2.2.19 and 2.3.7 with `xf-addon:upgrade`: every add-on file matches `hashes.json`, the web-root `forumcopilot.php` matches the archive, and `getConfig` reports 1.10.0. No database changes; one template modification and one class extension. Each change exercised through `forumcopilot.php` and the web pages on both forums; live suites on both: basic 49/49, interface 100/100. The test data was removed by restoring the databases.
 
+### Fixed
+- A topic row without a preview of its first post no longer fails to draw (it threw "Null check operator used on a null value"). XenForo always sends a preview, so this did not happen with this add-on; other forums and older add-ons need not. From the official app (MoleDJ/tapatalk_flutter#144). Test: `test/topic_list_item_test.dart`.
+
 ## [1.0.0] - 2026-10-19
 
 The 1.0 release, the same app as the official Forum Copilot app 1.0. Since 0.10.2 it has taken the official app's 0.10.3 to 1.0: the reactions and Material 3 work from the Discourse-app review, the forum's own header and colours, reply bars in threads and conversations, sign-in on the forum's website, two-step and passkeys from another phone, account deletion, drafts shared with the web editor, notification channels, and the fixes from reviewing every screen on a Pixel 4a and an iPhone 17. Ships with bundled ForumCopilot addon **v1.9.0**; the features that need it stay off with an older add-on. From this release on, versions follow the rules in [RELEASING.md](RELEASING.md#versioning).

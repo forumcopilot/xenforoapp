@@ -163,7 +163,7 @@ class TopicListItem extends StatelessWidget {
               ),
             ),
             // Short content if available
-            if (topic.shortContent!.isNotEmpty && !topic.isAnnouncement) ...[
+            if (topic.shortContent?.isNotEmpty == true && !topic.isAnnouncement) ...[
               Padding(
                 padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, 0.0, DesignTokens.spacingL, DesignTokens.spacingS),
                 child: Text(

@@ -977,6 +977,7 @@
   "@discard": {"description": "Button that closes a composer and throws away what was typed"},
   "discardChanges": "Descartar cambios",
   "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "saveDraft": "Guardar borrador",
   "notificationsTab": "Avisos",
   "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
   "postAwaitingApproval": "Tu publicación aparecerá cuando un moderador la apruebe.",

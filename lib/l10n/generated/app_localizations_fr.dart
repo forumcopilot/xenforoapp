@@ -1677,6 +1677,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get discardChanges => 'Annuler les modifications';
 
   @override
+  String get saveDraft => 'Enregistrer le brouillon';
+
+  @override
   String get notificationsTab => 'Alertes';
 
   @override

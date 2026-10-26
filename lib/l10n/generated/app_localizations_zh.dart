@@ -1585,6 +1585,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get discardChanges => '舍弃更改';
 
   @override
+  String get saveDraft => '保存草稿';
+
+  @override
   String get notificationsTab => '通知';
 
   @override

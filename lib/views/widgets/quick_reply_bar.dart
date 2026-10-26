@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,6 +56,10 @@ class QuickReplyBarState extends State<QuickReplyBar> {
   bool _sending = false;
   bool _hasText = false;
   ServerDraft? _serverDraft;
+
+  /// Set while a full editor is open on this bar's text, once the bar has
+  /// lost focus to it: the bar cannot take focus until the editor closes.
+  bool _editorOpen = false;
 
   @override
   void initState() {
@@ -136,10 +141,30 @@ class QuickReplyBarState extends State<QuickReplyBar> {
   /// bar's text, which it edits in place; [open] is true when it posted,
   /// and the bar is then emptied. A thread's Reply on a post comes here, so
   /// what was typed in the bar goes with the quote instead of being lost.
+  ///
+  /// The editor closes to the page with the keyboard down. Flutter gives focus
+  /// back to what had it when the editor opened, so a bar that was being
+  /// typed in took it back, and the keyboard came up again over the page
+  /// after ✕ or posting. While the editor is open the bar cannot take focus,
+  /// so the page keeps it instead; it is set only once the bar has lost focus
+  /// to the editor, as taking it from the bar earlier would put the keyboard
+  /// away while the editor opens.
   Future<void> openEditor(Future<bool> Function(TextEditingController controller) open) async {
     if (_sending) return;
     _draftTimer?.cancel();
-    final sent = await open(_controller);
+    void keepFromRefocusing() {
+      if (!_focusNode.hasFocus && !_editorOpen && mounted) setState(() => _editorOpen = true);
+    }
+
+    _focusNode.addListener(keepFromRefocusing);
+    keepFromRefocusing();
+    bool sent;
+    try {
+      sent = await open(_controller);
+    } finally {
+      _focusNode.removeListener(keepFromRefocusing);
+      if (mounted && _editorOpen) setState(() => _editorOpen = false);
+    }
     if (!mounted) return;
     if (sent) {
       _controller.clear();
@@ -194,6 +219,7 @@ class QuickReplyBarState extends State<QuickReplyBar> {
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
+                canRequestFocus: !_editorOpen,
                 readOnly: _sending,
                 minLines: 1,
                 maxLines: 5,
@@ -236,6 +262,12 @@ class QuickReplyBarState extends State<QuickReplyBar> {
 /// stay up until the reply was sent. Drags past either end count too: a
 /// conversation is usually at its newest message, where there is no further
 /// to go.
+///
+/// A drag that starts while the keyboard is up also tells the system to hide
+/// it. Unfocusing hides it when a field has it, but iOS leaves its keyboard up
+/// until it is told to hide, and a keyboard no field holds any more stayed
+/// over the thread however it was scrolled (seen on an iPhone after closing
+/// the Reply page).
 class DismissKeyboardOnDrag extends StatelessWidget {
   const DismissKeyboardOnDrag({super.key, required this.child});
 
@@ -244,6 +276,13 @@ class DismissKeyboardOnDrag extends StatelessWidget {
   @override
   Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
         onNotification: (notification) {
+          // The window's own inset: a Scaffold takes the keyboard out of its
+          // body's MediaQuery.
+          if (notification is ScrollStartNotification &&
+              notification.dragDetails != null &&
+              View.of(context).viewInsets.bottom > 0) {
+            SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
+          }
           final dragged = switch (notification) {
             ScrollUpdateNotification(:final dragDetails) => dragDetails != null,
             OverscrollNotification(:final dragDetails) => dragDetails != null,

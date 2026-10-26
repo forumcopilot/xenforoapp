@@ -7,7 +7,13 @@ import 'package:forumcopilot_flutter/views/widgets/discard_changes_scope.dart';
 /// The composers ask before throwing away what was typed, whichever way they
 /// are closed; an untouched form closes at once.
 void main() {
-  Future<TextEditingController> openForm(WidgetTester tester, {bool isEdit = false, bool busy = false}) async {
+  Future<TextEditingController> openForm(
+    WidgetTester tester, {
+    bool isEdit = false,
+    bool busy = false,
+    Future<void> Function()? onSaveDraft,
+    Future<void> Function()? onDiscard,
+  }) async {
     final controller = TextEditingController();
     await tester.pumpWidget(MaterialApp(
       locale: const Locale('en'),
@@ -26,6 +32,8 @@ void main() {
               hasChanges: () => controller.text.trim().isNotEmpty,
               isEdit: isEdit,
               busy: busy,
+              onSaveDraft: onSaveDraft,
+              onDiscard: onDiscard,
               child: Scaffold(body: TextField(controller: controller)),
             ),
           )),
@@ -66,6 +74,38 @@ void main() {
     await pressBack(tester);
     await tester.tap(find.text('Discard'));
     await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsNothing);
+  });
+
+  testWidgets('without a draft there is no Save draft', (tester) async {
+    final controller = await openForm(tester);
+    controller.text = 'half a reply';
+    await tester.pump();
+    await pressBack(tester);
+    expect(find.text('Save draft'), findsNothing);
+  });
+
+  testWidgets('a form with a draft: Save draft and Discard each do theirs, then close', (tester) async {
+    final done = <String>[];
+    final controller = await openForm(
+      tester,
+      onSaveDraft: () async => done.add('saved'),
+      onDiscard: () async => done.add('discarded'),
+    );
+    controller.text = 'half a reply';
+    await tester.pump();
+    await pressBack(tester);
+    await tester.tap(find.text('Save draft'));
+    await tester.pumpAndSettle();
+    expect(done, ['saved']);
+    expect(find.byType(TextField), findsNothing);
+
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await pressBack(tester);
+    await tester.tap(find.text('Discard'));
+    await tester.pumpAndSettle();
+    expect(done, ['saved', 'discarded']);
     expect(find.byType(TextField), findsNothing);
   });
 

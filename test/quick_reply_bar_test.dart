@@ -260,5 +260,31 @@ void main() {
       await tester.pumpAndSettle();
       expect(typing(tester), isTrue);
     });
+
+    // iOS keeps its keyboard up until it is told to hide; a keyboard that no
+    // field holds any more stayed up however the thread was scrolled.
+    bool hideSent(WidgetTester tester) => tester.testTextInput.log.any((call) => call.method == 'TextInput.hide');
+
+    testWidgets('a keyboard no field holds is told to hide', (tester) async {
+      await pumpPage(tester, physics: const AlwaysScrollableScrollPhysics(), rows: 40);
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300); // the keyboard is up
+      addTearDown(tester.view.resetViewInsets);
+      FocusManager.instance.primaryFocus?.unfocus(); // and no field has it
+      await tester.pump();
+      tester.testTextInput.log.clear();
+      await tester.drag(find.text('message 2'), const Offset(0, -200));
+      await tester.pumpAndSettle();
+      expect(hideSent(tester), isTrue);
+    });
+
+    testWidgets('without a keyboard, a drag tells the system nothing', (tester) async {
+      await pumpPage(tester, physics: const AlwaysScrollableScrollPhysics(), rows: 40);
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump();
+      tester.testTextInput.log.clear();
+      await tester.drag(find.text('message 2'), const Offset(0, -200));
+      await tester.pumpAndSettle();
+      expect(hideSent(tester), isFalse);
+    });
   });
 }

@@ -1608,6 +1608,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get discardChanges => '変更を破棄';
 
   @override
+  String get saveDraft => '下書きを保存';
+
+  @override
   String get notificationsTab => '通知';
 
   @override

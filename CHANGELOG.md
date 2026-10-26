@@ -6,6 +6,12 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Fixed
+- Closing the Reply page with ✕ (or Back) with something written asks what to do with it: Discard, Save draft or Cancel. It used to keep it without asking and put it back in the thread's quick-reply bar, where the only way to remove it was to select it all and delete it. Discard now empties the bar and removes the draft, on this device and on the forum; Save draft puts it back in the bar. The same for a direct-message reply. Tests: `test/reply_editor_close_test.dart`, `test/discard_changes_scope_test.dart`.
+- The thread comes back with the keyboard down when the Reply page closes, whether the reply was posted, discarded or saved. The quick-reply bar took focus back if it had it when the Reply page opened (typing in it, then Reply on a post), and the keyboard came straight back up over the thread.
+- A quote reply keeps the same editor when the quote arrives. It was built anew, which put the keyboard away and brought it back.
+- Dragging a thread or a conversation while the keyboard is up also tells the system to hide it. On an iPhone the keyboard could stay up over a thread however it was scrolled (reported after closing the Reply page). Test: `test/quick_reply_bar_test.dart`.
+
 ## [1.0.1] - 2026-10-26
 
 A patch release: the newer bundled add-on, and one fix in the app. Members who sign up on the forum's website from the app now come back signed in, and in-app sign-up follows the forum's spam protection. Nothing changes for a fork: no config fields, build steps or minimum add-on version. Ships with bundled ForumCopilot addon **v1.10.0**; the app works with 1.9.0 too, without these sign-up improvements.

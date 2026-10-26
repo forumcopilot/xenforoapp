@@ -1666,6 +1666,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get discardChanges => 'Descartar alterações';
 
   @override
+  String get saveDraft => 'Salvar rascunho';
+
+  @override
   String get notificationsTab => 'Avisos';
 
   @override

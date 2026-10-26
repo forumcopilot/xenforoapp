@@ -977,6 +977,7 @@
   "@discard": {"description": "Button that closes a composer and throws away what was typed"},
   "discardChanges": "변경 사항 버리기",
   "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "saveDraft": "임시 저장",
   "notificationsTab": "알림",
   "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
   "postAwaitingApproval": "운영자가 승인하면 게시물이 표시됩니다.",

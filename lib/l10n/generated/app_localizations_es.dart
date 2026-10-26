@@ -1670,6 +1670,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get discardChanges => 'Descartar cambios';
 
   @override
+  String get saveDraft => 'Guardar borrador';
+
+  @override
   String get notificationsTab => 'Avisos';
 
   @override

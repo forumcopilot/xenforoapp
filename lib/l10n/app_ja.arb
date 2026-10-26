@@ -953,6 +953,7 @@
   "@discard": {"description": "Button that closes a composer and throws away what was typed"},
   "discardChanges": "変更を破棄",
   "@discardChanges": {"description": "Button that closes an edit form and throws away the changes"},
+  "saveDraft": "下書きを保存",
   "notificationsTab": "通知",
   "@notificationsTab": {"description": "Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text."},
   "postAwaitingApproval": "モデレーターが承認すると、投稿が表示されます。",

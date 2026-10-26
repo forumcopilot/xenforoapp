@@ -1674,6 +1674,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get discardChanges => 'Änderungen verwerfen';
 
   @override
+  String get saveDraft => 'Entwurf speichern';
+
+  @override
   String get notificationsTab => 'Mitteilungen';
 
   @override

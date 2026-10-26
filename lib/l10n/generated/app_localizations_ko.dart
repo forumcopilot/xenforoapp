@@ -1601,6 +1601,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get discardChanges => '변경 사항 버리기';
 
   @override
+  String get saveDraft => '임시 저장';
+
+  @override
   String get notificationsTab => '알림';
 
   @override

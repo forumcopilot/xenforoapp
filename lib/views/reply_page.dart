@@ -252,25 +252,21 @@ class _ReplyPageState extends State<ReplyPage> {
               return _createdPostId ?? true;
             },
           );
-          if (isLoading) {
-            return Stack(
-              children: [
-                compose,
+          // The editor stays in the same place whether the quote is loading,
+          // failed or here, so it is the same editor throughout: it used to be
+          // built anew when the quote arrived, which took its focus and put
+          // the keyboard away and back, and lost anything typed meanwhile.
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              compose,
+              if (isLoading || hasError)
                 ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
-                const Center(child: CircularProgressIndicator()),
-              ],
-            );
-          } else if (hasError) {
-            return Stack(
-              children: [
-                compose,
-                ModalBarrier(dismissible: false, color: Colors.black.withValues(alpha: 0.2)),
+              if (isLoading) const Center(child: CircularProgressIndicator()),
+              if (hasError)
                 Center(child: Text(AppLocalizations.of(context).failedToLoadQuote(snapshot.error.toString()))),
-              ],
-            );
-          } else {
-            return compose;
-          }
+            ],
+          );
         },
       );
     } else {

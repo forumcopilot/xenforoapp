@@ -6,10 +6,10 @@ import '../../l10n/generated/app_localizations.dart';
 /// button, Android's back gesture or iOS's swipe. The composers used to close
 /// on any of them without a word, and what had been typed was lost.
 ///
-/// Adapted from the Discourse app's `DiscardChangesScope` (forum_kit), without
-/// its draft options: Forum Copilot has no drafts yet. "Do you want to discard
-/// your post?" for new writing, "Do you want to discard your changes?" for an
-/// edit, with Cancel and Discard.
+/// Adapted from the Discourse app's `DiscardChangesScope` (forum_kit). "Do you
+/// want to discard your post?" for new writing, "Do you want to discard your
+/// changes?" for an edit, with Cancel and Discard; a form that keeps a draft
+/// also offers Save draft, which keeps it and closes.
 ///
 /// A form without changes closes at once and keeps Android's predictive back
 /// animation. While [busy] (sending) it does not close at all. A successful
@@ -22,6 +22,8 @@ class DiscardChangesScope extends StatefulWidget {
     required this.child,
     this.isEdit = false,
     this.busy = false,
+    this.onSaveDraft,
+    this.onDiscard,
   });
 
   /// What [hasChanges] follows: the form's text controllers.
@@ -36,11 +38,20 @@ class DiscardChangesScope extends StatefulWidget {
   /// Set while the form is sending: Back does nothing until it answers.
   final bool busy;
 
+  /// Keeps what was written for later, before closing. Offered as Save draft
+  /// only when given.
+  final Future<void> Function()? onSaveDraft;
+
+  /// Throws away what was written (the draft too), before closing.
+  final Future<void> Function()? onDiscard;
+
   final Widget child;
 
   @override
   State<DiscardChangesScope> createState() => _DiscardChangesScopeState();
 }
+
+enum _Choice { discard, saveDraft }
 
 class _DiscardChangesScopeState extends State<DiscardChangesScope> {
   bool _asking = false;
@@ -50,26 +61,32 @@ class _DiscardChangesScopeState extends State<DiscardChangesScope> {
     _asking = true;
     final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final discard = await showDialog<bool>(
+    final choice = await showDialog<_Choice>(
       context: context,
       builder: (dialog) => AlertDialog(
         // When the buttons don't fit side by side they stack with the action
-        // on top, as Material 3 stacks a dialog's buttons.
+        // on top and Cancel at the bottom, as Material 3 stacks a dialog's
+        // buttons.
         actionsOverflowDirection: VerticalDirection.up,
         content: Text(widget.isEdit
             ? l10n.discardChangesQuestion
             : l10n.discardPostQuestion),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialog, false),
+            onPressed: () => Navigator.pop(dialog),
             child: Text(l10n.cancel),
           ),
+          if (widget.onSaveDraft != null)
+            TextButton(
+              onPressed: () => Navigator.pop(dialog, _Choice.saveDraft),
+              child: Text(l10n.saveDraft),
+            ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.error,
               foregroundColor: colorScheme.onError,
             ),
-            onPressed: () => Navigator.pop(dialog, true),
+            onPressed: () => Navigator.pop(dialog, _Choice.discard),
             child: Text(widget.isEdit
                 ? l10n.discardChanges
                 : l10n.discard),
@@ -77,8 +94,24 @@ class _DiscardChangesScopeState extends State<DiscardChangesScope> {
         ],
       ),
     );
+    if (choice == null || !mounted) {
+      _asking = false;
+      return;
+    }
+    try {
+      switch (choice) {
+        case _Choice.saveDraft:
+          await widget.onSaveDraft?.call();
+        case _Choice.discard:
+          await widget.onDiscard?.call();
+      }
+    } catch (e) {
+      // Both are best effort (the forum's copy especially): closing still
+      // does what was asked on this device.
+      debugPrint('DiscardChangesScope: $choice failed: $e');
+    }
     _asking = false;
-    if (discard != true || !mounted) return;
+    if (!mounted) return;
     final route = ModalRoute.of(context);
     // Navigator.pop closes the form regardless of this scope.
     if (route != null && route.isCurrent) Navigator.of(context).pop();

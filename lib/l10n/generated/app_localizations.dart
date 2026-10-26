@@ -2978,6 +2978,12 @@ abstract class AppLocalizations {
   /// **'Discard changes'**
   String get discardChanges;
 
+  /// Button that closes a composer and keeps what was typed as a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get saveDraft;
+
   /// Short bottom navigation label for Notifications. Keep concise so it fits on narrow phones with larger text.
   ///
   /// In en, this message translates to:

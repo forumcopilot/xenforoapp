@@ -1654,6 +1654,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discardChanges => 'Discard changes';
 
   @override
+  String get saveDraft => 'Save draft';
+
+  @override
   String get notificationsTab => 'Alerts';
 
   @override

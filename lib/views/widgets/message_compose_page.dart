@@ -272,6 +272,7 @@ class _MessageComposePageState extends State<MessageComposePage> {
     }
   }
 
+  /// Posted or discarded: no draft left, here or on the forum.
   Future<void> _clearDraft() async {
     final key = widget.draftKey;
     if (key == null) return;
@@ -285,6 +286,26 @@ class _MessageComposePageState extends State<MessageComposePage> {
       debugPrint('MessageComposePage: clearing the draft failed: $e');
     }
   }
+
+  /// Save draft: keeps what was written, here and on the forum.
+  Future<void> _keepDraft() async {
+    _draftTimer?.cancel();
+    await _saveDraft();
+    // Best effort, and it may be slow: the form closes without waiting.
+    unawaited(_serverDraft?.saveNow(_contentController.text, title: _draftTitle));
+  }
+
+  /// Discard: nothing written is kept. The text goes from the quick-reply bar
+  /// too when the form edits the bar's text, so it does not come back there.
+  Future<void> _discardDraft() async {
+    await _clearDraft();
+    _titleController.clear();
+    _contentController.clear();
+  }
+
+  /// Whether a form that keeps a draft has anything in it to ask about.
+  bool _hasDraftContent() =>
+      _titleController.text.trim().isNotEmpty || _contentController.text.trim().isNotEmpty || _attachments.isNotEmpty;
 
   /// Whether closing now would lose something the writer added.
   bool _hasUnsavedChanges() {
@@ -1634,8 +1655,13 @@ class _MessageComposePageState extends State<MessageComposePage> {
 
     return DiscardChangesScope(
       listenable: Listenable.merge([_titleController, _contentController]),
-      // With a draft, closing keeps the text: nothing to ask about.
-      hasChanges: widget.draftKey == null ? _hasUnsavedChanges : () => false,
+      // With a draft, closing asks whenever there is something written, so it
+      // can be thrown away: it used to be kept without a word, back in the
+      // quick-reply bar, where the only way to remove it was to select it all
+      // and delete it.
+      hasChanges: widget.draftKey == null ? _hasUnsavedChanges : _hasDraftContent,
+      onSaveDraft: widget.draftKey == null ? null : _keepDraft,
+      onDiscard: widget.draftKey == null ? null : _discardDraft,
       isEdit: widget.isEditing,
       busy: _isSubmitting,
       child: PopScope(

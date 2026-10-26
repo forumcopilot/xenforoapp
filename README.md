@@ -4,7 +4,7 @@ This repository is an open-source Flutter template for building a **single-forum
 
 The app connects directly to one XenForo forum through the Forum Copilot add-on endpoint (for example `forumcopilot.php`) and does not require `forumcopilot.com` runtime APIs.
 
-**Current release: 1.0** (October 2026), the same app as the official Forum Copilot app 1.0, for add-on 1.9.0. What changed: [CHANGELOG.md](CHANGELOG.md).
+**Current release: 1.0.1** (October 2026), the same app as the official Forum Copilot app 1.0 plus one fix from it, with add-on 1.10.0. What changed: [CHANGELOG.md](CHANGELOG.md).
 
 ## Forum Copilot: the only full-featured mobile app built specifically for XenForo
 

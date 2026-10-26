@@ -6,7 +6,9 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
-Ships with bundled ForumCopilot addon **v1.10.0**.
+## [1.0.1] - 2026-10-26
+
+A patch release: the newer bundled add-on, and one fix in the app. Members who sign up on the forum's website from the app now come back signed in, and in-app sign-up follows the forum's spam protection. Nothing changes for a fork: no config fields, build steps or minimum add-on version. Ships with bundled ForumCopilot addon **v1.10.0**; the app works with 1.9.0 too, without these sign-up improvements.
 
 ### Bundled addon (v1.9.0 → v1.10.0, published 2026-10-19 as the `addon-v1.10.0` release)
 - Signing up on the forum's website from the app comes back signed in. The app's sign-in request is kept in XenForo's session (from `forumcopilot-app-login`, or the app's `_xfRedirect` on the register page or a connected-account sign-up), and `register/complete` shows "Continue in the app", which hands the app a code as the sign-in page does. Used once, ignored after half an hour.
@@ -296,5 +298,7 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.0.1
+[1.0.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.0.0
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

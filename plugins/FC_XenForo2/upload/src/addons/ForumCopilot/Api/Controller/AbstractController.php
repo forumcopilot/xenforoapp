@@ -427,7 +427,8 @@ abstract class AbstractController extends Controller
     /**
      * Check if the user is flooding (performing action too frequently)
      * Returns an error response if flooding, null otherwise
-     * Consistent with web version
+     * Consistent with web version. HTTP 200 with errorCode flood: the app
+     * shows resultText only from 2xx replies (it was 429 before 1.11.0).
      * 
      * @param string $action The action being performed (e.g., 'report', 'post')
      * @param int|null $floodingLimit Custom flood limit in seconds
@@ -444,8 +445,8 @@ abstract class AbstractController extends Controller
         $timeRemaining = $floodChecker->checkFlooding($action, $visitor->user_id, $floodingLimit);
         if ($timeRemaining) {
             return $this->apiError(
-                \XF::phrase('must_wait_x_seconds_before_performing_this_action', ['count' => $timeRemaining])->render(),
-                429,
+                \XF::phrase('must_wait_x_seconds_before_performing_this_action', ['count' => $timeRemaining]),
+                null,
                 ErrorCode::FLOOD
             );
         }

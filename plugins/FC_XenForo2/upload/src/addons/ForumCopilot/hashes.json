@@ -5,7 +5,7 @@
   "src/addons/ForumCopilot/Adapter/XenForoParamAdapter.php": "7ddc3de4e75aeb8e2d023844b172a0fb9ed8624518101b8e2fd5854e0118ae36",
   "src/addons/ForumCopilot/Admin/Controller/Option.php": "0664e88e477f3d3f6517075478ddd9ad4ce2fd6b225062aa7883a92f52e648ae",
   "src/addons/ForumCopilot/Admin/View/Option/Index.php": "2f6a1de78ecfa7cfa3be14f2404f6f6ddc48b248a884e976f662f8adc2a41bfe",
-  "src/addons/ForumCopilot/Api/Controller/AbstractController.php": "6f1ed29c6fb69d5e813d789c72392041a14d473019b02aeac6a613db392618eb",
+  "src/addons/ForumCopilot/Api/Controller/AbstractController.php": "272e0969d275db9849e0422397f1f80458439d116a15884df127fb46179289a1",
   "src/addons/ForumCopilot/Api/Controller/AccountController.php": "40b7afeabf8b94db976f9cbf6f36be51fe87f2ddea536e9080400c5ff4ca9e94",
   "src/addons/ForumCopilot/Api/Controller/AttachmentController.php": "1702e3239d90180c5324a8317ac2c0266c40d4bde22d1686394da892e4bd66ac",
   "src/addons/ForumCopilot/Api/Controller/ConfigController.php": "2ebe21aa134371ff2e842e674fbf143cd749b8c7cd3ce606ae09bd00787bb3bb",

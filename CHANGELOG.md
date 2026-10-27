@@ -6,6 +6,9 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon, not yet released (after v1.10.0)
+- Threads started or replied to in the app are watched by the member's own "watch content on creation" and "on interaction" preferences, as on the website (`autoWatchThread` after `newTopic` and `replyPost`). Before, the app never watched them, so a member who started a thread in the app got no alerts or pushes for its replies. Exercised as a regular member on 2.2.19 and 2.3.7 with the preferences set (watched, with and without email as chosen) and unset (not watched).
+
 ### Fixed
 - Closing the Reply page with ✕ (or Back) with something written asks what to do with it: Discard, Save draft or Cancel. It used to keep it without asking and put it back in the thread's quick-reply bar, where the only way to remove it was to select it all and delete it. Discard now empties the bar and removes the draft, on this device and on the forum; Save draft puts it back in the bar. The same for a direct-message reply. Tests: `test/reply_editor_close_test.dart`, `test/discard_changes_scope_test.dart`.
 - The thread comes back with the keyboard down when the Reply page closes, whether the reply was posted, discarded or saved. The quick-reply bar took focus back if it had it when the Reply page opened (typing in it, then Reply on a post), and the keyboard came straight back up over the thread.

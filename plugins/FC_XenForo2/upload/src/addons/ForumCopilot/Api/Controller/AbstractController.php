@@ -592,6 +592,28 @@ abstract class AbstractController extends Controller
     }
 
     /**
+     * Watch a thread the visitor just started or replied to, by their "watch
+     * content on creation" / "on interaction" preference, as XenForo's own
+     * ForumController::finalizeThreadCreate and
+     * ThreadController::finalizeThreadReply do when the form sends no explicit
+     * watch choice. Without it, threads started in the app were never watched,
+     * so their starter got no alerts or pushes for replies.
+     *
+     * Best-effort: the post is already saved, so a failure here is logged and
+     * never fails the call.
+     */
+    protected function autoWatchThread(\XF\Entity\Thread $thread, bool $onCreation)
+    {
+        try {
+            if ($thread->canWatch()) {
+                $this->repository('XF:ThreadWatch')->autoWatchThread($thread, \XF::visitor(), $onCreation);
+            }
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot: auto-watch failed: ');
+        }
+    }
+
+    /**
      * Number of reactions on a post or conversation message: what the API
      * reports as likeCount. Not reaction_score, which sums each reaction's
      * score: XenForo's stock Wow, Sad and Angry score 0, so content whose

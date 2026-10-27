@@ -1038,6 +1038,8 @@ class PostController extends AbstractController
             // Send notifications
             $replier->sendNotifications();
 
+            $this->autoWatchThread($thread, false);
+
             // Mark thread as read for replier
             $this->repository('XF:Thread')->markThreadReadByVisitor($thread);
 

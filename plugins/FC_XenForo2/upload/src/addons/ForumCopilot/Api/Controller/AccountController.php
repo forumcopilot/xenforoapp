@@ -26,6 +26,17 @@ class AccountController extends AbstractController
 {
     protected const NO_BOARD_ACCESS_MESSAGE = 'Your account does not currently have access to this forum';
 
+    /** XenForo's phrase (you_already_logged_in) links to the forum list. */
+    protected const ALREADY_LOGGED_IN_MESSAGE = 'You are already logged in.';
+
+    /**
+     * forgotPassword: requests one IP address may make in LOST_PASSWORD_WINDOW
+     * seconds, counted as login attempts under LOST_PASSWORD_LOGIN.
+     */
+    protected const LOST_PASSWORD_LIMIT = 5;
+    protected const LOST_PASSWORD_WINDOW = 1800;
+    protected const LOST_PASSWORD_LOGIN = 'fc:lost_password';
+
     /**
      * Session key: when prefetchAccount opened the app's sign-up form, for
      * XenForo's registration timer.
@@ -653,6 +664,12 @@ class AccountController extends AbstractController
         try {
             $options = $this->app()->options();
 
+            // XenForo's register page refuses a signed-in visitor
+            // (Pub\Controller\Register::actionIndex), banned ones included.
+            if (\XF::visitor()->user_id) {
+                return $this->apiError(self::ALREADY_LOGGED_IN_MESSAGE, null, ErrorCode::ERROR);
+            }
+
             if ($refusal = $this->registrationRefusal()) {
                 return $this->apiError($refusal);
             }
@@ -722,15 +739,15 @@ class AccountController extends AbstractController
                 $input['dob_year'] = (int)$dob->format('Y');
             }
 
+            // Always set, as the web form always sends them: XenForo checks
+            // the required fields only when custom_fields is in the input.
             $customFields = $params->get('customFields', []);
-            if (is_array($customFields) && $customFields) {
-                $input['custom_fields'] = $customFields;
-            }
+            $input['custom_fields'] = is_array($customFields) ? $customFields : [];
 
-            // Also sets the activity summary email, as on the web.
-            $emailChoice = $params->get('emailChoice', null);
-            if ($options->registrationSetup['requireEmailChoice'] && $emailChoice !== null) {
-                $input['email_choice'] = (bool)$emailChoice;
+            // Also sets the activity summary email, as on the web, where an
+            // unticked box is "no" (Register::getRegistrationInput).
+            if (!empty($options->registrationSetup['requireEmailChoice'])) {
+                $input['email_choice'] = (bool)$params->get('emailChoice', false);
             }
 
             /** @var \XF\Service\User\Registration $registration */
@@ -748,6 +765,18 @@ class AccountController extends AbstractController
             // One start for one account. Zeroed, not removed: XenForo does
             // not save a session left with no data, so the start would stay.
             $this->session()->set(self::REGISTER_START_KEY, 0);
+
+            // Saved, but rejected by XenForo's spam check: say so, as the
+            // website does once the new member is signed in (the rejection
+            // page, with its reason), rather than "thanks for registering".
+            if ($user->user_state === 'rejected') {
+                return $this->apiError(
+                    $this->refusalText($user, 'actionRejected'),
+                    null,
+                    ErrorCode::ACCOUNT_DISABLED,
+                    ['userState' => 'rejected', 'userId' => (string)$user->user_id]
+                );
+            }
 
             // What register/complete says on the website.
             if ($user->user_state === 'email_confirm') {
@@ -1398,22 +1427,51 @@ class AccountController extends AbstractController
         }
     }
 
+    /**
+     * Sends a password reset email, as XenForo's lost password page does
+     * (Pub\Controller\LostPassword::actionIndex), by email address or user
+     * name.
+     *
+     * Where the forum asks for a captcha on that page (lostPasswordCaptcha,
+     * on by default) and shows guests one, the app cannot show it: the
+     * member is sent to the website (resetViaWebUrl), as register does.
+     * Otherwise one IP address may ask LOST_PASSWORD_LIMIT times in
+     * LOST_PASSWORD_WINDOW seconds, on top of XenForo's limit per member.
+     */
     public function actionForgotPassword(ParameterBag $params)
     {
         // Don't allow if already logged in
         $visitor = \XF::visitor();
         if ($visitor->user_id) {
-            return $this->apiError('You are already logged in', null, ErrorCode::VALIDATION);
+            return $this->apiError(self::ALREADY_LOGGED_IN_MESSAGE, null, ErrorCode::VALIDATION);
+        }
+
+        $options = $this->app()->options();
+        if (!empty($options->lostPasswordCaptcha)
+            && $this->app()->captcha()
+            && $this->repository('XF:User')->getGuestUser()->isShownCaptcha()
+        ) {
+            return $this->apiError(
+                'Please reset your password on the forum\'s website.',
+                null,
+                ErrorCode::ERROR,
+                ['resetViaWebUrl' => $this->buildLink('canonical:lost-password')]
+            );
         }
 
         // Accept either email or username in a single parameter
         $usernameOrEmail = $params->get('usernameOrEmail', '');
+        $usernameOrEmail = is_string($usernameOrEmail) ? trim($usernameOrEmail) : '';
 
-        if (empty($usernameOrEmail)) {
+        if ($usernameOrEmail === '') {
             return $this->apiError('Username or email is required', null, ErrorCode::VALIDATION);
         }
 
         try {
+            if ($floodError = $this->lostPasswordFloodError()) {
+                return $floodError;
+            }
+
             // Find user by email or username (similar to login logic)
             $user = null;
             
@@ -1467,6 +1525,39 @@ class AccountController extends AbstractController
         }
     }
 
+    /**
+     * forgotPassword's limit per IP address: the requests are logged as
+     * login attempts (XenForo's xf_login_attempt, pruned daily by XenForo)
+     * under their own name. Returns the flood error, or null and counts
+     * this request.
+     */
+    protected function lostPasswordFloodError()
+    {
+        $ip = (string)$this->request->getIp();
+        if ($ip === '') {
+            return null;
+        }
+
+        $cutOff = \XF::$time - self::LOST_PASSWORD_WINDOW;
+        /** @var \XF\Repository\LoginAttempt $attemptRepo */
+        $attemptRepo = $this->repository('XF:LoginAttempt');
+        if ($attemptRepo->countLoginAttemptsSince($cutOff, $ip, self::LOST_PASSWORD_LOGIN) >= self::LOST_PASSWORD_LIMIT) {
+            $oldest = (int)$this->app()->db()->fetchOne(
+                'SELECT MIN(attempt_date) FROM xf_login_attempt WHERE attempt_date >= ? AND ip_address = ? AND login = ?',
+                [$cutOff, \XF\Util\Ip::stringToBinary($ip), self::LOST_PASSWORD_LOGIN]
+            );
+            $wait = max(1, ($oldest ?: \XF::$time) + self::LOST_PASSWORD_WINDOW - \XF::$time);
+            return $this->apiError(
+                \XF::phrase('must_wait_x_seconds_before_performing_this_action', ['count' => $wait]),
+                null,
+                ErrorCode::FLOOD
+            );
+        }
+
+        $attemptRepo->logFailedLogin(self::LOST_PASSWORD_LOGIN, $ip);
+        return null;
+    }
+
     public function actionPrefetchAccount(ParameterBag $params)
     {
         $options = $this->app()->options();
@@ -1488,8 +1579,11 @@ class AccountController extends AbstractController
         // Build registration requirements if registration is possible
         $requirements = null;
         if ($canRegister) {
-            // The app's form opens now: XenForo's registration timer starts.
-            $this->session()->set(self::REGISTER_START_KEY, \XF::$time);
+            // The app's form opens now: XenForo's registration timer starts
+            // (not for a signed-in visitor, whom register refuses).
+            if (!\XF::visitor()->user_id) {
+                $this->session()->set(self::REGISTER_START_KEY, \XF::$time);
+            }
 
             $requirements = [
                 'username' => [
@@ -1504,8 +1598,9 @@ class AccountController extends AbstractController
                 ],
                 'dateOfBirth' => [
                     'required' => (bool)$setup['requireDob'],
-                    // 0: no minimum
-                    'minimumAge' => (int)($setup['minimumAge'] ?? 0),
+                    // 0: no minimum. XenForo applies the minimum age only
+                    // when a date of birth is required.
+                    'minimumAge' => !empty($setup['requireDob']) ? (int)($setup['minimumAge'] ?? 0) : 0,
                     'requireDob' => (bool)$setup['requireDob']
                 ],
                 'location' => [
@@ -1586,8 +1681,11 @@ class AccountController extends AbstractController
                     ];
                     
                     // Add choices if applicable
+                    // An object (value => label) even when the values are
+                    // 0..n, which JSON would otherwise turn into a list the
+                    // app does not read.
                     if (in_array($field->field_type, ['select', 'radio', 'checkbox', 'multiselect'])) {
-                        $fieldData['choices'] = $field->field_choices ?: [];
+                        $fieldData['choices'] = $field->field_choices ? (object)$field->field_choices : [];
                     }
                     
                     // Add match params if applicable

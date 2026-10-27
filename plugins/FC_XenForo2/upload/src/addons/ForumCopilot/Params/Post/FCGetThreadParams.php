@@ -20,12 +20,20 @@ class FCGetThreadParams
     /** @var bool Whether to return HTML content */
     public $returnHtml;
 
-    public function __construct($topicId = '', $startNum = 0, $lastNum = 19, $returnHtml = true)
+    /**
+     * @var bool Optional (1.11.0): also the moderated and deleted posts the
+     *           visitor may see, and the member's own posts awaiting approval,
+     *           as XenForo's thread page shows them. Off by default.
+     */
+    public $includeHidden;
+
+    public function __construct($topicId = '', $startNum = 0, $lastNum = 19, $returnHtml = true, $includeHidden = false)
     {
         $this->topicId = $topicId;
         $this->startNum = $startNum;
         $this->lastNum = $lastNum;
         $this->returnHtml = $returnHtml;
+        $this->includeHidden = (bool)$includeHidden;
     }
 
     /**
@@ -37,7 +45,8 @@ class FCGetThreadParams
             $data['topicId'] ?? '',
             $data['startNum'] ?? 0,
             $data['lastNum'] ?? 19,
-            $data['returnHtml'] ?? true
+            $data['returnHtml'] ?? true,
+            $data['includeHidden'] ?? false
         );
     }
 

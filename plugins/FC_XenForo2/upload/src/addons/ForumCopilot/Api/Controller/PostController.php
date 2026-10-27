@@ -49,7 +49,7 @@ class PostController extends AbstractController
             // 1-based range, at most MAX_POSTS_PER_REQUEST posts
             $startNum = max(1, (int)$fcParams->startNum);
             $perPage = $this->clampPostsPerRequest((int)$fcParams->lastNum - $startNum + 1);
-            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $perPage);
+            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $perPage, $fcParams->includeHidden);
 
             $result = new FCThreadResult(
                 true,
@@ -74,6 +74,7 @@ class PostController extends AbstractController
     {
         $postId = $params->get('postId', '');
         $postsPerRequest = $this->clampPostsPerRequest($params->get('postsPerRequest', 20));
+        $includeHidden = $this->isTrueParam($params->get('includeHidden', false));
 
         if (empty($postId)) {
             return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
@@ -92,7 +93,7 @@ class PostController extends AbstractController
             // has the anchor in the middle.
             $position = $this->getPostPosition($post);
             $startNum = max(1, $position - (int)floor($postsPerRequest / 2));
-            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $postsPerRequest);
+            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $postsPerRequest, $includeHidden);
 
             $topicData = $this->buildThreadTopicData($thread);
             $result = new FCThreadByPostResult(
@@ -122,6 +123,7 @@ class PostController extends AbstractController
 
         $topicId = $params->get('topicId', '');
         $postsPerRequest = $this->clampPostsPerRequest($params->get('postsPerRequest', 20));
+        $includeHidden = $this->isTrueParam($params->get('includeHidden', false));
 
         if (empty($topicId)) {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
@@ -152,9 +154,7 @@ class PostController extends AbstractController
             $firstUnreadPost = null;
             if (!$isFullyRead) {
                 // Only search for unread posts if thread is not fully read
-                $finder = $this->finder('XF:Post');
-                $finder->where('thread_id', $thread->thread_id);
-                $finder->where('message_state', 'visible');
+                $finder = $this->getThreadPostFinder($thread, $includeHidden);
                 $finder->where('post_date', '>', $readDate);
                 $finder->order([['post_date', 'ASC'], ['post_id', 'ASC']]);
                 // Not a post by a member the visitor ignores, as
@@ -181,10 +181,7 @@ class PostController extends AbstractController
             } else {
                 // No unread posts - user has read everything
                 // Return the last page and last post position
-                $totalPostsFinder = $this->finder('XF:Post');
-                $totalPostsFinder->where('thread_id', $thread->thread_id);
-                $totalPostsFinder->where('message_state', 'visible');
-                $totalPosts = $totalPostsFinder->total();
+                $totalPosts = $this->getThreadPostFinder($thread, false)->total();
 
                 if ($totalPosts > 0) {
                     // Position is the last post
@@ -194,7 +191,7 @@ class PostController extends AbstractController
                 }
             }
 
-            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $postsPerRequest);
+            [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $postsPerRequest, $includeHidden);
 
             $topicData = $this->buildThreadTopicData($thread);
             $result = new FCThreadByUnreadResult(
@@ -222,29 +219,60 @@ class PostController extends AbstractController
      * One page of a thread's posts for getThread, getThreadByPost and
      * getThreadByUnread, which share it and the builders below.
      *
+     * Post numbers and the total count visible posts. With $includeHidden,
+     * the moderated and deleted posts the visitor may see come with the page
+     * of the visible post before them, as on XenForo's thread page, which
+     * pages by the position column (PostFinder::onPage): such a post shares
+     * that post's number.
+     *
      * @param \XF\Entity\Thread $thread
      * @param int $startNum 1-based number of the first post
      * @param int $perPage
-     * @return array [posts (collection), total number of posts]
+     * @param bool $includeHidden
+     * @return array [posts (collection), total number of visible posts]
      */
-    protected function fetchThreadPostsPage(\XF\Entity\Thread $thread, $startNum, $perPage): array
+    protected function fetchThreadPostsPage(\XF\Entity\Thread $thread, $startNum, $perPage, bool $includeHidden = false): array
     {
-        $finder = $this->finder('XF:Post');
-        $finder->where('thread_id', $thread->thread_id);
-        $finder->where('message_state', 'visible');
+        $finder = $this->getThreadPostFinder($thread, $includeHidden);
         // XenForo's thread order (PostFinder::orderByDate), with the id last
         // so posts made in the same second keep their place across pages
         $finder->order([['position', 'ASC'], ['post_date', 'ASC'], ['post_id', 'ASC']]);
-
         $finder->with($this->getThreadPostListWith());
 
-        // Offset should be startNum - 1 (since position 1 = offset 0)
-        $finder->limit($perPage, $startNum - 1);
-
-        $posts = $finder->fetch();
-        $total = $finder->total();
+        if ($includeHidden) {
+            $finder->where('position', '>=', $startNum - 1);
+            $finder->where('position', '<', $startNum - 1 + $perPage);
+            $posts = $finder->fetch();
+            $total = $this->getThreadPostFinder($thread, false)->total();
+        } else {
+            // Offset should be startNum - 1 (since position 1 = offset 0)
+            $finder->limit($perPage, $startNum - 1);
+            $posts = $finder->fetch();
+            $total = $finder->total();
+        }
 
         return [$posts, (int)$total];
+    }
+
+    /**
+     * The posts of a thread the app may list: the visible ones, or with
+     * $includeHidden, those XenForo's thread page lists for the visitor
+     * (PostFinder::inThread): also deleted posts for those who may see
+     * them, moderated posts for moderators, and the member's own posts
+     * awaiting approval.
+     *
+     * @return \XF\Mvc\Entity\Finder
+     */
+    protected function getThreadPostFinder(\XF\Entity\Thread $thread, bool $includeHidden)
+    {
+        $finder = $this->finder('XF:Post');
+        if ($includeHidden) {
+            $finder->inThread($thread);
+        } else {
+            $finder->where('thread_id', $thread->thread_id);
+            $finder->where('message_state', 'visible');
+        }
+        return $finder;
     }
 
     /**
@@ -349,7 +377,9 @@ class PostController extends AbstractController
             // Everyone who reacted: the app counts and finds the member's own
             // reaction in this list
             'likesInfo' => $likesInfo,
-            'isApproved' => $post->message_state === 'visible',
+            // Awaiting approval, or deleted (only with includeHidden)
+            'isApproved' => $post->message_state !== 'moderated',
+            'isDeleted' => $post->message_state === 'deleted',
             'isFirstPost' => $post->post_id === $thread->first_post_id,
             // The post's number (floor) in the thread
             'position' => $this->getPostPosition($post),
@@ -364,6 +394,10 @@ class PostController extends AbstractController
 
         // A member the visitor ignores: XenForo shows the post collapsed
         $row['isIgnored'] = $post->isIgnored();
+
+        // The moderator actions for hidden posts (approvePost, undeletePost)
+        $row['canApprove'] = $post->canApproveUnapprove();
+        $row['canUndelete'] = $post->message_state === 'deleted' && $post->canUndelete();
 
         return $row;
     }

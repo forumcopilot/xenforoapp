@@ -146,6 +146,7 @@ class XenForoParamAdapter
             'startNum' => $params->get('startNum', 0),
             'lastNum' => $params->get('lastNum', 19),
             'returnHtml' => $params->get('returnHtml', true),
+            'includeHidden' => self::toBool($params->get('includeHidden', false)),
         ]);
     }
 

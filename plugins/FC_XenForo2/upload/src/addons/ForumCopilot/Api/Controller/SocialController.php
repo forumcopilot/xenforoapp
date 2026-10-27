@@ -115,13 +115,26 @@ class SocialController extends AbstractController
             }
 
             $visitor = \XF::visitor();
-            
+
+            // As XenForo's MemberController::actionFollow: the profile must be
+            // viewable, and canFollowUser applies unless already following
+            $error = null;
+            if (!$user->canViewBasicProfile($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
+            if ($visitor->isFollowing($user)) {
+                return $this->apiSuccess(new FCFollowResult(true, null, true));
+            }
             if (!$visitor->canFollowUser($user)) {
-                return $this->apiError('Cannot follow this user', null, ErrorCode::NO_PERMISSION);
+                return $this->apiError(\XF::phrase('you_not_currently_able_to_follow_this_user'), null, ErrorCode::NO_PERMISSION);
             }
 
-            // XF:User\Follow on 2.2; aliased to FollowService on 2.3.
-            $this->service('XF:User\Follow', $user, $visitor)->follow();
+            // XF:User\Follow on 2.2; aliased to FollowService on 2.3. It saves
+            // without throwing, so its refusals (the follow limit) are errors.
+            $userFollow = $this->service('XF:User\Follow', $user, $visitor)->follow();
+            if ($userFollow && $userFollow->hasErrors()) {
+                return $this->apiFieldErrors($userFollow->getErrors());
+            }
 
             $result = new FCFollowResult(true, null, true);
             return $this->apiSuccess($result);

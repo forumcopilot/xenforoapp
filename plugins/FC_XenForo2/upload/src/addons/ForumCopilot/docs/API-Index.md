@@ -19,21 +19,53 @@ cookie requirements. This file is intended for MCP server discovery.
 
 ## Response envelope (common)
 
+Every reply is JSON (`Content-Type: application/json`) with `result`. A
+successful reply has no `resultText`:
+
 ```json
 {
-  "result": true,
-  "resultText": null
+  "result": true
 }
 ```
 
-On error:
+A refused or failed call answers **HTTP 200** with `result: false` (the app
+reads `resultText` only from 2xx replies). Only a request that isn't a JSON
+POST with the media type `application/json` gets HTTP 400.
 
 ```json
 {
   "result": false,
-  "resultText": "Error message"
+  "resultText": "The requested thread could not be found.",
+  "errorCode": "not_found"
 }
 ```
+
+- `resultText` — XenForo's own message where there is one (in the member's
+  language), plain text. Several form errors come one per line.
+- `errorCode` (add-on 1.11.0+) — what kind of error it is:
+
+  | errorCode | Meaning |
+  |---|---|
+  | `login_required` | The method needs a signed-in member |
+  | `guest_denied` | Guests may not see or do this; signing in may help |
+  | `no_permission` | The member may not see or do this |
+  | `not_found` | The thread, post, member, message... doesn't exist or isn't visible |
+  | `validation` | Input was refused; see `errors` |
+  | `flood` | Too soon after the last action of this kind |
+  | `board_closed` | The board is closed |
+  | `banned` | Banned account or IP address |
+  | `account_pending` | Account waiting for email confirmation or approval |
+  | `account_disabled` | Rejected or disabled account |
+  | `tfa_required` | The member's groups require two-step verification |
+  | `security_locked` | The account is security locked |
+  | `bad_request` | Malformed call: bad JSON, unknown method, missing or invalid parameters |
+  | `server_error` | Unexpected failure; logged in XenForo's server error log under `errorId` |
+  | `error` | Any other refusal |
+
+- `errors` (object, field => message) — form errors XenForo keys by field
+  (`register`, new thread, new conversation, follow, search...).
+- `errorId` (string) — with `server_error`: the reference to look for in
+  Admin CP → Logs → Server error log ("Forum Copilot API [id] ...").
 
 ## Authentication categories
 
@@ -65,10 +97,21 @@ verification and security lock. A refused call returns HTTP 200 with
 
 - **Auth:** `none`
 - **Description:** Returns public config and environment info.
-- **Params:** none
+- **Params:**
+  - `dismissNoticeId` (int, optional, 1.11.0) — dismiss this notice for the member, as XenForo's notice close button does.
 - **Response** (among others):
   - `browserLoginSchemes` (string[]) — App schemes the website may hand a sign-in to (see "Signing in and up on the website"); empty when that is off.
   - `userState` (string) — The signed-in member's XenForo state (`valid`, `email_confirm`, `moderated`, ...); empty for a guest.
+  - `guestOkay`, `guestSearch`, `guestWhosOnline` (bool) — what guests may do (view some forum, search, see the online list).
+  - `conversation` and `alert` are always `true`; `ignoreUser`, `multiQuote`, `getTopicStatus`, `advancedMerge`, `advancedMove`, `modApprove`, `modDelete` and `modReport` are `false` because the API has no method behind them. `hookVersion`, `apiLevel`, `pushSlug`, `apiKey` and `releaseTimestamp` are kept for older apps and mean nothing.
+  - Added in 1.11.0:
+    - `advancedSearch` (true: search with `advanceSearchTopic`/`advanceSearchPost`), `minSearchLength`, `disableSearch`.
+    - `boardInactiveMessage` (string) — why the board is closed; empty when open.
+    - `canSearch`, `canStartConversation`, `canUploadAvatar`, `isModerator` (bool) — the visitor's.
+    - `notices` (array) — the notices XenForo shows the visitor on pages without page criteria: `id`, `type` (`block`, `floating`, `scrolling`, `bottom_fixer`), `title`, `message` (text), `messageHtml`, `dismissible`, `displayStyle`.
+    - `tosUrl`, `privacyPolicyUrl`, `contactUrl` (string) — empty when the forum has no such page.
+    - `helpPages` (array) — `id`, `title`, `url` of the active help pages.
+    - `policyAcceptance` — `required`, `termsRequired`, `privacyRequired`, `acceptUrl`: the member still has to accept updated terms or privacy policy on the website. Reported only; the app isn't refused.
 
 ## Account
 
@@ -341,7 +384,7 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 ### `loginForum`
 
 - **Auth:** `none`
-- **Description:** Mapped but not implemented (no `actionLoginForum`).
+- **Description:** Kept for older apps: XenForo has no password-protected forums, so it always answers success.
 - **Params:** none
 
 ## Topic
@@ -509,46 +552,53 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 
 ## Search
 
+All four run on XenForo's own search (its index, minimum word length, result
+limit and per-member result cache), with permissions applied before results
+are counted. `searchId` in a reply names that search: send it back with the
+same words for the next page. Pages are at most 100 results.
+
 ### `searchTopic`
 
 - **Auth:** `optional`
-- **Description:** Keyword search for topics.
+- **Description:** Keyword search for topics: posts and threads, one result per thread (XenForo's "Search threads").
 - **Params:**
   - `searchString` (string, required)
-  - `startNum` (int, optional, default 0)
-  - `lastNum` (int, optional, default 19)
+  - `startNum` (int, optional, default 0) — first result, 0-based.
+  - `lastNum` (int, optional, default 19) — last result, inclusive.
   - `searchId` (string, optional)
+- **Response:** `totalTopicNum`, `searchId`, `topics` (topic rows as in topic lists).
 
 ### `searchPost`
 
 - **Auth:** `optional`
-- **Description:** Keyword search for posts.
-- **Params:** same as `searchTopic`
+- **Description:** Keyword search for posts, newest first.
+- **Params:** same as `searchTopic`.
+- **Response:** `totalPostNum`, `searchId`, `posts`.
 
 ### `advanceSearchTopic`
 
 - **Auth:** `optional`
-- **Description:** Advanced topic search.
+- **Description:** Advanced topic search, one result per thread; the app's Search tab.
 - **Params:**
   - `keywords` (string, required)
   - `page` (int, optional, default 1)
-  - `perpage` (int, optional, default 20)
-  - `searchId` (string, optional)
+  - `perpage` (int, optional, default 20, at most 100)
+  - `searchId` (string, optional) — reuse the member's own earlier search for the same words.
   - `titleOnly` (bool, optional)
-  - `userId` (string, optional)
-  - `searchUser` (string, optional)
-  - `forumId` (string, optional)
-  - `topicId` (string, optional)
-  - `onlyIn` (array<string>, optional)
-  - `notIn` (array<string>, optional)
-  - `startedBy` (bool, optional)
-  - `searchTime` (int, optional) — Unix timestamp (newer than).
+  - `userId` (string, optional) or `searchUser` (string, optional) — member names, comma-separated (names only).
+  - `forumId` (string, optional), `onlyIn` (array<string>, optional) — forums to search (not their sub-forums).
+  - `notIn` (array<string>, optional) — forums to leave out (used when no forums are given).
+  - `topicId` (string, optional) — only this thread.
+  - `startedBy` (bool, optional) — with a member: threads they started.
+  - `searchTime` (int, optional) — Unix time; newer than.
+- **Response:** `totalTopicNum`, `searchId`, `topics` (topic rows as in topic lists).
 
 ### `advanceSearchPost`
 
 - **Auth:** `optional`
-- **Description:** Advanced post search.
-- **Params:** same as `advanceSearchTopic`
+- **Description:** Advanced post search, newest first.
+- **Params:** same as `advanceSearchTopic` (`startedBy` doesn't apply).
+- **Response:** `totalPostNum`, `searchId`, `posts`.
 
 ## Attachment
 
@@ -581,45 +631,46 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 ### `likePost`
 
 - **Auth:** `required`
-- **Description:** React (like) a post.
+- **Description:** React to a post, as XenForo's reaction button: adds the reaction, switches to it, or takes it off when it is the member's current one. The reaction must exist and be active.
 - **Params:**
   - `postId` (string, required)
-  - `like` (bool, optional, default true)
+  - `reactionId` (int, optional, default 1) — from `getConfig`'s `availableReactions`.
+- **Response:** `isLiked`, `likeCount` (number of reactions), `visitorReactionId` (null when taken off).
 
 ### `unlikePost`
 
 - **Auth:** `required`
-- **Description:** Remove reaction from a post.
-- **Params:** same as `likePost` with `like=false`
+- **Description:** Take the member's reaction off a post, whichever it is.
+- **Params:**
+  - `postId` (string, required)
+- **Response:** `isLiked` (false), `likeCount`.
 
 ### `follow`
 
 - **Auth:** `required`
-- **Description:** Follow a user.
+- **Description:** Follow a member, as XenForo's Follow button (their profile must be viewable).
 - **Params:**
-  - `userId` (string, required)
-  - `follow` (bool, optional, default true)
+  - `userId` (string, required) — an id, or a user name.
 
 ### `unfollow`
 
 - **Auth:** `required`
-- **Description:** Unfollow a user.
-- **Params:** same as `follow` with `follow=false`
+- **Description:** Stop following a member.
+- **Params:**
+  - `userId` (string, required) — an id, or a user name.
 
 ### `getAlert`
 
 - **Auth:** `required`
-- **Description:** List alerts.
+- **Description:** List the member's alerts, newest first. By default it works like XenForo's alert list: the shown alerts that read themselves (reactions, follows...) are marked read, and all alerts are marked viewed (the badge) when page 1 loads.
 - **Params:**
   - `page` (int, optional, default 1)
-  - `perpage` (int, optional, default 20)
-  - `unreadOnly` (bool, optional, default false)
-
-### `thankPost`
-
-- **Auth:** `required`
-- **Description:** Legacy reaction endpoint (maps to like/unlike).
-- **Params:** same as `likePost`
+  - `perpage` (int, optional, default 20, at most 100)
+  - `skipMarkRead` (bool, optional, 1.11.0) — mark nothing, like XenForo's `skip_mark_read`.
+  - `unreadOnly` (bool, optional, 1.11.0) — only alerts not read yet.
+  - `markReadIds`, `markUnreadIds` (int[], optional, 1.11.0) — mark the member's own alerts read or unread before listing.
+  - `markAllRead` (bool, optional, 1.11.0) — mark all the member's alerts read before listing.
+- **Response:** `total` (all the member's alerts, for paging), `items` (alerts), `visitor` (`conversations_unread`, `alerts_unviewed`, `total_unread`). Each alert: `id`, `type`, `message`, `timestamp`, `isRead` (viewed), `actionUrl`, `fromUserId`, `fromUsername`, `fromUserIconUrl`, `action`, `contentId`, ids by type (`postId`, `topicId`, `conversationId`...), and from 1.11.0 `isUnread` (XenForo's read state), `isUnviewed`, `readDate`, `viewDate`, `autoRead`.
 
 ## Subscription
 
@@ -722,55 +773,70 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 
 ## Private Conversation
 
+XenForo's direct messages. Every method works on the member's own copy of a
+conversation: a conversation the member isn't in is "not found".
+
 ### `newConversation`
 
 - **Auth:** `required`
+- **Description:** Start a direct message, as XenForo's form: XenForo checks the recipients (names who don't exist or don't accept messages from the member come back in `errors.recipients`), the maximum number of recipients and the flood limit.
 - **Params:**
-  - `recipientIds` (array<string>, required)
-  - `title` (string, required)
-  - `textBody` (string, required)
+  - `userName` (array<string> or comma-separated string, required) — recipient user names.
+  - `subject` (string, required)
+  - `textBody` (string, required) — BBCode.
+  - `groupId` (string, optional) — the upload hash of files uploaded for it (type `pm`), when the member may attach files to direct messages.
+  - `openInvite` (bool, optional) — anyone in it may invite others.
+  - `conversationLocked` (bool, optional) — no replies.
+- **Response:** `convId`.
 
 ### `replyConversation`
 
 - **Auth:** `required`
+- **Description:** Reply, as XenForo's form: flood limit, and the reply draft is deleted.
 - **Params:**
   - `conversationId` (string, required)
   - `textBody` (string, required)
+  - `groupId` (string, optional) — upload hash.
+- **Response:** `messageId`.
 
 ### `getConversations`
 
 - **Auth:** `required`
 - **Params:**
-  - `page` (int, optional, default 1)
-  - `perpage` (int, optional, default 20)
+  - `startNum` (int, optional, default 0), `lastNum` (int, optional, default 19) — at most 100 rows.
+- **Response:** `conversationCount`, `unreadCount` (the member's unread conversations), `canUpload` (may attach files to direct messages), `list`. Each row: `id`, `title`, starter and last-message author fields, `isUnread`, `messageId` (first unread, or latest), `unreadMessageCount`, `messageCount`, `participantCount`, `participants` (1.11.0: `id`, `username`, everyone but the starter), `canReply`, `canInvite`, `canEdit`, `canClose`, `isClosed`.
 
 ### `getConversation`
 
 - **Auth:** `required`
+- **Description:** Messages, oldest first; marks the conversation read up to the last one shown, and the alerts about them read.
 - **Params:**
   - `conversationId` (string, required)
-  - `page` (int, optional, default 1)
-  - `perpage` (int, optional, default 20)
+  - `startNum` (int, optional, default 0) — first message number (1-based).
+  - `lastNum` (int, optional, default 19) — last message number, inclusive; at most 100 messages.
+- **Response:** `convId`, `convTitle`, `messages`, `participants`, `totalMessageNum`, `lastRead`, `canReply`, `canInvite`, `canEdit`, `canClose`, `isClosed`, `canUpload`.
 
 ### `getConversationByMessage`
 
 - **Auth:** `required`
+- **Description:** The page around one message.
 - **Params:**
   - `messageId` (string, required)
+  - `messagesPerRequest` (int, optional, default 20, at most 100)
 
 ### `getRawConversation` / `saveRawConversation`
 
-- **Auth:** `required`
-- **Params:** `conversationId` (string, required), plus `textBody` for save.
+- **Auth:** `required` (the starter)
+- **Params:** `conversationId` (string, required); for save, optional `conversationTitle`, `conversationOpen` (bool), `openInvite` (bool).
 
 ### `getRawMessage` / `saveRawMessage`
 
-- **Auth:** `required`
-- **Params:** `messageId` (string, required), plus `textBody` for save.
+- **Auth:** `required` (the author, within XenForo's edit time limit)
+- **Params:** `messageId` (string, required); for save, `messageContent` (string, required) and optional `groupId` (upload hash of new files). Attachments the message already has stay as they are.
 
 ### `closeConversation` / `uncloseConversation`
 
-- **Auth:** `required`
+- **Auth:** `required` (the starter)
 - **Params:** `conversationId` (string, required)
 
 ### `markConversationRead` / `markConversationUnread`
@@ -781,21 +847,27 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 ### `leaveConversation`
 
 - **Auth:** `required`
-- **Params:** `conversationId` (string, required)
+- **Params:**
+  - `conversationId` (string, required)
+  - `mode` (int, optional) — 2: leave and ignore future messages; otherwise it comes back on a new reply.
+  - `ignore` (bool, optional, 1.11.0) — the same as mode 2.
 
 ### `inviteParticipant`
 
 - **Auth:** `required`
 - **Params:**
   - `conversationId` (string, required)
-  - `recipientIds` (array<string>, required)
+  - `userName` (array<string> or comma-separated string, required)
 
 ### `getQuoteConversation`
 
-- **Auth:** `required`
+- **Auth:** `required` (the member can reply in it)
 - **Params:** `messageId` (string, required)
+- **Response:** `quote` (BBCode).
 
 ### `likeConversationMessage` / `unlikeConversationMessage`
 
 - **Auth:** `required`
-- **Params:** `messageId` (string, required)
+- **Description:** As `likePost` / `unlikePost`, for a direct message.
+- **Params:** `messageId` (string, required); for like, `reactionId` (int, optional, default 1).
+

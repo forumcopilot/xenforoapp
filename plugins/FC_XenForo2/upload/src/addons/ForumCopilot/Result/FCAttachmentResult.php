@@ -105,13 +105,20 @@ class FCTapatalkImageUploadResult extends FCResult
     public $imageUrl;
     public $imageId;
     public $thumbnailUrl;
+    // What the SDK's uploadAvatar reads
+    public $attachmentId;
+    public $fileName;
+    public $fileSize;
 
-    public function __construct($result = true, $resultText = 'success', $imageUrl = null, $imageId = null, $thumbnailUrl = null)
+    public function __construct($result = true, $resultText = 'success', $imageUrl = null, $imageId = null, $thumbnailUrl = null, $attachmentId = null, $fileName = null, $fileSize = null)
     {
         parent::__construct($result, $resultText);
         $this->imageUrl = $imageUrl;
         $this->imageId = $imageId;
         $this->thumbnailUrl = $thumbnailUrl;
+        $this->attachmentId = $attachmentId;
+        $this->fileName = $fileName;
+        $this->fileSize = $fileSize;
     }
 
     public function toArray()
@@ -120,6 +127,9 @@ class FCTapatalkImageUploadResult extends FCResult
         if ($this->imageUrl !== null) $data['imageUrl'] = $this->imageUrl;
         if ($this->imageId !== null) $data['imageId'] = $this->imageId;
         if ($this->thumbnailUrl !== null) $data['thumbnailUrl'] = $this->thumbnailUrl;
+        if ($this->attachmentId !== null) $data['attachmentId'] = $this->attachmentId;
+        if ($this->fileName !== null) $data['fileName'] = $this->fileName;
+        if ($this->fileSize !== null) $data['fileSize'] = $this->fileSize;
         return $data;
     }
 }

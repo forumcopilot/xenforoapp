@@ -29,6 +29,11 @@ class AttachmentController extends AbstractController
         $attachmentName = $params->get('attachmentName', '');
         // Accept both attachmentData and attachmentBytes for compatibility
         $attachmentData = $params->get('attachmentData', $params->get('attachmentBytes', ''));
+        // Optional, for posts: the post being edited or the thread being
+        // replied to. XenForo's editor uploads in that context, so the
+        // per-message attachment limit counts the post's own files too.
+        $postId = (int)$params->get('postId', 0);
+        $threadId = (int)$params->get('threadId', 0);
 
         // Validate required fields
         // Empty ID is allowed for conversation_message attachments (drafts), but required for other types
@@ -36,28 +41,28 @@ class AttachmentController extends AbstractController
         if (empty($type) || empty($attachmentName) || empty($attachmentData)) {
             return $this->apiError('Type, attachment name, and data are required', null, ErrorCode::VALIDATION);
         }
-        if (!$isConversationType && empty($id)) {
+        if (!$isConversationType && empty($id) && !$postId && !$threadId) {
             return $this->apiError('ID is required for ' . $type . ' attachments', null, ErrorCode::BAD_REQUEST);
         }
 
+        // An upload hash is at most 32 characters (XenForo's
+        // AttachmentController::actionUpload); ours and XenForo's are md5 hex
+        $groupId = is_string($groupId) ? trim($groupId) : '';
+        if ($groupId !== '' && !preg_match('/^[a-zA-Z0-9]{1,32}$/', $groupId)) {
+            return $this->apiError('Invalid groupId', null, ErrorCode::BAD_REQUEST);
+        }
+
         try {
-            $visitor = \XF::visitor();
-            
             // Decode base64 data
             $fileData = base64_decode($attachmentData);
             if ($fileData === false) {
                 return $this->apiError('Invalid attachment data', null, ErrorCode::VALIDATION);
             }
 
-            // Create temporary file with proper extension
-            $extension = strtolower(pathinfo($attachmentName, PATHINFO_EXTENSION));
-            $tempFile = tempnam(sys_get_temp_dir(), 'fc_upload_') . '.' . $extension;
-            file_put_contents($tempFile, $fileData);
-
             // Determine content type and context
             $contentType = 'post';
             $contentData = [];
-            if ($type === 'pm' || $type === 'conversation_message') {
+            if ($isConversationType) {
                 $contentType = 'conversation_message';
                 // Set conversation_id for conversation_message attachments
                 // The handler requires conversation_id in contentData for permission checks
@@ -65,59 +70,53 @@ class AttachmentController extends AbstractController
                 if (!empty($id)) {
                     $contentData['conversation_id'] = (int)$id;
                 }
+            } elseif ($postId) {
+                // An edit: the handler checks the member may view and edit
+                // the post (Attachment\PostHandler::getForumFromContext)
+                $contentData['post_id'] = $postId;
+            } elseif ($threadId) {
+                $contentData['thread_id'] = $threadId;
             } else {
-                // For forum posts
-                $contentData['node_id'] = $id;
+                // A new thread, or a reply from an app that sends only the forum
+                $contentData['node_id'] = (int)$id;
             }
 
             // Get attachment handler and manipulator (like Tapatalk does)
             $attachmentRepo = $this->repository('XF:Attachment');
             $handler = $attachmentRepo->getAttachmentHandler($contentType);
             if (!$handler) {
-                unlink($tempFile);
                 return $this->apiError('Invalid content type', null, ErrorCode::BAD_REQUEST);
             }
 
             if (!$handler->canManageAttachments($contentData, $error)) {
-                unlink($tempFile);
-                return $this->apiError('Cannot manage attachments: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
-            // Generate or use provided hash
-            if (empty($groupId)) {
-                $hash = md5(uniqid('', true));
-            } else {
-                $hash = $groupId;
-            }
+            // A new upload hash the way XenForo makes one
+            // (AttachmentRepository::getEditorData)
+            $hash = $groupId !== '' ? $groupId : md5(microtime(true) . \XF::generateRandomString(8, true));
 
-            // Create XF\Http\Upload object from temp file
-            $uploadFile = [
-                'tmp_name' => $tempFile,
-                'name' => $attachmentName,
-                'error' => UPLOAD_ERR_OK,
-                'size' => filesize($tempFile),
-                'type' => mime_content_type($tempFile),
-            ];
-            $upload = new Upload($tempFile, $attachmentName, UPLOAD_ERR_OK);
+            // XenForo's own temporary file, removed at the end of the request.
+            // The member's file name only names the upload (its extension is
+            // checked against the forum's allowed types); it is never part of
+            // a path.
+            $tempFile = \XF\Util\File::getTempFile();
+            file_put_contents($tempFile, $fileData);
+            $fileName = basename(str_replace('\\', '/', (string)$attachmentName));
+            $upload = new Upload($tempFile, $fileName, UPLOAD_ERR_OK);
 
-            // Use Attachment Manipulator (like Tapatalk does)
-            $manipulator = new \XF\Attachment\Manipulator($handler, $attachmentRepo, $contentData, $hash);
-            
+            // XenForo's Attachment Manipulator, as its upload page creates it
+            $class = \XF::extendClass('XF\Attachment\Manipulator');
+            $manipulator = new $class($handler, $attachmentRepo, $contentData, $hash);
+
             if (!$manipulator->canUpload($uploadError)) {
-                unlink($tempFile);
-                return $this->apiError('Cannot upload: ' . ($uploadError ? $uploadError : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($uploadError ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Insert attachment from upload
             $attachment = $manipulator->insertAttachmentFromUpload($upload, $error);
             if (!$attachment) {
-                unlink($tempFile);
-                return $this->apiError('Failed to upload attachment: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
-            }
-
-            // Clean up temp file (manipulator should have moved it)
-            if (file_exists($tempFile)) {
-                unlink($tempFile);
+                return $this->apiError($error ?: \XF::phrase('something_went_wrong_please_try_again'), null, ErrorCode::VALIDATION);
             }
 
             $result = new FCAttachmentUploadResult(
@@ -132,10 +131,6 @@ class AttachmentController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            // Clean up temp file if it exists
-            if (isset($tempFile) && file_exists($tempFile)) {
-                @unlink($tempFile);
-            }
             return $this->apiException($e, 'Failed to upload attachment');
         }
     }
@@ -168,6 +163,10 @@ class AttachmentController extends AbstractController
                 }
                 if ($attachment->temp_hash !== $groupId) {
                     return $this->apiError('Invalid hash', null, ErrorCode::VALIDATION);
+                }
+                // and only the member's own upload
+                if (!$attachment->Data || $attachment->Data->user_id != \XF::visitor()->user_id) {
+                    return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
                 }
             } else {
                 // This is an existing attachment - check view permission only (no hash needed)
@@ -234,7 +233,7 @@ class AttachmentController extends AbstractController
             $visitor = \XF::visitor();
             
             if (!$visitor->canUploadAvatar()) {
-                return $this->apiError('Cannot upload avatar', null, ErrorCode::NO_PERMISSION);
+                return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Decode base64 data
@@ -243,53 +242,45 @@ class AttachmentController extends AbstractController
                 return $this->apiError('Invalid image data', null, ErrorCode::VALIDATION);
             }
 
-            // XenForo's own temporary file; the avatar service reads the image
-            // type from the contents and the extension from the upload's name
+            // XenForo's own temporary file, removed at the end of the request;
+            // the avatar service reads the image type from the contents and the
+            // extension from the upload's name
             $tempFile = \XF\Util\File::getTempFile();
             file_put_contents($tempFile, $fileData);
 
-            // Use XenForo's Avatar service (like Tapatalk does)
-            // The service will validate the image internally
+            // Use XenForo's Avatar service, as AccountController::actionAvatar
             /** @var \XF\Service\User\Avatar $avatarService */
             $avatarService = $this->service('XF:User\Avatar', $visitor);
 
             // Create XF\Http\Upload object from temp file
             $upload = new Upload($tempFile, 'avatar.' . $imageExtension, UPLOAD_ERR_OK);
 
-            // Set image from upload
+            // Set image from upload: XenForo's message when it isn't a usable image
             if (!$avatarService->setImageFromUpload($upload)) {
-                unlink($tempFile);
-                return $this->apiError('Failed to process image: ' . ($avatarService->getError() ?: 'Unknown error'), null, ErrorCode::VALIDATION);
+                return $this->apiError($avatarService->getError() ?: \XF::phrase('uploaded_file_must_be_valid_image'), null, ErrorCode::VALIDATION);
             }
 
-            // Update avatar
             if (!$avatarService->updateAvatar()) {
-                unlink($tempFile);
-                return $this->apiError('Failed to update avatar', null, ErrorCode::VALIDATION);
+                return $this->apiError(\XF::phrase('something_went_wrong_please_try_again'), null, ErrorCode::VALIDATION);
             }
 
-            // Refresh visitor to get updated avatar info
-            $visitor = \XF::visitor();
-
-            $fileSize = filesize($tempFile);
-            unlink($tempFile);
-
+            // The new avatar: imageUrl is its full-size URL, and the fields the
+            // SDK reads (attachmentId, fileName, fileSize) are filled. imageUrl
+            // was the member's id and imageId the file name before 1.11.0.
             $result = new FCTapatalkImageUploadResult(
                 true,
                 null,
-                (string)$visitor->user_id, // Use user_id as image ID
+                $this->getAbsoluteUrl($visitor->getAvatarUrl('o', null, true)),
+                (string)$visitor->user_id,
+                $this->getAbsoluteUrl($visitor->getAvatarUrl('s', null, true)),
+                (string)$visitor->user_id,
                 'avatar.' . $imageExtension,
-                '',
-                $fileSize
+                strlen($fileData)
             );
 
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            // Clean up temp file if it exists
-            if (isset($tempFile) && file_exists($tempFile)) {
-                @unlink($tempFile);
-            }
             return $this->apiException($e, 'Failed to upload avatar');
         }
     }

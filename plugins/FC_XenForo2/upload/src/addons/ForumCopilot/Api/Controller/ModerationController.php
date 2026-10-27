@@ -4,7 +4,6 @@ namespace ForumCopilot\Api\Controller;
 
 use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
-use ForumCopilot\Result\FCLoginModResult;
 use ForumCopilot\Result\FCStickTopicResult;
 use ForumCopilot\Result\FCCloseTopicResult;
 use ForumCopilot\Result\FCDeleteTopicResult;
@@ -30,43 +29,21 @@ require_once(__DIR__ . '/../../Result/FCModerationResult.php');
  */
 class ModerationController extends AbstractController
 {
+    /**
+     * Moderators sign in with login like every member: it runs XenForo's
+     * whole sign-in (two-step verification, login limits, the login log),
+     * and the moderator tools then follow the account's own permissions.
+     * This method signed in with the password alone, and no app calls it
+     * (the 1.x SDK's doLoginModAsync never reaches the server), so it now
+     * answers with a pointer to login and signs nobody in.
+     */
     public function actionDoLoginMod(ParameterBag $params)
     {
-        $username = $params->get('username', '');
-        $password = $params->get('password', '');
-
-        if (empty($username) || empty($password)) {
-            return $this->apiError('Username and password are required', null, ErrorCode::VALIDATION);
-        }
-
-        try {
-            // Use XenForo's LoginService for authentication
-            $loginService = $this->service('XF:User\Login', $username, $this->request()->getIp());
-            if ($loginService->isLoginLimited($limitType)) {
-                return $this->apiError('Account temporarily locked due to failed login attempts', null, ErrorCode::FLOOD);
-            }
-
-            // Validate password
-            $user = $loginService->validate($password, $error);
-            if (!$user) {
-                return $this->apiError($error ?: 'Invalid password', null, ErrorCode::VALIDATION);
-            }
-
-            // Check if user is a moderator
-            if (!$user->is_moderator && !$user->is_admin) {
-                return $this->apiError('User is not a moderator', null, ErrorCode::VALIDATION);
-            }
-
-            // Log the user in
-            $this->session()->changeUser($user);
-            $this->session()->save();
-
-            $result = new FCLoginModResult(true, null);
-            return $this->apiSuccess($result);
-
-        } catch (\Exception $e) {
-            return $this->apiException($e, 'Moderator login failed');
-        }
+        return $this->apiError(
+            'Moderator sign-in is not used: sign in with login. Moderator tools follow the permissions of the signed-in account.',
+            null,
+            ErrorCode::BAD_REQUEST
+        );
     }
 
     public function actionStickTopic(ParameterBag $params)

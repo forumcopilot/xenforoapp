@@ -91,10 +91,16 @@ class FCRawPostResult extends FCResult
     public $requirePrefix;
     public $prefixes;
     public $attachments;
+    /** @var string|null the forum new uploads go to */
+    public $forumId;
+    /** @var array|null upload hash, context and limits for new uploads */
+    public $attachmentData;
 
-    public function __construct($result = true, $resultText = 'success', $postContent = null, $postTitle = null, $canEditTitle = false, $prefixId = null, $requirePrefix = false, $prefixes = [], $attachments = [])
+    public function __construct($result = true, $resultText = 'success', $postContent = null, $postTitle = null, $canEditTitle = false, $prefixId = null, $requirePrefix = false, $prefixes = [], $attachments = [], $forumId = null, $attachmentData = null)
     {
         parent::__construct($result, $resultText);
+        $this->forumId = $forumId;
+        $this->attachmentData = $attachmentData;
         $this->postContent = $postContent;
         $this->postTitle = $postTitle;
         $this->canEditTitle = $canEditTitle;
@@ -132,6 +138,8 @@ class FCRawPostResult extends FCResult
             }
         }
         $data['attachments'] = $attachmentsArray;
+        if ($this->forumId !== null) $data['forumId'] = $this->forumId;
+        if ($this->attachmentData !== null) $data['attachmentData'] = $this->attachmentData;
         return $data;
     }
 }

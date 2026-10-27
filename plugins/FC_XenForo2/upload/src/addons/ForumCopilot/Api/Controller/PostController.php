@@ -1064,24 +1064,13 @@ class PostController extends AbstractController
         }
 
         try {
-            // Use basic finder to avoid add-on conflicts
-            $post = $this->em()->find('XF:Post', (int)$postId);
-            
-            if (!$post) {
-                return $this->apiError('Post not found', null, ErrorCode::NOT_FOUND);
-            }
+            // XenForo's not-found and no-permission messages
+            $post = $this->assertViewablePost((int)$postId);
 
-            $visitor = \XF::visitor();
-
-            // Check if post is viewable
-            $error = null;
-            if (!$post->canView($error)) {
-                return $this->apiError('Cannot view this post', null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Check edit permission - use canEdit() which exists in base Post entity
-            if (!$post->canEdit()) {
-                return $this->apiError('Cannot edit this post', null, ErrorCode::NO_PERMISSION);
+            // As PostController::actionEdit: XenForo's reason (edit time
+            // limit passed, thread closed, ...)
+            if (!$post->canEdit($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Safely get thread title, prefix information
@@ -1158,6 +1147,28 @@ class PostController extends AbstractController
             // Load and convert attachments
             $attachments = $this->getPostAttachments($post);
 
+            // The forum new uploads go to, and XenForo's upload data for the
+            // edit form (PostController::actionEdit): a fresh upload hash and
+            // the size, type and count limits. Only where the member may
+            // attach files, as on the website.
+            $forumId = $post->Thread ? (string)$post->Thread->node_id : null;
+            $attachmentData = null;
+            try {
+                $forum = $post->Thread ? $post->Thread->Forum : null;
+                if ($forum && $forum->canUploadAndManageAttachments()) {
+                    $editorData = $this->repository('XF:Attachment')->getEditorData('post', $post);
+                    $attachmentData = [
+                        'type' => $editorData['type'],
+                        'hash' => $editorData['hash'],
+                        'context' => (object)$editorData['context'],
+                        'constraints' => (object)$editorData['constraints'],
+                    ];
+                }
+            } catch (\Exception $e) {
+                // Optional data: the edit form works without it
+                \XF::logException($e, false, 'ForumCopilot: post editor data failed: ');
+            }
+
             $result = new FCRawPostResult(
                 true,
                 null,
@@ -1167,7 +1178,9 @@ class PostController extends AbstractController
                 $prefixId,
                 $requirePrefix,
                 $availablePrefixes,
-                $attachments
+                $attachments,
+                $forumId,
+                $attachmentData
             );
 
             return $this->apiSuccess($result);

@@ -882,75 +882,19 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Get the position (floor number) of a post in a thread
-     * Position is 1-based: first post is #1, first reply is #2, etc.
-     * 
-     * Tries to get position directly from XenForo's Post entity (which stores it in the database),
-     * otherwise calculates it by counting visible posts.
-     * 
+     * The position (floor number) of a post in its thread, 1-based: first
+     * post is #1, first reply is #2, etc.
+     *
+     * XenForo keeps it in the post's position column, 0-based, counting
+     * visible posts; a moderated or deleted post shares the number of the
+     * visible post before it.
+     *
      * @param \XF\Entity\Post $post The post entity
      * @return int The position of the post in the thread (1-based)
      */
     protected function getPostPosition($post)
     {
-        try {
-            // XenForo stores position in the xf_post table as 0-based (first post = 0, second post = 1, etc.)
-            // But the API should return 1-based positions (first post = 1, second post = 2, etc.)
-            // So we need to add 1 to the position value
-            
-            // Method 1: Direct property access (most common in XenForo entities)
-            if (property_exists($post, 'position') && isset($post->position) && is_numeric($post->position)) {
-                // XenForo uses 0-based positions, convert to 1-based for API
-                return (int)$post->position + 1;
-            }
-            
-            // Method 2: Try accessing via getValue() method (XenForo entity method)
-            if (method_exists($post, 'getValue')) {
-                try {
-                    $position = $post->getValue('position');
-                    if ($position !== null && is_numeric($position)) {
-                        // XenForo uses 0-based positions, convert to 1-based for API
-                        return (int)$position + 1;
-                    }
-                } catch (\Exception $e) {
-                    // getValue might throw if field doesn't exist
-                }
-            }
-            
-            // Method 3: Try to get from entity's getter (if exists)
-            if (method_exists($post, 'getPosition')) {
-                $position = $post->getPosition();
-                if ($position !== null && is_numeric($position)) {
-                    // XenForo uses 0-based positions, convert to 1-based for API
-                    return (int)$position + 1;
-                }
-            }
-            
-            // Method 4: Try to reload post with position field explicitly selected
-            try {
-                $reloadedPost = $this->em()->find('XF:Post', $post->post_id, ['position']);
-                if ($reloadedPost && isset($reloadedPost->position) && is_numeric($reloadedPost->position)) {
-                    // XenForo uses 0-based positions, convert to 1-based for API
-                    return (int)$reloadedPost->position + 1;
-                }
-            } catch (\Exception $e) {
-                // Reload might fail, continue to calculation
-            }
-            
-            // If position is not directly available from the entity, calculate it
-            // Count all visible posts that come before or at the same time as this post
-            $positionFinder = $this->finder('XF:Post');
-            $positionFinder->where('thread_id', $post->thread_id);
-            $positionFinder->where('message_state', 'visible');
-            $positionFinder->where('post_date', '<=', $post->post_date);
-            $positionFinder->order('post_date', 'ASC');
-            
-            // The total() method returns the count, which is already 1-based (first post = 1)
-            return $positionFinder->total();
-        } catch (\Exception $e) {
-            // If calculation fails, return 1 as fallback (first post)
-            return 1;
-        }
+        return (int)$post->position + 1;
     }
 
     /**

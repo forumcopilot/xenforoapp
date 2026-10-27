@@ -26,6 +26,12 @@ require_once(__DIR__ . '/../../Result/FCPostResult.php');
  */
 class PostController extends AbstractController
 {
+    /**
+     * Most posts one thread call returns. XenForo's own page is
+     * messagesPerPage (20 by default); the app asks for 20.
+     */
+    const MAX_POSTS_PER_REQUEST = 100;
+
     public function actionGetThread(ParameterBag $params)
     {
         // Convert XenForo ParameterBag to forum-agnostic parameter class
@@ -40,8 +46,9 @@ class PostController extends AbstractController
         try {
             $thread = $this->assertViewableThread($fcParams->topicId);
 
-            $startNum = (int)$fcParams->startNum;
-            $perPage = (int)$fcParams->lastNum - $startNum + 1;
+            // 1-based range, at most MAX_POSTS_PER_REQUEST posts
+            $startNum = max(1, (int)$fcParams->startNum);
+            $perPage = $this->clampPostsPerRequest((int)$fcParams->lastNum - $startNum + 1);
             [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $perPage);
 
             $result = new FCThreadResult(
@@ -64,28 +71,25 @@ class PostController extends AbstractController
     public function actionGetThreadByPost(ParameterBag $params)
     {
         $postId = $params->get('postId', '');
-        $postsPerRequest = $params->get('postsPerRequest', 20);
+        $postsPerRequest = $this->clampPostsPerRequest($params->get('postsPerRequest', 20));
 
         if (empty($postId)) {
             return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
-            $post = $this->assertViewablePost($postId);
+            $post = $this->assertViewablePost((int)$postId);
             $thread = $post->Thread;
             if (!$thread) {
-                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_thread_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
-            // Calculate position and get surrounding posts
-            // Get position by counting posts before this one
-            $positionFinder = $this->finder('XF:Post');
-            $positionFinder->where('thread_id', $thread->thread_id);
-            $positionFinder->where('message_state', 'visible');
-            $positionFinder->where('post_date', '<=', $post->post_date);
-            $position = $positionFinder->total();
-
-            $startNum = max(1, $position - floor($postsPerRequest / 2));
+            // The anchor's number in the thread, from XenForo's position
+            // column (as ThreadPlugin::getPostLink finds its page); a hidden
+            // post shares the number of the visible post before it. The page
+            // has the anchor in the middle.
+            $position = $this->getPostPosition($post);
+            $startNum = max(1, $position - (int)floor($postsPerRequest / 2));
             [$posts, $total] = $this->fetchThreadPostsPage($thread, $startNum, $postsPerRequest);
 
             $topicData = $this->buildThreadTopicData($thread);
@@ -115,7 +119,7 @@ class PostController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicId = $params->get('topicId', '');
-        $postsPerRequest = $params->get('postsPerRequest', 20);
+        $postsPerRequest = $this->clampPostsPerRequest($params->get('postsPerRequest', 20));
 
         if (empty($topicId)) {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
@@ -141,7 +145,8 @@ class PostController extends AbstractController
                 $isFullyRead = ($readDate >= (int)$thread->last_post_date);
             }
 
-            // Find first unread post using basic finder to avoid add-on conflicts
+            // The first unread post, in XenForo's order for it
+            // (PostRepository::findNextPostsInThread)
             $firstUnreadPost = null;
             if (!$isFullyRead) {
                 // Only search for unread posts if thread is not fully read
@@ -149,8 +154,7 @@ class PostController extends AbstractController
                 $finder->where('thread_id', $thread->thread_id);
                 $finder->where('message_state', 'visible');
                 $finder->where('post_date', '>', $readDate);
-                $finder->order('post_date', 'ASC');
-                $finder->limit(1);
+                $finder->order([['post_date', 'ASC'], ['post_id', 'ASC']]);
 
                 $firstUnreadPost = $finder->fetchOne();
             }
@@ -160,12 +164,8 @@ class PostController extends AbstractController
             $startNum = 1;
 
             if ($firstUnreadPost) {
-                // Get position of first unread post
-                $positionFinder = $this->finder('XF:Post');
-                $positionFinder->where('thread_id', $thread->thread_id);
-                $positionFinder->where('message_state', 'visible');
-                $positionFinder->where('post_date', '<=', $firstUnreadPost->post_date);
-                $position = $positionFinder->total();
+                // Its number in the thread, from XenForo's position column
+                $position = $this->getPostPosition($firstUnreadPost);
 
                 // Return the full page that contains the first unread post
                 // (page 1 = posts 1-20, page 2 = posts 21-40, etc.)
@@ -225,7 +225,9 @@ class PostController extends AbstractController
         $finder = $this->finder('XF:Post');
         $finder->where('thread_id', $thread->thread_id);
         $finder->where('message_state', 'visible');
-        $finder->order('post_date', 'ASC');
+        // XenForo's thread order (PostFinder::orderByDate), with the id last
+        // so posts made in the same second keep their place across pages
+        $finder->order([['position', 'ASC'], ['post_date', 'ASC'], ['post_id', 'ASC']]);
 
         // Load Thread relationship with Forum for proper permission checks (needed for canEdit/canDelete)
         $finder->with(['Thread', 'Thread.Forum', 'Thread.Forum.Node']);
@@ -940,6 +942,14 @@ class PostController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Failed to report post');
         }
+    }
+
+    /**
+     * Posts per thread call: a number from 1 to MAX_POSTS_PER_REQUEST.
+     */
+    protected function clampPostsPerRequest($perPage): int
+    {
+        return max(1, min(self::MAX_POSTS_PER_REQUEST, (int)$perPage));
     }
 
     /**

@@ -544,7 +544,7 @@ class PostController extends AbstractController
             'replyCount' => $thread->reply_count,
             'viewCount' => $thread->view_count,
             'hasNewPosts' => $thread->isUnread(),
-            'isClosed' => $thread->discussion_state === 'closed',
+            'isClosed' => !$thread->discussion_open,
             'isSubscribed' => $thread->isWatched(),
             'canSubscribe' => $thread->canWatch(),
             'url' => $this->buildLink('canonical:threads', $thread),

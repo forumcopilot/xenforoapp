@@ -554,6 +554,14 @@ class TopicController extends AbstractController
      * check, validation, the flood check, then the follow-ups of
      * finalizeThreadCreate (notifications, watching, read marking, the
      * forum's draft, the pending-approval flag).
+     *
+     * Optional params (1.11.0), as the website's form has them: tags (list
+     * or comma-separated), customFields (field id => value), threadType
+     * (one of the forum's threadTypes from getForum), and for a poll
+     * isPoll or threadType "poll" with pollQuestion, pollOptions,
+     * pollMaxVotes (0 = unlimited, default 1), pollChangeVote,
+     * pollPublicVotes, pollViewResultsUnvoted (default true) and
+     * pollCloseDays (0 = never). getForum says what each forum requires.
      */
     public function actionNewTopic(ParameterBag $params)
     {
@@ -630,12 +638,37 @@ class TopicController extends AbstractController
     protected function setupThreadCreate(\XF\Entity\Forum $forum, $fcParams, &$attachmentsIgnored = false)
     {
         $creator = $this->service('XF:Thread\Creator', $forum);
+
+        // Thread type first, as XenForo does. Empty = the forum's default
+        // type; one the forum doesn't offer is a validation error
+        // ("Please select a valid thread type"), never a silent fallback.
+        // The poll's input is handed over the way XenForo's poll form
+        // sends it (poll[question], poll[new_responses]...).
+        $typeRequest = new \XF\Http\Request(
+            $this->app->container('inputFilterer'),
+            $fcParams->wantsPoll() ? ['poll' => $fcParams->getPollFormInput()] : []
+        );
+        if (method_exists($creator, 'setDiscussionTypeAndDataForApi')) {
+            $creator->setDiscussionTypeAndDataForApi($fcParams->getThreadType(), $typeRequest);
+        } else {
+            $creator->setDiscussionTypeAndData($fcParams->getThreadType(), $typeRequest);
+        }
+
         $creator->setContent((string)$fcParams->title, (string)$fcParams->textBody);
 
         $prefixId = (int)$fcParams->prefixId;
         if ($prefixId && $forum->isPrefixUsable($prefixId)) {
             $creator->setPrefix($prefixId);
         }
+
+        if ($forum->canEditTags()) {
+            // XenForo checks the forum's minimum number of tags on validate
+            $creator->setTags($fcParams->getTags());
+        }
+
+        // Always, as XenForo does: required thread fields are checked here
+        // even when the app sends none.
+        $creator->setCustomFields(is_array($fcParams->customFields) ? $fcParams->customFields : []);
 
         $attachmentHash = $fcParams->groupId !== null ? (string)$fcParams->groupId : '';
         if ($attachmentHash !== '') {

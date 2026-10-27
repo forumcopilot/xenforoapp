@@ -116,6 +116,15 @@ class XenForoParamAdapter
             'isPoll' => $params->get('isPoll', false),
             'pollQuestion' => $params->get('pollQuestion', null),
             'pollOptions' => $params->get('pollOptions', []),
+            // 1.11.0: what XenForo's "Post thread" form also takes
+            'tags' => $params->get('tags', null),
+            'customFields' => $params->get('customFields', null),
+            'threadType' => $params->get('threadType', ''),
+            'pollMaxVotes' => $params->get('pollMaxVotes', null),
+            'pollChangeVote' => $params->get('pollChangeVote', null),
+            'pollPublicVotes' => $params->get('pollPublicVotes', null),
+            'pollViewResultsUnvoted' => $params->get('pollViewResultsUnvoted', null),
+            'pollCloseDays' => $params->get('pollCloseDays', null),
         ]);
     }
 

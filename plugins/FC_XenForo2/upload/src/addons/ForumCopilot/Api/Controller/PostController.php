@@ -176,7 +176,7 @@ class PostController extends AbstractController
 
                 // Return the full page that contains the first unread post
                 // (page 1 = posts 1-20, page 2 = posts 21-40, etc.)
-                $page = ceil($position / $postsPerRequest);
+                $page = (int)ceil($position / $postsPerRequest);
                 $startNum = ($page - 1) * $postsPerRequest + 1;
             } else {
                 // No unread posts - user has read everything

@@ -619,6 +619,8 @@ class TopicController extends AbstractController
             $thread = $creator->save();
             $creator->sendNotifications();
 
+            $this->autoWatchThread($thread, true);
+
             $this->repository('XF:Thread')->markThreadReadByVisitor($thread, $thread->post_date);
 
             $result = new FCNewTopicResult(

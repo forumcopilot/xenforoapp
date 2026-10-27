@@ -1607,6 +1607,26 @@ abstract class AbstractController extends Controller
     }
 
     /**
+     * MIME type of an attachment from its file extension, for the app to pick
+     * a viewer. Empty when unknown.
+     */
+    protected function mimeTypeForExtension($extension): string
+    {
+        $map = [
+            'txt' => 'text/plain', 'csv' => 'text/csv', 'pdf' => 'application/pdf',
+            'zip' => 'application/zip', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'jpe' => 'image/jpeg',
+            'png' => 'image/png', 'gif' => 'image/gif', 'webp' => 'image/webp', 'heic' => 'image/heic',
+            'svg' => 'image/svg+xml', 'mp4' => 'video/mp4', 'm4v' => 'video/mp4', 'mov' => 'video/quicktime',
+            'webm' => 'video/webm', 'mp3' => 'audio/mpeg', 'm4a' => 'audio/mp4', 'ogg' => 'audio/ogg',
+            'wav' => 'audio/wav', 'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        return $map[strtolower((string)$extension)] ?? '';
+    }
+
+    /**
      * Get attachments for a conversation message
      * Returns array of FCAttachment objects with inline status
      * 
@@ -1617,13 +1637,13 @@ abstract class AbstractController extends Controller
     {
         $attachments = [];
         
+        if (!$message->attach_count) {
+            return $attachments;
+        }
+
         try {
-            // Query attachments for this message
-            $attachmentFinder = $this->finder('XF:Attachment');
-            $attachmentFinder->where('content_type', 'conversation_message');
-            $attachmentFinder->where('content_id', $message->message_id);
-            $attachmentFinder->with('Data');
-            $messageAttachments = $attachmentFinder->fetch();
+            // Usually filled for the whole page by addAttachmentsToContent
+            $messageAttachments = $message->Attachments;
             
             if (!$messageAttachments || $messageAttachments->count() == 0) {
                 return $attachments;
@@ -1655,32 +1675,17 @@ abstract class AbstractController extends Controller
                     $height = (int)$data->height;
                 }
                 
-                // Get MIME type from extension (same mapping as posts)
-                $mimeType = '';
-                try {
-                    $extension = strtolower($data->extension ?? '');
-                    $mimeMap = [
-                        'txt' => 'text/plain',
-                        'jpg' => 'image/jpeg',
-                        'jpeg' => 'image/jpeg',
-                        'png' => 'image/png',
-                        'gif' => 'image/gif',
-                        'pdf' => 'application/pdf',
-                        'zip' => 'application/zip',
-                    ];
-                    $mimeType = $mimeMap[$extension] ?? '';
-                } catch (\Exception $e) {
-                    // If MIME type detection fails, leave empty
-                }
+                $mimeType = $this->mimeTypeForExtension($data->extension);
                 
                 // Get attachment URL (only if user can view full attachment)
                 // Use getDirectUrl() which returns direct file URL when available, or route URL as fallback
                 $url = '';
                 if ($canView) {
                     try {
-                        // getDirectUrl() returns direct file URL for videos/audio, or attachment route URL for others
-                        $directUrl = $attachment->getDirectUrl(true);
-                        $url = $this->getAbsoluteUrl($directUrl);
+                        // getDirectUrl() (XenForo 2.3) returns direct file URL for videos/audio, or attachment route URL for others
+                        $url = method_exists($attachment, 'getDirectUrl')
+                            ? $this->getAbsoluteUrl($attachment->getDirectUrl(true))
+                            : $this->buildLink('canonical:attachments', $attachment);
                     } catch (\Exception $e) {
                         // If URL building fails, try alternative method
                         try {

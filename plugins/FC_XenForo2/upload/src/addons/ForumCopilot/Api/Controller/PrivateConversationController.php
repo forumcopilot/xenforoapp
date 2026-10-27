@@ -179,8 +179,8 @@ class PrivateConversationController extends AbstractController
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
-        $startNum = $params->get('startNum', 0);
-        $lastNum = $params->get('lastNum', 19);
+        $startNum = (int)$params->get('startNum', 0);
+        $lastNum = (int)$params->get('lastNum', 19);
 
         try {
             $visitor = \XF::visitor();
@@ -197,13 +197,14 @@ class PrivateConversationController extends AbstractController
             // as 1-based, so startNum 20 gave page 1 again. floor() + 1 gives
             // the right page for 0-based ranges and for 1-based ones (1-20,
             // 21-40), which newer apps send to cope with older add-ons.
-            $perPage = max(1, $lastNum - $startNum + 1);
-            $page = (int)floor($startNum / $perPage) + 1;
+            $perPage = $this->clampPerPage($lastNum - $startNum + 1);
+            $page = (int)floor(max(0, $startNum) / $perPage) + 1;
             $finder->limitByPage($page, $perPage);
             
             // Fetch ConversationUser entities (not ConversationMaster directly)
             $userConvs = $finder->fetch();
             $total = $finder->total();
+            $unreadInfo = $this->getUnreadMessageInfo($userConvs);
             
             // Process ConversationUser entities (which have unread status and are already ordered)
             $conversationList = [];
@@ -217,114 +218,50 @@ class PrivateConversationController extends AbstractController
                     // ConversationUser entity has is_unread property directly
                     $isUnread = (bool)$userConv->is_unread;
                     
-                    // Check permissions safely
-                    $canReply = false;
+                    $canReply = $conversation->canReply();
+                    // XenForo has no deleting a conversation, only leaving it
                     $canDelete = false;
-                    $canInvite = false;
-                    $canEdit = false;
-                    $canClose = false;
-                    $isClosed = false;
-                    if (method_exists($conversation, 'canReply')) {
-                        $canReply = $conversation->canReply();
-                    }
-                    if (method_exists($conversation, 'canDelete')) {
-                        $canDelete = $conversation->canDelete();
-                    }
-                    if (method_exists($conversation, 'canInvite')) {
-                        $canInvite = $conversation->canInvite();
-                    }
-                    if (method_exists($conversation, 'canEdit')) {
-                        $canEdit = $conversation->canEdit();
-                    }
-                    // canClose is the same as canEdit - only the creator can close/reopen conversations
+                    $canInvite = $conversation->canInvite();
+                    // Only the starter can edit, close or reopen a conversation
+                    $canEdit = $conversation->canEdit();
                     $canClose = $canEdit;
-                    // isClosed is true when conversation_open is false
                     $isClosed = !$conversation->conversation_open;
                     
-                    // Get conversation starter info
-                    $startUserId = '';
-                    $startUsername = '';
-                    $startUserIconUrl = '';
-                    try {
-                        // Use 'Starter' relation (not 'User') - this is the correct relation name in ConversationMaster
-                        if ($conversation->Starter) {
-                            $startUserId = (string)$conversation->user_id;
-                            $startUsername = $conversation->Starter->username;
-                            $startUserIconUrl = $this->getAbsoluteUrl($conversation->Starter->getAvatarUrl('s'));
-                        } elseif ($conversation->user_id) {
-                            // Fallback: load user if not already loaded
-                            $starterUser = $this->em()->find('XF:User', $conversation->user_id);
-                            if ($starterUser) {
-                                $startUserId = (string)$conversation->user_id;
-                                $startUsername = $starterUser->username;
-                                $startUserIconUrl = $this->getAbsoluteUrl($starterUser->getAvatarUrl('s'));
-                            }
+                    // Conversation starter; the master keeps the name when the
+                    // account has gone
+                    $startUserId = $conversation->user_id ? (string)$conversation->user_id : '';
+                    $startUsername = $conversation->Starter ? $conversation->Starter->username : (string)$conversation->username;
+                    $startUserIconUrl = $conversation->Starter
+                        ? $this->getAbsoluteUrl($conversation->Starter->getAvatarUrl('s'))
+                        : '';
+                    
+                    // Last message author
+                    $lastMessageAuthorId = $conversation->last_message_user_id ? (string)$conversation->last_message_user_id : '';
+                    $lastMessageAuthorIconUrl = $conversation->LastMessageUser
+                        ? $this->getAbsoluteUrl($conversation->LastMessageUser->getAvatarUrl('s'))
+                        : '';
+                    
+                    $participantCount = (int)$conversation->recipient_count;
+
+                    // Everyone but the starter, from the list XenForo keeps on
+                    // the conversation itself (no extra query)
+                    $participants = [];
+                    foreach ((array)$conversation->recipients as $recipient) {
+                        if (!empty($recipient['user_id']) && $recipient['user_id'] != $conversation->user_id) {
+                            $participants[] = [
+                                'id' => (string)$recipient['user_id'],
+                                'username' => (string)($recipient['username'] ?? ''),
+                            ];
                         }
-                    } catch (\Exception $e) {
-                        // If user loading fails, continue without starter info
                     }
                     
-                    // Get last message author info
-                    $lastMessageAuthorId = '';
-                    $lastMessageAuthorIconUrl = '';
-                    try {
-                        if ($conversation->LastMessageUser) {
-                            $lastMessageAuthorId = (string)$conversation->last_message_user_id;
-                            $lastMessageAuthorIconUrl = $this->getAbsoluteUrl($conversation->LastMessageUser->getAvatarUrl('s'));
-                        } elseif ($conversation->last_message_user_id) {
-                            // Fallback: load user if not already loaded
-                            $lastMessageUser = $this->em()->find('XF:User', $conversation->last_message_user_id);
-                            if ($lastMessageUser) {
-                                $lastMessageAuthorId = (string)$conversation->last_message_user_id;
-                                $lastMessageAuthorIconUrl = $this->getAbsoluteUrl($lastMessageUser->getAvatarUrl('s'));
-                            }
-                        }
-                    } catch (\Exception $e) {
-                        // If user loading fails, continue without last message author info
-                    }
-                    
-                    // Get participant count (count active recipients)
-                    $participantCount = 0;
-                    try {
-                        if (isset($conversation->recipient_count)) {
-                            $participantCount = (int)$conversation->recipient_count;
-                        } else {
-                            // Fallback: count recipients manually
-                            $recipientFinder = $this->finder('XF:ConversationRecipient');
-                            $recipientFinder->where('conversation_id', $conversation->conversation_id);
-                            $recipientFinder->where('recipient_state', 'active');
-                            $participantCount = $recipientFinder->total();
-                        }
-                    } catch (\Exception $e) {
-                        // If counting fails, default to 0
-                        $participantCount = 0;
-                    }
-                    
-                    // Get message ID: first unread if unread, otherwise latest message
-                    // Also count unread messages if conversation is unread
+                    // Message to open: the first unread one, otherwise the latest
                     $messageId = null;
                     $unreadMessageCount = 0;
-                    
-                    if ($isUnread) {
-                        try {
-                            $messageRepo = $this->repository('XF:ConversationMessage');
-                            $firstUnreadMessage = $messageRepo->getFirstUnreadMessageInConversation($userConv);
-                            if ($firstUnreadMessage) {
-                                $messageId = (string)$firstUnreadMessage->message_id;
-                            }
-                            
-                            // Count unread messages
-                            if ($userConv->Recipient) {
-                                $lastReadDate = $userConv->Recipient->last_read_date;
-                                $unreadMessageFinder = $messageRepo->findNewestMessagesInConversation($conversation, $lastReadDate);
-                                $unreadMessageCount = $unreadMessageFinder->total();
-                            }
-                        } catch (\Exception $e) {
-                            // If lookup fails, will fall back to last message ID
-                        }
+                    if ($isUnread && isset($unreadInfo[$conversation->conversation_id])) {
+                        $messageId = (string)$unreadInfo[$conversation->conversation_id]['first_unread'];
+                        $unreadMessageCount = (int)$unreadInfo[$conversation->conversation_id]['unread'];
                     }
-                    
-                    // If no unread message found (or conversation is read), use the latest message ID
                     if ($messageId === null && $conversation->last_message_id) {
                         $messageId = (string)$conversation->last_message_id;
                     }
@@ -349,6 +286,7 @@ class PrivateConversationController extends AbstractController
                         'unreadMessageCount' => $unreadMessageCount,
                         'messageCount' => $messageCount,
                         'participantCount' => $participantCount,
+                        'participants' => $participants,
                         'canReply' => $canReply,
                         'canDelete' => $canDelete,
                         'canInvite' => $canInvite,
@@ -362,19 +300,17 @@ class PrivateConversationController extends AbstractController
                 }
             }
 
-            // Count unread conversations
-            $unreadFinder = $this->finder('XF:ConversationRecipient');
-            $unreadFinder->where('user_id', $visitor->user_id);
-            $unreadFinder->where('recipient_state', 'active');
-            $unreadFinder->where('last_read_date', '<', \XF::$time);
-            $unreadCount = $unreadFinder->total();
+            // XenForo keeps the member's unread conversation count
+            $unreadCount = (int)$visitor->conversations_unread;
             
             $result = new FCConversationsResult(
                 true,
                 null,
                 (int)$total,
-                (int)$unreadCount,
-                $visitor->canUploadAndManageAttachments(),
+                $unreadCount,
+                // Attaching files to direct messages, as the new-message form
+                // decides (ConversationMaster::canUploadAndManageAttachments)
+                (bool)$visitor->hasPermission('conversation', 'uploadAttachment'),
                 $conversationList
             );
 
@@ -385,13 +321,116 @@ class PrivateConversationController extends AbstractController
         }
     }
 
+    /**
+     * Unread messages for the unread conversations on a page, in one query:
+     * conversation id => [unread count, first unread message id].
+     *
+     * @param \XF\Mvc\Entity\AbstractCollection $userConvs ConversationUser entities
+     * @return array
+     */
+    protected function getUnreadMessageInfo($userConvs): array
+    {
+        $ids = [];
+        foreach ($userConvs as $userConv) {
+            if ($userConv->is_unread) {
+                $ids[] = (int)$userConv->conversation_id;
+            }
+        }
+        if (!$ids) {
+            return [];
+        }
+
+        return $this->app()->db()->fetchAllKeyed(
+            'SELECT m.conversation_id, COUNT(*) AS unread, MIN(m.message_id) AS first_unread
+            FROM xf_conversation_message AS m
+            INNER JOIN xf_conversation_recipient AS r
+                ON (r.conversation_id = m.conversation_id AND r.user_id = ?)
+            WHERE m.conversation_id IN (' . $this->app()->db()->quote($ids) . ')
+                AND m.message_date > r.last_read_date
+            GROUP BY m.conversation_id',
+            'conversation_id',
+            [\XF::visitor()->user_id]
+        );
+    }
+
+    /**
+     * Page size for a list request, at most 100, so one call can't ask for a
+     * whole long conversation at once. The app asks for 20.
+     */
+    protected function clampPerPage($perPage): int
+    {
+        return max(1, min(100, (int)$perPage));
+    }
+
+    /**
+     * The app's rows for a page of conversation messages. Attachments are
+     * loaded for the whole page in one query, as XenForo's conversation view
+     * does; reactions are fetched only for messages that have some; the
+     * message number comes from the page offset (messages are ordered by date,
+     * then id, which is the order getMessagePosition counts in). Alerts about
+     * the messages shown are marked read, as on the website.
+     *
+     * @param \XF\Mvc\Entity\AbstractCollection $messages
+     * @param int $lastRead the member's last read date in this conversation
+     * @param int $offset how many messages come before this page
+     * @return array
+     */
+    protected function buildConversationMessageRows($messages, $lastRead, $offset): array
+    {
+        $this->repository('XF:Attachment')->addAttachmentsToContent($messages, 'conversation_message');
+
+        $alertRepo = $this->repository('XF:UserAlert');
+        if ($messages->count() && method_exists($alertRepo, 'markUserAlertsReadForContent')) {
+            $alertRepo->markUserAlertsReadForContent('conversation_message', $messages->keys());
+        }
+
+        $rows = [];
+        $i = 0;
+        foreach ($messages as $message) {
+            $likeFlags = $this->getConversationMessageLikeFlags($message);
+            $likeCount = $this->getReactionCount($message);
+
+            $attachments = [];
+            foreach ($this->getConversationMessageAttachments($message) as $attachment) {
+                $attachments[] = $attachment instanceof \ForumCopilot\Entity\FCAttachment
+                    ? $attachment->toArray()
+                    : $attachment;
+            }
+
+            $rows[] = [
+                'id' => (string)$message->message_id,
+                'authorId' => (string)$message->user_id,
+                'authorName' => $message->User ? $message->User->username : $message->username,
+                'authorIconUrl' => $message->User ? $this->getAbsoluteUrl($message->User->getAvatarUrl('s')) : '',
+                'timestamp' => $message->message_date * 1000,
+                // Always the raw message (BBCode)
+                'messageContent' => $message->message,
+                'messageNumber' => $offset + (++$i),
+                'canEdit' => $message->canEdit(),
+                // XenForo has no deleting a direct message
+                'canDelete' => false,
+                'canReport' => $message->canReport(),
+                'canLike' => $likeFlags['canLike'],
+                'isLiked' => $likeFlags['isLiked'],
+                'likeCount' => $likeCount,
+                'likesInfo' => $likeCount ? $this->getConversationMessageLikesInfo($message) : [],
+                'attachments' => $attachments,
+                'isUnread' => $message->message_date > $lastRead,
+                'isFirstMessage' => $message->message_id == $message->Conversation->first_message_id,
+                'isIgnored' => $message->isIgnored(),
+            ];
+        }
+
+        return $rows;
+    }
+
     public function actionGetConversation(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $conversationId = $params->get('conversationId', '');
-        $startNum = $params->get('startNum', 0);
-        $lastNum = $params->get('lastNum', 19);
+        $startNum = (int)$params->get('startNum', 0);
+        $lastNum = (int)$params->get('lastNum', 19);
 
         if (empty($conversationId)) {
             return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
@@ -459,114 +498,14 @@ class PrivateConversationController extends AbstractController
             // So we don't need to explicitly add it here
             
             // Calculate pagination - ensure valid values
-            $perPage = max(1, $lastNum - $startNum + 1);
+            $perPage = $this->clampPerPage($lastNum - $startNum + 1);
             // Offset should be startNum - 1 (since position 1 = offset 0)
             $offset = max(0, $startNum - 1);
             $finder->limit($perPage, $offset);
             
             $messages = $finder->fetch();
+            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset);
 
-            $messageList = [];
-            foreach ($messages as $message) {
-                // Always return raw message (BBCode)
-                $messageContent = $message->message;
-                
-                // Get canLike and isLiked flags
-                $likeFlags = $this->getConversationMessageLikeFlags($message);
-                $canLike = $likeFlags['canLike'];
-                $isLiked = $likeFlags['isLiked'];
-
-                // Get likes info (list of users who liked this message)
-                $likesInfo = $this->getConversationMessageLikesInfo($message);
-
-                // Get attachments for this message
-                $attachments = $this->getConversationMessageAttachments($message);
-                
-                // Convert FCAttachment objects to arrays
-                $attachmentsArray = [];
-                foreach ($attachments as $attachment) {
-                    if ($attachment instanceof \ForumCopilot\Entity\FCAttachment) {
-                        $attachmentsArray[] = $attachment->toArray();
-                    } else {
-                        $attachmentsArray[] = $attachment;
-                    }
-                }
-                
-                // Check if message is unread (like web version)
-                $isUnread = false;
-                try {
-                    if (method_exists($message, 'isUnread')) {
-                        $isUnread = $message->isUnread($lastRead);
-                    }
-                } catch (\Exception $e) {
-                    // If check fails, default to false
-                }
-                
-                // Check if this is the first message (like web version)
-                $isFirstMessage = false;
-                try {
-                    if (method_exists($message, 'isFirstMessage')) {
-                        $isFirstMessage = $message->isFirstMessage();
-                    }
-                } catch (\Exception $e) {
-                    // If check fails, default to false
-                }
-                
-                // Check if user can report this message (like web version)
-                $canReport = false;
-                try {
-                    if (method_exists($message, 'canReport')) {
-                        $canReport = $message->canReport();
-                    }
-                } catch (\Exception $e) {
-                    // If check fails, default to false
-                }
-                
-                // Check if message author is ignored (like web version)
-                $isIgnored = false;
-                try {
-                    if (method_exists($message, 'isIgnored')) {
-                        $isIgnored = $message->isIgnored();
-                    }
-                } catch (\Exception $e) {
-                    // If check fails, default to false
-                }
-                
-                // Check if user can edit this message (like web version)
-                $canEditMessage = false;
-                try {
-                    if (method_exists($message, 'canEdit')) {
-                        $canEditMessage = $message->canEdit();
-                    }
-                } catch (\Exception $e) {
-                    // If check fails, default to false
-                }
-                
-                // Calculate message position (message number) in the conversation
-                $messageNumber = $this->getMessagePosition($message, $conversation);
-                
-                $messageList[] = [
-                    'id' => (string)$message->message_id,
-                    'authorId' => (string)$message->user_id,
-                    'authorName' => $message->User ? $message->User->username : $message->username,
-                    'authorIconUrl' => $message->User ? $this->getAbsoluteUrl($message->User->getAvatarUrl('s')) : '',
-                    'timestamp' => $message->message_date * 1000,
-                    'messageContent' => $messageContent,
-                    'messageNumber' => $messageNumber,
-                    'canEdit' => $canEditMessage,
-                    'canDelete' => false, // ConversationMessage doesn't have canDelete() method
-                    'canReport' => $canReport,
-                    'canLike' => $canLike,
-                    'isLiked' => $isLiked,
-                    'likeCount' => $this->getReactionCount($message),
-                    'likesInfo' => $likesInfo,
-                    'attachments' => $attachmentsArray,
-                    'isUnread' => $isUnread,
-                    'isFirstMessage' => $isFirstMessage,
-                    'isIgnored' => $isIgnored,
-                ];
-            }
-            
             // Mark conversation as read after viewing (like web version)
             $lastMessage = $messages->last();
             if ($lastMessage) {
@@ -643,7 +582,7 @@ class PrivateConversationController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $messageId = $params->get('messageId', '');
-        $messagesPerRequest = $params->get('messagesPerRequest', 20);
+        $messagesPerRequest = $this->clampPerPage($params->get('messagesPerRequest', 20));
 
         if (empty($messageId)) {
             return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
@@ -727,101 +666,8 @@ class PrivateConversationController extends AbstractController
             
             $messages = $messageFinder->fetch();
             $total = $conversation->reply_count + 1; // +1 for first message
+            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset);
 
-            $messageList = [];
-            foreach ($messages as $msg) {
-                $messageContent = $msg->message;
-                
-                // Get canLike and isLiked flags
-                $likeFlags = $this->getConversationMessageLikeFlags($msg);
-                $canLike = $likeFlags['canLike'];
-                $isLiked = $likeFlags['isLiked'];
-
-                // Get likes info
-                $likesInfo = $this->getConversationMessageLikesInfo($msg);
-
-                // Get attachments
-                $attachments = $this->getConversationMessageAttachments($msg);
-                
-                $attachmentsArray = [];
-                foreach ($attachments as $attachment) {
-                    if ($attachment instanceof \ForumCopilot\Entity\FCAttachment) {
-                        $attachmentsArray[] = $attachment->toArray();
-                    } else {
-                        $attachmentsArray[] = $attachment;
-                    }
-                }
-                
-                // Check if message is unread
-                $isUnread = false;
-                try {
-                    if (method_exists($msg, 'isUnread')) {
-                        $isUnread = $msg->isUnread($lastRead);
-                    }
-                } catch (\Exception $e) {
-                }
-                
-                // Check if this is the first message
-                $isFirstMessage = false;
-                try {
-                    if (method_exists($msg, 'isFirstMessage')) {
-                        $isFirstMessage = $msg->isFirstMessage();
-                    }
-                } catch (\Exception $e) {
-                }
-                
-                // Check if user can report this message
-                $canReport = false;
-                try {
-                    if (method_exists($msg, 'canReport')) {
-                        $canReport = $msg->canReport();
-                    }
-                } catch (\Exception $e) {
-                }
-                
-                // Check if message author is ignored
-                $isIgnored = false;
-                try {
-                    if (method_exists($msg, 'isIgnored')) {
-                        $isIgnored = $msg->isIgnored();
-                    }
-                } catch (\Exception $e) {
-                }
-                
-                // Check if user can edit this message
-                $canEditMessage = false;
-                try {
-                    if (method_exists($msg, 'canEdit')) {
-                        $canEditMessage = $msg->canEdit();
-                    }
-                } catch (\Exception $e) {
-                }
-                
-                // Calculate message position (message number) in the conversation
-                $messageNumber = $this->getMessagePosition($msg, $conversation);
-                
-                $messageList[] = [
-                    'id' => (string)$msg->message_id,
-                    'authorId' => (string)$msg->user_id,
-                    'authorName' => $msg->User ? $msg->User->username : $msg->username,
-                    'authorIconUrl' => $msg->User ? $this->getAbsoluteUrl($msg->User->getAvatarUrl('s')) : '',
-                    'timestamp' => $msg->message_date * 1000,
-                    'messageContent' => $messageContent,
-                    'messageNumber' => $messageNumber,
-                    'canEdit' => $canEditMessage,
-                    'canDelete' => false,
-                    'canReport' => $canReport,
-                    'canLike' => $canLike,
-                    'isLiked' => $isLiked,
-                    'likeCount' => $this->getReactionCount($msg),
-                    'likesInfo' => $likesInfo,
-                    'attachments' => $attachmentsArray,
-                    'isUnread' => $isUnread,
-                    'isFirstMessage' => $isFirstMessage,
-                    'isIgnored' => $isIgnored,
-                ];
-            }
-            
             // Mark conversation as read after viewing
             $lastMessage = $messages->last();
             if ($lastMessage) {

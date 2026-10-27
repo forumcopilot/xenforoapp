@@ -209,24 +209,42 @@ class SubscriptionController extends AbstractController
         }
     }
 
+    /**
+     * The member's watched threads, as XenForo's "Watched threads" page
+     * lists them (ThreadRepository::findThreadsForWatchedList): threads the
+     * member watches, newest activity first, however old.
+     *
+     * It used to be What's New with a "watched" filter: every recent thread
+     * in a watched forum was listed too, and a watched thread with no post
+     * in the last 30 days dropped off the list, so it could not be unwatched
+     * from the app.
+     */
     public function actionGetSubscribedTopic(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
-        $startNum = $params->get('startNum', 0);
-        $lastNum = $params->get('lastNum', 19);
+        // Same paging params, defaults and checks as getLatestTopic
+        $fcParams = XenForoParamAdapter::toGetLatestTopicParams($params);
+        $errors = $fcParams->validate();
+        if (!empty($errors)) {
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
+        }
 
         try {
             $visitor = \XF::visitor();
-            
-            // Setup base finder with common filters (but skip find_new requirement for subscribed)
-            $finder = $this->setupTopicListFinder(['requireFindNew' => false]);
-            
-            // Apply watched filter
-            $this->applyTopicFilters($finder, ['watched' => true], $visitor);
-            
+
+            $finder = $this->repository('XF:Thread')->findThreadsForWatchedList();
+            // XenForo filters each page by canView; leaving out forums the
+            // member can't see first keeps pages full and the total right.
+            $finder->where('node_id', $this->repository('XF:Forum')->getViewableForums()->keys());
+
             // Build topic list (use last post for preview to match original behavior)
-            $result = $this->buildTopicListFromFinder($finder, $startNum, $lastNum, ['useLastPost' => true]);
+            $result = $this->buildTopicListFromFinder(
+                $finder,
+                $fcParams->startNum,
+                $fcParams->lastNum,
+                ['useLastPost' => true]
+            );
 
             return $this->apiSuccess(new FCSubscribedTopicResult(
                 true,
@@ -235,7 +253,7 @@ class SubscriptionController extends AbstractController
                 $result['topics']
             ));
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get subscribed topics');
         }
     }

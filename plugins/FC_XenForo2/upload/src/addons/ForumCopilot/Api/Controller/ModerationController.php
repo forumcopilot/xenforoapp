@@ -282,18 +282,16 @@ class ModerationController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicId = $params->get('topicId', '');
-        $reason = $params->get('reason', '');
 
         if (empty($topicId)) {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
-            // Use find() instead of assertViewableThread() because deleted threads may not be viewable
-            $thread = $this->em()->find('XF:Thread', $topicId);
-            if (!$thread) {
-                return $this->apiError('Topic not found', null, ErrorCode::NOT_FOUND);
-            }
+            // The thread must be viewable first, as in XenForo's
+            // ThreadController::actionUndelete; moderators see deleted
+            // threads with the "View deleted threads" permission.
+            $thread = $this->assertViewableThread($topicId);
 
             $visitor = \XF::visitor();
 
@@ -325,22 +323,20 @@ class ModerationController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $postId = $params->get('postId', '');
-        $reason = $params->get('reason', '');
 
         if (empty($postId)) {
             return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
-            $post = $this->em()->find('XF:Post', $postId);
-            if (!$post) {
-                return $this->apiError('Post not found', null, ErrorCode::NOT_FOUND);
-            }
+            // The post must be viewable first, as in XenForo's
+            // PostController::actionUndelete
+            $post = $this->assertViewablePost($postId);
 
             $visitor = \XF::visitor();
 
-            if (!$post->canUndelete()) {
-                return $this->apiError('Cannot undelete this post', null, ErrorCode::NO_PERMISSION);
+            if (!$post->canUndelete($error)) {
+                return $this->apiError('Cannot undelete this post' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // For undeleting, directly set message_state (as XenForo core does in InlineMod)
@@ -451,20 +447,22 @@ class ModerationController extends AbstractController
             $thread = $this->assertViewableThread($topicId);
             $visitor = \XF::visitor();
 
-            if (!$thread->canApproveUnapprove()) {
-                return $this->apiError('Cannot approve this topic', null, ErrorCode::NO_PERMISSION);
+            if (!$thread->canApproveUnapprove($error)) {
+                return $this->apiError('Cannot approve this topic' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
-            // Use XenForo's Thread Editor service
-            /** @var \XF\Service\Thread\Editor $editor */
-            $editor = $this->service('XF:Thread\Editor', $thread);
-            $editor->setDiscussionState('visible');
-
-            if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+            // Approving only lifts moderation; a deleted thread is restored
+            // with undeleteTopic, which checks the undelete permission
+            if ($thread->discussion_state == 'deleted') {
+                return $this->apiError('This topic is deleted; undelete it instead', null, ErrorCode::VALIDATION);
             }
 
-            $editor->save();
+            // XenForo's Thread Approver, as ThreadController::actionApprove
+            // and the approval queue use: it approves only a moderated thread
+            // (an already visible one is left as it is), and then alerts the
+            // forum's watchers and the members mentioned or quoted in the
+            // first post.
+            $this->approveThread($thread);
 
             $result = new FCApproveTopicResult(true, null, true);
             return $this->apiSuccess($result);
@@ -488,22 +486,15 @@ class ModerationController extends AbstractController
             $post = $this->assertViewablePost($postId);
             $visitor = \XF::visitor();
 
-            if (!$post->canApproveUnapprove()) {
-                return $this->apiError('Cannot approve this post', null, ErrorCode::NO_PERMISSION);
+            if (!$post->canApproveUnapprove($error)) {
+                return $this->apiError('Cannot approve this post' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Post Approver service (like core does)
             if ($post->isFirstPost()) {
-                // For first post, approve the thread instead
-                if ($post->Thread->discussion_state == 'moderated') {
-                    /** @var \XF\Service\Thread\Editor $editor */
-                    $editor = $this->service('XF:Thread\Editor', $post->Thread);
-                    $editor->setDiscussionState('visible');
-                    if (!$editor->validate($errors)) {
-                        return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
-                    }
-                    $editor->save();
-                }
+                // For first post, approve the thread instead, with the
+                // Thread Approver as XenForo's approval queue does
+                $this->approveThread($post->Thread);
             } else if ($post->message_state == 'moderated') {
                 /** @var \XF\Service\Post\Approver $approver */
                 $approver = $this->service('XF:Post\Approver', $post);
@@ -726,5 +717,19 @@ class ModerationController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Failed to spam clean user');
         }
+    }
+
+    /**
+     * Approve a moderated thread with XenForo's Thread Approver, as
+     * ThreadController::actionApprove and the approval queue do: it does
+     * nothing unless the thread is awaiting approval, and then notifies the
+     * forum's watchers and the members mentioned or quoted in the first post.
+     */
+    protected function approveThread(\XF\Entity\Thread $thread)
+    {
+        /** @var \XF\Service\Thread\Approver $approver */
+        $approver = $this->service('XF:Thread\Approver', $thread);
+        $approver->setNotifyRunTime(1); // as the approval queue: the rest is queued
+        return $approver->approve();
     }
 }

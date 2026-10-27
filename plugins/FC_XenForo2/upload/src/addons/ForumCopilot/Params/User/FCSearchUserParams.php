@@ -17,11 +17,15 @@ class FCSearchUserParams
     /** @var int Results per page */
     public $perpage;
 
-    public function __construct($keywords = '', $page = 1, $perpage = 20)
+    /** @var string "prefix": names starting with the keywords; otherwise names containing them (since 1.11.0) */
+    public $match;
+
+    public function __construct($keywords = '', $page = 1, $perpage = 20, $match = '')
     {
         $this->keywords = $keywords;
         $this->page = $page;
         $this->perpage = $perpage;
+        $this->match = $match;
     }
 
     /**
@@ -34,7 +38,8 @@ class FCSearchUserParams
         return new self(
             $keywords,
             $data['page'] ?? 1,
-            $data['perpage'] ?? 20
+            $data['perpage'] ?? 20,
+            is_string($data['match'] ?? null) ? $data['match'] : ''
         );
     }
 

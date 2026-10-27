@@ -207,6 +207,7 @@ class XenForoParamAdapter
             'keywords' => $params->get('keywords', ''),
             'page' => $params->get('page', 1),
             'perpage' => $params->get('perpage', 20),
+            'match' => $params->get('match', ''),
         ]);
     }
 

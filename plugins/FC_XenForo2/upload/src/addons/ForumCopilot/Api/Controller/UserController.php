@@ -370,11 +370,17 @@ class UserController extends AbstractController
         $finder = $this->finder('XF:User');
         // Use isValidUser() method which properly filters valid users
         $finder->isValidUser();
+        // Session activity, for the online status (User::isOnline)
+        $finder->with('Activity');
         
         if ($hasKeywords) {
-            // Use XenForo's escapeLike method for proper escaping (handles special characters correctly)
-            // Format '%?%' means: % before, % after, ? is placeholder for the search term
-            $finder->where('username', 'LIKE', $finder->escapeLike($keywords, '%?%'));
+            // Use XenForo's escapeLike method for proper escaping (handles special characters correctly).
+            // match "prefix" (since 1.11.0) finds names starting with the
+            // keywords, as XenForo's member finder does
+            // (MemberController::actionFind), and can use the username
+            // index. Without it, names containing the keywords, as before.
+            $pattern = ($fcParams->match === 'prefix') ? '?%' : '%?%';
+            $finder->where('username', 'LIKE', $finder->escapeLike($keywords, $pattern));
             $finder->order('username', 'ASC');
         } else {
             // When no keywords, order alphabetically by username (matching web implementation)
@@ -384,8 +390,10 @@ class UserController extends AbstractController
         // Get total count BEFORE applying limit
         $total = $finder->total();
         
-        // Apply pagination
-        $finder->limit($fcParams->perpage, ($fcParams->page - 1) * $fcParams->perpage);
+        // Apply pagination. At most 50 per page (or the member list's page
+        // size, if larger), so one call can't read the whole member list.
+        $perPage = min((int)$fcParams->perpage, max(50, (int)$this->options()->membersPerPage));
+        $finder->limit($perPage, ((int)$fcParams->page - 1) * $perPage);
 
         $users = $finder->fetch();
 
@@ -395,11 +403,9 @@ class UserController extends AbstractController
             // Get avatar URL - let errors surface if method doesn't exist
             $iconUrl = $this->getAbsoluteUrl($user->getAvatarUrl('s'));
 
-            // Check if online - use last_activity comparison
-            $isOnline = false;
-            if ($user->last_activity && $user->last_activity > (\XF::$time - 900)) {
-                $isOnline = true;
-            }
+            // XenForo's online status: false for members who hide it,
+            // unless the visitor may override privacy
+            $isOnline = $user->isOnline();
 
             $userList[] = [
                 'id' => (string)$user->user_id,

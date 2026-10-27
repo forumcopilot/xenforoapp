@@ -163,7 +163,7 @@ class AccountController extends AbstractController
                 if (empty($tfaCode)) {
                     // First request - trigger the selected/default provider so code-based
                     // providers like email actually generate and send their challenge.
-                    $requestedProviderId = $params->get('tfaProvider', '');
+                    $requestedProviderId = $this->stringParam($params, 'tfaProvider');
                     if (!empty($requestedProviderId) && !$tfaService->isProviderValid($requestedProviderId)) {
                         return $this->apiError('Invalid TFA provider', null, ErrorCode::BAD_REQUEST);
                     }
@@ -244,7 +244,7 @@ class AccountController extends AbstractController
                 }
                 
                 // Second request - verify TFA code
-                $providerId = $params->get('tfaProvider', '');
+                $providerId = $this->stringParam($params, 'tfaProvider');
                 if (empty($providerId)) {
                     // Use first available provider if not specified
                     $providers = $tfaService->getProviders();
@@ -712,26 +712,26 @@ class AccountController extends AbstractController
             // The form's fields as XenForo's own register form sends them
             // (Pub\Controller\Register::getRegistrationInput); XenForo checks
             // each one and says which is wrong.
-            $password = (string)$params->get('password', '');
-            $passwordConfirm = (string)$params->get('passwordConfirm', '');
+            $password = $this->stringParam($params, 'password');
+            $passwordConfirm = $this->stringParam($params, 'passwordConfirm');
             if ($passwordConfirm !== '' && $passwordConfirm !== $password) {
                 return $this->registrationErrors(['password' => \XF::phrase('passwords_did_not_match')]);
             }
 
             $input = [
-                'username' => (string)$params->get('username', ''),
-                'email' => (string)$params->get('email', ''),
+                'username' => $this->stringParam($params, 'username'),
+                'email' => $this->stringParam($params, 'email'),
                 'password' => $password,
             ];
-            if ($timezone = (string)$params->get('timezone', '')) {
+            if ($timezone = $this->stringParam($params, 'timezone')) {
                 $input['timezone'] = $timezone;
             }
-            if ($location = (string)$params->get('location', '')) {
+            if ($location = $this->stringParam($params, 'location')) {
                 $input['location'] = $location;
             }
 
             // dateOfBirth: YYYY-MM-DD
-            $dateOfBirth = (string)$params->get('dateOfBirth', '');
+            $dateOfBirth = $this->stringParam($params, 'dateOfBirth');
             $dob = $dateOfBirth !== '' ? \DateTime::createFromFormat('Y-m-d', $dateOfBirth) : false;
             if ($dob && $dob->format('Y-m-d') === $dateOfBirth) {
                 $input['dob_day'] = (int)$dob->format('d');
@@ -984,8 +984,8 @@ class AccountController extends AbstractController
      */
     public function actionCompleteBrowserLogin(ParameterBag $params)
     {
-        $code = (string)$params->get('code', '');
-        $verifier = (string)$params->get('verifier', '');
+        $code = $this->stringParam($params, 'code');
+        $verifier = $this->stringParam($params, 'verifier');
         if ($code === '' || $verifier === '') {
             return $this->apiError('The sign-in was not completed. Please try again.', null, ErrorCode::VALIDATION);
         }
@@ -1367,6 +1367,19 @@ class AccountController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Profile update failed');
         }
+    }
+
+    /**
+     * A text parameter: numbers as text, '' when it is missing or not text
+     * (an array would otherwise fail inside XenForo's services).
+     */
+    protected function stringParam(ParameterBag $params, string $key, string $default = ''): string
+    {
+        $value = $params->get($key, $default);
+        if (is_string($value)) {
+            return $value;
+        }
+        return (is_int($value) || is_float($value)) ? (string)$value : $default;
     }
 
     /**
@@ -1803,7 +1816,7 @@ class AccountController extends AbstractController
 
         try {
             $visitor = \XF::visitor();
-            $category = $params->get('category', '');
+            $category = $this->stringParam($params, 'category');
             
             if (empty($category)) {
                 return $this->apiError('Category parameter is required', null, ErrorCode::BAD_REQUEST);
@@ -1894,7 +1907,7 @@ class AccountController extends AbstractController
 
         try {
             $visitor = \XF::visitor();
-            $category = $params->get('category', '');
+            $category = $this->stringParam($params, 'category');
             $settingsToUpdate = $params->get('settings', []);
             
             if (empty($category)) {

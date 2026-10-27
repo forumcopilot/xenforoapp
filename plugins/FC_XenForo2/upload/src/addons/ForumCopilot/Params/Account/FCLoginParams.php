@@ -84,6 +84,16 @@ class FCLoginParams
         
         // Convert to proper types if needed
         $this->anonymous = self::toBool($this->anonymous);
+
+        // Text only: XenForo's LoginService fails on an array.
+        foreach (['loginname', 'password'] as $field) {
+            if (is_int($this->$field) || is_float($this->$field)) {
+                $this->$field = (string)$this->$field;
+            } elseif (!is_string($this->$field)) {
+                $errors[] = $field . ' must be a string';
+                $this->$field = '';
+            }
+        }
         
         if (empty($this->loginname)) {
             $errors[] = 'loginname is required';

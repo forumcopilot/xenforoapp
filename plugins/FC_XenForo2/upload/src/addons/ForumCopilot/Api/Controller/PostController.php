@@ -937,7 +937,9 @@ class PostController extends AbstractController
                 return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
-            $responseIds = array_values(array_map('intval', $responseIds));
+            // Each response once: the web form's checkboxes can't repeat one,
+            // and a repeat failed the vote with a database error
+            $responseIds = array_values(array_unique(array_map('intval', $responseIds)));
 
             $voter = $this->service('XF:Poll\Voter', $poll, $responseIds);
             if (!$voter->validate($errors)) {
@@ -1318,17 +1320,20 @@ class PostController extends AbstractController
         }
 
         try {
-            $post = $this->assertViewablePost($postId);
+            $post = $this->assertViewablePost((int)$postId);
 
-            // Get username with fallback for guest users
-            $username = $post->User ? $post->User->username : ($post->username ?: 'Guest');
-            
-            // Create quote format - handle guest users properly
-            $quote = '[QUOTE="' . $username . ', post: ' . $post->post_id;
-            if ($post->User) {
-                $quote .= ', member: ' . $post->user_id;
+            // Only where the visitor may reply, as PostController::actionQuote
+            if (!$post->Thread || !$post->Thread->canReply($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
-            $quote .= '"]' . $post->message . '[/QUOTE]';
+
+            // XenForo's quote (QuotePlugin::actionQuote): quotes inside the
+            // post are left out and censored words replaced, then wrapped in
+            // [QUOTE="name, post: id, member: id"], with the stored name for
+            // a guest or deleted member
+            $quote = $post->getQuoteWrapper(
+                $this->app()->stringFormatter()->getBbCodeForQuote($post->message, 'post')
+            );
 
             $result = new FCQuotePostResult(
                 true,
@@ -1349,36 +1354,40 @@ class PostController extends AbstractController
 
         $postId = $params->get('postId', '');
         $reason = $params->get('reason', '');
+        $reason = is_string($reason) ? trim($reason) : '';
 
-        if (empty($postId) || empty($reason)) {
-            return $this->apiError('Post ID and reason are required', null, ErrorCode::BAD_REQUEST);
+        if (empty($postId)) {
+            return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
-            $post = $this->assertViewablePost($postId);
-            $visitor = \XF::visitor();
+            $post = $this->assertViewablePost((int)$postId);
 
             if (!$post->canReport($error)) {
-                return $this->apiError('Cannot report this post: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
-            if (empty($reason)) {
-                return $this->apiError('Reason is required', null, ErrorCode::VALIDATION);
+            // ReportPlugin::setupReportCreate's check and message
+            if (!strlen($reason)) {
+                return $this->apiError(\XF::phrase('please_enter_reason_for_reporting_this_message'), null, ErrorCode::VALIDATION);
             }
 
-            // Use XenForo's Report Creator service (like Tapatalk does)
+            // Use XenForo's Report Creator service, as ReportPlugin::actionReport
             /** @var \XF\Service\Report\Creator $creator */
             $creator = $this->service('XF:Report\Creator', 'post', $post);
             $creator->setMessage($reason);
 
-            // Validate before saving
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
+            }
+
+            if ($floodError = $this->checkFlooding('report')) {
+                return $floodError;
             }
 
             // Save report (this already includes the message as a comment)
-            $report = $creator->save();
-            
+            $creator->save();
+
             // Send notifications
             $creator->sendNotifications();
 

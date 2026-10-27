@@ -34,23 +34,26 @@ class UserController extends AbstractController
         }
 
         try {
-            // Use basic finder to avoid add-on conflicts
+            // The relations XenForo's member page loads (assertViewableUser),
+            // plus Activity for the online status
+            $with = ['Activity', 'Option', 'Privacy', 'Profile'];
             $user = null;
-            
+
             if (!empty($fcParams->userId)) {
-                $user = $this->em()->find('XF:User', (int)$fcParams->userId);
+                $user = $this->em()->find('XF:User', (int)$fcParams->userId, $with);
             } else {
-                // Use finder instead of findOne to avoid conflicts
                 $finder = $this->finder('XF:User');
                 $finder->where('username', $fcParams->username);
+                $finder->with($with);
                 $user = $finder->fetchOne();
             }
 
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
+            $isSelf = ($visitor->user_id && $visitor->user_id == $user->user_id);
 
             // Get avatar URL - use only method that exists in base User entity
             $avatarUrl = '';
@@ -60,25 +63,52 @@ class UserController extends AbstractController
                 // If getAvatarUrl fails, use empty string
             }
 
-            // Check if online - use last_activity comparison instead of isOnline()
-            $isOnline = false;
-            if ($user->last_activity && $user->last_activity > (\XF::$time - 900)) {
-                $isOnline = true;
+            // Online status and "last seen" as XenForo shows them: hidden for
+            // members who untick "Show your online status" unless the visitor
+            // may override privacy (User::isOnline, canViewOnlineStatus; the
+            // member page's last seen uses the same check, Templater
+            // fnUserActivity). Hidden: isOnline false, lastActivityTime null
+            // (the app hides "last seen" for null).
+            $canViewOnlineStatus = $user->canViewOnlineStatus();
+            $isOnline = $user->isOnline();
+            $lastActivityTime = $canViewOnlineStatus ? $user->last_activity * 1000 : null;
+
+            // Check if visitor can view full profile (for location, website,
+            // about, signature, custom fields and follow counts: XenForo's
+            // member page and About tab need it, assertViewableUser)
+            $canViewFullProfile = false;
+            try {
+                $canViewFullProfile = $user->canViewFullProfile();
+            } catch (\Exception $e) {
+                // If check fails, use default (false)
             }
 
-            // Safely get profile information
+            // Follow counts and custom fields, as on XenForo's About tab
+            // (MemberController::actionAbout)
             $followingCount = 0;
             $followerCount = 0;
             $customFields = [];
-            try {
-                if ($user->Profile) {
-                    $followingCount = isset($user->Profile->following_count) ? (int)$user->Profile->following_count : 0;
-                    $followerCount = isset($user->Profile->followers_count) ? (int)$user->Profile->followers_count : 0;
-                    // Filter custom fields based on privacy settings
-                    $customFields = $this->getFilteredCustomFields($user, $visitor);
+            $customFieldsDisplay = [];
+            if ($canViewFullProfile && $user->Profile) {
+                try {
+                    $userFollowRepo = $this->repository('XF:UserFollow');
+                    if ($user->Profile->following) {
+                        $followingCount = $userFollowRepo->findFollowingForProfile($user)->total();
+                    }
+                    $followerCount = $userFollowRepo->findFollowersForProfile($user)->total();
+                } catch (\Exception $e) {
+                    \XF::logException($e, false, 'ForumCopilot: follow counts failed: ');
                 }
-            } catch (\Exception $e) {
-                // If Profile relation fails, use defaults
+
+                try {
+                    $customFields = $this->getFilteredCustomFields($user, $visitor);
+                    $customFieldsDisplay = $this->getCustomFieldsDisplay(
+                        $user->Profile->custom_fields->getDefinitionSet(),
+                        $customFields
+                    );
+                } catch (\Exception $e) {
+                    \XF::logException($e, false, 'ForumCopilot: custom fields failed: ');
+                }
             }
 
             // Check following relationships
@@ -103,8 +133,10 @@ class UserController extends AbstractController
                     // Returns false if user is admin/moderator or if visitor doesn't have permission
                     $canBan = $user->canBan();
                 }
-            } catch (\Exception $e) {
-                // If check fails, use default (false)
+            } catch (\Throwable $e) {
+                // If check fails, use default (false). \Throwable: should
+                // canBan() be missing (needs a 2.2 check), the call throws an
+                // \Error, which would otherwise fail the whole profile.
             }
 
             // Check if visitor is ignoring this user
@@ -161,16 +193,27 @@ class UserController extends AbstractController
                 // If check fails, use default (false)
             }
 
-            // Check if visitor can post on target user's profile (respects privacy rules)
-            $acceptsFollowers = false;
+            // Check if visitor can follow this user. The app shows the
+            // Follow button from acceptsFollowers (isFollowing ||
+            // acceptsFollowers), so that is canFollowUser too; it used to be
+            // the "post on your profile" privacy check, which hid the button
+            // for members who limit profile posts. That check is now
+            // canPostOnProfile.
+            $canFollow = false;
             try {
-                if ($visitor->user_id && $user->Privacy) {
-                    // This checks privacy rules: 'members', 'followed', or 'none'
-                    // Returns true if visitor meets the privacy requirement
-                    $acceptsFollowers = $user->isPrivacyCheckMet('allow_post_profile', $visitor);
+                if ($visitor->user_id) {
+                    $canFollow = $visitor->canFollowUser($user);
                 }
             } catch (\Exception $e) {
-                // If Privacy relation fails, use defaults
+                // If check fails, use default (false)
+            }
+            $acceptsFollowers = $canFollow;
+
+            $canPostOnProfile = false;
+            try {
+                $canPostOnProfile = $user->canPostOnProfile();
+            } catch (\Exception $e) {
+                // If check fails, use default (false)
             }
 
             // Get user title (display text)
@@ -186,14 +229,6 @@ class UserController extends AbstractController
                 }
             } catch (\Exception $e) {
                 // If getting title fails, leave as null
-            }
-
-            // Check if visitor can view full profile (for location, website, about, signature)
-            $canViewFullProfile = false;
-            try {
-                $canViewFullProfile = $user->canViewFullProfile();
-            } catch (\Exception $e) {
-                // If check fails, use default (false)
             }
 
             // Get profile fields (only if can view full profile)
@@ -212,16 +247,6 @@ class UserController extends AbstractController
                 }
             }
 
-            // Check if visitor can follow this user
-            $canFollow = false;
-            try {
-                if ($visitor->user_id) {
-                    $canFollow = $visitor->canFollowUser($user);
-                }
-            } catch (\Exception $e) {
-                // If check fails, use default (false)
-            }
-
             // Check if visitor can ignore this user
             $canIgnore = false;
             try {
@@ -232,6 +257,18 @@ class UserController extends AbstractController
                 // If check fails, use default (false)
             }
 
+            // User state and groups only for the member themself and for
+            // admins with user permission, as XenForo's REST API sends them
+            // (User::setupApiResultData). The banned flag also for visitors
+            // who override privacy (as the REST API) and for moderators who
+            // can ban, who need it for the ban/unban menu. Others get the
+            // defaults: groups [], state valid, not banned.
+            $canViewInternal = $isSelf || $visitor->hasAdminPermission('user');
+            $canViewBanned = $canViewInternal
+                || $canBan
+                || $visitor->canBypassUserPrivacy()
+                || ($visitor->is_moderator && $visitor->hasPermission('general', 'banUser'));
+
             // Create FC user entity
             $fcUser = new FCUser([
                 'id' => (string)$user->user_id,
@@ -240,7 +277,7 @@ class UserController extends AbstractController
                 'iconUrl' => $avatarUrl,
                 'postCount' => (int)$user->message_count,
                 'registrationTime' => $user->register_date * 1000,
-                'lastActivityTime' => $user->last_activity * 1000,
+                'lastActivityTime' => $lastActivityTime,
                 'isOnline' => $isOnline,
                 'acceptsPM' => $acceptsPM,
                 // canSendPM and canPM removed - acceptsPM now combines their purpose
@@ -251,13 +288,13 @@ class UserController extends AbstractController
                 'followerCount' => $followerCount,
                 'customFields' => $customFields,
                 'canBan' => $canBan,
-                'isBanned' => (bool)$user->is_banned,
+                'isBanned' => $canViewBanned ? (bool)$user->is_banned : false,
                 'isIgnored' => $isIgnored,
                 'canSpamClean' => $canSpamClean,
                 'canBeReported' => $canBeReported,
-                'userGroups' => $user->secondary_group_ids ?: [],
+                'userGroups' => $canViewInternal ? ($user->secondary_group_ids ?: []) : [],
                 'displayText' => $userTitle,
-                'userState' => $user->user_state, // Include user state
+                'userState' => $canViewInternal ? $user->user_state : 'valid',
                 'location' => $location,
                 'website' => $website,
                 'about' => $about,
@@ -267,8 +304,28 @@ class UserController extends AbstractController
                 // canSendPM removed - acceptsPM now combines its purpose (can I send PM to this user?)
             ]);
 
+            $data = $fcUser->toArray();
+            // Since 1.11.0: whether the visitor may post on this profile
+            // (what acceptsFollowers used to say), and the custom fields with
+            // their titles and choice labels, in display order.
+            $data['canPostOnProfile'] = $canPostOnProfile;
+            $data['customFieldsDisplay'] = $customFieldsDisplay;
+
+            // Viewing a member's profile marks their "followed you" alert
+            // read, as XenForo's member page does (MemberController::actionView)
+            if ($visitor->user_id && !$isSelf && $canViewFullProfile) {
+                try {
+                    $alertRepo = $this->repository('XF:UserAlert');
+                    if (method_exists($alertRepo, 'markUserAlertsReadForContent')) {
+                        $alertRepo->markUserAlertsReadForContent('user', $visitor->user_id, 'following');
+                    }
+                } catch (\Exception $e) {
+                    \XF::logException($e, false, 'ForumCopilot: marking follow alert read failed: ');
+                }
+            }
+
             // getUserInfo doesn't have a specific result class, return user data directly
-            return $this->apiSuccess($fcUser->toArray());
+            return $this->apiSuccess($data);
 
         } catch (\Exception $e) {
             return $this->apiException($e, 'Failed to get user info');
@@ -713,9 +770,14 @@ class UserController extends AbstractController
     }
 
     /**
-     * Get filtered custom fields based on privacy settings
-     * Respects field groups, viewable_profile setting, and user privacy preferences
-     * 
+     * Custom field values the visitor may see, keyed by field id. The caller
+     * asks only when the visitor may view the full profile, as XenForo's
+     * About tab needs (MemberController::actionAbout, assertViewableUser).
+     * The member themself and admins with user permission get every value,
+     * as in XenForo's REST API (User::setupApiResultData); everyone else the
+     * personal fields shown on profiles, plus the contact fields when the
+     * member lets them see identities.
+     *
      * @param \XF\Entity\User $user The user whose custom fields to retrieve
      * @param \XF\Entity\User $visitor The viewing user
      * @return array Filtered custom field values
@@ -726,11 +788,15 @@ class UserController extends AbstractController
             return [];
         }
 
+        $isSelf = $visitor->user_id && $visitor->user_id == $user->user_id;
+        if (!$isSelf && !$user->canViewFullProfile()) {
+            return [];
+        }
+
         $profile = $user->Profile;
         $fieldSet = $profile->custom_fields;
-        
-        // If visitor is viewing their own profile or can bypass privacy, return all fields
-        if ($visitor->user_id == $user->user_id || $visitor->canBypassUserPrivacy()) {
+
+        if ($isSelf || $visitor->hasAdminPermission('user')) {
             return $fieldSet->getFieldValues();
         }
 
@@ -755,6 +821,57 @@ class UserController extends AbstractController
         }
         
         return $fieldValues;
+    }
+
+    /**
+     * The same custom fields for display: each field's title, and its value
+     * as text (a choice field's labels rather than its keys). Fields with no
+     * value are left out, as on XenForo's About tab. In display order.
+     *
+     * @param \XF\CustomField\DefinitionSet $definitionSet the user fields
+     * @param array $fieldValues field id => value, from getFilteredCustomFields
+     * @return array [{id, title, value}]
+     */
+    protected function getCustomFieldsDisplay(\XF\CustomField\DefinitionSet $definitionSet, array $fieldValues)
+    {
+        if (!$fieldValues) {
+            return [];
+        }
+
+        $display = [];
+        foreach ($definitionSet->getFieldDefinitions() as $fieldId => $field) {
+            if (!array_key_exists($fieldId, $fieldValues)) {
+                continue;
+            }
+            $value = $fieldValues[$fieldId];
+            if ($value === null || $value === '' || $value === []) {
+                continue;
+            }
+
+            $choices = $field->field_choices ?: [];
+            if ($field->type_group === 'single') {
+                $text = isset($choices[$value]) ? (string)$choices[$value] : (string)$value;
+            } elseif ($field->type_group === 'multiple') {
+                $labels = [];
+                foreach ((array)$value as $choice => $unused) {
+                    $labels[] = isset($choices[$choice]) ? (string)$choices[$choice] : (string)$choice;
+                }
+                $text = implode(', ', $labels);
+            } else {
+                $text = $this->plainText($field->getFormattedValue($value));
+            }
+
+            if ($text === '') {
+                continue;
+            }
+            $display[] = [
+                'id' => (string)$fieldId,
+                'title' => (string)$field->title,
+                'value' => $text,
+            ];
+        }
+
+        return $display;
     }
 
 }

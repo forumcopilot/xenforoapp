@@ -46,8 +46,11 @@ class FCGetUserInfoParams
             $errors[] = 'username must be string';
         }
         
-        if (!is_string($this->userId)) {
+        // A JSON number is accepted too (the 1.x app sends a string)
+        if (!is_string($this->userId) && !is_int($this->userId)) {
             $errors[] = 'userId must be string';
+        } elseif ($this->userId !== '' && !ctype_digit((string)$this->userId)) {
+            $errors[] = 'userId must be a number';
         }
         
         return $errors;

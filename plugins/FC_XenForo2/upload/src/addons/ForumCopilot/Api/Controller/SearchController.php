@@ -20,7 +20,7 @@ class SearchController extends AbstractController
     {
         // Convert XenForo ParameterBag to forum-agnostic parameter class
         $fcParams = XenForoParamAdapter::toSearchTopicParams($params);
-        
+
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
@@ -28,86 +28,27 @@ class SearchController extends AbstractController
         }
 
         try {
-            $visitor = \XF::visitor();
-            if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
+            if ($denied = $this->assertCanSearch()) {
+                return $denied;
             }
 
-            // Build search input matching XenForo's web format
-            // Don't specify 'order' to use default (relevance if supported, otherwise date)
-            // This matches how the web interface works - search results are ordered by relevance
-            $input = [
-                'search_type' => 'thread', // Search for threads
+            // XenForo's "Search threads": posts and threads, one result per thread
+            $page = $this->runSearchPage([
+                'search_type' => 'post',
                 'keywords' => $fcParams->searchString,
-                'c' => [
-                    'title_only' => 0, // Search in both title and content
-                ],
-            ];
-
-            // Prepare search query using XenForo's search system
-            $query = $this->prepareSearchQuery($input, $constraints);
-            
-            if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
-            }
-
-            $searcher = $this->app()->search();
-            if ($searcher->isQueryEmpty($query, $error)) {
-                return $this->apiError($error);
-            }
-
-            // Run search using XenForo's search repository (same as web interface)
-            $searchRepo = $this->repository('XF:Search');
-            $search = $searchRepo->runSearch($query, $constraints, true);
-
-            if (!$search) {
-                $result = new FCSearchTopicResult(
-                    true,
-                    null,
-                    0,
-                    []
-                );
-                return $this->apiSuccess($result);
-            }
-
-            // Get result set from search
-            $resultSet = $searcher->getResultSet($search->search_results);
-            
-            // Calculate pagination
-            $perPage = $fcParams->lastNum - $fcParams->startNum + 1;
-            $page = floor($fcParams->startNum / $perPage) + 1;
-            if ($page < 1) {
-                $page = 1;
-            }
-            
-            // Slice results to requested page
-            $resultSet->sliceResultsToPage($page, $perPage);
-            
-            // Limit to viewable results (respects permissions)
-            $resultSet->limitToViewableResults();
-            
-            // Get wrapped results (same as web interface)
-            $resultsWrapped = $searcher->wrapResultsForRender($resultSet, [
-                'search' => $search,
-                'term' => $search->search_query,
-            ]);
-
-            // Convert to API format
-            $topicList = [];
-            foreach ($resultsWrapped as $wrapper) {
-                $entity = $wrapper->getResult();
-                
-                // Only process thread entities
-                if ($entity instanceof \XF\Entity\Thread) {
-                    $topicList[] = $this->convertThreadToApiFormat($entity);
-                }
+                'c' => [],
+                'grouped' => 1,
+            ], (int)$fcParams->startNum, (int)$fcParams->lastNum - (int)$fcParams->startNum + 1, (int)$fcParams->searchId);
+            if (!is_array($page)) {
+                return $page;
             }
 
             $result = new FCSearchTopicResult(
                 true,
                 null,
-                (int)$search->result_count,
-                $topicList
+                $page['total'],
+                $page['searchId'],
+                $this->topicRowsForResults($page['results'])
             );
 
             return $this->apiSuccess($result);
@@ -119,95 +60,36 @@ class SearchController extends AbstractController
 
     public function actionSearchPost(ParameterBag $params)
     {
-        $searchString = $params->get('searchString', '');
-        $startNum = $params->get('startNum', 0);
-        $lastNum = $params->get('lastNum', 19);
-        $searchId = $params->get('searchId', '');
+        $searchString = (string)$params->get('searchString', '');
+        $startNum = (int)$params->get('startNum', 0);
+        $lastNum = (int)$params->get('lastNum', 19);
+        $searchId = (int)$params->get('searchId', 0);
 
-        if (empty($searchString)) {
+        if ($searchString === '') {
             return $this->apiError('Search string is required', null, ErrorCode::VALIDATION);
         }
 
         try {
-            $visitor = \XF::visitor();
-            if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
+            if ($denied = $this->assertCanSearch()) {
+                return $denied;
             }
 
-            // Build search input for post search
-            $input = [
-                'search_type' => 'post', // Search for posts
+            $page = $this->runSearchPage([
+                'search_type' => 'post',
                 'keywords' => $searchString,
                 'c' => [],
                 'order' => 'date',
-            ];
-
-            // Prepare search query using XenForo's search system
-            $query = $this->prepareSearchQuery($input, $constraints);
-            
-            if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
-            }
-
-            $searcher = $this->app()->search();
-            if ($searcher->isQueryEmpty($query, $error)) {
-                return $this->apiError($error);
-            }
-
-            // Run search using XenForo's search repository
-            $searchRepo = $this->repository('XF:Search');
-            $search = $searchRepo->runSearch($query, $constraints, true);
-
-            if (!$search) {
-                $result = new FCSearchPostResult(
-                    true,
-                    null,
-                    0,
-                    $searchId ?: null,
-                    []
-                );
-                return $this->apiSuccess($result);
-            }
-
-            // Get result set from search
-            $resultSet = $searcher->getResultSet($search->search_results);
-            
-            // Calculate pagination
-            $perPage = $lastNum - $startNum + 1;
-            $page = floor($startNum / $perPage) + 1;
-            if ($page < 1) {
-                $page = 1;
-            }
-            
-            // Slice results to requested page
-            $resultSet->sliceResultsToPage($page, $perPage);
-            
-            // Limit to viewable results (respects permissions)
-            $resultSet->limitToViewableResults();
-            
-            // Get wrapped results
-            $resultsWrapped = $searcher->wrapResultsForRender($resultSet, [
-                'search' => $search,
-                'term' => $search->search_query,
-            ]);
-
-            // Convert to API format
-            $postList = [];
-            foreach ($resultsWrapped as $wrapper) {
-                $entity = $wrapper->getResult();
-                
-                // Only process post entities
-                if ($entity instanceof \XF\Entity\Post) {
-                    $postList[] = $this->convertPostToApiFormat($entity);
-                }
+            ], $startNum, $lastNum - $startNum + 1, $searchId);
+            if (!is_array($page)) {
+                return $page;
             }
 
             $result = new FCSearchPostResult(
                 true,
                 null,
-                (int)$search->result_count,
-                $searchId ?: $search->search_id,
-                $postList
+                $page['total'],
+                $page['searchId'],
+                $this->postRowsForResults($page['results'])
             );
 
             return $this->apiSuccess($result);
@@ -217,423 +99,295 @@ class SearchController extends AbstractController
         }
     }
 
+    /**
+     * Topic search, the one the app's Search tab uses. Runs on XenForo's own
+     * search, like the website's "Search threads": its search index, minimum
+     * word length, result limit and per-member result cache, with permissions
+     * applied before results are counted. Rows are full topic rows.
+     */
     public function actionAdvanceSearchTopic(ParameterBag $params)
     {
-        $keywords = $params->get('keywords', '');
-        $page = $params->get('page', 1);
-        $perpage = $params->get('perpage', 20);
-        $searchId = $params->get('searchId', '');
-        $titleOnly = $params->get('titleOnly', false);
-        $userId = $params->get('userId', '');
-        $searchUser = $params->get('searchUser', '');
-        $forumId = $params->get('forumId', '');
-        $topicId = $params->get('topicId', '');
+        return $this->advancedSearch($params, true);
+    }
+
+    public function actionAdvanceSearchPost(ParameterBag $params)
+    {
+        return $this->advancedSearch($params, false);
+    }
+
+    /**
+     * advanceSearchTopic and advanceSearchPost. Params as before: keywords,
+     * page, perpage, searchId (reuses the member's own earlier search for the
+     * same words), titleOnly, userId or searchUser (member names), forumId and
+     * onlyIn (forums to search), notIn (forums to leave out), topicId,
+     * startedBy (with a member: threads they started) and searchTime (newer
+     * than, a Unix time).
+     */
+    protected function advancedSearch(ParameterBag $params, bool $topics)
+    {
+        $keywords = trim((string)$params->get('keywords', ''));
+        $page = max(1, (int)$params->get('page', 1));
+        $perpage = max(1, min(100, (int)$params->get('perpage', 20)));
+        $searchId = (int)$params->get('searchId', 0);
+        $titleOnly = (bool)$params->get('titleOnly', false);
+        $userId = (int)$params->get('userId', 0);
+        $searchUser = trim((string)$params->get('searchUser', ''));
+        $forumId = (int)$params->get('forumId', 0);
+        $topicId = (int)$params->get('topicId', 0);
         $onlyIn = $params->get('onlyIn', []);
         $notIn = $params->get('notIn', []);
-        $startedBy = $params->get('startedBy', false);
-        $searchTime = $params->get('searchTime', 0);
+        $startedBy = (bool)$params->get('startedBy', false);
+        $searchTime = (int)$params->get('searchTime', 0);
 
-        if (empty($keywords)) {
+        if ($keywords === '') {
             return $this->apiError('Search keywords are required', null, ErrorCode::VALIDATION);
         }
 
         try {
-            $visitor = \XF::visitor();
-            if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
+            if ($denied = $this->assertCanSearch()) {
+                return $denied;
             }
 
-            // Resolve searchUser to userId if provided
-            $resolvedUserId = null;
-            if (!empty($userId)) {
-                $resolvedUserId = (int)$userId;
-            } elseif (!empty($searchUser)) {
-                $userRepo = $this->repository('XF:User');
-                $user = $userRepo->getUserByNameOrEmail($searchUser);
-                if ($user) {
-                    $resolvedUserId = $user->user_id;
-                } else {
-                    return $this->apiError('User not found: ' . $searchUser, null, ErrorCode::NOT_FOUND);
+            $constraints = ['title_only' => $titleOnly ? 1 : 0];
+
+            // Members by name only, as XenForo's search form takes them
+            $userName = '';
+            if ($userId) {
+                $user = $this->em()->find('XF:User', $userId);
+                if (!$user) {
+                    return $this->apiError(\XF::phrase('requested_member_not_found'), null, ErrorCode::NOT_FOUND);
+                }
+                $userName = $user->username;
+            } elseif ($searchUser !== '') {
+                $userName = $searchUser;
+            }
+            if ($userName !== '') {
+                $constraints['users'] = $userName;
+            }
+
+            // Threads a member started: XenForo's thread search, whose
+            // results are threads by their starter
+            $searchType = ($topics && $startedBy && $userName !== '') ? 'thread' : 'post';
+
+            $nodeIds = [];
+            if ($forumId) {
+                $nodeIds[] = $forumId;
+            }
+            if (is_array($onlyIn)) {
+                $nodeIds = array_merge($nodeIds, array_map('intval', $onlyIn));
+            }
+            if (!$nodeIds && is_array($notIn) && $notIn) {
+                // XenForo's search takes forums to include; leaving some out
+                // means every other forum the member can see
+                $exclude = array_map('intval', $notIn);
+                $nodeIds = array_diff($this->getViewableForumIds(), $exclude);
+                if (!$nodeIds) {
+                    $nodeIds = [0];
                 }
             }
+            if ($nodeIds) {
+                $constraints['nodes'] = array_values(array_unique(array_filter($nodeIds, function ($id) {
+                    return $id >= 0;
+                })));
+            }
+            if ($topicId && $searchType === 'post') {
+                $constraints['thread'] = $topicId;
+            }
+            if ($searchTime > 0) {
+                // A number: XenForo's datetime filter takes it as a Unix time.
+                // Formatting it as a date read it in the member's timezone.
+                $constraints['newer_than'] = $searchTime;
+            }
 
-            // Use basic finder approach (like actionSearchTopic) to avoid search system conflicts
-            $finder = $this->finder('XF:Thread');
-            $finder->where('discussion_state', 'visible');
-            
-            // Apply search keywords
-            $db = $this->app()->db();
-            $likePattern = '%' . $db->escapeLike($keywords) . '%';
-            $quotedLike = $db->quote($likePattern);
-            if ($titleOnly) {
-                $finder->whereSql('title LIKE ' . $quotedLike);
+            $input = [
+                'search_type' => $searchType,
+                'keywords' => $keywords,
+                'c' => $constraints,
+                'order' => 'date',
+            ];
+            if ($topics && $searchType === 'post') {
+                $input['grouped'] = 1;
+            }
+
+            $result = $this->runSearchPage($input, ($page - 1) * $perpage, $perpage, $searchId);
+            if (!is_array($result)) {
+                return $result;
+            }
+
+            if ($topics) {
+                $reply = new FCSearchDataResultTopic(
+                    true,
+                    null,
+                    $result['total'],
+                    $result['searchId'],
+                    $this->topicRowsForResults($result['results'], $topicId)
+                );
             } else {
-                // Restrict to threads where title OR any visible post message matches
-                $finder->whereSql(
-                    '(title LIKE ' . $quotedLike . ' OR thread_id IN (SELECT thread_id FROM xf_post WHERE message LIKE ' . $quotedLike . ' AND message_state = \'visible\'))'
+                $reply = new FCSearchDataResultPost(
+                    true,
+                    null,
+                    $result['total'],
+                    $result['searchId'],
+                    $this->postRowsForResults($result['results'])
                 );
             }
-            
-            // Apply user filter
-            if ($resolvedUserId !== null) {
-                if ($startedBy) {
-                    // Filter threads started by the user
-                    $finder->where('user_id', $resolvedUserId);
-                }
-                // Note: When startedBy is false, we would ideally filter threads where the user
-                // has participated (posted in), but this requires a complex subquery. For now,
-                // we filter by thread starter when startedBy is true, and don't apply user filter
-                // when startedBy is false. The user participation filtering would need to be
-                // done in post-processing, which is inefficient for large result sets.
-            }
-            
-            // Apply forum filters
-            $forumIds = [];
-            if (!empty($forumId)) {
-                $forumIds[] = (int)$forumId;
-            }
-            if (!empty($onlyIn) && is_array($onlyIn)) {
-                foreach ($onlyIn as $forum) {
-                    $forumIds[] = (int)$forum;
-                }
-            }
-            if (!empty($forumIds)) {
-                $finder->where('node_id', $forumIds);
-            }
-            
-            // Exclude forums
-            if (!empty($notIn) && is_array($notIn)) {
-                $excludeIds = array_map('intval', $notIn);
-                if (!empty($excludeIds)) {
-                    // XenForo finder doesn't support NOT IN directly, use whereSql
-                    $excludeIdsStr = implode(',', $excludeIds);
-                    $finder->whereSql("node_id NOT IN ($excludeIdsStr)");
-                }
-            }
-            
-            // Filter by specific topic
-            if (!empty($topicId)) {
-                $finder->where('thread_id', (int)$topicId);
-            }
-            
-            // Apply date filter
-            if ($searchTime > 0) {
-                // searchTime is expected to be a Unix timestamp
-                // Use post_date for thread creation date, or last_post_date for recent activity
-                // Using post_date to match thread creation time
-                $finder->where('post_date', '>', (int)$searchTime);
-            }
-            
-            // Order by last post date to show threads with most recent activity first
-            $finder->order('last_post_date', 'DESC');
-            
-            // Apply pagination
-            $finder->limit($perpage, ($page - 1) * $perpage);
-            
-            $threads = $finder->fetch();
-            $total = $finder->total();
 
-            $topicList = [];
-            foreach ($threads as $thread) {
-                // Respect XenForo's permission system
-                $error = null;
-                if (!$thread->canView($error)) {
-                    continue;
-                }
-                
-                // Find the actual post that matches the search criteria
-                $matchedPost = null;
-                
-                // Check if title matches
-                $titleMatches = stripos($thread->title, $keywords) !== false;
-                
-                if ($titleOnly) {
-                    // Title-only search: if title matches, use first post
-                    if ($titleMatches && $thread->first_post_id) {
-                        $matchedPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                    }
-                } else {
-                    // Search in both title and posts
-                    if ($titleMatches) {
-                        // Title matches, use first post
-                        if ($thread->first_post_id) {
-                            $matchedPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                        }
-                    } else {
-                        // Title doesn't match, search through posts
-                        try {
-                            $postFinder = $this->finder('XF:Post');
-                            $postFinder->where('thread_id', $thread->thread_id);
-                            $postFinder->where('message_state', 'visible');
-                            $postFinder->order('post_date', 'ASC');
-                            $posts = $postFinder->fetch();
-                            
-                            foreach ($posts as $post) {
-                                if ($post->message && stripos($post->message, $keywords) !== false) {
-                                    $matchedPost = $post;
-                                    break; // Use first matching post
-                                }
-                            }
-                        } catch (\Exception $e) {
-                            // If search fails, skip this thread
-                            continue;
-                        }
-                    }
-                    
-                    // If no match found, skip this thread
-                    if (!$matchedPost) {
-                        continue;
-                    }
-                }
-
-                // Safely get forum/node information
-                $forumName = 'Unknown';
-                try {
-                    if ($thread->Forum && $thread->Forum->Node) {
-                        $forumName = $thread->Forum->Node->title;
-                    }
-                } catch (\Exception $e) {
-                    // If add-on conflict occurs, skip this relation
-                }
-
-                // Get short content and author info from matched post (or fallback to last post)
-                $authorName = 'Unknown';
-                $authorId = (string)$thread->user_id;
-                $authorUserType = '0';
-                $authorIconUrl = '';
-                $timestamp = $thread->post_date * 1000;
-                $shortContent = '';
-                
-                try {
-                    if ($matchedPost) {
-                        // Use the matched post
-                        if ($matchedPost->message) {
-                            $shortContent = $this->getShortContent($matchedPost->message);
-                        }
-                        
-                        if ($matchedPost->User) {
-                            $authorName = $matchedPost->User->username;
-                            $authorId = (string)$matchedPost->user_id;
-                            $authorUserType = (string)$matchedPost->User->user_group_id;
-                            $authorIconUrl = $this->getAbsoluteUrl($matchedPost->User->getAvatarUrl('s'));
-                        }
-                        $timestamp = $matchedPost->post_date * 1000;
-                    } else {
-                        // Fallback to last post if no match found
-                        if ($thread->last_post_id) {
-                            $lastPost = $this->em()->find('XF:Post', $thread->last_post_id);
-                            if ($lastPost) {
-                                if ($lastPost->message) {
-                                    $shortContent = $this->getShortContent($lastPost->message);
-                                }
-                                
-                                if ($lastPost->User) {
-                                    $authorName = $lastPost->User->username;
-                                    $authorId = (string)$lastPost->user_id;
-                                    $authorUserType = (string)$lastPost->User->user_group_id;
-                                    $authorIconUrl = $this->getAbsoluteUrl($lastPost->User->getAvatarUrl('s'));
-                                } else {
-                                    $authorName = $thread->last_post_username ?: 'Unknown';
-                                    $authorId = (string)$thread->last_post_user_id;
-                                }
-                                $timestamp = $lastPost->post_date * 1000;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    // If preview generation fails, use thread creator info
-                    try {
-                        if ($thread->User) {
-                            $authorName = $thread->User->username;
-                            $authorId = (string)$thread->user_id;
-                            $authorUserType = (string)$thread->User->user_group_id;
-                            $authorIconUrl = $this->getAbsoluteUrl($thread->User->getAvatarUrl('s'));
-                        }
-                    } catch (\Exception $e2) {
-                        // If add-on conflict occurs, use defaults
-                    }
-                }
-
-                $topicList[] = [
-                    'id' => (string)$thread->thread_id,
-                    'title' => $thread->title,
-                    'forumId' => (string)$thread->node_id,
-                    'forumName' => $forumName,
-                    'authorId' => $authorId,
-                    'authorName' => $authorName,
-                    'authorUserType' => $authorUserType,
-                    'timestamp' => $timestamp,
-                    'authorIconUrl' => $authorIconUrl,
-                    'shortContent' => $shortContent,
-                    'url' => $this->buildLink('canonical:threads', $thread),
-                ];
-            }
-
-            $result = new FCSearchDataResultTopic(
-                true,
-                null,
-                (int)$total,
-                $searchId ?: null,
-                $topicList
-            );
-
-            return $this->apiSuccess($result);
+            return $this->apiSuccess($reply);
 
         } catch (\Exception $e) {
             return $this->apiException($e, 'Advanced search failed');
         }
     }
 
-    public function actionAdvanceSearchPost(ParameterBag $params)
+    /**
+     * The member may search, as XenForo's search pages require.
+     *
+     * @return \XF\Http\Response|null an error reply, or null
+     */
+    protected function assertCanSearch()
     {
-        $keywords = $params->get('keywords', '');
-        $page = $params->get('page', 1);
-        $perpage = $params->get('perpage', 20);
-        $searchId = $params->get('searchId', '');
-        $titleOnly = $params->get('titleOnly', false);
-        $userId = $params->get('userId', '');
-        $searchUser = $params->get('searchUser', '');
-        $forumId = $params->get('forumId', '');
-        $topicId = $params->get('topicId', '');
-        $onlyIn = $params->get('onlyIn', []);
-        $notIn = $params->get('notIn', []);
-        $startedBy = $params->get('startedBy', false);
-        $searchTime = $params->get('searchTime', 0);
+        $error = null;
+        if (!\XF::visitor()->canSearch($error)) {
+            return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+        return null;
+    }
 
-        if (empty($keywords)) {
-            return $this->apiError('Search keywords are required', null, ErrorCode::VALIDATION);
+    /**
+     * Ids of the forums the visitor can view.
+     */
+    protected function getViewableForumIds(): array
+    {
+        $ids = [];
+        foreach ($this->repository('XF:Node')->getNodeList() as $node) {
+            if ($node->node_type_id === 'Forum') {
+                $ids[] = (int)$node->node_id;
+            }
+        }
+        return $ids;
+    }
+
+    /**
+     * Runs a XenForo search, or reuses the member's own earlier one when
+     * searchId names a search for the same words and type (as XenForo's
+     * results page does), then cuts out one page of viewable results.
+     *
+     * @param array $input search form input for prepareSearchQuery
+     * @param int $offset results to skip
+     * @param int $limit page size, at most 100
+     * @param int $searchId an earlier search's id, or 0
+     * @return array|\XF\Http\Response ['results' => entities, 'total' => int,
+     *                                 'searchId' => string|null], or an error reply
+     */
+    protected function runSearchPage(array $input, int $offset, int $limit, int $searchId)
+    {
+        $offset = max(0, $offset);
+        $limit = max(1, min(100, $limit));
+        $visitor = \XF::visitor();
+        $searcher = $this->app()->search();
+
+        $search = null;
+        if ($searchId) {
+            /** @var \XF\Entity\Search|null $existing */
+            $existing = $this->em()->find('XF:Search', $searchId);
+            $keywords = $this->app->stringFormatter()->censorText((string)$input['keywords'], '');
+            if ($existing
+                && $existing->user_id == $visitor->user_id
+                && $existing->search_type === $input['search_type']
+                && $existing->search_query === $keywords
+                && (!$existing->isValidColumn('search_grouping')
+                    || (bool)$existing->search_grouping === !empty($input['grouped']))
+            ) {
+                $search = $existing;
+            }
         }
 
-        try {
-            $visitor = \XF::visitor();
-            if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Build search input for advanced post search
-            $input = [
-                'search_type' => 'post', // Search for posts
-                'keywords' => $keywords,
-                'c' => [
-                    'title_only' => $titleOnly ? 1 : 0,
-                ],
-                'order' => 'date',
-            ];
-
-            // Apply user filter
-            if (!empty($userId)) {
-                // If userId is provided, we need to convert it to username
-                // because prepareSearchQuery expects usernames, not user IDs
-                $user = $this->em()->find('XF:User', (int)$userId);
-                if ($user) {
-                    $input['c']['users'] = $user->username;
-                } else {
-                    return $this->apiError('User not found: ' . $userId, null, ErrorCode::NOT_FOUND);
-                }
-            } elseif (!empty($searchUser)) {
-                // If searchUser (username) is provided, use that
-                $input['c']['users'] = $searchUser;
-            }
-
-            // Apply forum filters - combine forumId and onlyIn
-            $forumIds = [];
-            if (!empty($forumId)) {
-                $forumIds[] = (int)$forumId;
-            }
-            if (!empty($onlyIn) && is_array($onlyIn)) {
-                foreach ($onlyIn as $forum) {
-                    $forumIds[] = (int)$forum;
-                }
-            }
-            if (!empty($forumIds)) {
-                $input['c']['nodes'] = array_unique($forumIds);
-            }
-
-            // Note: notIn (exclude forums) is not directly supported by XenForo's search system
-            // This would require post-processing the results, which is inefficient
-            // The parameter is accepted but not applied to maintain API compatibility
-
-            if (!empty($topicId)) {
-                // Filter by specific thread
-                $input['c']['thread'] = (int)$topicId;
-            }
-
-            // Note: startedBy parameter applies to thread starters, not post authors
-            // For post search, this parameter is not applicable and is ignored
-
-            if ($searchTime > 0) {
-                // Filter by date (newer than)
-                // searchTime is expected to be a Unix timestamp
-                // Convert to datetime format expected by prepareSearchQuery
-                $input['c']['newer_than'] = date('Y-m-d H:i:s', (int)$searchTime);
-            }
-
-            // Prepare search query using XenForo's search system
+        if (!$search) {
             $query = $this->prepareSearchQuery($input, $constraints);
-            
             if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($query->getErrors());
             }
 
-            $searcher = $this->app()->search();
+            $error = null;
             if ($searcher->isQueryEmpty($query, $error)) {
-                return $this->apiError($error);
+                return $this->apiError($error ?: \XF::phrase('please_specify_search_query_or_name_of_member'), null, ErrorCode::VALIDATION);
             }
 
-            // Run search using XenForo's search repository
-            $searchRepo = $this->repository('XF:Search');
-            $search = $searchRepo->runSearch($query, $constraints, true);
-
+            $search = $this->repository('XF:Search')->runSearch($query, $constraints, true);
             if (!$search) {
-                $result = new FCSearchDataResultPost(
-                    true,
-                    null,
-                    0,
-                    $searchId ?: null,
-                    []
-                );
-                return $this->apiSuccess($result);
+                return ['results' => [], 'total' => 0, 'searchId' => null];
             }
-
-            // Get result set from search
-            $resultSet = $searcher->getResultSet($search->search_results);
-            
-            // Slice results to requested page
-            $resultSet->sliceResultsToPage($page, $perpage);
-            
-            // Limit to viewable results (respects permissions)
-            $resultSet->limitToViewableResults();
-            
-            // Get wrapped results
-            $resultsWrapped = $searcher->wrapResultsForRender($resultSet, [
-                'search' => $search,
-                'term' => $search->search_query,
-            ]);
-
-            // Convert to API format
-            $postList = [];
-            foreach ($resultsWrapped as $wrapper) {
-                $entity = $wrapper->getResult();
-                
-                // Only process post entities
-                if ($entity instanceof \XF\Entity\Post) {
-                    $postList[] = $this->convertPostToApiFormat($entity);
-                }
-            }
-
-            $result = new FCSearchDataResultPost(
-                true,
-                null,
-                (int)$search->result_count,
-                $searchId ?: $search->search_id,
-                $postList
-            );
-
-            return $this->apiSuccess($result);
-
-        } catch (\Exception $e) {
-            return $this->apiException($e, 'Advanced search failed');
         }
+
+        $resultSet = $searcher->getResultSet($search->search_results);
+        if (method_exists($resultSet, 'sliceResults')) {
+            $resultSet->sliceResults($offset, $limit);
+        } else {
+            $resultSet->sliceResultsToPage((int)floor($offset / $limit) + 1, $limit);
+        }
+        $resultSet->limitToViewableResults();
+
+        $results = [];
+        foreach ($searcher->wrapResultsForRender($resultSet, ['search' => $search, 'term' => $search->search_query]) as $wrapper) {
+            $results[] = $wrapper->getResult();
+        }
+
+        return [
+            'results' => $results,
+            'total' => (int)$search->result_count,
+            'searchId' => (string)$search->search_id,
+        ];
+    }
+
+    /**
+     * Topic rows for search results: threads, or the threads of post results
+     * (once each). Read and watch state for the whole page come from one
+     * query, rather than two per thread.
+     *
+     * @param array $results search result entities
+     * @param int $onlyTopicId when set, only this thread
+     */
+    protected function topicRowsForResults(array $results, int $onlyTopicId = 0): array
+    {
+        $threads = [];
+        foreach ($results as $entity) {
+            $thread = $entity instanceof \XF\Entity\Thread
+                ? $entity
+                : ($entity instanceof \XF\Entity\Post ? $entity->Thread : null);
+            if ($thread && !isset($threads[$thread->thread_id])
+                && (!$onlyTopicId || $thread->thread_id == $onlyTopicId)
+            ) {
+                $threads[$thread->thread_id] = $thread;
+            }
+        }
+
+        $visitorId = \XF::visitor()->user_id;
+        if ($threads && $visitorId) {
+            $this->finder('XF:Thread')
+                ->whereIds(array_keys($threads))
+                ->with(['Read|' . $visitorId, 'Watch|' . $visitorId])
+                ->fetch();
+        }
+
+        $rows = [];
+        foreach ($threads as $thread) {
+            $rows[] = $this->convertThreadToApiFormat($thread);
+        }
+        return $rows;
+    }
+
+    /**
+     * Post rows for search results (post results only).
+     */
+    protected function postRowsForResults(array $results): array
+    {
+        $rows = [];
+        foreach ($results as $entity) {
+            if ($entity instanceof \XF\Entity\Post) {
+                $rows[] = $this->convertPostToApiFormat($entity);
+            }
+        }
+        return $rows;
     }
 
     /**
@@ -719,6 +473,11 @@ class SearchController extends AbstractController
             $query->withMetadata('thread_type', $input['c.thread_type']);
         }
 
+        // One result per thread, as XenForo's "Search threads" (2.2+)
+        if ($input['grouped'] && method_exists($query, 'withGroupedResults')) {
+            $query->withGroupedResults();
+        }
+
         if ($input['order']) {
             $query->orderedBy($input['order']);
         }
@@ -788,7 +547,7 @@ class SearchController extends AbstractController
             'replyCount' => $thread->reply_count,
             'viewCount' => $thread->view_count,
             'hasNewPosts' => $thread->isUnread(),
-            'isClosed' => $thread->discussion_state === 'closed',
+            'isClosed' => !$thread->discussion_open,
             'isSubscribed' => $thread->isWatched(),
             'canSubscribe' => $thread->canWatch(),
             'url' => $this->buildLink('canonical:threads', $thread),
@@ -811,7 +570,7 @@ class SearchController extends AbstractController
             'canUpload' => false,
             'isBanned' => false,
             'isApproved' => $thread->discussion_state === 'visible',
-            'isDeleted' => false,
+            'isDeleted' => $thread->discussion_state === 'deleted',
             'isMoved' => false,
             'isMerged' => false,
             'realTopicId' => null,

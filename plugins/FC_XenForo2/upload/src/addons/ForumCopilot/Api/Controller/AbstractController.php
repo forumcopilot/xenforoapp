@@ -1310,7 +1310,8 @@ abstract class AbstractController extends Controller
             'replyCount' => $thread->reply_count,
             'viewCount' => $thread->view_count,
             'hasNewPosts' => $thread->isUnread(),
-            'isClosed' => $thread->discussion_state === 'closed',
+            // Locked threads: discussion_open (discussion_state is only visible/moderated/deleted)
+            'isClosed' => !$thread->discussion_open,
             'isSubscribed' => $threadWatchStatus['isWatched'],
             'canSubscribe' => $threadWatchStatus['canWatch'],
             'url' => $this->buildLink('canonical:threads', $thread),
@@ -1333,7 +1334,8 @@ abstract class AbstractController extends Controller
             'canUpload' => $canUpload,
             'isBanned' => false,
             'isApproved' => $thread->discussion_state === 'visible',
-            'isDeleted' => false,
+            // Soft-deleted threads, which getTopic lists for moderators who may see them
+            'isDeleted' => $thread->discussion_state === 'deleted',
             'isMoved' => false,
             'isMerged' => false,
             'realTopicId' => null,

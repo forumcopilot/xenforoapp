@@ -1071,11 +1071,9 @@ class AccountController extends AbstractController
             // XenForo refuses to delete the visitor's own account unless told to.
             $user->setOption('allow_self_delete', true);
 
-            // This device's remember key and two-step trust, while the
-            // account still exists.
+            // This device's remember key, while the account still exists.
             $login = $this->getLoginPlugin();
             $login->deleteVisitorRememberRecord(false);
-            $this->untrustThisDevice($userId);
 
             $deleter = $this->service('XF:User\Delete', $user);
             if (!$deleter->delete($errors)) {
@@ -1083,11 +1081,13 @@ class AccountController extends AbstractController
                 return $this->apiError(implode(' ', $messages) ?: 'The account could not be deleted.', null, ErrorCode::VALIDATION);
             }
 
-            // Its push registrations and app record (best effort: the
-            // account is gone either way), then this session.
+            // Its push registrations, app record and this device's two-step
+            // trust (best effort: the account is gone either way), then
+            // this session.
             try {
                 $this->repository('ForumCopilot:DeviceToken')->deleteForUser($userId);
                 \XF::db()->delete('xf_fc_user', 'user_id = ?', $userId);
+                $this->untrustThisDevice($userId);
             } catch (\Exception $e) {
                 \XF::logException($e, false, 'ForumCopilot: deleteAccount device tokens: ');
             }

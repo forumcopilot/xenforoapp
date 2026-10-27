@@ -41,6 +41,14 @@ class FCUser
     
     private $canSendPMSet = false;
 
+    /**
+     * Fields sent only when given (the signed-in member's own login reply):
+     * email, canPM, canModerate, canSearch.
+     *
+     * @var array
+     */
+    private $ownFields = [];
+
     public function __construct($data = [])
     {
         $this->id = $data['id'] ?? '';
@@ -72,6 +80,11 @@ class FCUser
         $this->signature = $data['signature'] ?? null;
         $this->canFollow = $data['canFollow'] ?? false;
         $this->canIgnore = $data['canIgnore'] ?? false;
+        foreach (['email', 'canPM', 'canModerate', 'canSearch'] as $key) {
+            if (array_key_exists($key, $data)) {
+                $this->ownFields[$key] = $data[$key];
+            }
+        }
         if (array_key_exists('canSendPM', $data)) {
             $this->canSendPM = $data['canSendPM'];
             $this->canSendPMSet = true;
@@ -120,7 +133,7 @@ class FCUser
         if ($this->canSendPMSet) {
             $data['canSendPM'] = $this->canSendPM;
         }
-        
-        return $data;
+
+        return array_merge($data, $this->ownFields);
     }
 }

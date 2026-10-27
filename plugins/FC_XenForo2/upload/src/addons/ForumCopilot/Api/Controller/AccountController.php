@@ -32,6 +32,11 @@ class AccountController extends AbstractController
      */
     protected const REGISTER_START_KEY = 'fcRegisterStart';
 
+    /**
+     * Signs the app in: with a passkey (webauthn_payload, from
+     * getPasskeyChallenge), or with name and password, then two-step when
+     * the member has it (tfaRequired, then again with tfaCode).
+     */
     public function actionLogin(ParameterBag $params)
     {
         // Check for passkey-only login (webauthn_payload present)
@@ -43,27 +48,51 @@ class AccountController extends AbstractController
 
             try {
                 $webauthnChallenge = $params->get('webauthn_challenge', '');
+                $webauthnChallenge = is_string($webauthnChallenge) ? $webauthnChallenge : '';
                 $challengeService = $this->app->service(\ForumCopilot\Service\PasskeyChallengeService::class);
+                $session = $this->session();
+                $ip = (string)$this->request->getIp();
+
+                // XenForo's login limits, before and after the check, as its
+                // own passkey sign-in has them (Pub\Controller\Login::actionLogin).
+                if ($challengeService->hasTooManyLoginAttempts($ip)) {
+                    $challengeService->clearStoredChallenge($session);
+                    return $this->loginLimitedError();
+                }
+
                 $error = null;
-                $passkey = $challengeService->validateAssertion($this->session(), $webauthnChallenge, $webauthnPayload, $error);
+                $passkey = $challengeService->validateAssertion($session, $webauthnChallenge, $webauthnPayload, $error);
+                // A challenge answers one sign-in, whatever the outcome.
+                $challengeService->clearStoredChallenge($session);
                 if ($passkey === null) {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError($error ?: 'Passkey verification failed', null, ErrorCode::VALIDATION);
+                    return $this->apiError($error ?: \XF::phrase('given_passkey_or_security_key_could_not_be_verified'), null, ErrorCode::VALIDATION);
                 }
                 $user = $passkey->User;
                 if (!$user) {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError('Could not identify user from passkey', null, ErrorCode::VALIDATION);
+                    return $this->apiError(\XF::phrase('given_passkey_or_security_key_could_not_be_verified'), null, ErrorCode::VALIDATION);
+                }
+                if ($challengeService->hasTooManyLoginAttempts($ip, $user->username)) {
+                    return $this->loginLimitedError();
                 }
                 if ($refusal = $this->signInRefusal($user)) {
-                    $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError($refusal);
+                    return $refusal;
                 }
-                $challengeService->clearStoredChallenge($this->session());
-                $challengeService->updatePasskeyLastUse($passkey, $this->request->getIp());
+                $challengeService->clearFailedAttempts($ip, $user->username);
+                $challengeService->updatePasskeyLastUse($passkey, $ip);
+
+                // A passkey is two-step on its own (in 2.3 a member with one
+                // is a two-step member): XenForo trusts the device on a
+                // passkey sign-in (LoginPlugin::setDeviceTrusted). Without
+                // it the remember cookie could not sign the app back in once
+                // its session lapses, and the member was signed out.
+                if ($this->getTfaRepository()->isUserTfaConfirmationRequired($user, $this->request->getCookie('tfa_trust'))) {
+                    $this->trustThisDevice($user);
+                }
 
                 // Complete login using XenForo native flow (handles remember cookie and login IP log)
                 $loginPlugin = $this->getLoginPlugin();
+                // The passkey may answer a two-step prompt of a password sign-in.
+                $loginPlugin->clearTfaSessionCheck();
                 $remember = (bool)$params->get('remember', true);
                 $loginPlugin->completeLogin($user, $remember);
 
@@ -75,14 +104,6 @@ class AccountController extends AbstractController
                 return $this->apiSuccess($result);
                 
             } catch (\Exception $e) {
-                $logFile = \XF::getRootDirectory() . '/internal_data/forumcopilot_passkey.log';
-                $logPrefix = '[' . date('c') . ']';
-                $requestIp = $this->request->getIp();
-                file_put_contents(
-                    $logFile,
-                    $logPrefix . ' passkey_only_login_exception ip=' . $requestIp . ' error=' . $e->getMessage() . PHP_EOL,
-                    FILE_APPEND
-                );
                 return $this->apiException($e, 'Passkey login failed');
             }
         }
@@ -104,7 +125,7 @@ class AccountController extends AbstractController
             
             // Check for rate limiting (brute force protection)
             if ($loginService->isLoginLimited($limitType)) {
-                return $this->apiError('Your account has temporarily been locked due to failed login attempts', null, ErrorCode::FLOOD);
+                return $this->loginLimitedError($limitType);
             }
 
             // Validate password using LoginService (handles failed attempts, password upgrades, etc.)
@@ -115,14 +136,16 @@ class AccountController extends AbstractController
             }
 
             if ($refusal = $this->signInRefusal($user)) {
-                return $this->apiError($refusal);
+                return $refusal;
             }
 
-            // Check if user has two-factor authentication enabled
+            // Two-step, when XenForo would ask for it here: the member uses it,
+            // two-step is on for the forum, and this device holds no trust
+            // (LoginPlugin::triggerIfTfaConfirmationRequired).
             $tfaRepo = $this->getTfaRepository();
             $tfaService = $this->getTfaService($user);
             
-            if ($tfaRepo->userRequiresTfa($user)) {
+            if ($tfaRepo->isUserTfaConfirmationRequired($user, $this->request->getCookie('tfa_trust'))) {
                 // TFA is required for this user
                 $tfaCode = $params->get('tfaCode', '');
                 
@@ -223,7 +246,7 @@ class AccountController extends AbstractController
                 
                 // Check rate limiting for TFA attempts
                 if ($tfaService->hasTooManyTfaAttempts()) {
-                    return $this->apiError('Your account has temporarily been locked due to failed login attempts', null, ErrorCode::FLOOD);
+                    return $this->apiError(\XF::phrase('your_account_has_temporarily_been_locked_due_to_failed_login_attempts'), null, ErrorCode::FLOOD);
                 }
                 
                 // Handle passkey provider differently from code-based providers
@@ -240,12 +263,18 @@ class AccountController extends AbstractController
                     if (empty($webauthnChallenge)) {
                         return $this->apiError('webauthn_challenge is required for passkey verification', null, ErrorCode::BAD_REQUEST);
                     }
+                    // The add-on's Tfa service extension (PasskeyTfaVerifyTrait)
+                    // checks this against the app's own challenge and this
+                    // member's passkeys.
                     $this->request->set('webauthn_challenge', $webauthnChallenge);
                     $this->request->set('webauthn_payload', $webauthnPayload);
                     $this->request->set('confirm', true);
                     $verified = $tfaService->verify($this->request, $providerId);
                     if (!$verified) {
-                        return $this->apiError('Passkey verification failed', null, ErrorCode::VALIDATION);
+                        // Counted towards the two-step attempt limits, as
+                        // TfaService::verify does for the other providers.
+                        $this->repository('XF:TfaAttempt')->logFailedTfaAttempt($user->user_id);
+                        return $this->apiError(\XF::phrase('given_passkey_or_security_key_could_not_be_verified'), null, ErrorCode::VALIDATION);
                     }
                 } else {
                     // Code-based TFA verification (totp, email, backup)
@@ -272,7 +301,7 @@ class AccountController extends AbstractController
                     }
                     
                     if (!$verified) {
-                        return $this->apiError('Invalid two-factor authentication code', null, ErrorCode::VALIDATION);
+                        return $this->apiError(\XF::phrase('two_step_verification_value_could_not_be_confirmed'), null, ErrorCode::VALIDATION);
                     }
                 }
                 
@@ -328,13 +357,6 @@ class AccountController extends AbstractController
                 'timeout' => 60000
             ]);
         } catch (\Exception $e) {
-            $logFile = \XF::getRootDirectory() . '/internal_data/forumcopilot_passkey.log';
-            $logPrefix = '[' . date('c') . ']';
-            file_put_contents(
-                $logFile,
-                $logPrefix . ' get_passkey_challenge_fail ip=' . $this->request->getIp() . ' error=' . $e->getMessage() . PHP_EOL,
-                FILE_APPEND
-            );
             return $this->apiException($e, 'Failed to generate passkey challenge');
         }
     }
@@ -345,19 +367,26 @@ class AccountController extends AbstractController
     }
 
     /**
-     * Why [$user] may not sign the app in, or null if they may; the same for
-     * every way in (password, passkey, website).
+     * The error for why [$user] may not sign the app in, or null if they
+     * may; the same for every way in (password, passkey, website). A banned
+     * or rejected member sees the reason (and the ban's end) as XenForo's
+     * Error plugin words it.
+     *
+     * @return \XF\Http\Response|null
      */
-    protected function signInRefusal(\XF\Entity\User $user): ?string
+    protected function signInRefusal(\XF\Entity\User $user)
     {
         if ($user->is_banned) {
-            return 'Account is banned';
+            return $this->apiError($this->refusalText($user, 'actionBanned'), null, ErrorCode::BANNED);
         }
-        if ($user->user_state === 'disabled' || $user->user_state === 'rejected') {
-            return 'Account is not available';
+        if ($user->user_state === 'rejected') {
+            return $this->apiError($this->refusalText($user, 'actionRejected'), null, ErrorCode::ACCOUNT_DISABLED);
+        }
+        if ($user->user_state === 'disabled') {
+            return $this->apiError($this->refusalText($user, 'actionDisabled'), null, ErrorCode::ACCOUNT_DISABLED);
         }
         if ($user->security_lock) {
-            return 'Your account is currently security locked';
+            return $this->apiError(\XF::phrase('your_account_is_currently_security_locked'), null, ErrorCode::SECURITY_LOCKED);
         }
 
         // Every other API method refuses members without "View the board"
@@ -368,10 +397,39 @@ class AccountController extends AbstractController
         // account is ready the API answers them getConfig,
         // resendEmailConfirmation and logout, and tells them why otherwise.
         if (!$user->hasPermission('general', 'view') && !$this->isAwaitingMember($user)) {
-            return self::NO_BOARD_ACCESS_MESSAGE;
+            return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE, null, ErrorCode::NO_PERMISSION);
         }
 
         return null;
+    }
+
+    /**
+     * The text of one of XenForo's Error plugin pages (actionBanned,
+     * actionRejected, actionDisabled) for [$user], who is not the visitor
+     * yet while signing in.
+     */
+    protected function refusalText(\XF\Entity\User $user, string $errorAction): string
+    {
+        $errorPlugin = $this->plugin('XF:Error');
+        return \XF::asVisitor($user, function () use ($errorPlugin, $errorAction) {
+            return $this->replyText($errorPlugin->$errorAction());
+        });
+    }
+
+    /**
+     * The reply when XenForo's login limits are hit. Where the forum shows a
+     * captcha instead of refusing (loginLimit "captcha"), the app cannot show
+     * it: signInOnWebsite says the member can still sign in through the
+     * website (browser sign-in).
+     */
+    protected function loginLimitedError(?string $limitType = null)
+    {
+        return $this->apiError(
+            \XF::phrase('your_account_has_temporarily_been_locked_due_to_failed_login_attempts'),
+            null,
+            ErrorCode::FLOOD,
+            $limitType === 'captcha' ? ['signInOnWebsite' => true] : []
+        );
     }
 
     /**
@@ -446,8 +504,9 @@ class AccountController extends AbstractController
             'isOnline' => true,
             'acceptsPM' => $user->canReceiveConversation(), // Check if user can receive conversations
             'canSendPM' => $canSendPM,
-            'canModerate' => $user->is_moderator,
-            'canSearch' => $user->canSearch(),
+            'canPM' => $canSendPM,
+            'canModerate' => (bool)$user->is_moderator,
+            'canSearch' => (bool)$user->canSearch(),
             'userState' => $user->user_state, // Include user state so app can show appropriate message
         ]);
 
@@ -456,9 +515,11 @@ class AccountController extends AbstractController
         $canProfile = $user->canViewFullProfile();
         $canUploadAvatar = $user->canUploadAvatar();
 
-        // Get attachment permissions (user-specific)
-        $canUploadAttachment = $user->canUploadAndManageAttachments('forum');
-        $canUploadConversationAttachment = $user->canUploadAndManageAttachments('conversation');
+        // Get attachment permissions (user-specific). What 2.3's
+        // User::canUploadAndManageAttachments() checks, written out so it
+        // works on 2.2 too.
+        $canUploadAttachment = $user->user_id && $user->hasPermission('forum', 'uploadAttachment');
+        $canUploadConversationAttachment = $user->user_id && $user->hasPermission('conversation', 'uploadAttachment');
 
         // Get attachment constraints from XenForo options (global settings)
         $options = $this->app()->options();
@@ -907,7 +968,7 @@ class AccountController extends AbstractController
             return $this->apiError('The sign-in has expired. Please try again.', null, ErrorCode::VALIDATION);
         }
         if ($refusal = $this->signInRefusal($user)) {
-            return $this->apiError($refusal);
+            return $refusal;
         }
 
         try {

@@ -20,40 +20,25 @@ class ConfigController extends AbstractController
         // Explicitly cast to boolean to ensure true/false, not 0/1
         $isOpen = (bool)$options->boardActive;
         
-        // Check if guests can access the forum (check if there are any viewable nodes for guests)
-        $guestOkay = true; // Default to true
-        if (!$visitor->user_id) {
-            // For guests, check if they can view any nodes
-            $nodeRepo = $this->repository('XF:Node');
-            $nodes = $nodeRepo->getNodeList();
-            $guestOkay = false;
-            foreach ($nodes as $node) {
+        // What guests may do, from XenForo's guest user (there is no user 0
+        // row to look up, so these were always false before 1.11.0)
+        $guest = $this->repository('XF:User')->getGuestUser();
+        $guestOkay = (bool)\XF::asVisitor($guest, function () {
+            foreach ($this->repository('XF:Node')->getNodeList() as $node) {
                 if ($node->canView()) {
-                    $guestOkay = true;
-                    break;
+                    return true;
                 }
             }
+            return false;
+        });
+        $guestSearch = (bool)$guest->canSearch();
+        $guestWhosOnline = (bool)$guest->canViewMemberList();
+
+        // Optional (1.11.0): dismiss a notice, as XenForo's notice close button does
+        $dismissNoticeId = (int)$params->get('dismissNoticeId', 0);
+        if ($dismissNoticeId && $visitor->user_id) {
+            $this->dismissNotice($dismissNoticeId);
         }
-        // Explicitly cast to boolean
-        $guestOkay = (bool)$guestOkay;
-        
-        // Check if guests can search
-        $guestSearch = false;
-        // Check guest search permission by checking if guest user (user_id = 0) has search permission
-        $guestUser = $this->em()->find('XF:User', 0);
-        if ($guestUser) {
-            $guestSearch = $guestUser->canSearch();
-        }
-        // Explicitly cast to boolean
-        $guestSearch = (bool)$guestSearch;
-        
-        // Check if guests can view who's online
-        $guestWhosOnline = false;
-        if ($guestUser) {
-            $guestWhosOnline = $guestUser->canViewMemberList();
-        }
-        // Explicitly cast to boolean
-        $guestWhosOnline = (bool)$guestWhosOnline;
         
         $addOn = \XF::app()->addOnManager()->getById('ForumCopilot');
         $addOnVersion = $addOn ? $addOn->version_string : 'unknown';
@@ -79,7 +64,8 @@ class ConfigController extends AbstractController
         $config = [
             'version' => $addOnVersion,
             'systemVersion' => \XF::$version,
-            'phpVersion' => phpversion(),
+            // Not used by the app; the server's PHP version is nobody's business
+            'phpVersion' => '',
             'hookVersion' => '1.0',
             'apiLevel' => '4',
             'releaseTimestamp' => (string)(time() * 1000),
@@ -99,9 +85,9 @@ class ConfigController extends AbstractController
             'passwordType' => 'bcrypt',
             'conversation' => true,
             'getTopicStatus' => false,
-            'getParticipatedForum' => false,
+            'getParticipatedForum' => true,
             'updateProfile' => true,
-            'userId' => '',
+            'userId' => $visitor->user_id ? (string)$visitor->user_id : '',
             // The signed-in member's state (valid, email_confirm, moderated,
             // ...), so the app sees a new member's account become ready.
             'userState' => $visitor->user_id ? (string)$visitor->user_state : '',
@@ -111,10 +97,11 @@ class ConfigController extends AbstractController
             'advancedMerge' => false,
             'advancedMove' => false,
             'pushType' => 'fcm',
-            'push' => 'enabled',
+            'push' => $options->fc_push_enabled ? 'enabled' : 'disabled',
             'contentEncoding' => 'gzip',
             'contentType' => 'application/json',
-            'loginWithEmail' => false,
+            // XenForo's login takes a user name or an email address
+            'loginWithEmail' => true,
             'apiKey' => '', // Will be set by client
             'forumType' => 'xenforo',
             'canViewChat' => $canViewChat,
@@ -124,11 +111,152 @@ class ConfigController extends AbstractController
             'accountDeletion' => (bool)$options->fc_account_deletion,
             // Members can sign the app in through the website (Pub\Controller\AppLogin).
             'browserLoginSchemes' => array_values(preg_split('/[\s,]+/', strtolower((string)$options->fc_app_login_schemes), -1, PREG_SPLIT_NO_EMPTY)),
+
+            // 1.11.0. advancedSearch is what the app already assumed when it
+            // was missing: its Search tab uses advanceSearchTopic/Post.
+            'advancedSearch' => true,
+            'minSearchLength' => (int)$options->searchMinWordLength,
+            'disableSearch' => !$options->enableSearch,
+            'boardInactiveMessage' => $isOpen ? '' : $this->plainText($options->boardInactiveMessage),
+            'canSearch' => (bool)$visitor->canSearch(),
+            'canStartConversation' => (bool)$visitor->canStartConversation(),
+            'canUploadAvatar' => (bool)$visitor->canUploadAvatar(),
+            'isModerator' => (bool)$visitor->is_moderator,
+            'notices' => $this->getNotices(),
+            'tosUrl' => $this->getAbsoluteUrl((string)$this->app->container('tosUrl')),
+            'privacyPolicyUrl' => $this->getAbsoluteUrl((string)$this->app->container('privacyPolicyUrl')),
+            'contactUrl' => $this->getAbsoluteUrl((string)$this->app->container('contactUrl')),
+            'helpPages' => $this->getHelpPages(),
+            'policyAcceptance' => $this->getPolicyAcceptance(),
         ];
 
         // Create FCConfigResult object and return it
         $configResult = new FCConfigResult($config);
         return $this->apiSuccess($configResult->toArray());
+    }
+
+    /**
+     * The notices XenForo would show this visitor on a page with no page
+     * criteria (Pub\App::getNoticeList): active, matching the visitor's user
+     * criteria, not dismissed. Notices limited to particular pages don't
+     * show, as the app has no such pages.
+     */
+    protected function getNotices(): array
+    {
+        if (!$this->options()->enableNotices) {
+            return [];
+        }
+
+        try {
+            $class = $this->app->extendClass('XF\NoticeList');
+            /** @var \XF\NoticeList $noticeList */
+            $noticeList = new $class($this->app, \XF::visitor(), []);
+
+            $visitor = \XF::visitor();
+            $dismissed = $this->session()->dismissedNotices;
+            if (!is_array($dismissed) && $visitor->user_id) {
+                $dismissed = $this->repository('XF:Notice')->getDismissedNoticesForUser($visitor);
+            }
+            if (is_array($dismissed)) {
+                $noticeList->setDismissed($dismissed);
+            }
+
+            foreach ($this->app->container('notices') as $key => $notice) {
+                $noticeList->addConditionalNotice($key, $notice['notice_type'], $notice['message'], $notice);
+            }
+
+            $notices = [];
+            foreach ($noticeList->getNotices() as $type => $typeNotices) {
+                foreach ($typeNotices as $key => $notice) {
+                    $notices[] = [
+                        'id' => (string)$key,
+                        'type' => (string)$type,
+                        'title' => (string)($notice['title'] ?? ''),
+                        'message' => $this->plainText($notice['message']),
+                        'messageHtml' => (string)$notice['message'],
+                        'dismissible' => !empty($notice['dismissible']) && $visitor->user_id,
+                        'displayStyle' => (string)($notice['display_style'] ?? ''),
+                    ];
+                }
+            }
+            return $notices;
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'Forum Copilot getConfig notices: ');
+            return [];
+        }
+    }
+
+    /**
+     * Dismisses a notice for the visitor, as AccountController::actionDismissNotice.
+     */
+    protected function dismissNotice(int $noticeId)
+    {
+        $notice = $this->em()->find('XF:Notice', $noticeId);
+        $error = null;
+        if ($notice && $notice->canDismissNotice($error)) {
+            $this->repository('XF:Notice')->dismissNotice($notice, \XF::visitor());
+            $this->session()->remove('dismissedNotices');
+        }
+    }
+
+    /**
+     * Active help pages with their web addresses, as XenForo's help index lists
+     * them (terms and privacy policy only when their links are on).
+     */
+    protected function getHelpPages(): array
+    {
+        $pages = [];
+        try {
+            $privacyPolicyUrl = $this->app->container('privacyPolicyUrl');
+            $tosUrl = $this->app->container('tosUrl');
+            foreach ($this->repository('XF:HelpPage')->findActiveHelpPages()->fetch() as $page) {
+                if (($page->page_id == 'privacy_policy' && !$privacyPolicyUrl)
+                    || ($page->page_id == 'terms' && !$tosUrl)
+                ) {
+                    continue;
+                }
+                $pages[] = [
+                    'id' => (string)$page->page_id,
+                    'title' => (string)$page->title,
+                    'url' => $this->buildLink('canonical:help', $page),
+                ];
+            }
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'Forum Copilot getConfig help pages: ');
+        }
+        return $pages;
+    }
+
+    /**
+     * Whether the member still has to accept updated terms or privacy policy,
+     * which the website asks before anything else
+     * (Pub\Controller\AbstractController::assertPolicyAcceptance). Reported
+     * only: the app isn't refused, as 1.x apps have no screen to accept on.
+     */
+    protected function getPolicyAcceptance(): array
+    {
+        $options = $this->options();
+        $visitor = \XF::visitor();
+        $privacyPolicyUrl = (string)$this->app->container('privacyPolicyUrl');
+        $tosUrl = (string)$this->app->container('tosUrl');
+
+        $privacyRequired = false;
+        $termsRequired = false;
+        if ($visitor->user_id && isset($options->privacyPolicyLastUpdate, $options->termsLastUpdate)) {
+            $privacyRequired = $options->privacyPolicyLastUpdate && $privacyPolicyUrl
+                && $visitor->privacy_policy_accepted < $options->privacyPolicyLastUpdate;
+            $termsRequired = $options->termsLastUpdate && $tosUrl
+                && $visitor->terms_accepted < $options->termsLastUpdate;
+        }
+
+        return [
+            'required' => $privacyRequired || $termsRequired,
+            'privacyRequired' => (bool)$privacyRequired,
+            'termsRequired' => (bool)$termsRequired,
+            'acceptUrl' => ($privacyRequired || $termsRequired)
+                ? $this->buildLink('canonical:misc/' . ($privacyRequired ? 'accept-privacy-policy' : 'accept-terms'))
+                : '',
+        ];
     }
 
     /**

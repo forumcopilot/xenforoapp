@@ -68,6 +68,46 @@ class FCConfigResult
     /** @var string The signed-in member's state (valid, email_confirm, moderated, ...); empty for a guest */
     public $userState = '';
 
+    // 1.11.0
+
+    /** @var bool The app's search uses advanceSearchTopic/Post (what apps assumed when it was missing) */
+    public $advancedSearch = true;
+
+    /** @var int XenForo's minimum search word length */
+    public $minSearchLength = 3;
+
+    /** @var bool Search is switched off on this forum */
+    public $disableSearch = false;
+
+    /** @var string Why the board is closed (plain text); empty when open */
+    public $boardInactiveMessage = '';
+
+    /** @var bool The visitor may search */
+    public $canSearch = false;
+
+    /** @var bool The visitor may start direct messages */
+    public $canStartConversation = false;
+
+    /** @var bool The visitor may upload an avatar */
+    public $canUploadAvatar = false;
+
+    /** @var bool The visitor is a moderator */
+    public $isModerator = false;
+
+    /** @var array<int, array<string, mixed>> Notices for the visitor: id, type, title, message, messageHtml, dismissible, displayStyle */
+    public $notices = [];
+
+    /** @var string Terms, privacy policy and contact pages; empty when the forum has none */
+    public $tosUrl = '';
+    public $privacyPolicyUrl = '';
+    public $contactUrl = '';
+
+    /** @var array<int, array<string, string>> Help pages: id, title, url */
+    public $helpPages = [];
+
+    /** @var array{required: bool, privacyRequired: bool, termsRequired: bool, acceptUrl: string} Updated policies the member hasn't accepted */
+    public $policyAcceptance = [];
+
     public function __construct($data = [])
     {
         // Set all properties from data array

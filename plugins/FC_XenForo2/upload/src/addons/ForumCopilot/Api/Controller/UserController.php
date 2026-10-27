@@ -516,11 +516,11 @@ class UserController extends AbstractController
         // Use SessionActivityFinder with proper filtering
         $finder = $this->finder('XF:SessionActivity');
         
-        // Restrict to members only (excludes guests and robots)
+        // Restrict to members only (excludes guests and robots). This also
+        // hides members who hide their online status, unless the visitor
+        // may override privacy, as XenForo's online list
+        // (SessionActivityFinder::applyMemberVisibilityRestriction).
         $finder->restrictType('member');
-        
-        // Apply member visibility restrictions (respects privacy settings)
-        $finder->applyMemberVisibilityRestriction();
         
         // Only include active sessions (within online timeout)
         $finder->activeOnly();
@@ -541,8 +541,10 @@ class UserController extends AbstractController
         // Get total count BEFORE applying limit
         $total = $finder->total();
         
-        // Apply pagination
-        $finder->limit($fcParams->perpage, ($fcParams->page - 1) * $fcParams->perpage);
+        // Apply pagination. At most 50 per page (or the online list's page
+        // size, membersPerPage, if larger).
+        $perPage = min((int)$fcParams->perpage, max(50, (int)$this->options()->membersPerPage));
+        $finder->limit($perPage, ((int)$fcParams->page - 1) * $perPage);
 
         $sessions = $finder->fetch();
 
@@ -556,29 +558,57 @@ class UserController extends AbstractController
 
         $userList = [];
         foreach ($sessions as $session) {
-            // User should already be filtered by restrictType and visibility, but double-check
-            if ($session->User && $session->User->user_state === 'valid') {
-                $description = $session->description;
-                $itemUrl = $session->getItemUrl();
-                $userList[] = [
-                    'id' => (string)$session->User->user_id,
-                    'username' => $session->User->username,
-                    'iconUrl' => $this->getAbsoluteUrl($session->User->getAvatarUrl('s')),
-                    'isOnline' => true,
-                    // Human-readable activity string for direct display
-                    // (e.g. "Viewing thread Foo", "Using Forum Copilot Mobile App").
-                    // Renders Phrase objects to their localised string form.
-                    'currentActivity' => $description !== null ? (string)$description : null,
-                    // Optional click-through URL the web /online/ page links to
-                    // (e.g. the thread URL when viewing a thread, or the
-                    // admin-configured /getapps URL for mobile-app sessions).
-                    'currentActivityUrl' => $itemUrl !== false && $itemUrl !== null
-                        ? $this->getAbsoluteUrl($itemUrl)
-                        : null,
-                    'currentTopicId' => $session->params['thread_id'] ?? null,
-                    'lastActivityTime' => $session->view_date * 1000,
-                ];
+            // restrictType('member') already keeps only sessions with a user
+            // the visitor may see, as on XenForo's online list; rows are not
+            // dropped here, so the list matches total.
+            $user = $session->User;
+            if (!$user) {
+                continue;
             }
+
+            // What the member is doing, only when they show it: XenForo's
+            // online list shows it only if User::canViewCurrentActivity()
+            // (template online_list; Templater::fnUserActivity). Otherwise
+            // the three fields are null.
+            $canViewActivity = method_exists($user, 'canViewCurrentActivity')
+                ? $user->canViewCurrentActivity()
+                : $user->canViewOnlineStatus();
+
+            $currentActivity = null;
+            $currentActivityUrl = null;
+            $currentTopicId = null;
+            if ($canViewActivity) {
+                $description = $session->description;
+                $itemUrl = $session->item_url;
+                // Human-readable activity string for direct display
+                // (e.g. "Viewing thread", "Using Forum Copilot Mobile App").
+                // Renders Phrase objects to their localised string form.
+                $currentActivity = $description !== null ? (string)$description : null;
+                // Optional click-through URL the web /online/ page links to
+                // (e.g. the thread URL when viewing a thread, or the
+                // admin-configured /getapps URL for mobile-app sessions).
+                $currentActivityUrl = $itemUrl !== false && $itemUrl !== null
+                    ? $this->getAbsoluteUrl($itemUrl)
+                    : null;
+                // The thread id only when XenForo resolved its title, which it
+                // does only for threads the visitor may view
+                // (ThreadController::getActivityDetails)
+                $threadId = $session->params['thread_id'] ?? null;
+                if ($threadId && $session->item_title) {
+                    $currentTopicId = (string)$threadId;
+                }
+            }
+
+            $userList[] = [
+                'id' => (string)$user->user_id,
+                'username' => $user->username,
+                'iconUrl' => $this->getAbsoluteUrl($user->getAvatarUrl('s')),
+                'isOnline' => true,
+                'currentActivity' => $currentActivity,
+                'currentActivityUrl' => $currentActivityUrl,
+                'currentTopicId' => $currentTopicId,
+                'lastActivityTime' => $session->view_date * 1000,
+            ];
         }
 
         $result = new FCOnlineUserResult(

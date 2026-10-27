@@ -902,8 +902,13 @@ class AccountController extends AbstractController
             $passwordChange->setLogIp(true);
             $passwordChange->setNotify(true);
             // Handled below, as XenForo's own password page does
-            // (Pub\Controller\Account::actionSecuritySave).
-            $passwordChange->setInvalidateRememberKeys(false);
+            // (Pub\Controller\Account::actionSecuritySave). Both calls need a
+            // 2.2 check, so they are made only where they exist.
+            $handleChange = method_exists($passwordChange, 'setInvalidateRememberKeys')
+                && method_exists($this->getLoginPlugin(), 'handleVisitorPasswordChange');
+            if ($handleChange) {
+                $passwordChange->setInvalidateRememberKeys(false);
+            }
 
             // Validate before saving
             if (!$passwordChange->isValid($error)) {
@@ -922,7 +927,9 @@ class AccountController extends AbstractController
             // and updates the session's password date. Without it the change
             // ended the app's own session, and the app had to sign in again
             // with the new password.
-            $this->getLoginPlugin()->handleVisitorPasswordChange();
+            if ($handleChange) {
+                $this->getLoginPlugin()->handleVisitorPasswordChange();
+            }
 
             // The signed-out devices' push registrations (the UserProfile
             // class extension does this for every password change once it

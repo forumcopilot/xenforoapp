@@ -765,9 +765,12 @@ abstract class AbstractController extends Controller
      * Returns an array of like information with userId, username, avatarUrl, and timestamp
      * 
      * @param \XF\Entity\Post $post The post entity
+     * @param array|null $reactions The post's reactions when already read for
+     *                              the whole page (ReactionContent entities);
+     *                              null reads them here
      * @return array Array of like information
      */
-    protected function getPostLikesInfo($post)
+    protected function getPostLikesInfo($post, ?array $reactions = null)
     {
         $likesInfo = [];
         
@@ -781,14 +784,13 @@ abstract class AbstractController extends Controller
                 return $likesInfo;
             }
             
-            // Use XenForo's repository method to find reactions properly
-            $reactionRepo = $this->repository('XF:Reaction');
-            
-            // Use the proper method to find content reactions with all relations loaded
-            $finder = $reactionRepo->findContentReactions('post', $post->post_id);
-            
-            // Fetch reactions
-            $reactions = $finder->fetch();
+            if ($reactions === null) {
+                // Use XenForo's repository method to find reactions properly,
+                // with all relations loaded
+                $reactions = $this->repository('XF:Reaction')
+                    ->findContentReactions('post', $post->post_id)
+                    ->fetch();
+            }
             
             foreach ($reactions as $reactionContent) {
                 try {

@@ -229,14 +229,7 @@ class PostController extends AbstractController
         // so posts made in the same second keep their place across pages
         $finder->order([['position', 'ASC'], ['post_date', 'ASC'], ['post_id', 'ASC']]);
 
-        // Load Thread relationship with Forum for proper permission checks (needed for canEdit/canDelete)
-        $finder->with(['Thread', 'Thread.Forum', 'Thread.Forum.Node']);
-
-        // Load visitor's reaction if logged in (needed for isReactedTo check)
-        $visitor = \XF::visitor();
-        if ($visitor->user_id) {
-            $finder->with(['Reactions|' . $visitor->user_id]);
-        }
+        $finder->with($this->getThreadPostListWith());
 
         // Offset should be startNum - 1 (since position 1 = offset 0)
         $finder->limit($perPage, $startNum - 1);
@@ -248,6 +241,31 @@ class PostController extends AbstractController
     }
 
     /**
+     * Relations loaded with a page of posts, as XenForo's thread page loads
+     * them (the Post entity's "full" set): the author with profile and,
+     * where online status is shown, activity; the visitor's own reaction.
+     * Without them each post cost several queries.
+     */
+    protected function getThreadPostListWith(): array
+    {
+        // The thread and forum for the permission checks (canEdit, canDelete, ...)
+        $with = ['Thread', 'Thread.Forum', 'Thread.Forum.Node', 'User', 'User.Profile'];
+
+        $userRelations = $this->em()->getEntityStructure('XF:User')->relations;
+        if ($this->options()->showMessageOnlineStatus && isset($userRelations['Activity'])) {
+            $with[] = 'User.Activity';
+        }
+
+        $visitorId = \XF::visitor()->user_id;
+        if ($visitorId) {
+            // Needed for isReactedTo
+            $with[] = 'Reactions|' . $visitorId;
+        }
+
+        return $with;
+    }
+
+    /**
      * The app's post rows for a page of a thread.
      *
      * @param \XF\Entity\Thread $thread
@@ -256,9 +274,18 @@ class PostController extends AbstractController
      */
     protected function buildThreadPostRows(\XF\Entity\Thread $thread, $posts): array
     {
+        if (!$posts->count()) {
+            return [];
+        }
+
+        // Attachments for the whole page in one query, only for posts that
+        // have some, as ThreadPlugin::fetchExtraContentForPostsFullView does
+        $this->repository('XF:Attachment')->addAttachmentsToContent($posts, 'post');
+
         $context = [
             // XenForo shows online status beside messages only with this option on
             'showOnline' => (bool)$this->options()->showMessageOnlineStatus,
+            'reactions' => $this->fetchReactionsForPosts($posts),
         ];
 
         $rows = [];
@@ -283,6 +310,14 @@ class PostController extends AbstractController
 
         // Get canLike and isLiked flags
         $likeFlags = $this->getPostLikeFlags($post);
+        $likeCount = $this->getReactionCount($post);
+        if (!$likeCount) {
+            $likesInfo = [];
+        } elseif (isset($context['reactions'])) {
+            $likesInfo = $this->getPostLikesInfo($post, $context['reactions'][$post->post_id] ?? []);
+        } else {
+            $likesInfo = $this->getPostLikesInfo($post);
+        }
 
         $fcPost = new FCPost([
             'id' => (string)$post->post_id,
@@ -303,8 +338,10 @@ class PostController extends AbstractController
             'canReport' => $post->canReport(),
             'canLike' => $likeFlags['canLike'],
             'isLiked' => $likeFlags['isLiked'],
-            'likeCount' => $this->getReactionCount($post),
-            'likesInfo' => $this->getPostLikesInfo($post),
+            'likeCount' => $likeCount,
+            // Everyone who reacted: the app counts and finds the member's own
+            // reaction in this list
+            'likesInfo' => $likesInfo,
             'isApproved' => $post->message_state === 'visible',
             'isFirstPost' => $post->post_id === $thread->first_post_id,
             // The post's number (floor) in the thread
@@ -319,6 +356,41 @@ class PostController extends AbstractController
         $row['isAuthorOnline'] = !empty($context['showOnline']) && $user && $user->isOnline();
 
         return $row;
+    }
+
+    /**
+     * The reactions to a page of posts in one query, by post id, in the
+     * order and with the relations of XenForo's "who reacted" list
+     * (ReactionRepository::findContentReactions). Only posts with reactions
+     * are looked up. Null when the batch could not be read: each post then
+     * reads its own.
+     *
+     * @param \XF\Mvc\Entity\AbstractCollection $posts
+     * @return array|null post id => ReactionContent[]
+     */
+    protected function fetchReactionsForPosts($posts): ?array
+    {
+        $postIds = [];
+        foreach ($posts as $post) {
+            if ($this->getReactionCount($post)) {
+                $postIds[] = $post->post_id;
+            }
+        }
+        if (!$postIds) {
+            return [];
+        }
+
+        try {
+            $byPost = [];
+            $reactions = $this->repository('XF:Reaction')->findContentReactions('post', $postIds)->fetch();
+            foreach ($reactions as $reaction) {
+                $byPost[$reaction->content_id][] = $reaction;
+            }
+            return $byPost;
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot: reactions for posts failed: ');
+            return null;
+        }
     }
 
     /**
@@ -1010,43 +1082,44 @@ class PostController extends AbstractController
     }
 
     /**
-     * Get attachments for a post and convert them to FCAttachment objects
-     * 
+     * The post's attachments as the app reads them (FCAttachment, plus
+     * fields added later). The page's attachments are usually loaded in one
+     * query beforehand (addAttachmentsToContent); a post without any costs
+     * no query.
+     *
      * @param \XF\Entity\Post $post The post entity
-     * @return array Array of FCAttachment objects
+     * @return array attachment rows
      */
     protected function getPostAttachments($post)
     {
         $attachments = [];
-        
+
+        if (!$post->attach_count) {
+            return $attachments;
+        }
+
         try {
-            // Query attachments for this post
-            $attachmentFinder = $this->finder('XF:Attachment');
-            $attachmentFinder->where('content_type', 'post');
-            $attachmentFinder->where('content_id', $post->post_id);
-            $attachmentFinder->with('Data');
-            $postAttachments = $attachmentFinder->fetch();
-            
-            if (!$postAttachments || $postAttachments->count() == 0) {
+            $postAttachments = $post->Attachments;
+            if (!$postAttachments || !$postAttachments->count()) {
                 return $attachments;
             }
-            
+
+            // Full files need the thread's "view attachments" permission;
+            // thumbnails are shown regardless, as on the website
+            $error = null;
+            $canViewUrl = $post->Thread ? $post->Thread->canViewAttachments($error) : false;
+
             foreach ($postAttachments as $attachment) {
                 // Skip temporary/unassociated attachments
                 if ($attachment->temp_hash || $attachment->unassociated) {
                     continue;
                 }
-                
-                // Check if user can view this attachment
-                $error = null;
-                $canView = $attachment->canView($error);
-                
-                // Get attachment data
+
                 $data = $attachment->Data;
                 if (!$data) {
                     continue;
                 }
-                
+
                 // Determine if it's an image
                 $isImage = false;
                 $width = null;
@@ -1056,33 +1129,16 @@ class PostController extends AbstractController
                     $width = (int)$data->width;
                     $height = (int)$data->height;
                 }
-                
-                // Get MIME type from extension (simple mapping for common types)
-                $mimeType = '';
-                try {
-                    $extension = strtolower($data->extension ?? '');
-                    $mimeMap = [
-                        'txt' => 'text/plain',
-                        'jpg' => 'image/jpeg',
-                        'jpeg' => 'image/jpeg',
-                        'png' => 'image/png',
-                        'gif' => 'image/gif',
-                        'pdf' => 'application/pdf',
-                        'zip' => 'application/zip',
-                    ];
-                    $mimeType = $mimeMap[$extension] ?? '';
-                } catch (\Exception $e) {
-                    // If MIME type detection fails, leave empty
-                }
-                
-                // Get attachment URL (only if user can view full attachment)
-                // Use getDirectUrl() which returns direct file URL when available, or route URL as fallback
+
+                // The file's URL, only if the visitor may view it.
+                // getDirectUrl (XenForo 2.3) is the direct file URL for videos
+                // and audio and the attachment page for the rest.
                 $url = '';
-                if ($canView) {
+                if ($attachment->canView()) {
                     try {
-                        // getDirectUrl() returns direct file URL for videos/audio, or attachment route URL for others
-                        $directUrl = $attachment->getDirectUrl(true);
-                        $url = $this->getAbsoluteUrl($directUrl);
+                        $url = method_exists($attachment, 'getDirectUrl')
+                            ? $this->getAbsoluteUrl($attachment->getDirectUrl(true))
+                            : $this->buildLink('canonical:attachments', $attachment);
                     } catch (\Exception $e) {
                         // If URL building fails, try alternative method
                         try {
@@ -1092,7 +1148,7 @@ class PostController extends AbstractController
                         }
                     }
                 }
-                
+
                 // Get thumbnail URL if available (ALWAYS return if thumbnail exists, like web interface)
                 $thumbnailUrl = null;
                 if ($attachment->has_thumbnail) {
@@ -1102,29 +1158,18 @@ class PostController extends AbstractController
                         // If thumbnail URL building fails, leave as null
                     }
                 }
-                
-                // Check permissions for viewing URLs
-                // canViewUrl requires thread's canViewAttachments permission (for full image viewing)
-                // Thumbnails are always viewable (like web interface), full URLs require permission
-                $canViewUrl = false;
-                if ($post->Thread) {
-                    $error = null;
-                    $canViewUrl = $post->Thread->canViewAttachments($error);
-                }
-                $canViewThumbnailUrl = $attachment->has_thumbnail; // Not dependent on canView
-                
+
                 // Check if attachment is embedded inline in the post
                 $isInline = false;
                 if (method_exists($post, 'isAttachmentEmbedded')) {
                     $isInline = $post->isAttachmentEmbedded($attachment->attachment_id);
                 }
-                
-                // Create FCAttachment object
+
                 $fcAttachment = new FCAttachment([
                     'id' => (string)$attachment->attachment_id,
                     'fileName' => $attachment->filename,
                     'fileSize' => (int)$attachment->file_size,
-                    'mimeType' => $mimeType,
+                    'mimeType' => $this->mimeTypeForExtension($data->extension),
                     'url' => $url,
                     'thumbnailUrl' => $thumbnailUrl,
                     'groupId' => $attachment->temp_hash ?: '',
@@ -1132,17 +1177,49 @@ class PostController extends AbstractController
                     'width' => $width,
                     'height' => $height,
                     'canViewUrl' => $canViewUrl,
-                    'canViewThumbnailUrl' => $canViewThumbnailUrl,
+                    'canViewThumbnailUrl' => (bool)$attachment->has_thumbnail,
                     'isInline' => $isInline,
                 ]);
-                
-                $attachments[] = $fcAttachment;
+
+                $attachments[] = array_merge($fcAttachment->toArray(), $this->getAttachmentTypeFields($attachment));
             }
         } catch (\Exception $e) {
             // If attachment loading fails, log error and return empty array
-            \XF::logError('ForumCopilot: Error loading post attachments: ' . $e->getMessage());
+            \XF::logException($e, false, 'ForumCopilot: Error loading post attachments: ');
         }
-        
+
         return $attachments;
+    }
+
+    /**
+     * Attachment fields the SDK reads (FCAttachment) from XenForo's own
+     * getters: video, audio, type group and file-type icon. The getters
+     * that a XenForo version doesn't have are left out.
+     *
+     * @param \XF\Entity\Attachment $attachment
+     * @return array
+     */
+    protected function getAttachmentTypeFields($attachment): array
+    {
+        $fields = [
+            'fileSizePrintable' => (string)\XF::language()->fileSizeFormat((int)$attachment->file_size),
+        ];
+
+        foreach (['isVideo' => 'is_video', 'isAudio' => 'is_audio'] as $field => $getter) {
+            if ($attachment->isValidGetter($getter)) {
+                $fields[$field] = (bool)$attachment->get($getter);
+            }
+        }
+        foreach (['typeGrouping' => 'type_grouping', 'icon' => 'icon', 'iconName' => 'icon_name'] as $field => $getter) {
+            if ($attachment->isValidGetter($getter)) {
+                $value = $attachment->get($getter);
+                // The SDK reads these as strings
+                if (is_string($value) && $value !== '') {
+                    $fields[$field] = $value;
+                }
+            }
+        }
+
+        return $fields;
     }
 }

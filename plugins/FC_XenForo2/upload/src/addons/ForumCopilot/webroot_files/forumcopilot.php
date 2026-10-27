@@ -57,6 +57,17 @@ class ForumCopilotPubApp extends PubApp
      */
     protected const ALWAYS_OPEN_METHODS = ['logout', 'unregisterDevice'];
 
+    /**
+     * XenForo's account section: like its own account pages, they skip the
+     * "View the board" and required two-step checks (a new member waiting
+     * for email confirmation can still correct the address), but not bans,
+     * closed board or security lock.
+     */
+    protected const ACCOUNT_METHODS = [
+        'updateEmail', 'updatePassword', 'deleteAccount', 'updateProfile',
+        'getUserSettings', 'updateUserSettings', 'getUserSettingsCategories',
+    ];
+
     public function preDispatch(\XF\Mvc\RouteMatch $match)
     {
         // This is an API-only entry point - always return JSON
@@ -283,7 +294,10 @@ class ForumCopilotPubApp extends PubApp
             // checks (bans, "View the board", closed board...) never run.
             // Apply them here before anything else happens for this visitor.
             if (!in_array($method, self::ALWAYS_OPEN_METHODS, true)) {
-                $denied = $controller->checkBoardAccess(in_array($method, self::SIGN_IN_METHODS, true));
+                $denied = $controller->checkBoardAccess(
+                    in_array($method, self::SIGN_IN_METHODS, true),
+                    in_array($method, self::ACCOUNT_METHODS, true)
+                );
                 if ($denied) {
                     return $denied;
                 }

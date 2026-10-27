@@ -8,6 +8,13 @@
     <default_value>forumcopilot</default_value>
     <relation group_id="fc_options" display_order="71"/>
   </option>
+  <option option_id="fc_app_tfa_trust_days" edit_format="spinbox" data_type="unsigned_integer" advanced="0">
+    <default_value>365</default_value>
+    <edit_format_params>min=1
+max=3650
+units={{ phrase('units_days') }}</edit_format_params>
+    <relation group_id="fc_options" display_order="72"/>
+  </option>
   <option option_id="fc_debug_logging" edit_format="onoff" data_type="boolean" advanced="0">
     <default_value>0</default_value>
     <relation group_id="fc_options" display_order="60"/>

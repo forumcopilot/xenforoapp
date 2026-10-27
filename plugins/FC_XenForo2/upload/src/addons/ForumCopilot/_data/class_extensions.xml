@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class_extensions>
   <extension from_class="XF\Admin\Controller\Option" to_class="ForumCopilot\XF\Admin\Controller\Option" execute_order="10" active="1"/>
+  <extension from_class="XF\Entity\User" to_class="ForumCopilot\XF\Entity\User" execute_order="10" active="1"/>
   <extension from_class="XF\Entity\UserOption" to_class="ForumCopilot\XF\Entity\UserOption" execute_order="10" active="1"/>
+  <extension from_class="XF\Entity\UserProfile" to_class="ForumCopilot\XF\Entity\UserProfile" execute_order="10" active="1"/>
   <extension from_class="XF\Pub\Controller\AccountController" to_class="ForumCopilot\XF\Pub\Controller\AccountController" execute_order="10" active="1"/>
   <extension from_class="XF\Pub\Controller\Register" to_class="ForumCopilot\XF\Pub\Controller\Register" execute_order="10" active="1"/>
   <extension from_class="XF\Repository\UserAlert" to_class="ForumCopilot\XF\Repository\UserAlert" execute_order="10" active="1"/>

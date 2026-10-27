@@ -335,9 +335,12 @@ abstract class AbstractController extends Controller
      *
      * @param bool $signInOnly Only refuse banned IPs, as XenForo's login,
      *                         register and lost-password pages do
+     * @param bool $accountSection Skip the "View the board" and required
+     *                         two-step checks, as XenForo's account pages do
+     *                         (Pub\Controller\AccountController)
      * @return Response|null an error response, or null if the visitor may continue
      */
-    public function checkBoardAccess(bool $signInOnly = false)
+    public function checkBoardAccess(bool $signInOnly = false, bool $accountSection = false)
     {
         $request = $this->request;
         $bannedIps = $this->app->container('bannedIps');
@@ -364,7 +367,7 @@ abstract class AbstractController extends Controller
             return $this->apiError($this->replyText($errorPlugin->actionDisabled()), null, ErrorCode::ACCOUNT_DISABLED);
         }
 
-        if (!$visitor->hasPermission('general', 'view')) {
+        if (!$accountSection && !$visitor->hasPermission('general', 'view')) {
             // A new member waiting for confirmation or approval has the
             // guests' permissions; say why rather than "no permission".
             if ($visitor->user_id && $this->isAwaitingMember($visitor)) {
@@ -383,7 +386,8 @@ abstract class AbstractController extends Controller
             return $this->apiError($this->plainText($options->boardInactiveMessage), null, ErrorCode::BOARD_CLOSED);
         }
 
-        if ($visitor->user_id
+        if (!$accountSection
+            && $visitor->user_id
             && empty($visitor->Option->use_tfa)
             && \XF::config('enableTfa')
             && $visitor->hasPermission('general', 'requireTfa')

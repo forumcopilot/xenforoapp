@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cron/>
+<cron>
+  <entry entry_id="fcPruneDeviceTokens" cron_class="ForumCopilot\Repository\DeviceToken" cron_method="runDailyPrune" active="1"><![CDATA[{"day_type":"dom","dom":[-1],"hours":[4],"minutes":[17]}]]></entry>
+</cron>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phrases>
+  <phrase title="cron_entry.fcPruneDeviceTokens" version_id="1110000" version_string="1.11.0"><![CDATA[Forum Copilot: remove stale app device registrations]]></phrase>
   <phrase title="fc_app_login_confirm" version_id="1090000" version_string="1.9.0"><![CDATA[Sign the {board} app in as <b>{name}</b>?]]></phrase>
   <phrase title="fc_app_login_continue" version_id="1090000" version_string="1.9.0"><![CDATA[Continue]]></phrase>
   <phrase title="fc_app_login_continue_in_app" version_id="1100000" version_string="1.10.0"><![CDATA[Continue in the app]]></phrase>
@@ -23,6 +24,7 @@
         Smart Banner]]></phrase>
   <phrase title="option.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Members can delete their account in the app]]></phrase>
   <phrase title="option.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[App sign-in schemes]]></phrase>
+  <phrase title="option.fc_app_tfa_trust_days" version_id="1110000" version_string="1.11.0"><![CDATA[App two-step trust (days)]]></phrase>
   <phrase title="option.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
         Diagnostic logging]]></phrase>
   <phrase title="option.fc_mobile_activity_label" version_id="1040370" version_string="1.4.3"><![CDATA[
@@ -51,8 +53,9 @@
         Banner icon URL]]></phrase>
   <phrase title="option.fc_smart_banner_ios_app_id" version_id="1004000" version_string="1.4.0"><![CDATA[
         iOS App Store ID]]></phrase>
-  <phrase title="option_explain.fc_account_deletion" version_id="1090000" version_string="1.9.0"><![CDATA[Apple requires apps that let people sign up to let them delete their account in the app. When on, a member can delete their own account from the app after entering their password (or their user name, for accounts without a password), as if an administrator deleted it: their posts stay, as a guest's. Administrators and moderators cannot. When off, the app tells members to contact the forum's staff.]]></phrase>
+  <phrase title="option_explain.fc_account_deletion" version_id="1110000" version_string="1.11.0"><![CDATA[Apple requires apps that let people sign up to let them delete their account in the app. When on, a member can delete their own account from the app after entering their password (or their user name, for accounts without a password), as if an administrator deleted it: their posts stay, as a guest's. Administrators, moderators and staff members cannot. When off, the app tells members to contact the forum's staff.]]></phrase>
   <phrase title="option_explain.fc_app_login_schemes" version_id="1090000" version_string="1.9.0"><![CDATA[Members can sign an app in through this website, with any way they sign in here (Google, Facebook, passkeys, two-step). These are the URL schemes of the apps the website may hand the sign-in to, separated by commas: "forumcopilot" for the Forum Copilot app, plus your own app's scheme if you publish one. Leave empty to turn browser sign-in off.]]></phrase>
+  <phrase title="option_explain.fc_app_tfa_trust_days" version_id="1110000" version_string="1.11.0"><![CDATA[After two-step verification, a passkey or a browser sign-in, the app trusts the phone for this many days, so its remember cookie can sign it back in without a code (XenForo's website trusts a browser for 45 days). After that the member passes two-step again at their next sign-in. Signing out of the app ends the trust.]]></phrase>
   <phrase title="option_explain.fc_debug_logging" version_id="1080600" version_string="1.8.6"><![CDATA[
         Write a trace of every push decision ("[FC DEBUG]", "[FC PM]") to the server error log. XenForo has no log level below error, so these lines show up as ErrorException entries even though nothing failed. Leave this off in normal operation; turn it on only while troubleshooting push delivery with Forum Copilot support, then turn it off again. Genuine failures are always logged regardless of this setting.]]></phrase>
   <phrase title="option_explain.fc_mobile_activity_label" version_id="1080100" version_string="1.8.1"><![CDATA[

@@ -984,29 +984,13 @@ class PostController extends AbstractController
             $replier = $this->service('XF:Thread\Replier', $thread);
             $replier->setMessage($fcParams->textBody);
 
-            // Handle attachments if provided
-            if ($thread->Forum->canUploadAndManageAttachments()) {
-                $attachmentHash = '';
-                $groupId = $fcParams->groupId ?? $params->get('groupId', '');
-                if ($groupId) {
-                    $attachmentHash = $groupId;
-                } elseif (!empty($fcParams->attachmentIds) && is_array($fcParams->attachmentIds)) {
-                    // Get attachments by IDs and build hash string
-                    $attachmentRepo = $this->repository('XF:Attachment');
-                    $attachments = $attachmentRepo->findByIds($fcParams->attachmentIds);
-                    $hashArray = [];
-                    foreach ($attachments as $attachment) {
-                        if ($attachment->canView() && $attachment->temp_hash) {
-                            $hashArray[] = $attachment->temp_hash;
-                        }
-                    }
-                    if ($hashArray) {
-                        $attachmentHash = implode(',', $hashArray);
-                    }
-                }
-                if ($attachmentHash) {
-                    $replier->setAttachmentHash($attachmentHash);
-                }
+            // New uploads come as the upload hash (groupId), attached only
+            // where the member may attach files, as ThreadController::
+            // setupThreadReply does. attachmentIds is accepted and ignored:
+            // XenForo attaches uploads by their hash alone.
+            $groupId = (string)$fcParams->groupId;
+            if ($groupId !== '' && $thread->Forum && $thread->Forum->canUploadAndManageAttachments()) {
+                $replier->setAttachmentHash($groupId);
             }
 
             // Validate before saving
@@ -1185,7 +1169,6 @@ class PostController extends AbstractController
         $postContent = $params->get('postContent', '');
         $prefix = $params->get('prefix', null);
         $reason = $params->get('reason', '');
-        $attachmentIds = $params->get('attachmentIds', []);
         $groupId = $params->get('groupId', '');
 
         if (empty($postId) || empty($postContent)) {
@@ -1218,29 +1201,16 @@ class PostController extends AbstractController
             $editor = $this->service('XF:Post\Editor', $post);
             $editor->setMessage($postContent);
 
-            // Handle attachments if provided
+            // New uploads come as the upload hash (groupId), attached only
+            // where the member may attach files (PostController::setupPostEdit).
+            // The post's existing attachments stay as they are; removals go
+            // through removeAttachment. attachmentIds (the ids already on the
+            // post) is accepted and ignored.
             $thread = $post->Thread;
-            if ($thread && $thread->Forum && $thread->Forum->canUploadAndManageAttachments()) {
-                $attachmentHash = '';
-                if ($groupId) {
-                    $attachmentHash = $groupId;
-                } elseif (!empty($attachmentIds) && is_array($attachmentIds)) {
-                    // Get attachments by IDs and build hash string
-                    $attachmentRepo = $this->repository('XF:Attachment');
-                    $attachments = $attachmentRepo->findByIds($attachmentIds);
-                    $hashArray = [];
-                    foreach ($attachments as $attachment) {
-                        if ($attachment->canView() && $attachment->temp_hash) {
-                            $hashArray[] = $attachment->temp_hash;
-                        }
-                    }
-                    if ($hashArray) {
-                        $attachmentHash = implode(',', $hashArray);
-                    }
-                }
-                if ($attachmentHash) {
-                    $editor->setAttachmentHash($attachmentHash);
-                }
+            if (is_string($groupId) && $groupId !== ''
+                && $thread && $thread->Forum && $thread->Forum->canUploadAndManageAttachments()
+            ) {
+                $editor->setAttachmentHash($groupId);
             }
 
             // If this is the first post, handle thread-level edits (title and/or prefix)

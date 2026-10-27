@@ -11,6 +11,9 @@ class FCNewTopicResult extends FCResult
     public $topicId;
     public $state;
 
+    /** @var array More fields for the reply (1.11.0), e.g. attachmentsIgnored */
+    public $extra = [];
+
     public function __construct($result = true, $resultText = 'success', $topicId = '', $state = 0)
     {
         parent::__construct($result, $resultText);
@@ -23,7 +26,7 @@ class FCNewTopicResult extends FCResult
         $data = parent::toArray();
         $data['topicId'] = $this->topicId;
         $data['state'] = $this->state;
-        return $data;
+        return array_merge($data, $this->extra);
     }
 }
 

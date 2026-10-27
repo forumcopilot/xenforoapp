@@ -548,6 +548,13 @@ class TopicController extends AbstractController
         }
     }
 
+    /**
+     * Starts a thread the way XenForo's "Post thread" page does
+     * (Pub ForumController::actionPostThread): canCreateThread, the spam
+     * check, validation, the flood check, then the follow-ups of
+     * finalizeThreadCreate (notifications, watching, read marking, the
+     * forum's draft, the pending-approval flag).
+     */
     public function actionNewTopic(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) {
@@ -563,53 +570,30 @@ class TopicController extends AbstractController
 
         try {
             $forum = $this->assertViewableForum($fcParams->forumId);
-            $visitor = \XF::visitor();
 
+            $error = null;
             if (!$forum->canCreateThread($error)) {
-                return $this->apiError('Cannot create thread in this forum: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
-            $creator = $this->service('XF:Thread\Creator', $forum);
-            $creator->setContent($fcParams->title, $fcParams->textBody);
+            $attachmentsIgnored = false;
+            $creator = $this->setupThreadCreate($forum, $fcParams, $attachmentsIgnored);
 
-            if (!empty($fcParams->prefixId) && $forum->isPrefixUsable($fcParams->prefixId)) {
-                $creator->setPrefix($fcParams->prefixId);
-            }
-
-            if ($forum->canUploadAndManageAttachments()) {
-                $attachmentHash = '';
-                if ($fcParams->groupId !== null && $fcParams->groupId !== '') {
-                    $attachmentHash = (string)$fcParams->groupId;
-                } elseif (!empty($fcParams->attachmentIds)) {
-                    $attachmentRepo = $this->repository('XF:Attachment');
-                    $attachments = $attachmentRepo->findByIds($fcParams->attachmentIds);
-                    $hashArray = [];
-                    foreach ($attachments as $attachment) {
-                        if ($attachment->canView() && $attachment->temp_hash) {
-                            $hashArray[] = $attachment->temp_hash;
-                        }
-                    }
-                    if ($hashArray) {
-                        $attachmentHash = implode(',', $hashArray);
-                    }
-                }
-                if ($attachmentHash !== '') {
-                    $creator->setAttachmentHash($attachmentHash);
-                }
-            }
+            // Before validation, as XenForo does; spam that should be held
+            // makes the thread moderated (state 1), other spam is an error.
+            $creator->checkForSpam();
 
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
-            $this->checkFlooding('thread', $this->options()->floodCheckLengthDiscussion ?: null);
+            if ($floodError = $this->checkFlooding('thread', $this->options()->floodCheckLengthDiscussion ?: null)) {
+                return $floodError;
+            }
 
+            /** @var \XF\Entity\Thread $thread */
             $thread = $creator->save();
-            $creator->sendNotifications();
-
-            $this->autoWatchThread($thread, true);
-
-            $this->repository('XF:Thread')->markThreadReadByVisitor($thread, $thread->post_date);
+            $this->finalizeThreadCreate($creator);
 
             $result = new FCNewTopicResult(
                 true,
@@ -618,10 +602,77 @@ class TopicController extends AbstractController
                 // 1 = held for moderator approval (see actionReplyPost).
                 $thread->discussion_state === 'moderated' ? 1 : 0
             );
+            if ($attachmentsIgnored) {
+                // The forum doesn't let this member attach files
+                $result->extra['attachmentsIgnored'] = true;
+            }
 
             return $this->apiSuccess($result);
-        } catch (\Exception $e) {
-            return $this->apiException($e, 'Failed to create topic');
+        } catch (\Throwable $e) {
+            return $this->apiException($e, 'newTopic');
+        }
+    }
+
+    /**
+     * The thread creator with the app's input, as XenForo's
+     * ForumController::setupThreadCreate fills it.
+     *
+     * attachmentIds is ignored: it named attachments that are already saved,
+     * and the code reading it called a repository method that doesn't exist.
+     * The app sends groupId (the upload hash) instead.
+     *
+     * @param \XF\Entity\Forum $forum
+     * @param \ForumCopilot\Params\Topic\FCNewTopicParams $fcParams
+     * @param bool $attachmentsIgnored set when files were sent to a forum
+     *                                 where the member can't attach them
+     * @return \XF\Service\Thread\Creator
+     */
+    protected function setupThreadCreate(\XF\Entity\Forum $forum, $fcParams, &$attachmentsIgnored = false)
+    {
+        $creator = $this->service('XF:Thread\Creator', $forum);
+        $creator->setContent((string)$fcParams->title, (string)$fcParams->textBody);
+
+        $prefixId = (int)$fcParams->prefixId;
+        if ($prefixId && $forum->isPrefixUsable($prefixId)) {
+            $creator->setPrefix($prefixId);
+        }
+
+        $attachmentHash = $fcParams->groupId !== null ? (string)$fcParams->groupId : '';
+        if ($attachmentHash !== '') {
+            if ($forum->canUploadAndManageAttachments()) {
+                $creator->setAttachmentHash($attachmentHash);
+            } else {
+                $attachmentsIgnored = true;
+            }
+        }
+
+        return $creator;
+    }
+
+    /**
+     * XenForo's ForumController::finalizeThreadCreate, with watching by the
+     * member's "watch content on creation" preference (the app sends no
+     * watch choice).
+     *
+     * @param \XF\Service\Thread\Creator $creator
+     */
+    protected function finalizeThreadCreate($creator)
+    {
+        $creator->sendNotifications();
+
+        $forum = $creator->getForum();
+        $thread = $creator->getThread();
+
+        $this->autoWatchThread($thread, true);
+
+        $this->repository('XF:Thread')->markThreadReadByVisitor($thread, $thread->post_date);
+
+        // The web editor's "forum-{id}" draft (shared with DraftController)
+        $forum->draft_thread->delete();
+
+        if ($thread->discussion_state == 'moderated') {
+            // getTopic lists the member's own pending threads while this is set
+            $this->session()->setHasContentPendingApproval();
         }
     }
 

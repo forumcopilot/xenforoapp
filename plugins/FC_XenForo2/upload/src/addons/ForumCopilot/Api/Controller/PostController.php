@@ -295,6 +295,13 @@ class PostController extends AbstractController
         if ($visitorId) {
             // Needed for isReactedTo
             $with[] = 'Reactions|' . $visitorId;
+
+            // The visitor's own vote on posts that take votes (question
+            // threads, XenForo 2.2+), as the REST API loads it
+            $postRelations = $this->em()->getEntityStructure('XF:Post')->relations;
+            if (isset($postRelations['ContentVotes'])) {
+                $with[] = 'ContentVotes|' . $visitorId;
+            }
         }
 
         return $with;
@@ -317,10 +324,15 @@ class PostController extends AbstractController
         // have some, as ThreadPlugin::fetchExtraContentForPostsFullView does
         $this->repository('XF:Attachment')->addAttachmentsToContent($posts, 'post');
 
+        $visitor = \XF::visitor();
         $context = [
             // XenForo shows online status beside messages only with this option on
             'showOnline' => (bool)$this->options()->showMessageOnlineStatus,
             'reactions' => $this->fetchReactionsForPosts($posts),
+            // The visitor's "show signatures" option (guests: the forum's
+            // option for guests), as message_macros::signature checks it
+            'showSignatures' => $visitor->Option && $visitor->Option->content_show_signature,
+            'solutionPostId' => $this->getQuestionSolutionPostId($thread),
         ];
 
         $rows = [];
@@ -398,6 +410,14 @@ class PostController extends AbstractController
         // The moderator actions for hidden posts (approvePost, undeletePost)
         $row['canApprove'] = $post->canApproveUnapprove();
         $row['canUndelete'] = $post->message_state === 'deleted' && $post->canUndelete();
+
+        // The author's signature (BBCode), when the visitor shows signatures
+        $row['signature'] = !empty($context['showSignatures']) ? $this->getPostSignature($post) : null;
+
+        // Question threads: the solution (Post::isQuestionSolution), and
+        // votes on answers
+        $row['isSolution'] = !empty($context['solutionPostId']) && $post->post_id == $context['solutionPostId'];
+        $row += $this->getContentVoteFields($post);
 
         return $row;
     }
@@ -494,6 +514,7 @@ class PostController extends AbstractController
         $firstPostFlags = $firstPost
             ? $this->getPostLikeFlags($firstPost)
             : ['canLike' => false, 'isLiked' => false];
+        $solutionPostId = $this->getQuestionSolutionPostId($thread);
 
         // A redirect left behind when a thread was moved: XenForo's thread
         // page sends the visitor on to the target (RedirectHandler::
@@ -556,7 +577,99 @@ class PostController extends AbstractController
             'likeCount' => $this->getReactionCount($firstPost),
             'hasPoll' => ($pollData !== null),
             'poll' => $pollData,
-        ];
+            // Thread type (XenForo 2.2+): discussion, question, suggestion,
+            // article, poll or redirect; the question's solution; votes on
+            // suggestions and questions. Read-only.
+            'threadType' => (string)$thread->discussion_type,
+            'solutionPostId' => $solutionPostId ? (string)$solutionPostId : null,
+        ] + $this->getContentVoteFields($thread);
+    }
+
+    /**
+     * The author's signature as BBCode, or null when there is none to show.
+     * As XenForo's message_macros::signature: shown when the visitor shows
+     * signatures (checked by the caller) and the author has one. Censored
+     * and with images through the image proxy, like the post itself.
+     */
+    protected function getPostSignature(\XF\Entity\Post $post): ?string
+    {
+        $user = $post->User;
+        if (!$user || !$user->Profile) {
+            return null;
+        }
+
+        $signature = (string)$user->Profile->signature;
+        if ($signature === '') {
+            return null;
+        }
+
+        return $this->processImageProxyInBbCode($this->censorBbCode($signature, 'user:signature'));
+    }
+
+    /**
+     * The solution post of a question thread (XenForo 2.2+), or null: what
+     * QuestionHandler::isPostSolution checks, from the thread's type data.
+     */
+    protected function getQuestionSolutionPostId(\XF\Entity\Thread $thread): ?int
+    {
+        if ($thread->discussion_type !== 'question' || !$thread->isValidColumn('type_data')) {
+            return null;
+        }
+
+        $typeData = $thread->type_data;
+        if (!is_array($typeData) || ($typeData['allow_question_actions'] ?? '') === 'no') {
+            return null;
+        }
+
+        $solutionPostId = (int)($typeData['solution_post_id'] ?? 0);
+        return $solutionPostId ?: null;
+    }
+
+    /**
+     * Content votes on a thread (suggestions, questions) or a post (answers
+     * to a question), XenForo 2.2+, as the REST API sends them
+     * (ContentVoteTrait::addContentVoteToApiResult): voteScore, the
+     * visitor's own vote ("up", "down" or null) and canContentVote. Null
+     * and false where the content takes no votes.
+     *
+     * @param \XF\Entity\Thread|\XF\Entity\Post $content
+     * @return array
+     */
+    protected function getContentVoteFields($content): array
+    {
+        $fields = ['voteScore' => null, 'visitorVote' => null, 'canContentVote' => false];
+
+        try {
+            if (!method_exists($content, 'isContentVotingSupported') || !$content->isContentVotingSupported()) {
+                return $fields;
+            }
+
+            $fields['voteScore'] = (int)$content->vote_score;
+            $fields['canContentVote'] = (bool)$content->canVoteOnContent();
+
+            $visitorId = \XF::visitor()->user_id;
+            if ($visitorId) {
+                if ($content instanceof \XF\Entity\Post) {
+                    // Loaded with the page (getThreadPostListWith)
+                    $vote = $content->getVisitorContentVote();
+                    $fields['visitorVote'] = $vote ?: null;
+                } else {
+                    // Just the visitor's vote, not every vote on the thread
+                    $vote = $this->em()->findOne('XF:ContentVote', [
+                        'content_type' => 'thread',
+                        'content_id' => $content->thread_id,
+                        'vote_user_id' => $visitorId,
+                    ]);
+                    if ($vote && $vote->score) {
+                        $fields['visitorVote'] = $vote->score > 0 ? 'up' : 'down';
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot: content votes failed: ');
+        }
+
+        return $fields;
     }
 
     /**

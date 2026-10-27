@@ -54,6 +54,12 @@ class FCThreadResult extends FCResult
     public $likeCount;
     public $hasPoll;
     public $poll;
+    // Thread type, question solution and votes (1.11.0, XenForo 2.2+)
+    public $threadType;
+    public $solutionPostId;
+    public $voteScore;
+    public $visitorVote;
+    public $canContentVote;
     
     // Thread-specific properties
     public $totalPostNum;
@@ -92,7 +98,8 @@ class FCThreadResult extends FCResult
             'isStickySource', 'canRename', 'canDelete', 'canClose', 'canApprove',
             'canStick', 'canMove', 'canMerge', 'canBan', 'canReply', 'canReport',
             'canUpload', 'isBanned', 'isApproved', 'isDeleted', 'isMoved', 'isMerged',
-            'realTopicId', 'canLike', 'isLiked', 'likeCount', 'hasPoll', 'poll'
+            'realTopicId', 'canLike', 'isLiked', 'likeCount', 'hasPoll', 'poll',
+            'threadType', 'solutionPostId', 'voteScore', 'visitorVote', 'canContentVote'
         ];
         
         foreach ($topicProperties as $prop) {

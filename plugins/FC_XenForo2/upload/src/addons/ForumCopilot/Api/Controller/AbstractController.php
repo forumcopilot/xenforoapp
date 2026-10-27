@@ -6,6 +6,7 @@ use XF\Http\Response;
 use XF\Mvc\Controller;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Reply\AbstractReply;
+use ForumCopilot\Api\ErrorCode;
 use ForumCopilot\Result\FCResult;
 use ForumCopilot\Entity\FCTopic;
 
@@ -85,32 +86,151 @@ abstract class AbstractController extends Controller
     /**
      * API error response
      * Can accept either an FCResult object (for error results) or an error message string
-     * 
-     * @param string|FCResult $message Error message or FCResult error object
+     *
+     * @param string|\XF\Phrase|FCResult $message Error message or FCResult error object
      * @param int|null $code HTTP status code
+     * @param string|null $errorCode One of ErrorCode's constants; worked out from
+     *                               the message and HTTP code when null
+     * @param array $extra More fields for the reply, such as errors (field => message)
      * @return Response
      */
-    protected function apiError($message, $code = null): Response
+    protected function apiError($message, $code = null, ?string $errorCode = null, array $extra = []): Response
     {
         // If it's an FCResult object, use its toArray() method
         if ($message instanceof FCResult) {
             $responseData = $message->toArray();
-            
+            if (empty($responseData['result'])) {
+                $responseData['errorCode'] = $errorCode
+                    ?? ErrorCode::infer($responseData['resultText'] ?? '', $code ?: 400, !\XF::visitor()->user_id);
+            }
+            $responseData = array_merge($responseData, $extra);
+
             // Create and return a proper XF\Http\Response object
             $response = $this->app->response();
             $response->header('Content-Type', 'application/json; charset=UTF-8');
-            
+
             // Add fc_is_login header to indicate if user is logged in
             $this->addLoginStatusHeader($response);
-            
+
             $response->body(json_encode($responseData));
             $response->httpCode($code ?: 400);
-            
+
             return $response;
         }
-        
+
+        $isGuest = !\XF::visitor()->user_id;
+        $errorCode = $errorCode ?? ErrorCode::infer($message, $code, $isGuest);
+        if ($isGuest && $errorCode === ErrorCode::NO_PERMISSION) {
+            // A member might be allowed; tell the app that signing in may help
+            $errorCode = ErrorCode::GUEST_DENIED;
+        }
+        $extra = array_merge(['errorCode' => $errorCode], $extra);
+        if ($message instanceof \XF\Phrase) {
+            $message = $this->plainText($message->render('raw'));
+        }
+
         // Otherwise, use the old method for backward compatibility
-        return $this->apiResponse(false, $message, [], $code);
+        return $this->apiResponse(false, $message, $extra, $code);
+    }
+
+    /**
+     * Error reply for an exception caught in an action. XenForo's own refusals
+     * keep their message: a Reply\Exception from an assert or permission
+     * check, or a PrintableException from a service or entity (with its
+     * per-field errors). Anything else is logged in XenForo's server error log
+     * under a short reference, and the member sees a plain message with that
+     * reference, never the exception's own text.
+     *
+     * @param \Throwable $e
+     * @param string $context What was being done, for the log
+     *                        (e.g. "getThread")
+     * @return Response
+     */
+    protected function apiException(\Throwable $e, string $context = ''): Response
+    {
+        if ($e instanceof \XF\Mvc\Reply\Exception) {
+            return $this->apiReplyError($e->getReply());
+        }
+
+        if ($e instanceof \XF\PrintableException) {
+            return $this->apiFieldErrors($e->getMessages());
+        }
+
+        $errorId = ErrorCode::logException($e, $context);
+        return $this->apiError(
+            ErrorCode::unexpectedMessage($errorId),
+            null,
+            ErrorCode::SERVER_ERROR,
+            ['errorId' => $errorId]
+        );
+    }
+
+    /**
+     * Error reply from one of XenForo's own replies: the Error reply of a
+     * failed assert or a service's validation, or XenForo's no-permission /
+     * registration-required pages.
+     */
+    protected function apiReplyError(AbstractReply $reply): Response
+    {
+        $httpCode = $reply->getResponseCode();
+        $isGuest = !\XF::visitor()->user_id;
+
+        if ($reply instanceof \XF\Mvc\Reply\Error) {
+            $errors = $reply->getErrors();
+            if (count($errors) > 1 || is_string(key($errors))) {
+                return $this->apiFieldErrors($errors);
+            }
+            $first = reset($errors);
+            return $this->apiError(
+                $this->plainText((string)$first),
+                null,
+                ErrorCode::infer($first, $httpCode, $isGuest)
+            );
+        }
+
+        if ($reply instanceof \XF\Mvc\Reply\Message) {
+            return $this->apiError($this->plainText($reply->getMessage()), null, ErrorCode::infer('', $httpCode, $isGuest));
+        }
+
+        // XenForo answers a guest's no-permission with the login page
+        if ($isGuest && $reply instanceof \XF\Mvc\Reply\View) {
+            return $this->apiError(\XF::phrase('login_required'), null, ErrorCode::GUEST_DENIED);
+        }
+
+        return $this->apiError(\XF::phrase('do_not_have_permission'));
+    }
+
+    /**
+     * Validation error with XenForo's per-field messages, as from
+     * $entity->getErrors() or $service->validate($errors). The first message
+     * is resultText, as before; `errors` maps each field to its message, as
+     * register's reply has since 1.10.0.
+     *
+     * @param array $errors field name (or index) => message
+     * @param string|null $errorCode VALIDATION unless the message says otherwise
+     */
+    protected function apiFieldErrors(array $errors, ?string $errorCode = null): Response
+    {
+        $fieldErrors = [];
+        foreach ($errors as $field => $error) {
+            if (is_string($field)) {
+                $fieldErrors[$field] = $this->plainText((string)$error);
+            }
+        }
+
+        $first = reset($errors);
+        if (!$errorCode) {
+            $errorCode = $fieldErrors ? ErrorCode::ERROR : ErrorCode::infer($first, null, !\XF::visitor()->user_id);
+            if ($errorCode === ErrorCode::ERROR) {
+                $errorCode = ErrorCode::VALIDATION;
+            }
+        }
+        return $this->apiError(
+            $this->plainText((string)$first),
+            null,
+            $errorCode,
+            $fieldErrors ? ['errors' => $fieldErrors] : []
+        );
     }
 
     /**
@@ -184,7 +304,7 @@ abstract class AbstractController extends Controller
         if (!$visitor->user_id) {
             // Use apiError() which returns Response directly, not AbstractReply
             // This ensures complete() receives a Response object
-            return $this->apiError('Authentication required - please log in first', 401);
+            return $this->apiError('Authentication required - please log in first', 401, ErrorCode::LOGIN_REQUIRED);
         }
         return null;
     }
@@ -215,7 +335,7 @@ abstract class AbstractController extends Controller
         if (!empty($bannedIps['data'])
             && \XF\Util\Ip::checkIpsAgainstBinaryRangeList($request->getAllIps(), $bannedIps['data'])
         ) {
-            return $this->apiError($this->plainText(\XF::phrase('your_ip_address_has_been_banned')));
+            return $this->apiError($this->plainText(\XF::phrase('your_ip_address_has_been_banned')), null, ErrorCode::BANNED);
         }
 
         if ($signInOnly) {
@@ -226,13 +346,13 @@ abstract class AbstractController extends Controller
         $errorPlugin = $this->plugin('XF:Error');
 
         if ($visitor->is_banned) {
-            return $this->apiError($this->replyText($errorPlugin->actionBanned()));
+            return $this->apiError($this->replyText($errorPlugin->actionBanned()), null, ErrorCode::BANNED);
         }
         if ($visitor->user_state == 'rejected') {
-            return $this->apiError($this->replyText($errorPlugin->actionRejected()));
+            return $this->apiError($this->replyText($errorPlugin->actionRejected()), null, ErrorCode::ACCOUNT_DISABLED);
         }
         if ($visitor->user_state == 'disabled') {
-            return $this->apiError($this->replyText($errorPlugin->actionDisabled()));
+            return $this->apiError($this->replyText($errorPlugin->actionDisabled()), null, ErrorCode::ACCOUNT_DISABLED);
         }
 
         if (!$visitor->hasPermission('general', 'view')) {
@@ -242,16 +362,16 @@ abstract class AbstractController extends Controller
                 return $this->apiError($this->plainText($visitor->isAwaitingEmailConfirmation()
                     ? \XF::phrase('your_account_is_currently_awaiting_confirmation_confirmation_sent_to_x', ['email' => $visitor->email])
                     : \XF::phrase('your_account_is_currently_awaiting_approval_by_administrator')
-                ));
+                ), null, ErrorCode::ACCOUNT_PENDING);
             }
             return $this->apiError($this->plainText(
                 \XF::phrase($visitor->user_id ? 'do_not_have_permission' : 'login_required')
-            ));
+            ), null, $visitor->user_id ? ErrorCode::NO_PERMISSION : ErrorCode::LOGIN_REQUIRED);
         }
 
         $options = $this->options();
         if (!$options->boardActive && !$visitor->is_admin) {
-            return $this->apiError($this->plainText($options->boardInactiveMessage));
+            return $this->apiError($this->plainText($options->boardInactiveMessage), null, ErrorCode::BOARD_CLOSED);
         }
 
         if ($visitor->user_id
@@ -262,11 +382,11 @@ abstract class AbstractController extends Controller
             // Plain text drops the phrase's link to the two-step setup page
             return $this->apiError($this->plainText(
                 \XF::phrase('you_must_enable_two_step_to_continue', ['link' => ''])
-            ));
+            ), null, ErrorCode::TFA_REQUIRED);
         }
 
         if ($visitor->user_id && $visitor->security_lock) {
-            return $this->apiError('Your account is currently security locked');
+            return $this->apiError('Your account is currently security locked', null, ErrorCode::SECURITY_LOCKED);
         }
 
         return null;
@@ -325,7 +445,8 @@ abstract class AbstractController extends Controller
         if ($timeRemaining) {
             return $this->apiError(
                 \XF::phrase('must_wait_x_seconds_before_performing_this_action', ['count' => $timeRemaining])->render(),
-                429
+                429,
+                ErrorCode::FLOOD
             );
         }
 
@@ -349,12 +470,12 @@ abstract class AbstractController extends Controller
 
         $forum = $finder->fetchOne();
         if (!$forum) {
-            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('forum_not_found')));
+            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('requested_forum_not_found'), 404));
         }
 
         $error = null;
         if (!$forum->canView($error)) {
-            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('cannot_view_forum')));
+            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('do_not_have_permission'), 403));
         }
 
         return $forum;
@@ -369,12 +490,12 @@ abstract class AbstractController extends Controller
 
         $thread = $this->em()->find('XF:Thread', $threadId);
         if (!$thread) {
-            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('thread_not_found')));
+            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('requested_thread_not_found'), 404));
         }
 
         $error = null;
         if (!$thread->canView($error)) {
-            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('cannot_view_thread')));
+            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('do_not_have_permission'), 403));
         }
 
         return $thread;
@@ -387,12 +508,12 @@ abstract class AbstractController extends Controller
     {
         $post = $this->em()->find('XF:Post', $postId, ['Thread', 'Thread.Forum', 'Thread.Forum.Node', 'User']);
         if (!$post) {
-            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('post_not_found')));
+            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('requested_post_not_found'), 404));
         }
 
         $error = null;
         if (!$post->canView($error)) {
-            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('cannot_view_post')));
+            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('do_not_have_permission'), 403));
         }
 
         return $post;
@@ -422,36 +543,15 @@ abstract class AbstractController extends Controller
         /** @var \XF\Entity\ConversationMessage $message */
         $message = $this->em()->find('XF:ConversationMessage', (int)$messageId, $extraWith);
         if (!$message) {
-            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('requested_message_not_found')));
+            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase('requested_message_not_found'), 404));
         }
 
         $error = null;
         if (!$message->canView($error)) {
-            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('cannot_view_message')));
+            throw new \XF\Mvc\Reply\Exception($this->error($error ?: \XF::phrase('do_not_have_permission'), 403));
         }
 
         return $message;
-    }
-
-    /**
-     * Extract error message from XenForo Reply Exception
-     * Returns the first error message from the exception's reply object, or a fallback message
-     * 
-     * @param \XF\Mvc\Reply\Exception $e The exception to extract error from
-     * @param string $fallback Fallback message if error cannot be extracted
-     * @return string The error message
-     */
-    protected function extractErrorMessageFromReplyException(\XF\Mvc\Reply\Exception $e, $fallback = 'An error occurred')
-    {
-        $reply = $e->getReply();
-        if ($reply instanceof \XF\Mvc\Reply\Error) {
-            $errors = $reply->getErrors();
-            if (!empty($errors)) {
-                // Get first error message - Phrase objects will be rendered via __toString()
-                return is_array($errors) ? (string)($errors[0] ?? $fallback) : (string)$errors;
-            }
-        }
-        return $fallback;
     }
 
     /**

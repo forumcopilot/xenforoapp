@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCNewConversationResult;
 use ForumCopilot\Result\FCReplyConversationResult;
@@ -42,7 +43,7 @@ class PrivateConversationController extends AbstractController
         $conversationLocked = $params->get('conversationLocked', false);
 
         if (empty($userName) || empty($subject) || empty($textBody)) {
-            return $this->apiError('Username, subject, and content are required');
+            return $this->apiError('Username, subject, and content are required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -58,7 +59,7 @@ class PrivateConversationController extends AbstractController
             }
 
             if (empty($validUsernames)) {
-                return $this->apiError('No valid users found');
+                return $this->apiError('No valid users found', null, ErrorCode::VALIDATION);
             }
 
             // Use XenForo's Conversation Creator service (like XenForo core does)
@@ -98,7 +99,7 @@ class PrivateConversationController extends AbstractController
             // Validate before saving
             $errors = [];
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save conversation (returns ConversationMaster entity, like Tapatalk)
@@ -121,7 +122,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to create conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to create conversation');
         }
     }
 
@@ -135,19 +136,19 @@ class PrivateConversationController extends AbstractController
         $groupId = $params->get('groupId', '');
 
         if (empty($conversationId) || empty($textBody)) {
-            return $this->apiError('Conversation ID and content are required');
+            return $this->apiError('Conversation ID and content are required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
             $conversation = $this->em()->find('XF:ConversationMaster', $conversationId);
             if (!$conversation) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
 
             if (!$conversation->canReply()) {
-                return $this->apiError('Cannot reply to this conversation');
+                return $this->apiError('Cannot reply to this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Conversation Replier service (like XenForo core does)
@@ -175,7 +176,7 @@ class PrivateConversationController extends AbstractController
             // Validate before saving
             $errors = [];
             if (!$replier->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save reply (returns ConversationMessage entity). XenForo's
@@ -187,7 +188,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to reply to conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to reply to conversation');
         }
     }
 
@@ -397,7 +398,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get conversations: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get conversations');
         }
     }
 
@@ -410,7 +411,7 @@ class PrivateConversationController extends AbstractController
         $lastNum = $params->get('lastNum', 19);
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -425,13 +426,13 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             $conversation = $userConv->Master;
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Get lastRead timestamp (like web version)
@@ -650,7 +651,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($resultArray);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get conversation');
         }
     }
 
@@ -662,7 +663,7 @@ class PrivateConversationController extends AbstractController
         $messagesPerRequest = $params->get('messagesPerRequest', 20);
 
         if (empty($messageId)) {
-            return $this->apiError('Message ID is required');
+            return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -674,11 +675,11 @@ class PrivateConversationController extends AbstractController
             try {
                 $conversation = $message->Conversation;
             } catch (\Exception $e) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             if (!$conversation) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -690,11 +691,11 @@ class PrivateConversationController extends AbstractController
             $userConv = $userConvFinder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Get lastRead timestamp
@@ -898,12 +899,8 @@ class PrivateConversationController extends AbstractController
 
             return $this->apiSuccess($resultArray);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Failed to get conversation by message');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get conversation by message: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get conversation by message');
         }
     }
 
@@ -928,7 +925,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get inbox stats: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get inbox stats');
         }
     }
 
@@ -939,7 +936,7 @@ class PrivateConversationController extends AbstractController
         $conversationId = $params->get('conversationId', '');
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -954,7 +951,7 @@ class PrivateConversationController extends AbstractController
 
             $userConv = $finder->fetchOne();
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             $conversationRepo->markUserConversationRead($userConv);
@@ -963,7 +960,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to mark conversation as read: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to mark conversation as read');
         }
     }
 
@@ -974,7 +971,7 @@ class PrivateConversationController extends AbstractController
         $conversationId = $params->get('conversationId', '');
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -988,7 +985,7 @@ class PrivateConversationController extends AbstractController
             
             $userConv = $finder->fetchOne();
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Mark conversation as unread using repository method
@@ -998,7 +995,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to mark conversation as unread: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to mark conversation as unread');
         }
     }
 
@@ -1010,7 +1007,7 @@ class PrivateConversationController extends AbstractController
         $mode = $params->get('mode', 0);
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1023,7 +1020,7 @@ class PrivateConversationController extends AbstractController
             
             $userConv = $finder->fetchOne();
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Determine recipient state based on mode (like Tapatalk/XenForo core)
@@ -1049,7 +1046,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to leave conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to leave conversation');
         }
     }
 
@@ -1063,23 +1060,23 @@ class PrivateConversationController extends AbstractController
 
         // Validate input parameters
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         // Ensure userName is an array
         if (empty($userName)) {
-            return $this->apiError('Username is required');
+            return $this->apiError('Username is required', null, ErrorCode::VALIDATION);
         }
         if (!is_array($userName)) {
             // If it's a string, convert to array (comma-separated or single username)
             if (is_string($userName)) {
                 $userName = array_filter(array_map('trim', explode(',', $userName)));
             } else {
-                return $this->apiError('Username must be an array or comma-separated string');
+                return $this->apiError('Username must be an array or comma-separated string', null, ErrorCode::BAD_REQUEST);
             }
         }
         if (empty($userName)) {
-            return $this->apiError('At least one username is required');
+            return $this->apiError('At least one username is required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -1093,14 +1090,14 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found or you are not a participant');
+                return $this->apiError('Conversation not found or you are not a participant', null, ErrorCode::NOT_FOUND);
             }
 
             $conversation = $userConv->Master;
 
             // Check if user can invite to this conversation
             if (!$conversation->canInvite()) {
-                return $this->apiError('Cannot invite to this conversation');
+                return $this->apiError('Cannot invite to this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Conversation Inviter service (like XenForo core does)
@@ -1128,7 +1125,7 @@ class PrivateConversationController extends AbstractController
                         $errorMessages[] = 'Validation error';
                     }
                 }
-                return $this->apiError('Validation failed: ' . implode(', ', $errorMessages));
+                return $this->apiError('Validation failed: ' . implode(', ', $errorMessages), null, ErrorCode::VALIDATION);
             }
 
             // Save (insertRecipients handles duplicates correctly). XenForo's
@@ -1140,7 +1137,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to invite participants: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to invite participants');
         }
     }
 
@@ -1156,7 +1153,7 @@ class PrivateConversationController extends AbstractController
         $messageId = $params->get('messageId', '');
 
         if (empty($messageId)) {
-            return $this->apiError('Message ID is required');
+            return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1182,12 +1179,8 @@ class PrivateConversationController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Failed to get quote');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get quote: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get quote');
         }
     }
 
@@ -1198,7 +1191,7 @@ class PrivateConversationController extends AbstractController
         $messageId = $params->get('messageId', '');
 
         if (empty($messageId)) {
-            return $this->apiError('Message ID is required');
+            return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1216,7 +1209,7 @@ class PrivateConversationController extends AbstractController
             
             if (!$canLike) {
                 $errorMessage = $error ? (is_string($error) ? $error : 'Cannot like this message') : 'Cannot like this message';
-                return $this->apiError($errorMessage);
+                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
             // Apply the reaction the user picked via XenForo's reaction
@@ -1241,7 +1234,7 @@ class PrivateConversationController extends AbstractController
                     false
                 );
             } catch (\Throwable $e) {
-                return $this->apiError('Failed to react to message: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to react to message');
             }
 
             // Refresh the message so its reaction counts reflect the change.
@@ -1261,12 +1254,8 @@ class PrivateConversationController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Message not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to like message: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to like message');
         }
     }
 
@@ -1277,7 +1266,7 @@ class PrivateConversationController extends AbstractController
         $messageId = $params->get('messageId', '');
 
         if (empty($messageId)) {
-            return $this->apiError('Message ID is required');
+            return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1295,7 +1284,7 @@ class PrivateConversationController extends AbstractController
             
             if (!$canLike) {
                 $errorMessage = $error ? (is_string($error) ? $error : 'Cannot unlike this message') : 'Cannot unlike this message';
-                return $this->apiError($errorMessage);
+                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
             // Use like system
@@ -1354,7 +1343,7 @@ class PrivateConversationController extends AbstractController
                             $this->getReactionCount($message)
                         );
                     } catch (\Exception $e) {
-                        return $this->apiError('Failed to unlike message: ' . $e->getMessage());
+                        return $this->apiException($e, 'Failed to unlike message');
                     }
                 } else {
                     // Use old like system
@@ -1372,19 +1361,15 @@ class PrivateConversationController extends AbstractController
                             $this->getReactionCount($message)
                         );
                     } catch (\Exception $e) {
-                        return $this->apiError('Failed to unlike message: ' . $e->getMessage());
+                        return $this->apiException($e, 'Failed to unlike message');
                     }
                 }
             }
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Message not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unlike message: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unlike message');
         }
     }
 
@@ -1400,7 +1385,7 @@ class PrivateConversationController extends AbstractController
         $conversationId = $params->get('conversationId', '');
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1413,18 +1398,18 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             $conversation = $userConv->Master;
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check if user can edit (only creator can close/reopen conversations)
             if (!$conversation->canEdit($error)) {
-                return $this->apiError('Cannot close this conversation' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot close this conversation' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's standard approach: directly set conversation_open and save
@@ -1435,7 +1420,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to close conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to close conversation');
         }
     }
 
@@ -1451,7 +1436,7 @@ class PrivateConversationController extends AbstractController
         $conversationId = $params->get('conversationId', '');
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1464,18 +1449,18 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             $conversation = $userConv->Master;
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check if user can edit (only creator can close/reopen conversations)
             if (!$conversation->canEdit($error)) {
-                return $this->apiError('Cannot open this conversation' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot open this conversation' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's standard approach: directly set conversation_open and save
@@ -1486,7 +1471,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to open conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to open conversation');
         }
     }
 
@@ -1497,7 +1482,7 @@ class PrivateConversationController extends AbstractController
         $conversationId = $params->get('conversationId', '');
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1515,18 +1500,18 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             $conversation = $userConv->Master;
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission (only creator can edit)
             if (!$conversation->canEdit($error)) {
-                return $this->apiError('Cannot edit this conversation' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot edit this conversation' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             $result = new FCRawConversationResult(
@@ -1541,7 +1526,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get raw conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get raw conversation');
         }
     }
 
@@ -1560,7 +1545,7 @@ class PrivateConversationController extends AbstractController
         $conversationOpen = $params->get('conversationOpen', null);
 
         if (empty($conversationId)) {
-            return $this->apiError('Conversation ID is required');
+            return $this->apiError('Conversation ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1573,18 +1558,18 @@ class PrivateConversationController extends AbstractController
             $userConv = $finder->fetchOne();
             
             if (!$userConv || !$userConv->Master) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
             
             $conversation = $userConv->Master;
 
             if (!$conversation->canView()) {
-                return $this->apiError('Cannot view this conversation');
+                return $this->apiError('Cannot view this conversation', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission (only creator can edit)
             if (!$conversation->canEdit($error)) {
-                return $this->apiError('Cannot edit this conversation' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot edit this conversation' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's EditorService (same as core API uses)
@@ -1605,7 +1590,7 @@ class PrivateConversationController extends AbstractController
 
             // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save changes
@@ -1623,7 +1608,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to save conversation: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to save conversation');
         }
     }
 
@@ -1639,7 +1624,7 @@ class PrivateConversationController extends AbstractController
         $messageId = $params->get('messageId', '');
 
         if (empty($messageId)) {
-            return $this->apiError('Message ID is required');
+            return $this->apiError('Message ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1647,18 +1632,18 @@ class PrivateConversationController extends AbstractController
             $message = $this->em()->find('XF:ConversationMessage', (int)$messageId);
             
             if (!$message) {
-                return $this->apiError('Message not found');
+                return $this->apiError('Message not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Check if message is viewable
             $error = null;
             if (!$message->canView($error)) {
-                return $this->apiError('Cannot view this message');
+                return $this->apiError('Cannot view this message', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission
             if (!$message->canEdit($error)) {
-                return $this->apiError('Cannot edit this message' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot edit this message' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Get existing attachments using helper method
@@ -1674,7 +1659,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get raw message: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get raw message');
         }
     }
 
@@ -1693,7 +1678,7 @@ class PrivateConversationController extends AbstractController
         $groupId = $params->get('groupId', '');
 
         if (empty($messageId) || empty($messageContent)) {
-            return $this->apiError('Message ID and content are required');
+            return $this->apiError('Message ID and content are required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1701,23 +1686,23 @@ class PrivateConversationController extends AbstractController
             $message = $this->em()->find('XF:ConversationMessage', (int)$messageId);
             
             if (!$message) {
-                return $this->apiError('Message not found');
+                return $this->apiError('Message not found', null, ErrorCode::NOT_FOUND);
             }
 
             $conversation = $message->Conversation;
             if (!$conversation) {
-                return $this->apiError('Conversation not found');
+                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Check if message is viewable
             $error = null;
             if (!$message->canView($error)) {
-                return $this->apiError('Cannot view this message');
+                return $this->apiError('Cannot view this message', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission
             if (!$message->canEdit($error)) {
-                return $this->apiError('Cannot edit this message' . ($error ? ': ' . $error : ''));
+                return $this->apiError('Cannot edit this message' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's MessageEditorService (same as core API uses)
@@ -1751,7 +1736,7 @@ class PrivateConversationController extends AbstractController
 
             // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save message
@@ -1769,7 +1754,7 @@ class PrivateConversationController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to save message: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to save message');
         }
     }
 }

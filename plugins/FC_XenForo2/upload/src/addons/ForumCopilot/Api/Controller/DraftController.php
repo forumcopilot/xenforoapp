@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -25,7 +26,7 @@ class DraftController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
         $key = $this->validDraftKey($params->get('draftKey', ''));
         if ($key === null) {
-            return $this->apiError('Unknown draft key');
+            return $this->apiError('Unknown draft key', null, ErrorCode::BAD_REQUEST);
         }
 
         $draft = \XF\Draft::createFromKey($key);
@@ -41,10 +42,10 @@ class DraftController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
         $key = $this->validDraftKey($params->get('draftKey', ''));
         if ($key === null) {
-            return $this->apiError('Unknown draft key');
+            return $this->apiError('Unknown draft key', null, ErrorCode::BAD_REQUEST);
         }
         if (!$this->canDraftFor($key)) {
-            return $this->apiError('You cannot post there');
+            return $this->apiError('You cannot post there', null, ErrorCode::NO_PERMISSION);
         }
 
         $message = (string)$params->get('message', '');
@@ -61,7 +62,7 @@ class DraftController extends AbstractController
         $draft->message = $message;
         $draft->extra_data = $extra;
         if (!$draft->save()) {
-            return $this->apiError('The draft could not be saved');
+            return $this->apiError('The draft could not be saved', null, ErrorCode::VALIDATION);
         }
         return $this->apiSuccess(['draft' => $this->draftData($draft->getDraftEntity())]);
     }
@@ -71,7 +72,7 @@ class DraftController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
         $key = $this->validDraftKey($params->get('draftKey', ''));
         if ($key === null) {
-            return $this->apiError('Unknown draft key');
+            return $this->apiError('Unknown draft key', null, ErrorCode::BAD_REQUEST);
         }
         \XF\Draft::createFromKey($key)->delete();
         return $this->apiSuccess([]);

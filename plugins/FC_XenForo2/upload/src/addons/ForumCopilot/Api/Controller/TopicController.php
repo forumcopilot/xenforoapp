@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCTopicDataResult;
 use ForumCopilot\Result\FCNewTopicResult;
@@ -28,7 +29,7 @@ class TopicController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -36,25 +37,12 @@ class TopicController extends AbstractController
             $forum = null;
             try {
                 $forum = $this->assertViewableForum($fcParams->forumId);
-            } catch (\XF\Mvc\Reply\Exception $e) {
-                // Extract XenForo's error message from the exception
-                $reply = $e->getReply();
-                if ($reply instanceof \XF\Mvc\Reply\Error) {
-                    $errors = $reply->getErrors();
-                    if (!empty($errors)) {
-                        // Get first error message - Phrase objects will be rendered via __toString()
-                        $errorMsg = is_array($errors) ? (string)($errors[0] ?? 'Forum not found or cannot be viewed') : (string)$errors;
-                        return $this->apiError($errorMsg);
-                    }
-                }
-                // Fallback if we can't extract the error
-                return $this->apiError('Forum not found or cannot be viewed');
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get forum: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get forum');
             }
             
             if (!$forum) {
-                return $this->apiError('Forum not found');
+                return $this->apiError('Forum not found', null, ErrorCode::NOT_FOUND);
             }
             
             $visitor = \XF::visitor();
@@ -169,7 +157,7 @@ class TopicController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get topics');
         }
     }
 
@@ -181,7 +169,7 @@ class TopicController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -208,7 +196,7 @@ class TopicController extends AbstractController
                     []
                 ));
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get forum: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get forum');
             }
             
             if (!$forum) {
@@ -332,7 +320,7 @@ class TopicController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get pinned topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get pinned topics');
         }
     }
 
@@ -344,7 +332,7 @@ class TopicController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -371,7 +359,7 @@ class TopicController extends AbstractController
                     []
                 ));
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get forum: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get forum');
             }
             
             if (!$forum) {
@@ -423,7 +411,7 @@ class TopicController extends AbstractController
             );
             return $this->apiSuccess($result);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get announcement topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get announcement topics');
         }
     }
 
@@ -433,7 +421,7 @@ class TopicController extends AbstractController
 
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -471,7 +459,7 @@ class TopicController extends AbstractController
                 $result['topics']
             ));
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get latest topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get latest topics');
         }
     }
 
@@ -485,7 +473,7 @@ class TopicController extends AbstractController
 
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -511,7 +499,7 @@ class TopicController extends AbstractController
                 $result['topics']
             ));
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get unread topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get unread topics');
         }
     }
 
@@ -521,7 +509,7 @@ class TopicController extends AbstractController
 
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         $threadIds = $fcParams->getThreadIds();
@@ -556,7 +544,7 @@ class TopicController extends AbstractController
 
             return $this->apiSuccess(new FCTopicByIdsResult(true, null, $topicList));
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get topics');
         }
     }
 
@@ -570,7 +558,7 @@ class TopicController extends AbstractController
 
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -578,7 +566,7 @@ class TopicController extends AbstractController
             $visitor = \XF::visitor();
 
             if (!$forum->canCreateThread($error)) {
-                return $this->apiError('Cannot create thread in this forum: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot create thread in this forum: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             $creator = $this->service('XF:Thread\Creator', $forum);
@@ -611,7 +599,7 @@ class TopicController extends AbstractController
             }
 
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             $this->checkFlooding('thread', $this->options()->floodCheckLengthDiscussion ?: null);
@@ -633,7 +621,7 @@ class TopicController extends AbstractController
 
             return $this->apiSuccess($result);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to create topic: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to create topic');
         }
     }
 
@@ -644,7 +632,7 @@ class TopicController extends AbstractController
         $topicIds = $params->get('topicIds', []);
 
         if (empty($topicIds) || !is_array($topicIds)) {
-            return $this->apiError('Topic IDs array is required');
+            return $this->apiError('Topic IDs array is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -680,7 +668,7 @@ class TopicController extends AbstractController
 
         } catch (\Exception $e) {
             \XF::logException($e, false, 'ForumCopilot markTopicRead: ');
-            return $this->apiError('Failed to mark topics as read: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to mark topics as read');
         }
     }
 
@@ -694,7 +682,7 @@ class TopicController extends AbstractController
 
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -705,12 +693,12 @@ class TopicController extends AbstractController
             if (!empty($fcParams->userId)) {
                 $targetUser = $this->em()->find('XF:User', (int)$fcParams->userId);
                 if (!$targetUser) {
-                    return $this->apiError('User not found');
+                    return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
                 }
             } elseif (!empty(trim((string)$fcParams->username))) {
                 $targetUser = $this->em()->findOne('XF:User', ['username' => $fcParams->username]);
                 if (!$targetUser) {
-                    return $this->apiError('User not found');
+                    return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
                 }
             }
 
@@ -732,7 +720,7 @@ class TopicController extends AbstractController
                 $result['topics']
             ));
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get participated topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get participated topics');
         }
     }
 

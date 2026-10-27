@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use XF\Mvc\Entity\AbstractCollection;
 use ForumCopilot\Result\FCLikePostResult;
@@ -27,7 +28,7 @@ class SocialController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -45,7 +46,7 @@ class SocialController extends AbstractController
             
             if (!$canLike) {
                 $errorMessage = $error ? (is_string($error) ? $error : 'Cannot like this post') : 'Cannot like this post';
-                return $this->apiError($errorMessage);
+                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
             // Apply the reaction the user picked via XenForo's reaction
@@ -70,7 +71,7 @@ class SocialController extends AbstractController
                     false
                 );
             } catch (\Throwable $e) {
-                return $this->apiError('Failed to react to post: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to react to post');
             }
 
             // Refresh the post so its reaction counts reflect the change.
@@ -92,12 +93,8 @@ class SocialController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Post not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to like post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to like post');
         }
     }
 
@@ -108,7 +105,7 @@ class SocialController extends AbstractController
         $postId = $params->get('postId', '');
 
         if (empty($postId)) {
-            return $this->apiError('Post ID is required');
+            return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -126,7 +123,7 @@ class SocialController extends AbstractController
             
             if (!$canLike) {
                 $errorMessage = $error ? (is_string($error) ? $error : 'Cannot unlike this post') : 'Cannot unlike this post';
-                return $this->apiError($errorMessage);
+                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
             // Use like system (like Tapatalk does)
@@ -185,7 +182,7 @@ class SocialController extends AbstractController
                             $this->getReactionCount($post)
                         );
                     } catch (\Exception $e) {
-                        return $this->apiError('Failed to unlike post: ' . $e->getMessage());
+                        return $this->apiException($e, 'Failed to unlike post');
                     }
                 } else {
                     // Use old like system
@@ -203,19 +200,15 @@ class SocialController extends AbstractController
                             $this->getReactionCount($post)
                         );
                     } catch (\Exception $e) {
-                        return $this->apiError('Failed to unlike post: ' . $e->getMessage());
+                        return $this->apiException($e, 'Failed to unlike post');
                     }
                 }
             }
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Post not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unlike post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unlike post');
         }
     }
 
@@ -226,7 +219,7 @@ class SocialController extends AbstractController
         $userId = $params->get('userId', '');
 
         if (empty($userId)) {
-            return $this->apiError('User ID is required');
+            return $this->apiError('User ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -235,13 +228,13 @@ class SocialController extends AbstractController
                 ? $this->em()->find('XF:User', (int)$userId)
                 : $this->em()->findOne('XF:User', ['username' => $userId]);
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
             
             if (!$visitor->canFollowUser($user)) {
-                return $this->apiError('Cannot follow this user');
+                return $this->apiError('Cannot follow this user', null, ErrorCode::NO_PERMISSION);
             }
 
             // XF:User\Follow on 2.2; aliased to FollowService on 2.3.
@@ -251,7 +244,7 @@ class SocialController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to follow user: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to follow user');
         }
     }
 
@@ -262,7 +255,7 @@ class SocialController extends AbstractController
         $userId = $params->get('userId', '');
 
         if (empty($userId)) {
-            return $this->apiError('User ID is required');
+            return $this->apiError('User ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -271,7 +264,7 @@ class SocialController extends AbstractController
                 ? $this->em()->find('XF:User', (int)$userId)
                 : $this->em()->findOne('XF:User', ['username' => $userId]);
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -281,7 +274,7 @@ class SocialController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unfollow user: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unfollow user');
         }
     }
 
@@ -507,7 +500,7 @@ class SocialController extends AbstractController
             return $response;
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get alerts: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get alerts');
         }
     }
 

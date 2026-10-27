@@ -27,9 +27,12 @@ catch (\Throwable $e)
     // If XenForo initialization fails, return JSON error
     header('Content-Type: application/json; charset=UTF-8');
     http_response_code(500);
+    // The reason (often database details) goes to PHP's error log, not to the client
+    error_log('Forum Copilot: XenForo failed to start: ' . $e->getMessage());
     echo json_encode([
         'result' => false,
-        'resultText' => 'Failed to initialize XenForo: ' . $e->getMessage()
+        'resultText' => 'The forum is not available right now. Please try again later.',
+        'errorCode' => 'server_error'
     ]);
     exit;
 }
@@ -91,14 +94,14 @@ class ForumCopilotPubApp extends PubApp
                 // Parse JSON input
                 $input = json_decode(file_get_contents('php://input'), true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    return $this->createJsonError('Invalid JSON request', 400);
+                    return $this->createJsonError('Invalid JSON request', 400, 'bad_request');
                 }
 
                 $method = $input['method'] ?? '';
                 $params = $input['params'] ?? [];
 
                 if (empty($method)) {
-                    return $this->createJsonError('Method parameter is required', 400);
+                    return $this->createJsonError('Method parameter is required', 400, 'bad_request');
                 }
 
                 // Route to appropriate handler using full add-on loaded controller system
@@ -107,13 +110,13 @@ class ForumCopilotPubApp extends PubApp
             else
             {
                 // Not a valid API request - return JSON error
-                return $this->createJsonError('This endpoint requires a JSON POST request with Content-Type: application/json', 400);
+                return $this->createJsonError('This endpoint requires a JSON POST request with Content-Type: application/json', 400, 'bad_request');
             }
         }
         catch (\Throwable $e)
         {
             // Catch all exceptions and errors, always return JSON
-            return $this->createJsonError('Internal server error: ' . $e->getMessage(), 500);
+            return $this->createExceptionError($e, 'preDispatch');
         }
     }
 
@@ -260,7 +263,7 @@ class ForumCopilotPubApp extends PubApp
             ];
 
             if (!isset($map[$method])) {
-                return $this->createJsonError("Unknown method: $method", 400);
+                return $this->createJsonError("Unknown method: $method", 400, 'bad_request');
             }
 
             // Extract controller and action
@@ -300,7 +303,7 @@ class ForumCopilotPubApp extends PubApp
         catch (\Throwable $e)
         {
             // Catch all exceptions from controller actions and return JSON error
-            return $this->createJsonError('API error: ' . $e->getMessage(), 500);
+            return $this->createExceptionError($e, $method);
         }
     }
 
@@ -380,13 +383,60 @@ class ForumCopilotPubApp extends PubApp
     /**
      * Create JSON error response
      */
-    protected function createJsonError($message, $code = 400)
+    protected function createJsonError($message, $code = 400, $errorCode = 'error', array $extra = [])
     {
         $response = [
             'result' => false,
-            'resultText' => $message
-        ];
+            'resultText' => $message,
+            'errorCode' => $errorCode,
+        ] + $extra;
         return $this->createJsonResponse($response, $code);
+    }
+
+    /**
+     * Error reply for an exception no controller handled. XenForo's own
+     * refusals keep their message; anything else is logged in XenForo's server
+     * error log under a short reference that the member sees instead of the
+     * exception's text. HTTP 200, as controllers answer errors: the app reads
+     * resultText only from 2xx replies.
+     */
+    protected function createExceptionError(\Throwable $e, $method)
+    {
+        $isGuest = !\XF::visitor()->user_id;
+        $strip = function ($html) {
+            return trim(html_entity_decode(strip_tags((string)$html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        };
+
+        if ($e instanceof \XF\Mvc\Reply\Exception) {
+            $reply = $e->getReply();
+            if ($reply instanceof \XF\Mvc\Reply\Error) {
+                $errors = $reply->getErrors();
+                $first = reset($errors);
+                return $this->createJsonError(
+                    $strip($first),
+                    200,
+                    \ForumCopilot\Api\ErrorCode::infer($first, $reply->getResponseCode(), $isGuest)
+                );
+            }
+            return $this->createJsonError(
+                $strip(\XF::phrase($isGuest ? 'login_required' : 'do_not_have_permission')),
+                200,
+                $isGuest ? 'guest_denied' : 'no_permission'
+            );
+        }
+
+        if ($e instanceof \XF\PrintableException) {
+            $messages = $e->getMessages();
+            return $this->createJsonError($strip(reset($messages)), 200, 'validation');
+        }
+
+        $errorId = \ForumCopilot\Api\ErrorCode::logException($e, (string)$method);
+        return $this->createJsonError(
+            \ForumCopilot\Api\ErrorCode::unexpectedMessage($errorId),
+            200,
+            'server_error',
+            ['errorId' => $errorId]
+        );
     }
 
     /**
@@ -445,7 +495,7 @@ class ForumCopilotPubApp extends PubApp
         }
         catch (\Throwable $e)
         {
-            return $this->createJsonError('Verification error: ' . $e->getMessage(), 500);
+            return $this->createExceptionError($e, 'verify');
         }
     }
 
@@ -512,12 +562,23 @@ try
 }
 catch (\Throwable $e)
 {
-    // Catch any unhandled exceptions and return JSON error
+    // Catch any unhandled exceptions and return JSON error; the reason goes to the log
+    $errorId = bin2hex(random_bytes(4));
+    try
+    {
+        \XF::logException($e, false, 'Forum Copilot API [' . $errorId . '] runApp: ');
+    }
+    catch (\Throwable $logError)
+    {
+        error_log('Forum Copilot API [' . $errorId . '] runApp: ' . $e->getMessage());
+    }
     header('Content-Type: application/json; charset=UTF-8');
     http_response_code(500);
     echo json_encode([
         'result' => false,
-        'resultText' => 'Unhandled error: ' . $e->getMessage()
+        'resultText' => 'An unexpected error occurred. Please try again later. (' . $errorId . ')',
+        'errorCode' => 'server_error',
+        'errorId' => $errorId
     ]);
     exit;
 }

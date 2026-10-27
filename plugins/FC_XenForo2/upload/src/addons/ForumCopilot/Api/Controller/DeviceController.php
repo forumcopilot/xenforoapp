@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -29,13 +30,13 @@ class DeviceController extends AbstractController
         $appVersion = trim((string)$params->get('appVersion', ''));
 
         if ($deviceId === '' || $fcmToken === '') {
-            return $this->apiError('deviceId and fcmToken are required', 400);
+            return $this->apiError('deviceId and fcmToken are required', 400, ErrorCode::BAD_REQUEST);
         }
         if (!in_array($platform, ['ios', 'android', 'macos', 'web'], true)) {
-            return $this->apiError('platform must be one of: ios, android, macos, web', 400);
+            return $this->apiError('platform must be one of: ios, android, macos, web', 400, ErrorCode::BAD_REQUEST);
         }
         if (!in_array($source, ['forumcopilot', 'direct'], true)) {
-            return $this->apiError("source must be 'forumcopilot' or 'direct'", 400);
+            return $this->apiError("source must be 'forumcopilot' or 'direct'", 400, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -58,7 +59,7 @@ class DeviceController extends AbstractController
                 ],
             ]);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to register device: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to register device');
         }
     }
 
@@ -68,7 +69,7 @@ class DeviceController extends AbstractController
 
         $deviceId = trim((string)$params->get('deviceId', ''));
         if ($deviceId === '') {
-            return $this->apiError('deviceId is required', 400);
+            return $this->apiError('deviceId is required', 400, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -83,7 +84,7 @@ class DeviceController extends AbstractController
             }
             return $this->apiResponse(true, 'success', []);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unregister device: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unregister device');
         }
     }
 
@@ -94,14 +95,14 @@ class DeviceController extends AbstractController
         $deviceId = trim((string)$params->get('deviceId', ''));
         $fcmToken = trim((string)$params->get('fcmToken', ''));
         if ($deviceId === '' || $fcmToken === '') {
-            return $this->apiError('deviceId and fcmToken are required', 400);
+            return $this->apiError('deviceId and fcmToken are required', 400, ErrorCode::BAD_REQUEST);
         }
 
         try {
             /** @var \ForumCopilot\Entity\DeviceToken $entity */
             $entity = $this->em()->find('ForumCopilot:DeviceToken', $deviceId);
             if (!$entity) {
-                return $this->apiError('Device not found — call registerDevice first', 404);
+                return $this->apiError('Device not found — call registerDevice first', 404, ErrorCode::NOT_FOUND);
             }
             if ((int)$entity->user_id !== (int)\XF::visitor()->user_id) {
                 return $this->apiError('Device does not belong to current user', 403);
@@ -114,7 +115,7 @@ class DeviceController extends AbstractController
 
             return $this->apiResponse(true, 'success', []);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to update device token: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to update device token');
         }
     }
 }

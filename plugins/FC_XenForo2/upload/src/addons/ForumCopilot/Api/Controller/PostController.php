@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCThreadResult;
 use ForumCopilot\Result\FCThreadByUnreadResult;
@@ -33,7 +34,7 @@ class PostController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -41,16 +42,12 @@ class PostController extends AbstractController
             $thread = null;
             try {
                 $thread = $this->assertViewableThread($fcParams->topicId);
-            } catch (\XF\Mvc\Reply\Exception $e) {
-                // Extract XenForo's error message from the exception
-                $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-                return $this->apiError($errorMsg);
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get thread: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get thread');
             }
             
             if (!$thread) {
-                return $this->apiError('Thread not found');
+                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
             }
             
             $visitor = \XF::visitor();
@@ -296,7 +293,7 @@ class PostController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get thread: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get thread');
         }
     }
 
@@ -306,7 +303,7 @@ class PostController extends AbstractController
         $postsPerRequest = $params->get('postsPerRequest', 20);
 
         if (empty($postId)) {
-            return $this->apiError('Post ID is required');
+            return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -317,11 +314,11 @@ class PostController extends AbstractController
             try {
                 $thread = $post->Thread;
             } catch (\Exception $e) {
-                return $this->apiError('Thread not found');
+                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
             }
             
             if (!$thread) {
-                return $this->apiError('Thread not found');
+                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
             }
             
             // Calculate position and get surrounding posts
@@ -555,12 +552,8 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Post not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get thread by post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get thread by post');
         }
     }
 
@@ -572,7 +565,7 @@ class PostController extends AbstractController
         $postsPerRequest = $params->get('postsPerRequest', 20);
 
         if (empty($topicId)) {
-            return $this->apiError('Topic ID is required');
+            return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -580,16 +573,12 @@ class PostController extends AbstractController
             $thread = null;
             try {
                 $thread = $this->assertViewableThread($topicId);
-            } catch (\XF\Mvc\Reply\Exception $e) {
-                // Extract XenForo's error message from the exception
-                $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-                return $this->apiError($errorMsg);
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get thread: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get thread');
             }
             
             if (!$thread) {
-                return $this->apiError('Thread not found');
+                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
             }
 
             // XenForo's read date for the visitor: the later of the thread and forum read
@@ -895,12 +884,8 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get thread by unread: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get thread by unread');
         }
     }
 
@@ -916,26 +901,23 @@ class PostController extends AbstractController
         $responseIds = $params->get('responseIds', []);
 
         if (empty($topicId)) {
-            return $this->apiError('Topic ID is required');
+            return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         if (!is_array($responseIds) || empty($responseIds)) {
-            return $this->apiError('responseIds is required');
+            return $this->apiError('responseIds is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
             $thread = null;
             try {
                 $thread = $this->assertViewableThread($topicId);
-            } catch (\XF\Mvc\Reply\Exception $e) {
-                $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-                return $this->apiError($errorMsg);
             } catch (\Exception $e) {
-                return $this->apiError('Failed to get thread: ' . $e->getMessage());
+                return $this->apiException($e, 'Failed to get thread');
             }
 
             if (!$thread) {
-                return $this->apiError('Thread not found');
+                return $this->apiError('Thread not found', null, ErrorCode::NOT_FOUND);
             }
 
             $poll = null;
@@ -946,13 +928,13 @@ class PostController extends AbstractController
             }
 
             if (!$poll) {
-                return $this->apiError('Poll not found');
+                return $this->apiError('Poll not found', null, ErrorCode::NOT_FOUND);
             }
 
             $error = null;
             if (!$poll->canVote($error)) {
                 $errorMessage = $error ? (string)$error : 'Cannot vote on this poll';
-                return $this->apiError($errorMessage);
+                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
             }
 
             $responseIds = array_values(array_map('intval', $responseIds));
@@ -961,9 +943,9 @@ class PostController extends AbstractController
             if (!$voter->validate($errors)) {
                 if (is_array($errors)) {
                     $errors = array_map('strval', $errors);
-                    return $this->apiError(implode(', ', $errors));
+                    return $this->apiError(implode(', ', $errors), null, ErrorCode::VALIDATION);
                 }
-                return $this->apiError((string)$errors);
+                return $this->apiError((string)$errors, null, ErrorCode::VALIDATION);
             }
 
             $voter->save();
@@ -972,7 +954,7 @@ class PostController extends AbstractController
                 'poll' => $this->buildPollDataForThread($thread),
             ]);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to vote on poll: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to vote on poll');
         }
     }
 
@@ -986,7 +968,7 @@ class PostController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -994,7 +976,7 @@ class PostController extends AbstractController
             $visitor = \XF::visitor();
 
             if (!$thread->canReply($error)) {
-                return $this->apiError('Cannot reply to this thread: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot reply to this thread: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Thread Replier service (like Tapatalk does)
@@ -1029,7 +1011,7 @@ class PostController extends AbstractController
 
             // Validate before saving
             if (!$replier->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save reply post
@@ -1067,12 +1049,8 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to post reply: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to post reply');
         }
     }
 
@@ -1081,7 +1059,7 @@ class PostController extends AbstractController
         $postId = $params->get('postId', '');
 
         if (empty($postId)) {
-            return $this->apiError('Post ID is required');
+            return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1089,7 +1067,7 @@ class PostController extends AbstractController
             $post = $this->em()->find('XF:Post', (int)$postId);
             
             if (!$post) {
-                return $this->apiError('Post not found');
+                return $this->apiError('Post not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -1097,12 +1075,12 @@ class PostController extends AbstractController
             // Check if post is viewable
             $error = null;
             if (!$post->canView($error)) {
-                return $this->apiError('Cannot view this post');
+                return $this->apiError('Cannot view this post', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission - use canEdit() which exists in base Post entity
             if (!$post->canEdit()) {
-                return $this->apiError('Cannot edit this post');
+                return $this->apiError('Cannot edit this post', null, ErrorCode::NO_PERMISSION);
             }
 
             // Safely get thread title, prefix information
@@ -1194,7 +1172,7 @@ class PostController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get raw post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get raw post');
         }
     }
 
@@ -1211,7 +1189,7 @@ class PostController extends AbstractController
         $groupId = $params->get('groupId', '');
 
         if (empty($postId) || empty($postContent)) {
-            return $this->apiError('Post ID and content are required');
+            return $this->apiError('Post ID and content are required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1219,7 +1197,7 @@ class PostController extends AbstractController
             $post = $this->em()->find('XF:Post', (int)$postId);
             
             if (!$post) {
-                return $this->apiError('Post not found');
+                return $this->apiError('Post not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -1227,12 +1205,12 @@ class PostController extends AbstractController
             // Check if post is viewable
             $error = null;
             if (!$post->canView($error)) {
-                return $this->apiError('Cannot view this post');
+                return $this->apiError('Cannot view this post', null, ErrorCode::NO_PERMISSION);
             }
 
             // Check edit permission - use canEdit() which exists in base Post entity
             if (!$post->canEdit($error)) {
-                return $this->apiError('Cannot edit this post: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot edit this post: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Post Editor service (like core does)
@@ -1303,7 +1281,7 @@ class PostController extends AbstractController
 
             // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save post (and thread if first post)
@@ -1321,7 +1299,7 @@ class PostController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to update post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to update post');
         }
     }
 
@@ -1330,7 +1308,7 @@ class PostController extends AbstractController
         $postId = $params->get('postId', '');
 
         if (empty($postId)) {
-            return $this->apiError('Post ID is required');
+            return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1354,12 +1332,8 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Post not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get quote: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get quote');
         }
     }
 
@@ -1371,7 +1345,7 @@ class PostController extends AbstractController
         $reason = $params->get('reason', '');
 
         if (empty($postId) || empty($reason)) {
-            return $this->apiError('Post ID and reason are required');
+            return $this->apiError('Post ID and reason are required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -1379,11 +1353,11 @@ class PostController extends AbstractController
             $visitor = \XF::visitor();
 
             if (!$post->canReport($error)) {
-                return $this->apiError('Cannot report this post: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot report this post: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             if (empty($reason)) {
-                return $this->apiError('Reason is required');
+                return $this->apiError('Reason is required', null, ErrorCode::VALIDATION);
             }
 
             // Use XenForo's Report Creator service (like Tapatalk does)
@@ -1393,7 +1367,7 @@ class PostController extends AbstractController
 
             // Validate before saving
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Save report (this already includes the message as a comment)
@@ -1405,12 +1379,8 @@ class PostController extends AbstractController
             $result = new FCReportPostResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Post not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to report post: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to report post');
         }
     }
 

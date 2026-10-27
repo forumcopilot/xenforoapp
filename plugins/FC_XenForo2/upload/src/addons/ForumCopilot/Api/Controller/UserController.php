@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCSearchUserResult;
 use ForumCopilot\Result\FCOnlineUserResult;
@@ -29,7 +30,7 @@ class UserController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -46,7 +47,7 @@ class UserController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -270,7 +271,7 @@ class UserController extends AbstractController
             return $this->apiSuccess($fcUser->toArray());
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get user info: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get user info');
         }
     }
 
@@ -282,7 +283,7 @@ class UserController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         $visitor = \XF::visitor();
@@ -294,17 +295,17 @@ class UserController extends AbstractController
         if ($hasKeywords) {
             // When searching with keywords, check search permission
             if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed');
+                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
             }
             
             // Validate minimum keyword length to prevent performance issues
             if (strlen($keywords) < 2) {
-                return $this->apiError('Search keywords must be at least 2 characters');
+                return $this->apiError('Search keywords must be at least 2 characters', null, ErrorCode::VALIDATION);
             }
         } else {
             // When listing all members, check member list permission and option
             if (!$this->options()->enableMemberList || !$visitor->canViewMemberList()) {
-                return $this->apiError('Member list is not available');
+                return $this->apiError('Member list is not available', null, ErrorCode::NO_PERMISSION);
             }
         }
 
@@ -429,7 +430,7 @@ class UserController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get inbox stats: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get inbox stats');
         }
     }
 
@@ -441,12 +442,12 @@ class UserController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         $visitor = \XF::visitor();
         if (!$visitor->canViewMemberList()) {
-            return $this->apiError('Cannot view member list');
+            return $this->apiError('Cannot view member list', null, ErrorCode::NO_PERMISSION);
         }
 
         // Use SessionActivityFinder with proper filtering
@@ -535,7 +536,7 @@ class UserController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -550,7 +551,7 @@ class UserController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Get user's posts (replies) with proper filtering
@@ -638,7 +639,7 @@ class UserController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get user reply posts: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get user reply posts');
         }
     }
 
@@ -652,12 +653,12 @@ class UserController extends AbstractController
 
         // Validate that we have either userId or username
         if (empty($userId) && empty($username)) {
-            return $this->apiError('Either userId or username is required');
+            return $this->apiError('Either userId or username is required', null, ErrorCode::BAD_REQUEST);
         }
 
         // Validate that reason is provided
         if (empty($reason)) {
-            return $this->apiError('Reason is required');
+            return $this->apiError('Reason is required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -670,14 +671,14 @@ class UserController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
 
             // Check if user can be reported
             if (!$user->canBeReported($error)) {
-                return $this->apiError('Cannot report this user: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot report this user: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Report Creator service
@@ -687,7 +688,7 @@ class UserController extends AbstractController
 
             // Validate before saving
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors));
+                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
             }
 
             // Flood check (like web version) - prevent spam reporting
@@ -707,7 +708,7 @@ class UserController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to report user: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to report user');
         }
     }
 

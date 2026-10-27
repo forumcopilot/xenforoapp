@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCForumDataResult;
 use ForumCopilot\Result\FCLoginForumResult;
@@ -26,7 +27,7 @@ class ForumController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -215,12 +216,8 @@ class ForumController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Forum not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get forums: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get forums');
         }
     }
 
@@ -234,7 +231,7 @@ class ForumController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -267,22 +264,8 @@ class ForumController extends AbstractController
             $result = new FCMarkAllAsReadResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Handle XenForo reply exceptions
-            $reply = $e->getReply();
-            if ($reply instanceof \XF\Mvc\Reply\Error) {
-                $errors = $reply->getErrors();
-                if (!empty($errors)) {
-                    // Get first error message
-                    $errorMsg = is_array($errors) ? (string)($errors[0] ?? 'Forum not found or cannot be viewed') : (string)$errors;
-                    return $this->apiError($errorMsg);
-                }
-                return $this->apiError('Forum not found or cannot be viewed');
-            }
-            $errorMsg = $e->getMessage();
-            return $this->apiError('Failed to mark forum as read: ' . ($errorMsg ?: 'Unknown error'));
         } catch (\Throwable $e) {
-            return $this->apiError('Failed to mark forum as read: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to mark forum as read');
         }
     }
 
@@ -307,7 +290,7 @@ class ForumController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -381,7 +364,7 @@ class ForumController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get forum status: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get forum status');
         }
     }
 
@@ -432,7 +415,7 @@ class ForumController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get board stats: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get board stats');
         }
     }
 
@@ -537,7 +520,7 @@ class ForumController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get participated forums: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get participated forums');
         }
     }
 

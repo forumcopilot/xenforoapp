@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use XF\Http\Upload;
 use ForumCopilot\Result\FCAttachmentUploadResult;
@@ -33,10 +34,10 @@ class AttachmentController extends AbstractController
         // Empty ID is allowed for conversation_message attachments (drafts), but required for other types
         $isConversationType = ($type === 'pm' || $type === 'conversation_message');
         if (empty($type) || empty($attachmentName) || empty($attachmentData)) {
-            return $this->apiError('Type, attachment name, and data are required');
+            return $this->apiError('Type, attachment name, and data are required', null, ErrorCode::VALIDATION);
         }
         if (!$isConversationType && empty($id)) {
-            return $this->apiError('ID is required for ' . $type . ' attachments');
+            return $this->apiError('ID is required for ' . $type . ' attachments', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -45,7 +46,7 @@ class AttachmentController extends AbstractController
             // Decode base64 data
             $fileData = base64_decode($attachmentData);
             if ($fileData === false) {
-                return $this->apiError('Invalid attachment data');
+                return $this->apiError('Invalid attachment data', null, ErrorCode::VALIDATION);
             }
 
             // Create temporary file with proper extension
@@ -74,12 +75,12 @@ class AttachmentController extends AbstractController
             $handler = $attachmentRepo->getAttachmentHandler($contentType);
             if (!$handler) {
                 unlink($tempFile);
-                return $this->apiError('Invalid content type');
+                return $this->apiError('Invalid content type', null, ErrorCode::BAD_REQUEST);
             }
 
             if (!$handler->canManageAttachments($contentData, $error)) {
                 unlink($tempFile);
-                return $this->apiError('Cannot manage attachments: ' . ($error ? $error : 'Permission denied'));
+                return $this->apiError('Cannot manage attachments: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Generate or use provided hash
@@ -104,14 +105,14 @@ class AttachmentController extends AbstractController
             
             if (!$manipulator->canUpload($uploadError)) {
                 unlink($tempFile);
-                return $this->apiError('Cannot upload: ' . ($uploadError ? $uploadError : 'Permission denied'));
+                return $this->apiError('Cannot upload: ' . ($uploadError ? $uploadError : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Insert attachment from upload
             $attachment = $manipulator->insertAttachmentFromUpload($upload, $error);
             if (!$attachment) {
                 unlink($tempFile);
-                return $this->apiError('Failed to upload attachment: ' . ($error ? $error : 'Unknown error'));
+                return $this->apiError('Failed to upload attachment: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
             }
 
             // Clean up temp file (manipulator should have moved it)
@@ -135,7 +136,7 @@ class AttachmentController extends AbstractController
             if (isset($tempFile) && file_exists($tempFile)) {
                 @unlink($tempFile);
             }
-            return $this->apiError('Failed to upload attachment: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to upload attachment');
         }
     }
 
@@ -148,14 +149,14 @@ class AttachmentController extends AbstractController
 
         // Validate attachment ID is provided and is a positive integer
         if (empty($attachmentId) || !is_numeric($attachmentId) || (int)$attachmentId <= 0) {
-            return $this->apiError('Attachment ID is required and must be a positive integer');
+            return $this->apiError('Attachment ID is required and must be a positive integer', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
             // First, load the attachment to check if it's temporary or existing
             $attachment = $this->em()->find('XF:Attachment', (int)$attachmentId, ['Data']);
             if (!$attachment) {
-                return $this->apiError('Attachment not found');
+                return $this->apiError('Attachment not found', null, ErrorCode::NOT_FOUND);
             }
 
             // For temporary attachments, validate hash
@@ -163,16 +164,16 @@ class AttachmentController extends AbstractController
             if ($attachment->temp_hash) {
                 // This is a temporary attachment - validate hash
                 if (empty($groupId)) {
-                    return $this->apiError('Hash must be specified for temporary attachments');
+                    return $this->apiError('Hash must be specified for temporary attachments', null, ErrorCode::BAD_REQUEST);
                 }
                 if ($attachment->temp_hash !== $groupId) {
-                    return $this->apiError('Invalid hash');
+                    return $this->apiError('Invalid hash', null, ErrorCode::VALIDATION);
                 }
             } else {
                 // This is an existing attachment - check view permission only (no hash needed)
                 $error = null;
                 if (!$attachment->canView($error)) {
-                    return $this->apiError($error ?: 'Cannot view attachment');
+                    return $this->apiError($error ?: 'Cannot view attachment', null, ErrorCode::NO_PERMISSION);
                 }
             }
 
@@ -180,19 +181,19 @@ class AttachmentController extends AbstractController
             $handler = $attachmentRepo->getAttachmentHandler($attachment->content_type);
             
             if (!$handler) {
-                return $this->apiError('Invalid attachment handler');
+                return $this->apiError('Invalid attachment handler', null, ErrorCode::BAD_REQUEST);
             }
 
             // For existing attachments, check container and manage permissions
             if (!$attachment->temp_hash) {
                 $container = $attachment->Container;
                 if (!$container) {
-                    return $this->apiError('Attachment container not found');
+                    return $this->apiError('Attachment container not found', null, ErrorCode::NOT_FOUND);
                 }
 
                 $context = $handler->getContext($container);
                 if (!$handler->canManageAttachments($context, $error)) {
-                    return $this->apiError('Cannot manage attachments: ' . ($error ?: 'Permission denied'));
+                    return $this->apiError('Cannot manage attachments: ' . ($error ?: 'Permission denied'), null, ErrorCode::NO_PERMISSION);
                 }
             }
             
@@ -205,12 +206,8 @@ class AttachmentController extends AbstractController
             $result = new FCAttachmentRemoveResult(true, null, $hash);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Failed to remove attachment');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to remove attachment: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to remove attachment');
         }
     }
 
@@ -223,20 +220,20 @@ class AttachmentController extends AbstractController
         $attachmentData = $params->get('attachmentData', $params->get('attachmentBytes', ''));
 
         if (empty($imageExtension) || empty($attachmentData)) {
-            return $this->apiError('Image extension and data are required');
+            return $this->apiError('Image extension and data are required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             
             if (!$visitor->canUploadAvatar()) {
-                return $this->apiError('Cannot upload avatar');
+                return $this->apiError('Cannot upload avatar', null, ErrorCode::NO_PERMISSION);
             }
 
             // Decode base64 data
             $fileData = base64_decode($attachmentData);
             if ($fileData === false) {
-                return $this->apiError('Invalid image data');
+                return $this->apiError('Invalid image data', null, ErrorCode::VALIDATION);
             }
 
             // Create temporary file with proper extension
@@ -254,13 +251,13 @@ class AttachmentController extends AbstractController
             // Set image from upload
             if (!$avatarService->setImageFromUpload($upload)) {
                 unlink($tempFile);
-                return $this->apiError('Failed to process image: ' . ($avatarService->getError() ?: 'Unknown error'));
+                return $this->apiError('Failed to process image: ' . ($avatarService->getError() ?: 'Unknown error'), null, ErrorCode::VALIDATION);
             }
 
             // Update avatar
             if (!$avatarService->updateAvatar()) {
                 unlink($tempFile);
-                return $this->apiError('Failed to update avatar');
+                return $this->apiError('Failed to update avatar', null, ErrorCode::VALIDATION);
             }
 
             // Refresh visitor to get updated avatar info
@@ -285,7 +282,7 @@ class AttachmentController extends AbstractController
             if (isset($tempFile) && file_exists($tempFile)) {
                 @unlink($tempFile);
             }
-            return $this->apiError('Failed to upload avatar: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to upload avatar');
         }
     }
 }

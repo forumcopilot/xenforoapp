@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCLoginResult;
 use ForumCopilot\Result\FCRegisterResult;
@@ -37,7 +38,7 @@ class AccountController extends AbstractController
         $webauthnPayload = $params->get('webauthn_payload');
         if (!empty($webauthnPayload) && is_array($webauthnPayload)) {
             if (!$this->supportsPasskeys()) {
-                return $this->apiError('Passkey login is not supported on this XenForo version');
+                return $this->apiError('Passkey login is not supported on this XenForo version', null, ErrorCode::NO_PERMISSION);
             }
 
             try {
@@ -47,12 +48,12 @@ class AccountController extends AbstractController
                 $passkey = $challengeService->validateAssertion($this->session(), $webauthnChallenge, $webauthnPayload, $error);
                 if ($passkey === null) {
                     $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError($error ?: 'Passkey verification failed');
+                    return $this->apiError($error ?: 'Passkey verification failed', null, ErrorCode::VALIDATION);
                 }
                 $user = $passkey->User;
                 if (!$user) {
                     $challengeService->clearStoredChallenge($this->session());
-                    return $this->apiError('Could not identify user from passkey');
+                    return $this->apiError('Could not identify user from passkey', null, ErrorCode::VALIDATION);
                 }
                 if ($refusal = $this->signInRefusal($user)) {
                     $challengeService->clearStoredChallenge($this->session());
@@ -82,7 +83,7 @@ class AccountController extends AbstractController
                     $logPrefix . ' passkey_only_login_exception ip=' . $requestIp . ' error=' . $e->getMessage() . PHP_EOL,
                     FILE_APPEND
                 );
-                return $this->apiError('Passkey login failed: ' . $e->getMessage());
+                return $this->apiException($e, 'Passkey login failed');
             }
         }
         
@@ -93,7 +94,7 @@ class AccountController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -103,14 +104,14 @@ class AccountController extends AbstractController
             
             // Check for rate limiting (brute force protection)
             if ($loginService->isLoginLimited($limitType)) {
-                return $this->apiError('Your account has temporarily been locked due to failed login attempts');
+                return $this->apiError('Your account has temporarily been locked due to failed login attempts', null, ErrorCode::FLOOD);
             }
 
             // Validate password using LoginService (handles failed attempts, password upgrades, etc.)
             $user = $loginService->validate($fcParams->password, $error);
             if (!$user) {
                 // LoginService already records failed attempts
-                return $this->apiError($error ?: 'Invalid username or password');
+                return $this->apiError($error ?: 'Invalid username or password', null, ErrorCode::VALIDATION);
             }
 
             if ($refusal = $this->signInRefusal($user)) {
@@ -130,7 +131,7 @@ class AccountController extends AbstractController
                     // providers like email actually generate and send their challenge.
                     $requestedProviderId = $params->get('tfaProvider', '');
                     if (!empty($requestedProviderId) && !$tfaService->isProviderValid($requestedProviderId)) {
-                        return $this->apiError('Invalid TFA provider');
+                        return $this->apiError('Invalid TFA provider', null, ErrorCode::BAD_REQUEST);
                     }
 
                     $providers = $tfaService->getProviders();
@@ -217,34 +218,34 @@ class AccountController extends AbstractController
                 }
                 
                 if (!$tfaService->isProviderValid($providerId)) {
-                    return $this->apiError('Invalid TFA provider');
+                    return $this->apiError('Invalid TFA provider', null, ErrorCode::BAD_REQUEST);
                 }
                 
                 // Check rate limiting for TFA attempts
                 if ($tfaService->hasTooManyTfaAttempts()) {
-                    return $this->apiError('Your account has temporarily been locked due to failed login attempts');
+                    return $this->apiError('Your account has temporarily been locked due to failed login attempts', null, ErrorCode::FLOOD);
                 }
                 
                 // Handle passkey provider differently from code-based providers
                 if ($providerId === 'passkey') {
                     if (!$this->supportsPasskeys()) {
-                        return $this->apiError('Passkey verification is not supported on this XenForo version');
+                        return $this->apiError('Passkey verification is not supported on this XenForo version', null, ErrorCode::NO_PERMISSION);
                     }
 
                     $webauthnPayload = $params->get('webauthn_payload');
                     $webauthnChallenge = $params->get('webauthn_challenge', '');
                     if (empty($webauthnPayload) || !is_array($webauthnPayload)) {
-                        return $this->apiError('webauthn_payload is required for passkey verification');
+                        return $this->apiError('webauthn_payload is required for passkey verification', null, ErrorCode::BAD_REQUEST);
                     }
                     if (empty($webauthnChallenge)) {
-                        return $this->apiError('webauthn_challenge is required for passkey verification');
+                        return $this->apiError('webauthn_challenge is required for passkey verification', null, ErrorCode::BAD_REQUEST);
                     }
                     $this->request->set('webauthn_challenge', $webauthnChallenge);
                     $this->request->set('webauthn_payload', $webauthnPayload);
                     $this->request->set('confirm', true);
                     $verified = $tfaService->verify($this->request, $providerId);
                     if (!$verified) {
-                        return $this->apiError('Passkey verification failed');
+                        return $this->apiError('Passkey verification failed', null, ErrorCode::VALIDATION);
                     }
                 } else {
                     // Code-based TFA verification (totp, email, backup)
@@ -271,7 +272,7 @@ class AccountController extends AbstractController
                     }
                     
                     if (!$verified) {
-                        return $this->apiError('Invalid two-factor authentication code');
+                        return $this->apiError('Invalid two-factor authentication code', null, ErrorCode::VALIDATION);
                     }
                 }
                 
@@ -300,7 +301,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Login failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Login failed');
         }
     }
 
@@ -311,7 +312,7 @@ class AccountController extends AbstractController
     public function actionGetPasskeyChallenge(ParameterBag $params)
     {
         if (!$this->supportsPasskeys()) {
-            return $this->apiError('Passkey login is not supported on this XenForo version');
+            return $this->apiError('Passkey login is not supported on this XenForo version', null, ErrorCode::NO_PERMISSION);
         }
 
         try {
@@ -334,7 +335,7 @@ class AccountController extends AbstractController
                 $logPrefix . ' get_passkey_challenge_fail ip=' . $this->request->getIp() . ' error=' . $e->getMessage() . PHP_EOL,
                 FILE_APPEND
             );
-            return $this->apiError('Failed to generate passkey challenge: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to generate passkey challenge');
         }
     }
 
@@ -558,7 +559,7 @@ class AccountController extends AbstractController
                 return $this->apiError($refusal);
             }
             if (!$this->canRegisterViaAPI()) {
-                return $this->apiError($this->plainText(\XF::phrase('fc_register_on_website')));
+                return $this->apiError($this->plainText(\XF::phrase('fc_register_on_website')), null, ErrorCode::NO_PERMISSION);
             }
 
             // XenForo's registration timer, from when prefetchAccount opened
@@ -568,7 +569,7 @@ class AccountController extends AbstractController
                 return $this->apiError($this->plainText(\XF::phrase('something_went_wrong_please_try_again')));
             }
             if ($startTime + (int)$options->registrationTimer > \XF::$time) {
-                return $this->apiError($this->plainText(\XF::phrase('sorry_you_must_wait_longer_to_create_account')));
+                return $this->apiError($this->plainText(\XF::phrase('sorry_you_must_wait_longer_to_create_account')), null, ErrorCode::FLOOD);
             }
 
             // Only the policies the forum has. XenForo's form has one box for
@@ -674,7 +675,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Registration failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Registration failed');
         }
     }
 
@@ -694,7 +695,7 @@ class AccountController extends AbstractController
             }
         }
 
-        return $this->apiResponse(false, implode("\n", $messages), $byField ? ['errors' => $byField] : []);
+        return $this->apiResponse(false, implode("\n", $messages), ['errorCode' => ErrorCode::VALIDATION] + ($byField ? ['errors' => $byField] : []));
     }
 
     /**
@@ -745,7 +746,7 @@ class AccountController extends AbstractController
         $newPassword = $params->get('newPassword', '');
 
         if (empty($oldPassword) || empty($newPassword)) {
-            return $this->apiError('Old password and new password are required');
+            return $this->apiError('Old password and new password are required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -753,7 +754,7 @@ class AccountController extends AbstractController
             
             // Verify old password
             if (!$visitor->authenticate($oldPassword)) {
-                return $this->apiError('Current password is incorrect');
+                return $this->apiError('Current password is incorrect', null, ErrorCode::VALIDATION);
             }
 
             // Use XenForo's Password Change service
@@ -767,7 +768,7 @@ class AccountController extends AbstractController
 
             // Validate before saving
             if (!$passwordChange->isValid($error)) {
-                return $this->apiError('Password change validation failed: ' . ($error ? $error : 'Unknown error'));
+                return $this->apiError('Password change validation failed: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
             }
 
             // Save password change
@@ -784,7 +785,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Password update failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Password update failed');
         }
     }
 
@@ -806,14 +807,14 @@ class AccountController extends AbstractController
         $code = (string)$params->get('code', '');
         $verifier = (string)$params->get('verifier', '');
         if ($code === '' || $verifier === '') {
-            return $this->apiError('The sign-in was not completed. Please try again.');
+            return $this->apiError('The sign-in was not completed. Please try again.', null, ErrorCode::VALIDATION);
         }
 
         $userId = \ForumCopilot\Service\AppLoginCode::redeem($code, $verifier);
         /** @var \XF\Entity\User|null $user */
         $user = $userId ? $this->em()->find('XF:User', $userId) : null;
         if (!$user) {
-            return $this->apiError('The sign-in has expired. Please try again.');
+            return $this->apiError('The sign-in has expired. Please try again.', null, ErrorCode::VALIDATION);
         }
         if ($refusal = $this->signInRefusal($user)) {
             return $this->apiError($refusal);
@@ -827,7 +828,7 @@ class AccountController extends AbstractController
             $this->markUserHasApp($user->user_id);
             return $this->apiSuccess($this->loginSuccessResult($user));
         } catch (\Exception $e) {
-            return $this->apiError('Login failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Login failed');
         }
     }
 
@@ -851,12 +852,12 @@ class AccountController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         if (!\XF::options()->fc_account_deletion) {
-            return $this->apiError('This forum does not delete accounts from the app. Please contact the forum staff.');
+            return $this->apiError('This forum does not delete accounts from the app. Please contact the forum staff.', null, ErrorCode::NO_PERMISSION);
         }
 
         $visitor = \XF::visitor();
         if ($visitor->is_admin || $visitor->is_moderator || $visitor->is_super_admin) {
-            return $this->apiError('Staff accounts cannot be deleted from the app. Please ask an administrator.');
+            return $this->apiError('Staff accounts cannot be deleted from the app. Please ask an administrator.', null, ErrorCode::NO_PERMISSION);
         }
 
         $password = (string)$params->get('password', '');
@@ -864,10 +865,10 @@ class AccountController extends AbstractController
         $handler = $visitor->Auth ? $visitor->Auth->getAuthenticationHandler() : null;
         if ($handler && $handler->hasPassword()) {
             if ($password === '' || !$visitor->authenticate($password)) {
-                return $this->apiError('Your password is incorrect.');
+                return $this->apiError('Your password is incorrect.', null, ErrorCode::VALIDATION);
             }
         } elseif (utf8_strtolower(trim($username)) !== utf8_strtolower($visitor->username)) {
-            return $this->apiError('Type your user name to confirm.');
+            return $this->apiError('Type your user name to confirm.', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -884,7 +885,7 @@ class AccountController extends AbstractController
             $deleter = $this->service('XF:User\Delete', $user);
             if (!$deleter->delete($errors)) {
                 $messages = array_map('strval', is_array($errors) ? $errors : [$errors]);
-                return $this->apiError(implode(' ', $messages) ?: 'The account could not be deleted.');
+                return $this->apiError(implode(' ', $messages) ?: 'The account could not be deleted.', null, ErrorCode::VALIDATION);
             }
 
             // Its push registrations (best effort: the account is gone either
@@ -903,7 +904,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess(new \ForumCopilot\Result\FCResult(true, null));
         } catch (\Exception $e) {
             \XF::logException($e, false, 'ForumCopilot: deleteAccount: ');
-            return $this->apiError('The account could not be deleted: ' . $e->getMessage());
+            return $this->apiException($e, 'The account could not be deleted');
         }
     }
 
@@ -915,7 +916,7 @@ class AccountController extends AbstractController
         $newEmail = $params->get('newEmail', '');
 
         if (empty($password) || empty($newEmail)) {
-            return $this->apiError('Password and new email are required');
+            return $this->apiError('Password and new email are required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -923,7 +924,7 @@ class AccountController extends AbstractController
             
             // Verify password
             if (!$visitor->authenticate($password)) {
-                return $this->apiError('Password is incorrect');
+                return $this->apiError('Password is incorrect', null, ErrorCode::VALIDATION);
             }
 
             // Validate email using XenForo's Email validator
@@ -935,7 +936,7 @@ class AccountController extends AbstractController
             $newEmail = $emailValidator->coerceValue($newEmail);
             if (!$emailValidator->isValid($newEmail, $errorKey)) {
                 $errorPhrase = $emailValidator->getPrintableErrorValue($errorKey);
-                return $this->apiError($errorPhrase ?: 'Invalid email format');
+                return $this->apiError($errorPhrase ?: 'Invalid email format', null, ErrorCode::VALIDATION);
             }
 
             // Use XenForo's Email Change service
@@ -954,7 +955,7 @@ class AccountController extends AbstractController
 
             // Validate before saving
             if (!$emailChange->isValid($error)) {
-                return $this->apiError('Email change validation failed: ' . ($error ? $error : 'Unknown error'));
+                return $this->apiError('Email change validation failed: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
             }
 
             // Save email change
@@ -965,7 +966,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Email update failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Email update failed');
         }
     }
 
@@ -986,7 +987,7 @@ class AccountController extends AbstractController
         $enableActivitySummaryEmail = $params->get('enableActivitySummaryEmail', null);
 
         if (empty($userId)) {
-            return $this->apiError('User ID is required');
+            return $this->apiError('User ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -994,18 +995,18 @@ class AccountController extends AbstractController
             
             $user = $this->em()->find('XF:User', $userId);
             if (!$user) {
-                return $this->apiError('User not found');
+                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
             }
 
             // Check if user can edit this profile
             if ($visitor->user_id != $user->user_id) {
                 if (!$visitor->canEditProfile()) {
-                    return $this->apiError('Permission denied');
+                    return $this->apiError('Permission denied', null, ErrorCode::NO_PERMISSION);
                 }
             } else {
                 // User editing own profile - check canEditProfile
                 if (!$visitor->canEditProfile()) {
-                    return $this->apiError('You do not have permission to edit your profile');
+                    return $this->apiError('You do not have permission to edit your profile', null, ErrorCode::NO_PERMISSION);
                 }
             }
 
@@ -1082,10 +1083,10 @@ class AccountController extends AbstractController
                     if ($sigEditor->setSignature($profileData['signature'], $errors)) {
                         $profileInput['signature'] = $sigEditor->getNewSignature();
                     } else {
-                        return $this->apiError('Signature validation failed: ' . implode(', ', $errors));
+                        return $this->apiError('Signature validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
                     }
                 } else {
-                    return $this->apiError('You do not have permission to edit signature');
+                    return $this->apiError('You do not have permission to edit signature', null, ErrorCode::NO_PERMISSION);
                 }
             }
 
@@ -1171,12 +1172,8 @@ class AccountController extends AbstractController
             $result = new FCUpdateProfileResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Profile update failed');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Profile update failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Profile update failed');
         }
     }
 
@@ -1198,7 +1195,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Logout failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Logout failed');
         }
     }
 
@@ -1207,14 +1204,14 @@ class AccountController extends AbstractController
         // Don't allow if already logged in
         $visitor = \XF::visitor();
         if ($visitor->user_id) {
-            return $this->apiError('You are already logged in');
+            return $this->apiError('You are already logged in', null, ErrorCode::VALIDATION);
         }
 
         // Accept either email or username in a single parameter
         $usernameOrEmail = $params->get('usernameOrEmail', '');
 
         if (empty($usernameOrEmail)) {
-            return $this->apiError('Username or email is required');
+            return $this->apiError('Username or email is required', null, ErrorCode::VALIDATION);
         }
 
         try {
@@ -1256,7 +1253,7 @@ class AccountController extends AbstractController
             
             // Check if password reset can be triggered
             if (!$passwordReset->canTriggerConfirmation($error)) {
-                return $this->apiError($error ? $error : 'Password reset cannot be triggered at this time');
+                return $this->apiError($error ? $error : 'Password reset cannot be triggered at this time', null, ErrorCode::VALIDATION);
             }
 
             // Trigger the confirmation (sends email)
@@ -1267,7 +1264,7 @@ class AccountController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Password reset request failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Password reset request failed');
         }
     }
 
@@ -1491,7 +1488,7 @@ class AccountController extends AbstractController
                 'message' => $this->plainText(\XF::phrase('confirmation_email_has_been_resent')),
             ]);
         } catch (\Exception $e) {
-            return $this->apiError('Could not resend the email: ' . $e->getMessage());
+            return $this->apiException($e, 'Could not resend the email');
         }
     }
 
@@ -1512,13 +1509,13 @@ class AccountController extends AbstractController
             $category = $params->get('category', '');
             
             if (empty($category)) {
-                return $this->apiError('Category parameter is required');
+                return $this->apiError('Category parameter is required', null, ErrorCode::BAD_REQUEST);
             }
 
             // Get settings provider based on category
             $provider = $this->getSettingsProvider($category);
             if (!$provider) {
-                return $this->apiError('Unknown settings category: ' . $category);
+                return $this->apiError('Unknown settings category: ' . $category, null, ErrorCode::BAD_REQUEST);
             }
 
             // Get settings definition and current values
@@ -1581,7 +1578,7 @@ class AccountController extends AbstractController
             ]);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get user settings: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get user settings');
         }
     }
 
@@ -1604,23 +1601,23 @@ class AccountController extends AbstractController
             $settingsToUpdate = $params->get('settings', []);
             
             if (empty($category)) {
-                return $this->apiError('Category parameter is required');
+                return $this->apiError('Category parameter is required', null, ErrorCode::BAD_REQUEST);
             }
 
             if (!is_array($settingsToUpdate)) {
-                return $this->apiError('Settings must be an object/array');
+                return $this->apiError('Settings must be an object/array', null, ErrorCode::BAD_REQUEST);
             }
 
             // Get settings provider based on category
             $provider = $this->getSettingsProvider($category);
             if (!$provider) {
-                return $this->apiError('Unknown settings category: ' . $category);
+                return $this->apiError('Unknown settings category: ' . $category, null, ErrorCode::BAD_REQUEST);
             }
 
             // Validate and update settings
             $validationErrors = $provider->validateSettings($visitor, $settingsToUpdate);
             if (!empty($validationErrors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $validationErrors));
+                return $this->apiError('Validation failed: ' . implode(', ', $validationErrors), null, ErrorCode::VALIDATION);
             }
 
             // Apply updates
@@ -1630,7 +1627,7 @@ class AccountController extends AbstractController
             return $this->actionGetUserSettings(new ParameterBag(['category' => $category]));
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to update user settings: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to update user settings');
         }
     }
 
@@ -1674,7 +1671,7 @@ class AccountController extends AbstractController
             ]);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get settings categories: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get settings categories');
         }
     }
 

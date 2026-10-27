@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCSearchTopicResult;
 use ForumCopilot\Result\FCSearchPostResult;
@@ -23,13 +24,13 @@ class SearchController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
             $visitor = \XF::visitor();
             if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed');
+                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
             }
 
             // Build search input matching XenForo's web format
@@ -47,7 +48,7 @@ class SearchController extends AbstractController
             $query = $this->prepareSearchQuery($input, $constraints);
             
             if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()));
+                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
             }
 
             $searcher = $this->app()->search();
@@ -112,7 +113,7 @@ class SearchController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Search failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Search failed');
         }
     }
 
@@ -124,13 +125,13 @@ class SearchController extends AbstractController
         $searchId = $params->get('searchId', '');
 
         if (empty($searchString)) {
-            return $this->apiError('Search string is required');
+            return $this->apiError('Search string is required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed');
+                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
             }
 
             // Build search input for post search
@@ -145,7 +146,7 @@ class SearchController extends AbstractController
             $query = $this->prepareSearchQuery($input, $constraints);
             
             if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()));
+                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
             }
 
             $searcher = $this->app()->search();
@@ -212,7 +213,7 @@ class SearchController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Search failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Search failed');
         }
     }
 
@@ -233,13 +234,13 @@ class SearchController extends AbstractController
         $searchTime = $params->get('searchTime', 0);
 
         if (empty($keywords)) {
-            return $this->apiError('Search keywords are required');
+            return $this->apiError('Search keywords are required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed');
+                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
             }
 
             // Resolve searchUser to userId if provided
@@ -252,7 +253,7 @@ class SearchController extends AbstractController
                 if ($user) {
                     $resolvedUserId = $user->user_id;
                 } else {
-                    return $this->apiError('User not found: ' . $searchUser);
+                    return $this->apiError('User not found: ' . $searchUser, null, ErrorCode::NOT_FOUND);
                 }
             }
 
@@ -479,7 +480,7 @@ class SearchController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Advanced search failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Advanced search failed');
         }
     }
 
@@ -500,13 +501,13 @@ class SearchController extends AbstractController
         $searchTime = $params->get('searchTime', 0);
 
         if (empty($keywords)) {
-            return $this->apiError('Search keywords are required');
+            return $this->apiError('Search keywords are required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             if (!$visitor->canSearch()) {
-                return $this->apiError('Search is not allowed');
+                return $this->apiError('Search is not allowed', null, ErrorCode::NO_PERMISSION);
             }
 
             // Build search input for advanced post search
@@ -527,7 +528,7 @@ class SearchController extends AbstractController
                 if ($user) {
                     $input['c']['users'] = $user->username;
                 } else {
-                    return $this->apiError('User not found: ' . $userId);
+                    return $this->apiError('User not found: ' . $userId, null, ErrorCode::NOT_FOUND);
                 }
             } elseif (!empty($searchUser)) {
                 // If searchUser (username) is provided, use that
@@ -571,7 +572,7 @@ class SearchController extends AbstractController
             $query = $this->prepareSearchQuery($input, $constraints);
             
             if ($query->getErrors()) {
-                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()));
+                return $this->apiError('Search query errors: ' . implode(', ', $query->getErrors()), null, ErrorCode::VALIDATION);
             }
 
             $searcher = $this->app()->search();
@@ -631,7 +632,7 @@ class SearchController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Advanced search failed: ' . $e->getMessage());
+            return $this->apiException($e, 'Advanced search failed');
         }
     }
 

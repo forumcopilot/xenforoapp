@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Api\Controller;
 
+use ForumCopilot\Api\ErrorCode;
 use XF\Mvc\ParameterBag;
 use ForumCopilot\Result\FCSubscribedForumResult;
 use ForumCopilot\Result\FCSubscribeForumResult;
@@ -79,7 +80,7 @@ class SubscriptionController extends AbstractController
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get subscribed forums: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get subscribed forums');
         }
     }
 
@@ -93,7 +94,7 @@ class SubscriptionController extends AbstractController
         // Validate parameters
         $errors = $fcParams->validate();
         if (!empty($errors)) {
-            return $this->apiError('Invalid parameters: ' . implode(', ', $errors));
+            return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -138,7 +139,7 @@ class SubscriptionController extends AbstractController
                 $forum = $this->assertViewableForum($fcParams->forumId);
                 
                 if (!$forum->canWatch()) {
-                    return $this->apiError('Cannot subscribe to this forum');
+                    return $this->apiError('Cannot subscribe to this forum', null, ErrorCode::NO_PERMISSION);
                 }
                 
                 // Check forum notification settings (matching web version logic)
@@ -157,12 +158,8 @@ class SubscriptionController extends AbstractController
             $result = new FCSubscribeForumResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Forum not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to subscribe to forum: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to subscribe to forum');
         }
     }
 
@@ -173,7 +170,7 @@ class SubscriptionController extends AbstractController
         $forumId = $params->get('forumId', '');
 
         if (empty($forumId)) {
-            return $this->apiError('Forum ID is required');
+            return $this->apiError('Forum ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -197,12 +194,8 @@ class SubscriptionController extends AbstractController
             $result = new FCUnsubscribeForumResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Forum not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unsubscribe from forum: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unsubscribe from forum');
         }
     }
 
@@ -233,7 +226,7 @@ class SubscriptionController extends AbstractController
             ));
 
         } catch (\Exception $e) {
-            return $this->apiError('Failed to get subscribed topics: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to get subscribed topics');
         }
     }
 
@@ -245,7 +238,7 @@ class SubscriptionController extends AbstractController
         $subscribeMode = $params->get('subscribeMode', 0);
 
         if (empty($topicId)) {
-            return $this->apiError('Topic ID is required');
+            return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -253,7 +246,7 @@ class SubscriptionController extends AbstractController
             $visitor = \XF::visitor();
 
             if (!$thread->canWatch()) {
-                return $this->apiError('Cannot subscribe to this topic');
+                return $this->apiError('Cannot subscribe to this topic', null, ErrorCode::NO_PERMISSION);
             }
 
             // Map subscribeMode to XenForo watch state (like Tapatalk does)
@@ -288,12 +281,8 @@ class SubscriptionController extends AbstractController
             $result = new FCSubscribeTopicResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to subscribe to topic: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to subscribe to topic');
         }
     }
 
@@ -304,7 +293,7 @@ class SubscriptionController extends AbstractController
         $topicId = $params->get('topicId', '');
 
         if (empty($topicId)) {
-            return $this->apiError('Topic ID is required');
+            return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
         try {
@@ -328,12 +317,8 @@ class SubscriptionController extends AbstractController
             $result = new FCUnsubscribeTopicResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\XF\Mvc\Reply\Exception $e) {
-            // Extract XenForo's error message from the exception
-            $errorMsg = $this->extractErrorMessageFromReplyException($e, 'Thread not found or not accessible');
-            return $this->apiError($errorMsg);
         } catch (\Exception $e) {
-            return $this->apiError('Failed to unsubscribe from topic: ' . $e->getMessage());
+            return $this->apiException($e, 'Failed to unsubscribe from topic');
         }
     }
 }

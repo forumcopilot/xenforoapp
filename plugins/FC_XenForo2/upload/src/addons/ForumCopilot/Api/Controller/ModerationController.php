@@ -517,21 +517,34 @@ class ModerationController extends AbstractController
         $userName = $params->get('userName', '');
         $reason = $params->get('reason', '');
         
-        // New parameters matching web interface
-        $banLength = $params->get('banLength', 'permanent');
-        $endDateStr = $params->get('endDate', '');
+        // New parameters matching web interface. banLength: "permanent" or
+        // "temporary"; when absent, a ban with an end (endTime, endDate or
+        // banExpires) is temporary and one without is permanent.
+        $banLength = (string)$params->get('banLength', '');
+        $endDateStr = trim((string)$params->get('endDate', ''));
+        // Since 1.11.0: the end as a unix timestamp (seconds), used as is,
+        // and the time zone endDate is written in (e.g. "Europe/Paris")
+        $endTime = (int)$params->get('endTime', 0);
+        $timeZoneName = trim((string)$params->get('timeZone', ''));
         
         // Backward compatibility: support old banExpires parameter
-        $banExpires = $params->get('banExpires', 0);
+        $banExpires = (int)$params->get('banExpires', 0);
 
         if (empty($userName)) {
             return $this->apiError('Username is required', null, ErrorCode::VALIDATION);
         }
 
+        if ($banLength !== '' && $banLength !== 'permanent' && $banLength !== 'temporary') {
+            return $this->apiError('banLength must be "permanent" or "temporary"', null, ErrorCode::BAD_REQUEST);
+        }
+        if ($banLength === '') {
+            $banLength = ($endTime > 0 || $endDateStr !== '' || $banExpires > 0) ? 'temporary' : 'permanent';
+        }
+
         try {
             $user = $this->em()->findOne('XF:User', ['username' => $userName]);
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -541,36 +554,50 @@ class ModerationController extends AbstractController
             }
 
             // Determine end date based on parameters
-            $endDate = 0; // Default to permanent ban
+            $endDate = 0; // Permanent ban
             
-            // Priority: banLength/endDate > banExpires (for backward compatibility)
             if ($banLength === 'temporary') {
-                // For temporary ban, endDate is required
-                if (empty($endDateStr)) {
+                if ($endTime > 0) {
+                    $endDate = $endTime;
+                } elseif ($endDateStr !== '') {
+                    // "2025-12-21" or "2025-12-21 23:59:59" is a wall-clock
+                    // time: in timeZone when given, otherwise in the
+                    // moderator's XenForo time zone, as XenForo's own ban
+                    // form reads it (end_date filtered as datetime). The
+                    // 1.x app sends the time on the phone's clock, so this
+                    // is right when the phone and the XenForo account use
+                    // the same zone; it was read as UTC before.
+                    $timeZone = \XF::language()->getTimeZone();
+                    if ($timeZoneName !== '') {
+                        try {
+                            $timeZone = new \DateTimeZone($timeZoneName);
+                        } catch (\Exception $e) {
+                            return $this->apiError('Unknown timeZone: ' . $timeZoneName, null, ErrorCode::BAD_REQUEST);
+                        }
+                    }
+                    try {
+                        $endDate = (int)(new \DateTime($endDateStr, $timeZone))->format('U');
+                    } catch (\Exception $e) {
+                        return $this->apiError('Invalid end date format. Use format: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS', null, ErrorCode::VALIDATION);
+                    }
+                } elseif ($banExpires > 0) {
+                    // Older clients: an end timestamp, or a number of
+                    // seconds from now (any value before now is a length)
+                    $endDate = $banExpires > \XF::$time ? $banExpires : \XF::$time + $banExpires;
+                } else {
                     return $this->apiError('End date is required when banLength is "temporary"', null, ErrorCode::VALIDATION);
                 }
-                // Parse the end date string (supports formats like "2025-12-21" or "2025-12-21 23:59:59")
-                $endDateTimestamp = strtotime($endDateStr);
-                if ($endDateTimestamp === false) {
-                    return $this->apiError('Invalid end date format. Use format: YYYY-MM-DD or YYYY-MM-DD HH:MM:SS', null, ErrorCode::VALIDATION);
+
+                if ($endDate <= \XF::$time) {
+                    return $this->apiError(\XF::phrase('please_enter_a_date_in_the_future'), null, ErrorCode::VALIDATION);
                 }
-                if ($endDateTimestamp <= time()) {
-                    return $this->apiError('End date must be in the future', null, ErrorCode::VALIDATION);
-                }
-                $endDate = $endDateTimestamp;
-            } elseif ($banLength === 'permanent' || empty($banLength)) {
-                // Permanent ban
-                $endDate = 0;
-            } elseif ($banExpires > 0) {
-                // Backward compatibility: banExpires is number of seconds from now
-                $endDate = \XF::$time + $banExpires;
             }
 
             // Use XenForo's BanningRepository to ban user
             $banningRepo = $this->repository('XF:Banning');
             
             if (!$banningRepo->banUser($user, $endDate, $reason, $error, $visitor)) {
-                return $this->apiError('Failed to ban user: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
+                return $this->apiError($error ?: \XF::phrase('unexpected_error_occurred'), null, ErrorCode::VALIDATION);
             }
 
             $result = new FCBanUserResult(true, null, true);

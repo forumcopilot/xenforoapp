@@ -223,6 +223,13 @@ class AttachmentController extends AbstractController
             return $this->apiError('Image extension and data are required', null, ErrorCode::VALIDATION);
         }
 
+        // Only an image type XenForo's avatar service takes; the extension
+        // names the uploaded file and nothing else
+        $imageExtension = strtolower(ltrim(trim((string)$imageExtension), '.'));
+        if (!in_array($imageExtension, ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'webp'], true)) {
+            return $this->apiError(\XF::phrase('uploaded_file_must_be_valid_image'), null, ErrorCode::VALIDATION);
+        }
+
         try {
             $visitor = \XF::visitor();
             
@@ -236,8 +243,9 @@ class AttachmentController extends AbstractController
                 return $this->apiError('Invalid image data', null, ErrorCode::VALIDATION);
             }
 
-            // Create temporary file with proper extension
-            $tempFile = tempnam(sys_get_temp_dir(), 'fc_avatar_') . '.' . $imageExtension;
+            // XenForo's own temporary file; the avatar service reads the image
+            // type from the contents and the extension from the upload's name
+            $tempFile = \XF\Util\File::getTempFile();
             file_put_contents($tempFile, $fileData);
 
             // Use XenForo's Avatar service (like Tapatalk does)

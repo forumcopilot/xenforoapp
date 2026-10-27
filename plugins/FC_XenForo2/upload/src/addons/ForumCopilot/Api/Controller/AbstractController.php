@@ -202,8 +202,8 @@ abstract class AbstractController extends Controller
 
     /**
      * Validation error with XenForo's per-field messages, as from
-     * $entity->getErrors() or $service->validate($errors). The first message
-     * is resultText, as before; `errors` maps each field to its message, as
+     * $entity->getErrors() or $service->validate($errors). resultText has
+     * every message, one per line; `errors` maps each field to its message, as
      * register's reply has since 1.10.0.
      *
      * @param array $errors field name (or index) => message
@@ -219,6 +219,9 @@ abstract class AbstractController extends Controller
         }
 
         $first = reset($errors);
+        $messages = array_unique(array_map(function ($error) {
+            return $this->plainText((string)$error);
+        }, array_values($errors)));
         if (!$errorCode) {
             $errorCode = $fieldErrors ? ErrorCode::ERROR : ErrorCode::infer($first, null, !\XF::visitor()->user_id);
             if ($errorCode === ErrorCode::ERROR) {
@@ -226,7 +229,7 @@ abstract class AbstractController extends Controller
             }
         }
         return $this->apiError(
-            $this->plainText((string)$first),
+            implode("\n", $messages),
             null,
             $errorCode,
             $fieldErrors ? ['errors' => $fieldErrors] : []
@@ -553,6 +556,31 @@ abstract class AbstractController extends Controller
         }
 
         return $message;
+    }
+
+    /**
+     * The visitor's own copy of a conversation, as XenForo's
+     * ConversationController::assertViewableUserConversation finds it: only
+     * participants have one, so it is the participant check too.
+     *
+     * @return \XF\Entity\ConversationUser
+     * @throws \XF\Mvc\Reply\Exception not found when the visitor isn't a participant
+     */
+    protected function assertViewableUserConversation($conversationId, array $extraWith = [])
+    {
+        $finder = $this->finder('XF:ConversationUser');
+        $finder->where('owner_user_id', \XF::visitor()->user_id);
+        $finder->where('conversation_id', (int)$conversationId);
+        $finder->with($extraWith);
+
+        $userConv = $finder->fetchOne();
+        if (!$userConv || !$userConv->Master) {
+            // Renamed with "direct messages" in XenForo 2.3
+            $phrase = \XF::$versionId >= 2030000 ? 'requested_direct_message_not_found' : 'requested_conversation_not_found';
+            throw new \XF\Mvc\Reply\Exception($this->error(\XF::phrase($phrase), 404));
+        }
+
+        return $userConv;
     }
 
     /**

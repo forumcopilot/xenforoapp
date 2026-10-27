@@ -35,7 +35,6 @@ class PrivateConversationController extends AbstractController
         $userName = $params->get('userName', []);
         $subject = $params->get('subject', '');
         $textBody = $params->get('textBody', '');
-        $attachmentIds = $params->get('attachmentIds', []);
         $groupId = $params->get('groupId', '');
         
         // Optional parameters for conversation settings
@@ -46,23 +45,17 @@ class PrivateConversationController extends AbstractController
             return $this->apiError('Username, subject, and content are required', null, ErrorCode::VALIDATION);
         }
 
+        $visitor = \XF::visitor();
+        if (!$visitor->canStartConversation()) {
+            return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+
         try {
-            $visitor = \XF::visitor();
-
-            // Validate users and build recipients string (like Tapatalk does)
-            $validUsernames = [];
-            foreach ($userName as $username) {
-                $user = $this->em()->findOne('XF:User', ['username' => $username]);
-                if ($user && $visitor->canStartConversationWith($user)) {
-                    $validUsernames[] = $username;
-                }
-            }
-
-            if (empty($validUsernames)) {
-                return $this->apiError('No valid users found', null, ErrorCode::VALIDATION);
-            }
-
-            // Use XenForo's Conversation Creator service (like XenForo core does)
+            // Use XenForo's Conversation Creator service, as XenForo's own
+            // ConversationController::setupConversationCreate does. Its
+            // recipient check names recipients who don't exist or whose
+            // privacy settings refuse direct messages, and applies the
+            // maximum number of recipients.
             /** @var \XF\Service\Conversation\Creator $creator */
             $creator = $this->service('XF:Conversation\Creator', $visitor);
             
@@ -71,42 +64,25 @@ class PrivateConversationController extends AbstractController
             $options['open_invite'] = (bool)$openInvite;
             $options['conversation_open'] = !(bool)$conversationLocked; // Convert locked to open status
             $creator->setOptions($options);
-            
-            // Set recipients as comma-separated string (like Tapatalk)
-            $creator->setRecipients(implode(',', $validUsernames));
-            
-            // Set content (title and message)
+            $creator->setRecipients($this->recipientNames($userName));
             $creator->setContent($subject, $textBody);
 
-            // Handle attachments if provided (like Tapatalk does)
-            // Note: We set attachment hash before getting conversation to avoid entity access issues
-            if ($groupId) {
+            // New uploads come as the upload hash (groupId). attachmentIds
+            // lists attachments that are already saved and needs nothing.
+            if ($groupId && $creator->getConversation()->canUploadAndManageAttachments()) {
                 $creator->setAttachmentHash($groupId);
-            } elseif (!empty($attachmentIds) && is_array($attachmentIds)) {
-                $attachmentRepo = $this->repository('XF:Attachment');
-                $attachments = $attachmentRepo->findByIds($attachmentIds);
-                $hashArray = [];
-                foreach ($attachments as $attachment) {
-                    if ($attachment->canView() && $attachment->temp_hash) {
-                        $hashArray[] = $attachment->temp_hash;
-                    }
-                }
-                if ($hashArray) {
-                    $creator->setAttachmentHash(implode(',', $hashArray));
-                }
             }
 
-            // Validate before saving
-            $errors = [];
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
+            }
+            if ($floodError = $this->checkFlooding('conversation', $this->options()->floodCheckLengthDiscussion ?: null)) {
+                return $floodError;
             }
 
-            // Save conversation (returns ConversationMaster entity, like Tapatalk)
             /** @var \XF\Entity\ConversationMaster $conversation */
             $conversation = $creator->save();
             
-            // Finalize conversation creation (like Tapatalk does)
             \XF\Draft::createFromKey('conversation')->delete();
 
             // No sendNotifications(): XenForo's conversation Creator already
@@ -126,13 +102,30 @@ class PrivateConversationController extends AbstractController
         }
     }
 
+    /**
+     * Recipient names as XenForo's recipients field takes them: one
+     * comma-separated string. The app sends an array; a string is accepted too.
+     *
+     * @param mixed $names
+     */
+    protected function recipientNames($names): string
+    {
+        if (is_string($names)) {
+            return $names;
+        }
+        if (!is_array($names)) {
+            return '';
+        }
+        $names = array_filter(array_map('trim', array_map('strval', $names)), 'strlen');
+        return implode(', ', $names);
+    }
+
     public function actionReplyConversation(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $conversationId = $params->get('conversationId', '');
         $textBody = $params->get('textBody', '');
-        $attachmentIds = $params->get('attachmentIds', []);
         $groupId = $params->get('groupId', '');
 
         if (empty($conversationId) || empty($textBody)) {
@@ -140,49 +133,39 @@ class PrivateConversationController extends AbstractController
         }
 
         try {
-            $conversation = $this->em()->find('XF:ConversationMaster', $conversationId);
-            if (!$conversation) {
-                return $this->apiError('Conversation not found', null, ErrorCode::NOT_FOUND);
-            }
-
             $visitor = \XF::visitor();
 
+            // Only the visitor's own copy of the conversation, as XenForo's
+            // ConversationController::actionAddReply does
+            $userConv = $this->assertViewableUserConversation($conversationId);
+            $conversation = $userConv->Master;
+
             if (!$conversation->canReply()) {
-                return $this->apiError('Cannot reply to this conversation', null, ErrorCode::NO_PERMISSION);
+                return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
-            // Use XenForo's Conversation Replier service (like XenForo core does)
             /** @var \XF\Service\Conversation\Replier $replier */
             $replier = $this->service('XF:Conversation\Replier', $conversation, $visitor);
             $replier->setMessageContent($textBody);
 
-            // Handle attachments if provided
-            if ($groupId) {
+            if ($groupId && $conversation->canUploadAndManageAttachments()) {
                 $replier->setAttachmentHash($groupId);
-            } elseif (!empty($attachmentIds) && is_array($attachmentIds)) {
-                $attachmentRepo = $this->repository('XF:Attachment');
-                $attachments = $attachmentRepo->findByIds($attachmentIds);
-                $hashArray = [];
-                foreach ($attachments as $attachment) {
-                    if ($attachment->canView() && $attachment->temp_hash) {
-                        $hashArray[] = $attachment->temp_hash;
-                    }
-                }
-                if ($hashArray) {
-                    $replier->setAttachmentHash(implode(',', $hashArray));
-                }
             }
 
-            // Validate before saving
-            $errors = [];
             if (!$replier->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
+            }
+            if ($floodError = $this->checkFlooding('conversation_message')) {
+                return $floodError;
             }
 
             // Save reply (returns ConversationMessage entity). XenForo's
             // conversation Replier sends the notifications inside save(), so
             // there is no sendNotifications() call here.
             $message = $replier->save();
+
+            // The reply draft XenForo's editor keeps, as afterConversationReply does
+            $conversation->draft_reply->delete();
 
             $result = new FCReplyConversationResult(true, null, (string)$message->message_id);
             return $this->apiSuccess($result);
@@ -1056,7 +1039,6 @@ class PrivateConversationController extends AbstractController
 
         $userName = $params->get('userName', []);
         $conversationId = $params->get('conversationId', '');
-        $reason = $params->get('reason', '');
 
         // Validate input parameters
         if (empty($conversationId)) {
@@ -1109,23 +1091,8 @@ class PrivateConversationController extends AbstractController
             $recipientsString = implode(',', $userName);
             $inviter->setRecipients($recipientsString);
             
-            // Validate before saving
-            $errors = [];
             if (!$inviter->validate($errors)) {
-                // Convert error objects to strings if needed
-                $errorMessages = [];
-                foreach ($errors as $error) {
-                    if (is_string($error)) {
-                        $errorMessages[] = $error;
-                    } elseif (is_object($error) && method_exists($error, '__toString')) {
-                        $errorMessages[] = (string)$error;
-                    } elseif (is_object($error) && method_exists($error, 'render')) {
-                        $errorMessages[] = $error->render();
-                    } else {
-                        $errorMessages[] = 'Validation error';
-                    }
-                }
-                return $this->apiError('Validation failed: ' . implode(', ', $errorMessages), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             // Save (insertRecipients handles duplicates correctly). XenForo's
@@ -1590,7 +1557,7 @@ class PrivateConversationController extends AbstractController
 
             // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             // Save changes
@@ -1674,7 +1641,6 @@ class PrivateConversationController extends AbstractController
 
         $messageId = $params->get('messageId', '');
         $messageContent = $params->get('messageContent', '');
-        $attachmentIds = $params->get('attachmentIds', []);
         $groupId = $params->get('groupId', '');
 
         if (empty($messageId) || empty($messageContent)) {
@@ -1710,33 +1676,16 @@ class PrivateConversationController extends AbstractController
             $editor = $this->service('XF:Conversation\MessageEditor', $message);
             $editor->setMessageContent($messageContent);
 
-            // Handle attachments if provided (same pattern as saveRawPost)
-            if ($conversation->canUploadAndManageAttachments()) {
-                $attachmentHash = '';
-                if ($groupId) {
-                    $attachmentHash = $groupId;
-                } elseif (!empty($attachmentIds) && is_array($attachmentIds)) {
-                    // Get attachments by IDs and build hash string
-                    $attachmentRepo = $this->repository('XF:Attachment');
-                    $attachments = $attachmentRepo->findByIds($attachmentIds);
-                    $hashArray = [];
-                    foreach ($attachments as $attachment) {
-                        if ($attachment->canView() && $attachment->temp_hash) {
-                            $hashArray[] = $attachment->temp_hash;
-                        }
-                    }
-                    if ($hashArray) {
-                        $attachmentHash = implode(',', $hashArray);
-                    }
-                }
-                if ($attachmentHash) {
-                    $editor->setAttachmentHash($attachmentHash);
-                }
+            // New uploads come as the upload hash (groupId). attachmentIds
+            // lists the attachments the message already has, which stay as
+            // they are, as on XenForo's own edit form.
+            if ($groupId && $conversation->canUploadAndManageAttachments()) {
+                $editor->setAttachmentHash($groupId);
             }
 
             // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             // Save message

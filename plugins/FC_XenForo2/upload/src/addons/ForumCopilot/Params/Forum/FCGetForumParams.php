@@ -11,7 +11,7 @@ class FCGetForumParams
     /** @var bool Whether to return forum descriptions */
     public $returnDescription;
     
-    /** @var string Specific forum ID to retrieve (empty for all forums) */
+    /** @var string|int Forum or category whose subtree to retrieve (empty or "0" for all forums) */
     public $forumId;
 
     public function __construct($returnDescription = true, $forumId = '')
@@ -59,7 +59,8 @@ class FCGetForumParams
             $errors[] = 'returnDescription must be boolean';
         }
         
-        if (!is_string($this->forumId)) {
+        // A forum or category id (a JSON number is fine), or node name
+        if (!is_string($this->forumId) && !is_int($this->forumId)) {
             $errors[] = 'forumId must be string';
         }
         

@@ -94,6 +94,24 @@ class SubscriptionController extends AbstractController
         }
     }
 
+    /**
+     * Watches a forum, as XenForo's "Watch forum" form does
+     * (Pub ForumController::actionWatch).
+     *
+     * Optional params (1.11.0), the form's options: notifyOn ("thread",
+     * "message" or "" for none, limited to what the forum allows), sendAlert
+     * and sendEmail. Options not sent keep the watch's current value, or for
+     * a new watch take today's defaults: new threads, alerts on, emails when
+     * subscribeMode is 1.
+     *
+     * When the forum is already watched and none of the options are sent
+     * (a 1.x app only sends subscribeMode), the watch is left as it is: the
+     * app used to reset options chosen on the website.
+     *
+     * forumId "ALL" changes one option on every watched forum, as the
+     * Watched forums page's "manage" menu does: emails (sendEmail, or
+     * subscribeMode 1/0), and alerts when sendAlert is sent.
+     */
     public function actionSubscribeForum(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
@@ -109,77 +127,75 @@ class SubscriptionController extends AbstractController
 
         try {
             $visitor = \XF::visitor();
-
-            // Map subscribeMode to XenForo parameters
-            // subscribeMode: 0 = no email (alerts only), 1 = instant email, 2/3 = digest (not directly supported)
-            // Default to 'thread' notification type (matching web version default)
-            $notifyType = 'thread';
-            $sendAlert = true; // Default to true (matching web version default)
-            $sendEmail = ($fcParams->subscribeMode == 1); // Only send email if subscribeMode = 1
+            $forumWatchRepo = $this->repository('XF:ForumWatch');
 
             if ($fcParams->forumId === 'ALL') {
-                // Update all subscribed forums
-                // Each forum may have different allowed_watch_notifications, so check individually
-                $finder = $this->finder('XF:ForumWatch');
-                $finder->where('user_id', $visitor->user_id);
-                $watches = $finder->fetch();
-                
-                $forumWatchRepo = $this->repository('XF:ForumWatch');
-                foreach ($watches as $watch) {
-                    $watchForum = $watch->Forum;
-                    if (!$watchForum) {
-                        continue;
-                    }
-                    
-                    // Check if user can watch this forum (matching web version permission check)
-                    if (!$watchForum->canWatch()) {
-                        continue;
-                    }
-                    
-                    // Determine notifyType for this specific forum (matching web version logic)
-                    $forumNotifyType = 'thread';
-                    if ($watchForum->allowed_watch_notifications == 'none') {
-                        $forumNotifyType = '';
-                    }
-                    
-                    $forumWatchRepo->setWatchState($watchForum, $visitor, $forumNotifyType, $sendAlert, $sendEmail);
+                $sendEmail = $fcParams->sendEmail ?? ($fcParams->subscribeMode == 1);
+                $forumWatchRepo->setWatchStateForAll($visitor, $sendEmail ? 'watch_email' : 'watch_no_email');
+                if ($fcParams->sendAlert !== null) {
+                    $forumWatchRepo->setWatchStateForAll($visitor, $fcParams->sendAlert ? 'watch_alert' : 'watch_no_alert');
                 }
-            } else {
-                // Subscribe to specific forum (matching web version behavior)
-                $forum = $this->assertViewableForum($fcParams->forumId);
-                
-                if (!$forum->canWatch()) {
-                    return $this->apiError('Cannot subscribe to this forum', null, ErrorCode::NO_PERMISSION);
-                }
-                
-                // Check forum notification settings (matching web version logic)
-                // If forum doesn't allow watch notifications, set notifyType to empty
-                if ($forum->allowed_watch_notifications == 'none') {
-                    $notifyType = '';
-                }
-                // Note: API uses simplified subscribeMode, so we always use 'thread' type
-                // (web version supports 'message' when allowed_watch_notifications == 'all',
-                // but API doesn't expose this option via subscribeMode)
-                
-                $forumWatchRepo = $this->repository('XF:ForumWatch');
-                $forumWatchRepo->setWatchState($forum, $visitor, $notifyType, $sendAlert, $sendEmail);
+
+                return $this->apiSuccess(new FCSubscribeForumResult(true, null));
             }
 
+            $forum = $this->assertViewableForum($fcParams->forumId);
+
+            $error = null;
+            if (!$forum->canWatch($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
+
+            /** @var \XF\Entity\ForumWatch|null $watch */
+            $watch = $forum->Watch[$visitor->user_id];
+
+            if (!$watch || $fcParams->hasWatchOptions()) {
+                $notifyOn = $fcParams->notifyOn ?? ($watch ? $watch->notify_on : 'thread');
+                $sendAlert = $fcParams->sendAlert ?? ($watch ? (bool)$watch->send_alert : true);
+                $sendEmail = $fcParams->sendEmail ?? ($watch ? (bool)$watch->send_email : $fcParams->subscribeMode == 1);
+
+                // What the forum allows, as actionWatch limits it
+                if ($forum->allowed_watch_notifications == 'none') {
+                    $notifyOn = '';
+                } elseif ($forum->allowed_watch_notifications == 'thread' && $notifyOn == 'message') {
+                    $notifyOn = 'thread';
+                }
+
+                $forumWatchRepo->setWatchState($forum, $visitor, $notifyOn, $sendAlert, $sendEmail);
+                $watch = $this->em()->find('XF:ForumWatch', [
+                    'node_id' => $forum->node_id,
+                    'user_id' => $visitor->user_id,
+                ]);
+            }
+
+            $watchStatus = $this->getForumWatchStatus($forum, $visitor, $watch);
+
             $result = new FCSubscribeForumResult(true, null);
+            $result->extra = [
+                'isSubscribed' => $watchStatus['isWatched'],
+                'notifyOn' => $watchStatus['notifyOn'],
+                'sendAlert' => $watchStatus['sendAlert'],
+                'sendEmail' => $watchStatus['sendEmail'],
+            ];
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to subscribe to forum');
         }
     }
 
+    /**
+     * Stops watching a forum, or every forum with "ALL". A watch is removed
+     * even when the member can no longer see the forum, as on XenForo's
+     * Watched forums page.
+     */
     public function actionUnsubscribeForum(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $forumId = $params->get('forumId', '');
 
-        if (empty($forumId)) {
+        if (!is_scalar($forumId) || (string)$forumId === '') {
             return $this->apiError('Forum ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
@@ -188,23 +204,24 @@ class SubscriptionController extends AbstractController
             $forumWatchRepo = $this->repository('XF:ForumWatch');
 
             if ($forumId === 'ALL') {
-                // Unsubscribe from all forums
-                $finder = $this->finder('XF:ForumWatch');
-                $finder->where('user_id', $visitor->user_id);
-                $watches = $finder->fetch();
-                foreach ($watches as $watch) {
-                    $watch->delete();
-                }
+                $forumWatchRepo->setWatchStateForAll($visitor, 'delete');
             } else {
-                // Unsubscribe from specific forum
-                $forum = $this->assertViewableForum($forumId);
-                $forumWatchRepo->setWatchState($forum, $visitor, 'delete');
+                $watch = is_numeric($forumId) ? $this->em()->find('XF:ForumWatch', [
+                    'node_id' => (int)$forumId,
+                    'user_id' => $visitor->user_id,
+                ]) : null;
+                if ($watch) {
+                    $watch->delete();
+                } else {
+                    // Not watched: still say so when the forum doesn't exist
+                    $this->assertViewableForum($forumId);
+                }
             }
 
             $result = new FCUnsubscribeForumResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to unsubscribe from forum');
         }
     }
@@ -258,69 +275,90 @@ class SubscriptionController extends AbstractController
         }
     }
 
+    /**
+     * Watches a thread, as XenForo's "Watch thread" form does
+     * (Pub ThreadController::actionWatch).
+     *
+     * Optional param (1.11.0): emailSubscribe (bool), the form's "and
+     * receive email notifications". Without it subscribeMode decides as
+     * before (0 = alerts only, 1-3 = emails too). When the thread is already
+     * watched and emailSubscribe isn't sent, the watch is left as it is.
+     *
+     * topicId "ALL" sets emails on or off for every watched thread, as the
+     * Watched threads page's "manage" menu does.
+     */
     public function actionSubscribeTopic(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicId = $params->get('topicId', '');
         $subscribeMode = $params->get('subscribeMode', 0);
+        $emailSubscribe = \ForumCopilot\Params\Subscription\FCSubscribeForumParamsExtended::toOptionalBool(
+            $params->get('emailSubscribe', null)
+        );
 
-        if (empty($topicId)) {
+        if (!is_scalar($topicId) || (string)$topicId === '') {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
+        // subscribeMode: 0 = no email (alerts only), 1 = instant email, 2/3 = digest
+        // (XenForo has no digests, so 1-3 all mean emails)
+        if ($emailSubscribe === null) {
+            $emailSubscribe = in_array((int)$subscribeMode, [1, 2, 3], true);
+            $optionsSent = false;
+        } else {
+            $optionsSent = true;
+        }
+        $mode = $emailSubscribe ? 'watch_email' : 'watch_no_email';
+
         try {
-            $thread = $this->assertViewableThread($topicId);
             $visitor = \XF::visitor();
-
-            if (!$thread->canWatch()) {
-                return $this->apiError('Cannot subscribe to this topic', null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Map subscribeMode to XenForo watch state (like Tapatalk does)
-            // subscribeMode: 0 = no email (alerts only), 1 = instant email, 2/3 = digest (not directly supported)
-            // Tapatalk uses: 'watch_no_email' or 'watch_email'
-            $mode = 'watch_no_email'; // Default: alerts only
-            if ($subscribeMode == 1 || $subscribeMode == 2 || $subscribeMode == 3) {
-                // subscribeMode 1, 2, 3 all use email (XenForo doesn't support digest directly)
-                $mode = 'watch_email';
-            }
+            $threadWatchRepo = $this->repository('XF:ThreadWatch');
 
             if ($topicId === 'ALL') {
-                // Update all subscribed topics
-                $finder = $this->finder('XF:ThreadWatch');
-                $finder->where('user_id', $visitor->user_id);
-                $watches = $finder->fetch();
-                
-                foreach ($watches as $watch) {
-                    // Use setWatchState for each thread to properly set the watch state
-                    $watchThread = $watch->Thread;
-                    if ($watchThread) {
-                        $threadWatchRepo = $this->repository('XF:ThreadWatch');
-                        $threadWatchRepo->setWatchState($watchThread, $visitor, $mode);
-                    }
-                }
-            } else {
-                // Subscribe to specific topic (like Tapatalk does)
-                $threadWatchRepo = $this->repository('XF:ThreadWatch');
+                $threadWatchRepo->setWatchStateForAll($visitor, $mode);
+                return $this->apiSuccess(new FCSubscribeTopicResult(true, null));
+            }
+
+            $thread = $this->assertViewableThread($topicId);
+
+            $error = null;
+            if (!$thread->canWatch($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
+
+            /** @var \XF\Entity\ThreadWatch|null $watch */
+            $watch = $thread->Watch[$visitor->user_id];
+            if (!$watch || $optionsSent) {
                 $threadWatchRepo->setWatchState($thread, $visitor, $mode);
+            } else {
+                $mode = $watch->email_subscribe ? 'watch_email' : 'watch_no_email';
             }
 
             $result = new FCSubscribeTopicResult(true, null);
+            $result->extra = [
+                'isSubscribed' => true,
+                'emailSubscribe' => $mode === 'watch_email',
+            ];
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to subscribe to topic');
         }
     }
 
+    /**
+     * Stops watching a thread, or every thread with "ALL". A watch is removed
+     * even when the member can no longer see the thread (moved to a staff
+     * forum, deleted), as on XenForo's Watched threads page.
+     */
     public function actionUnsubscribeTopic(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicId = $params->get('topicId', '');
 
-        if (empty($topicId)) {
+        if (!is_scalar($topicId) || (string)$topicId === '') {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
         }
 
@@ -329,23 +367,24 @@ class SubscriptionController extends AbstractController
             $threadWatchRepo = $this->repository('XF:ThreadWatch');
 
             if ($topicId === 'ALL') {
-                // Unsubscribe from all topics
-                $finder = $this->finder('XF:ThreadWatch');
-                $finder->where('user_id', $visitor->user_id);
-                $watches = $finder->fetch();
-                foreach ($watches as $watch) {
-                    $watch->delete();
-                }
+                $threadWatchRepo->setWatchStateForAll($visitor, 'delete');
             } else {
-                // Unsubscribe from specific topic
-                $thread = $this->assertViewableThread($topicId);
-                $threadWatchRepo->setWatchState($thread, $visitor, 'delete');
+                $watch = $this->em()->find('XF:ThreadWatch', [
+                    'thread_id' => (int)$topicId,
+                    'user_id' => $visitor->user_id,
+                ]);
+                if ($watch) {
+                    $watch->delete();
+                } else {
+                    // Not watched: still say so when the thread doesn't exist
+                    $this->assertViewableThread($topicId);
+                }
             }
 
             $result = new FCUnsubscribeTopicResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to unsubscribe from topic');
         }
     }

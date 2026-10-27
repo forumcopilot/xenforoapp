@@ -8,6 +8,9 @@ namespace ForumCopilot\Result;
  */
 class FCSubscribeForumResult extends FCResult
 {
+    /** @var array More fields for the reply (1.11.0): the watch as it is now */
+    public $extra = [];
+
     public function __construct($result = true, $resultText = 'success')
     {
         parent::__construct($result, $resultText);
@@ -15,7 +18,7 @@ class FCSubscribeForumResult extends FCResult
 
     public function toArray()
     {
-        return parent::toArray();
+        return array_merge(parent::toArray(), $this->extra);
     }
 }
 

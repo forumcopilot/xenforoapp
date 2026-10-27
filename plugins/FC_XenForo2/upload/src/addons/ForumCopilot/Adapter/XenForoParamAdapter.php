@@ -400,6 +400,10 @@ class XenForoParamAdapter
         return FCSubscribeForumParamsExtended::fromArray([
             'forumId' => $params->get('forumId', ''),
             'subscribeMode' => $params->get('subscribeMode', 0),
+            // 1.11.0: the options of XenForo's "Watch forum" form
+            'notifyOn' => $params->get('notifyOn', null),
+            'sendAlert' => $params->get('sendAlert', null),
+            'sendEmail' => $params->get('sendEmail', null),
         ]);
     }
 

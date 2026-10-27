@@ -929,13 +929,15 @@ class AccountController extends AbstractController
      *
      * Confirmed with the member's password, or, for an account without one
      * (signed up with Google, Facebook, ...), with their user name typed in.
-     * Staff accounts (administrators, moderators) are refused: those are
-     * removed in the admin control panel. The forum can turn this off
+     * The password is checked with XenForo's login attempt limits. Staff
+     * accounts (administrators, moderators, staff members) are refused:
+     * those are removed in the admin control panel. The forum can turn this off
      * (option fc_account_deletion; getConfig's accountDeletion says which).
      *
      * XenForo's own deletion, as when an administrator deletes a member: the
      * account, profile and settings go; posts stay, under the name, as a
-     * guest's. This device's push registrations go with it.
+     * guest's. The member's push registrations, the record that they use
+     * the app and this device's two-step trust go with it.
      */
     public function actionDeleteAccount(ParameterBag $params)
     {
@@ -946,16 +948,18 @@ class AccountController extends AbstractController
         }
 
         $visitor = \XF::visitor();
-        if ($visitor->is_admin || $visitor->is_moderator || $visitor->is_super_admin) {
+        if ($visitor->is_admin || $visitor->is_moderator || $visitor->is_super_admin || $visitor->is_staff) {
             return $this->apiError('Staff accounts cannot be deleted from the app. Please ask an administrator.', null, ErrorCode::NO_PERMISSION);
         }
 
-        $password = (string)$params->get('password', '');
-        $username = (string)$params->get('username', '');
+        $password = $params->get('password', '');
+        $password = is_string($password) ? $password : '';
+        $username = $params->get('username', '');
+        $username = is_scalar($username) ? (string)$username : '';
         $handler = $visitor->Auth ? $visitor->Auth->getAuthenticationHandler() : null;
         if ($handler && $handler->hasPassword()) {
-            if ($password === '' || !$visitor->authenticate($password)) {
-                return $this->apiError('Your password is incorrect.', null, ErrorCode::VALIDATION);
+            if ($error = $this->currentPasswordError($visitor, $password, \XF::phrase('incorrect_password'))) {
+                return $error;
             }
         } elseif (utf8_strtolower(trim($username)) !== utf8_strtolower($visitor->username)) {
             return $this->apiError('Type your user name to confirm.', null, ErrorCode::VALIDATION);
@@ -968,9 +972,11 @@ class AccountController extends AbstractController
             // XenForo refuses to delete the visitor's own account unless told to.
             $user->setOption('allow_self_delete', true);
 
-            // This device's remember key, while the account still exists.
+            // This device's remember key and two-step trust, while the
+            // account still exists.
             $login = $this->getLoginPlugin();
             $login->deleteVisitorRememberRecord(false);
+            $this->untrustThisDevice($userId);
 
             $deleter = $this->service('XF:User\Delete', $user);
             if (!$deleter->delete($errors)) {
@@ -978,10 +984,11 @@ class AccountController extends AbstractController
                 return $this->apiError(implode(' ', $messages) ?: 'The account could not be deleted.', null, ErrorCode::VALIDATION);
             }
 
-            // Its push registrations (best effort: the account is gone either
-            // way), then this session.
+            // Its push registrations and app record (best effort: the
+            // account is gone either way), then this session.
             try {
-                \XF::db()->delete('xf_fc_device_token', 'user_id = ?', $userId);
+                $this->repository('ForumCopilot:DeviceToken')->deleteForUser($userId);
+                \XF::db()->delete('xf_fc_user', 'user_id = ?', $userId);
             } catch (\Exception $e) {
                 \XF::logException($e, false, 'ForumCopilot: deleteAccount device tokens: ');
             }
@@ -989,7 +996,11 @@ class AccountController extends AbstractController
             // the visitor is the deleted account.
             \XF::session()->logoutUser();
             $login->clearCookies();
-            $login->clearSiteData();
+            if (method_exists($login, 'clearSiteData')) { // needs a 2.2 check
+                $login->clearSiteData();
+            }
+            // The reply's fc_is_login header says signed out.
+            \XF::setVisitor($this->repository('XF:User')->getGuestUser());
 
             return $this->apiSuccess(new \ForumCopilot\Result\FCResult(true, null));
         } catch (\Exception $e) {
@@ -1005,16 +1016,16 @@ class AccountController extends AbstractController
         $password = $params->get('password', '');
         $newEmail = $params->get('newEmail', '');
 
-        if (empty($password) || empty($newEmail)) {
+        if (!is_string($password) || !is_string($newEmail) || $password === '' || $newEmail === '') {
             return $this->apiError('Password and new email are required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             
-            // Verify password
-            if (!$visitor->authenticate($password)) {
-                return $this->apiError('Password is incorrect', null, ErrorCode::VALIDATION);
+            // Verify password (with XenForo's login attempt limits)
+            if ($error = $this->currentPasswordError($visitor, $password, \XF::phrase('your_existing_password_is_not_correct'))) {
+                return $error;
             }
 
             // Validate email using XenForo's Email validator
@@ -1038,14 +1049,14 @@ class AccountController extends AbstractController
             // Check if user can change email (permission/rate limiting check)
             if (!$emailChange->canChangeEmail($error)) {
                 if (!$error) {
-                    $error = 'Your email may not be changed at this time';
+                    $error = \XF::phrase('your_email_may_not_be_changed_at_this_time');
                 }
                 return $this->apiError($error);
             }
 
             // Validate before saving
             if (!$emailChange->isValid($error)) {
-                return $this->apiError('Email change validation failed: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
+                return $this->apiError($error ?: \XF::phrase('please_enter_valid_email'), null, ErrorCode::VALIDATION);
             }
 
             // Save email change
@@ -1277,17 +1288,44 @@ class AccountController extends AbstractController
         return is_array($value) ? $value : [];
     }
 
+    /**
+     * Signs the app out, as XenForo's logout does (LoginPlugin::logoutVisitor),
+     * and also ends this device's two-step trust (untrustThisDevice).
+     *
+     * Optional deviceId (with fcmToken) also removes this device's push
+     * registration in the same request, as unregisterDevice does: the
+     * member's own device, or any device whose token is sent with it, so it
+     * works when the session has already ended.
+     */
     public function actionLogout(ParameterBag $params)
     {
         try {
             $visitor = \XF::visitor();
-            
-            if ($visitor->user_id) {
+            $userId = (int)$visitor->user_id;
+
+            $deviceId = $params->get('deviceId', '');
+            $fcmToken = $params->get('fcmToken', '');
+            $deviceId = is_scalar($deviceId) ? trim((string)$deviceId) : '';
+            $fcmToken = is_scalar($fcmToken) ? trim((string)$fcmToken) : '';
+            if ($deviceId !== '') {
+                try {
+                    $this->repository('ForumCopilot:DeviceToken')->deleteDevice($deviceId, $userId, $fcmToken);
+                } catch (\Exception $e) {
+                    \XF::logException($e, false, 'ForumCopilot: logout device token: ');
+                }
+            }
+
+            if ($userId) {
+                $this->untrustThisDevice($userId);
+
                 // Use LoginPlugin for consistent logout behavior with web implementation
                 // This handles: last activity update, remember record deletion, 
                 // session logout, cookie clearing, and Clear-Site-Data header
                 $loginPlugin = $this->getLoginPlugin();
                 $loginPlugin->logoutVisitor();
+
+                // The reply's fc_is_login header says signed out.
+                \XF::setVisitor($this->repository('XF:User')->getGuestUser());
             }
 
             // Logout doesn't have a specific result class, use base FCResult

@@ -980,6 +980,10 @@ abstract class AbstractController extends Controller
             
             // Trim whitespace from start and end
             $cleaned = trim($cleaned);
+
+            // The forum's censored words, as XenForo replaces them when it
+            // shows the message
+            $cleaned = $formatter->censorText($cleaned);
             
             // Get substring up to max length
             if (mb_strlen($cleaned) > $maxLength) {
@@ -996,7 +1000,7 @@ abstract class AbstractController extends Controller
             return $cleaned;
         } catch (\Exception $e) {
             // If cleaning fails, fall back to basic strip_tags
-            $cleaned = strip_tags($message);
+            $cleaned = strip_tags($this->app()->stringFormatter()->censorText($message));
             $cleaned = html_entity_decode($cleaned, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $cleaned = preg_replace('/[\r\n\t]+/u', ' ', $cleaned);
             $cleaned = preg_replace('/\s+/u', ' ', $cleaned);

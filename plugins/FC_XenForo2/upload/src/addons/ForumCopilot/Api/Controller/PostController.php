@@ -404,13 +404,48 @@ class PostController extends AbstractController
     }
 
     /**
-     * A post's message for the app: always the BBCode, with image URLs
-     * through the forum's image proxy.
+     * A post's message for the app: always the BBCode, with the forum's
+     * censored words replaced and image URLs through the forum's image proxy.
      */
     protected function postContentForApp($message): string
     {
         $message = is_string($message) ? $message : '';
-        return $this->processImageProxyInBbCode($message);
+        return $this->processImageProxyInBbCode($this->censorBbCode($message, 'post'));
+    }
+
+    /**
+     * BBCode with the forum's censored words replaced, as XenForo does when
+     * it shows a message: in the text and in tag options (such as a quoted
+     * name), through the BBCode "censor" processor action
+     * (Str\Formatter::getBbCodeForQuote uses the same).
+     *
+     * @param string $bbCode
+     * @param string $context BBCode rules context ('post', 'user:signature')
+     * @return string
+     */
+    protected function censorBbCode($bbCode, string $context = 'post'): string
+    {
+        $bbCode = is_string($bbCode) ? $bbCode : '';
+        if ($bbCode === '') {
+            return $bbCode;
+        }
+
+        // Most messages have nothing to censor: only those are parsed
+        $formatter = $this->app()->stringFormatter();
+        if ($formatter->censorText($bbCode) === $bbCode) {
+            return $bbCode;
+        }
+
+        try {
+            $bbCodeContainer = $this->app()->bbCode();
+            $processor = $bbCodeContainer->processor()
+                ->addProcessorAction('censor', $bbCodeContainer->processorAction('censor'));
+
+            return $processor->render($bbCode, $bbCodeContainer->parser(), $bbCodeContainer->rules($context));
+        } catch (\Exception $e) {
+            \XF::logException($e, false, 'ForumCopilot: censoring a message failed: ');
+            return $formatter->censorText($bbCode);
+        }
     }
 
     /**

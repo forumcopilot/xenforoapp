@@ -161,20 +161,62 @@ class SocialController extends AbstractController
         }
     }
 
+    /**
+     * getAlert's optional marking params: markAllRead (bool), markReadIds and
+     * markUnreadIds (alert ids). Only the visitor's own alerts are touched.
+     */
+    protected function applyAlertMarking(ParameterBag $params, \XF\Entity\User $visitor, $alertRepo)
+    {
+        if ($params->get('markAllRead')) {
+            $alertRepo->markUserAlertsRead($visitor);
+        }
+
+        foreach (['markReadIds' => true, 'markUnreadIds' => false] as $key => $read) {
+            $ids = $params->get($key);
+            if (!is_array($ids) || !$ids) {
+                continue;
+            }
+            $ids = array_slice(array_filter(array_map('intval', $ids)), 0, 100);
+            $alerts = $this->finder('XF:UserAlert')
+                ->where('alert_id', $ids)
+                ->where('alerted_user_id', $visitor->user_id)
+                ->fetch();
+            foreach ($alerts as $alert) {
+                if ($read) {
+                    $alertRepo->markUserAlertRead($alert);
+                } elseif (method_exists($alertRepo, 'markUserAlertUnread')) {
+                    $alertRepo->markUserAlertUnread($alert);
+                }
+            }
+        }
+    }
+
     public function actionGetAlert(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
-        $page = $params->get('page', 1);
-        $perpage = $params->get('perpage', 20);
-        $forceRefresh = $params->get('forceRefresh', false);
+        $page = max(1, (int)$params->get('page', 1));
+        $perpage = max(1, min(100, (int)$params->get('perpage', 20)));
+        // Optional (1.11.0): leave alerts as they are, like XenForo's
+        // skip_mark_read on its alert list
+        $skipMarkRead = (bool)$params->get('skipMarkRead', false);
+        // Optional (1.11.0): only alerts not read yet
+        $unreadOnly = (bool)$params->get('unreadOnly', false);
 
         try {
             $visitor = \XF::visitor();
             
             // Use the same method as the web interface
             $alertRepo = $this->repository('XF:UserAlert');
+
+            // Optional (1.11.0): mark alerts read or unread before listing,
+            // as XenForo's alert toggle and "Mark read" do
+            $this->applyAlertMarking($params, $visitor, $alertRepo);
+
             $alertsFinder = $alertRepo->findAlertsForUser($visitor->user_id);
+            if ($unreadOnly) {
+                $alertsFinder->where('read_date', 0);
+            }
             
             $alerts = $alertsFinder->limitByPage($page, $perpage)->fetch();
             
@@ -187,20 +229,18 @@ class SocialController extends AbstractController
             // Filter out alerts that can't be viewed (same as web interface)
             $viewableAlerts = $alerts->filterViewable();
             
-            // Auto-mark alerts as read (same as actionAlertsPopup)
-            $alertRepo->autoMarkUserAlertsRead($alerts, $visitor);
-            
-            // Mark all alerts as viewed to reset badge (same as actionAlertsPopup)
-            if ($visitor->alerts_unviewed)
-            {
-                $alertRepo->markUserAlertsViewed($visitor);
+            // As XenForo's alert list (AccountController::actionAlerts): the
+            // shown alerts that read themselves are marked read, and every
+            // alert is marked viewed (the badge) when the first page loads.
+            if (!$skipMarkRead) {
+                $alertRepo->autoMarkUserAlertsRead($viewableAlerts, $visitor);
+                if ($page == 1 && $visitor->alerts_unviewed) {
+                    $alertRepo->markUserAlertsViewed($visitor);
+                }
             }
             
-            // Get total before filtering (same as web interface)
+            // All of the member's alerts, for paging (XenForo's totalAlerts)
             $total = $alertsFinder->total();
-            
-            // Count viewable alerts for accurate total
-            $viewableCount = count($viewableAlerts);
 
             $alertList = [];
             // Process viewable alerts
@@ -260,7 +300,14 @@ class SocialController extends AbstractController
                         'type' => $alert->content_type,
                         'message' => $alertMessage,
                         'timestamp' => $alert->event_date * 1000,
+                        // "Viewed" (the badge), as it always was; isUnread
+                        // is XenForo's read state (1.11.0)
                         'isRead' => $alert->view_date > 0,
+                        'isUnread' => method_exists($alert, 'isUnreadInUi') ? $alert->isUnreadInUi() : !$alert->read_date,
+                        'isUnviewed' => !$alert->view_date,
+                        'readDate' => $alert->read_date ? $alert->read_date * 1000 : 0,
+                        'viewDate' => $alert->view_date ? $alert->view_date * 1000 : 0,
+                        'autoRead' => (bool)$alert->auto_read,
                         'actionUrl' => $actionUrl,
                         'fromUserId' => $alert->user_id ? (string)$alert->user_id : null,
                         'fromUsername' => $alert->username,
@@ -351,13 +398,13 @@ class SocialController extends AbstractController
                 }
             }
 
-            // Use viewable count if we have filtered alerts, otherwise use total
-            $resultTotal = $viewableCount > 0 ? $viewableCount : $total;
-            
+            // total counts every alert, so the app's "page * perpage < total"
+            // finds the next page. It was the number shown on this page,
+            // which ended the list after the first page.
             $result = new FCAlertResult(
                 true,
                 null,
-                (int)$resultTotal,
+                (int)$total,
                 $alertList
             );
 

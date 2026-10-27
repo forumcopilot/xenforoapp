@@ -38,7 +38,8 @@ class FCMarkAllAsReadParams
     {
         $errors = [];
         
-        if ($this->forumId !== null && !is_string($this->forumId)) {
+        // A forum or category id (a JSON number is fine); "", "0" or "ALL" = every forum
+        if ($this->forumId !== null && !is_string($this->forumId) && !is_int($this->forumId)) {
             $errors[] = 'forumId must be string or null';
         }
         

@@ -398,6 +398,11 @@ class ForumController extends AbstractController
         unset($row);
     }
 
+    /**
+     * Marks a forum, a category (all its forums), or with no forumId ("",
+     * "0" or "ALL") every forum read, as XenForo's forum, category and
+     * forum list "Mark read" links do.
+     */
     public function actionMarkAllAsRead(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
@@ -412,8 +417,6 @@ class ForumController extends AbstractController
         }
 
         try {
-            $visitor = \XF::visitor();
-            
             // Validate and set date parameter (matches XenForo web/API behavior)
             $markDate = $fcParams->date;
             if ($markDate !== null) {
@@ -423,19 +426,22 @@ class ForumController extends AbstractController
                 }
             }
             // If date is null, it will default to current time in markForumTreeReadByVisitor
+
+            $forumRepo = $this->repository('XF:Forum');
+            $forumId = $fcParams->forumId;
             
-            if (!empty($fcParams->forumId)) {
-                // Mark specific forum as read (including all sub-forums)
-                // This matches the web interface behavior which marks the forum tree
-                $forum = $this->assertViewableForum($fcParams->forumId);
-                
-                // Use markForumTreeReadByVisitor to mark forum and all sub-forums
-                // This matches the web interface behavior (see ForumController::actionMarkRead)
-                $this->repository('XF:Forum')->markForumTreeReadByVisitor($forum, $markDate);
-            } else {
+            if ($forumId === null || in_array((string)$forumId, ['', '0', 'ALL'], true)) {
                 // Mark all forums as read - use repository method with null base node
                 // This marks all forums in the entire forum tree
-                $this->repository('XF:Forum')->markForumTreeReadByVisitor(null, $markDate);
+                $forumRepo->markForumTreeReadByVisitor(null, $markDate);
+            } else {
+                $node = $this->assertViewableNode($forumId);
+                if ($node->node_type_id === 'Forum') {
+                    // The forum and its sub-forums (Pub ForumController::actionMarkRead)
+                    $forumRepo->markForumTreeReadByVisitor($node->Data, $markDate);
+                } else {
+                    $this->markCategoryReadByVisitor($node, $markDate);
+                }
             }
 
             $result = new FCMarkAllAsReadResult(true, null);
@@ -443,6 +449,37 @@ class ForumController extends AbstractController
 
         } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to mark forum as read');
+        }
+    }
+
+    /**
+     * Every forum in a category, as Pub CategoryController::actionMarkRead
+     * marks it. XenForo 2.3's markForumTreeReadByVisitor takes any node;
+     * where it only takes a forum (needs a 2.2 check), each forum under the
+     * category is marked with its sub-forums.
+     */
+    protected function markCategoryReadByVisitor(\XF\Entity\Node $categoryNode, $markDate)
+    {
+        $forumRepo = $this->repository('XF:Forum');
+        $category = $categoryNode->Data;
+
+        $param = (new \ReflectionMethod($forumRepo, 'markForumTreeReadByVisitor'))->getParameters()[0] ?? null;
+        $type = $param ? $param->getType() : null;
+        $typeName = $type instanceof \ReflectionNamedType ? $type->getName() : null;
+        if ($category && ($typeName === null || $category instanceof $typeName)) {
+            $forumRepo->markForumTreeReadByVisitor($category, $markDate);
+            return;
+        }
+
+        $forums = $this->finder('XF:Forum')
+            ->with('Node', true)
+            ->where('Node.lft', '>', $categoryNode->lft)
+            ->where('Node.rgt', '<', $categoryNode->rgt)
+            ->fetch();
+        foreach ($forums as $forum) {
+            if ($forum->canView()) {
+                $forumRepo->markForumTreeReadByVisitor($forum, $markDate);
+            }
         }
     }
 
@@ -469,66 +506,24 @@ class ForumController extends AbstractController
         if (!empty($errors)) {
             return $this->apiError('Invalid parameters: ' . implode(', ', $errors), null, ErrorCode::BAD_REQUEST);
         }
+        if (count($fcParams->forumIds) > self::TOPIC_LIST_MAX_ROWS) {
+            return $this->apiError(
+                'Invalid parameters: at most ' . self::TOPIC_LIST_MAX_ROWS . ' forumIds',
+                null,
+                ErrorCode::BAD_REQUEST
+            );
+        }
 
         try {
-            $visitor = \XF::visitor();
-            
-            // Use findByIds() for efficient bulk loading with Node relation
-            $forums = $this->em()->findByIds('XF:Forum', $fcParams->forumIds, ['Node']);
+            $forumIds = array_values(array_filter(array_map('intval', $fcParams->forumIds)));
+            $forums = $forumIds
+                ? $this->em()->findByIds('XF:Forum', $forumIds, $this->getForumStatusWith())
+                : [];
             
             $statusList = [];
-
             foreach ($forums as $forum) {
                 if ($forum && $forum->canView()) {
-                    // Check viewOthers permission for private info
-                    $hasViewOthers = $visitor->hasNodePermission($forum->node_id, 'viewOthers');
-                    $privateInfo = !$hasViewOthers;
-                    
-                    // Get last post information for forums
-                    $lastPostId = 0;
-                    $lastPostDate = 0;
-                    $lastPostUserId = 0;
-                    $lastPostUsername = '';
-                    $lastThreadId = 0;
-                    $lastThreadTitle = '';
-                    $lastThreadPrefixId = 0;
-                    
-                    if ($hasViewOthers) {
-                        $extras = $forum->getNodeListExtras();
-                        if (!empty($extras['last_post_date'])) {
-                            $lastPostId = $extras['last_post_id'] ?? 0;
-                            $lastPostDate = $extras['last_post_date'] ?? 0;
-                            $lastPostUserId = $extras['last_post_user_id'] ?? 0;
-                            $lastPostUsername = $extras['last_post_username'] ?? '';
-                            $lastThreadId = $extras['last_thread_id'] ?? 0;
-                            $lastThreadTitle = $extras['last_thread_title'] ?? '';
-                            $lastThreadPrefixId = $extras['last_thread_prefix_id'] ?? 0;
-                        }
-                    }
-                    
-                    $fcForum = new FCForum([
-                        'id' => (string)$forum->node_id,
-                        'name' => $forum->Node->title,
-                        'description' => $forum->Node->description,
-                        'parentId' => $forum->Node->parent_node_id ? (string)$forum->Node->parent_node_id : '',
-                        'displayOrder' => $forum->Node->display_order,
-                        'threadCount' => $hasViewOthers ? $forum->discussion_count : 0,
-                        'postCount' => $hasViewOthers ? $forum->message_count : 0,
-                        'canPost' => $forum->canCreateThread(),
-                        'canReply' => $forum->canCreateThread(),
-                        'canViewContent' => $forum->canViewThreadContent(),
-                        'isRead' => !$forum->isUnread(),
-                        'url' => $this->buildLink('canonical:forums', $forum),
-                        'privateInfo' => $privateInfo,
-                        'lastPostId' => $lastPostId,
-                        'lastPostDate' => $lastPostDate,
-                        'lastPostUserId' => $lastPostUserId,
-                        'lastPostUsername' => $lastPostUsername,
-                        'lastThreadId' => $lastThreadId,
-                        'lastThreadTitle' => $lastThreadTitle,
-                        'lastThreadPrefixId' => $lastThreadPrefixId,
-                    ]);
-                    $statusList[] = $fcForum;
+                    $statusList[] = $this->getForumStatusRow($forum);
                 }
             }
 
@@ -540,9 +535,76 @@ class ForumController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get forum status');
         }
+    }
+
+    /**
+     * Relations getForumStatus and getParticipatedForum read: the node, its
+     * permissions, and what the forum list shows (Forum::getListedWith).
+     */
+    protected function getForumStatusWith(): array
+    {
+        $with = ['Node', 'Node.Permissions|' . \XF::visitor()->permission_combination_id];
+        return array_merge($with, \XF\Entity\Forum::getListedWith());
+    }
+
+    /**
+     * A getForumStatus / getParticipatedForum row.
+     */
+    protected function getForumStatusRow(\XF\Entity\Forum $forum): FCForum
+    {
+        $visitor = \XF::visitor();
+
+        // Check viewOthers permission for private info
+        $hasViewOthers = $visitor->hasNodePermission($forum->node_id, 'viewOthers');
+        $privateInfo = !$hasViewOthers;
+        
+        // Get last post information for forums
+        $lastPostId = 0;
+        $lastPostDate = 0;
+        $lastPostUserId = 0;
+        $lastPostUsername = '';
+        $lastThreadId = 0;
+        $lastThreadTitle = '';
+        $lastThreadPrefixId = 0;
+        
+        if ($hasViewOthers) {
+            $extras = $forum->getNodeListExtras();
+            if (!empty($extras['last_post_date'])) {
+                $lastPostId = $extras['last_post_id'] ?? 0;
+                $lastPostDate = $extras['last_post_date'] ?? 0;
+                $lastPostUserId = $extras['last_post_user_id'] ?? 0;
+                $lastPostUsername = $extras['last_post_username'] ?? '';
+                $lastThreadId = $extras['last_thread_id'] ?? 0;
+                $lastThreadTitle = $extras['last_thread_title'] ?? '';
+                $lastThreadPrefixId = $extras['last_thread_prefix_id'] ?? 0;
+            }
+        }
+        
+        return new FCForum([
+            'id' => (string)$forum->node_id,
+            'name' => $forum->Node->title,
+            'description' => $forum->Node->description,
+            'parentId' => $forum->Node->parent_node_id ? (string)$forum->Node->parent_node_id : '',
+            'displayOrder' => $forum->Node->display_order,
+            'threadCount' => $hasViewOthers ? $forum->discussion_count : 0,
+            'postCount' => $hasViewOthers ? $forum->message_count : 0,
+            'canPost' => $forum->canCreateThread(),
+            'canReply' => $visitor->hasNodePermission($forum->node_id, 'postReply'),
+            'canViewContent' => $visitor->hasNodePermission($forum->node_id, 'viewContent'),
+            'isRead' => !$forum->isUnread(),
+            'url' => $this->buildLink('canonical:forums', $forum),
+            'privateInfo' => $privateInfo,
+            'lastPostId' => $lastPostId,
+            'lastPostDate' => $lastPostDate,
+            'lastPostUserId' => $lastPostUserId,
+            'lastPostUsername' => $lastPostUsername,
+            'lastThreadId' => $lastThreadId,
+            'lastThreadTitle' => $lastThreadTitle,
+            'lastThreadPrefixId' => $lastThreadPrefixId,
+        ]);
     }
 
     public function actionGetBoardStat(ParameterBag $params)
@@ -562,12 +624,8 @@ class ForumController extends AbstractController
             $latestUsername = $latestUser['username'] ?? '';
             $latestUserRegisterDate = $latestUser['register_date'] ?? 0;
 
-            // Get active members (users active in last 30 days)
-            $db = $this->app->db();
-            $activeMembers = $db->fetchOne(
-                'SELECT COUNT(*) FROM xf_user WHERE user_state = ? AND last_activity > ?',
-                ['valid', \XF::$time - (30 * 24 * 60 * 60)]
-            );
+            // Members active in the last 30 days, counted at most every 10 minutes
+            $activeMembers = $this->getActiveMemberCount();
 
             // Get online users using repository method (respects onlineStatusTimeout option)
             $activityRepo = $this->repository('XF:SessionActivity');
@@ -596,6 +654,44 @@ class ForumController extends AbstractController
         }
     }
 
+    /**
+     * Members active in the last 30 days. Kept for 10 minutes in XenForo's
+     * cache when the board has one configured (Doctrine-style fetch/save on
+     * 2.2 and 2.3); counted on each call otherwise, as before. XenForo's
+     * simple cache isn't used: saving it rewrites every add-on's values.
+     */
+    protected function getActiveMemberCount(): int
+    {
+        $cache = null;
+        try {
+            $cache = $this->app->cache();
+        } catch (\Exception $e) {
+            // No cache configured
+        }
+
+        $cacheId = 'forumcopilot_active_members';
+        if ($cache) {
+            $cached = $cache->fetch($cacheId);
+            if ($cached !== false && $cached !== null) {
+                return (int)$cached;
+            }
+        }
+
+        $count = (int)$this->app->db()->fetchOne(
+            'SELECT COUNT(*) FROM xf_user WHERE user_state = ? AND last_activity > ?',
+            ['valid', \XF::$time - (30 * 24 * 60 * 60)]
+        );
+
+        if ($cache) {
+            $cache->save($cacheId, $count, 600);
+        }
+
+        return $count;
+    }
+
+    /**
+     * Forums the member has posted in that they can see.
+     */
     public function actionGetParticipatedForum(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
@@ -603,88 +699,27 @@ class ForumController extends AbstractController
         try {
             $visitor = \XF::visitor();
             
-            // Get forums where user has participated (posted)
-            // Use threads where user has posted to find forums efficiently
-            $threadRepo = $this->repository('XF:Thread');
-            $finder = $threadRepo->findThreadsWithPostsByUser($visitor->user_id);
-            $finder->where('discussion_state', 'visible');
-            
-            $threads = $finder->fetch();
-            
-            // Get unique forum IDs from threads
-            $forumIds = [];
-            foreach ($threads as $thread) {
-                if ($thread->Forum && $thread->Forum->canView()) {
-                    $forumIds[$thread->node_id] = true;
-                }
-            }
-            $forumIds = array_keys($forumIds);
-            
-            if (empty($forumIds)) {
-                // Return empty result
-                $result = new FCParticipatedForumResult(
-                    true,
-                    null,
-                    []
-                );
-                return $this->apiSuccess($result);
-            }
-            
-            // Fetch forums by IDs with Node relation loaded
-            $forums = $this->em()->findByIds('XF:Forum', $forumIds, ['Node']);
+            // The forums of the visible threads the member posted in, as one
+            // list of ids (it used to load every such thread)
+            $forumIds = $this->app->db()->fetchAllColumn(
+                'SELECT DISTINCT thread.node_id
+                FROM xf_thread_user_post AS user_post
+                INNER JOIN xf_thread AS thread ON (thread.thread_id = user_post.thread_id)
+                WHERE user_post.user_id = ? AND thread.discussion_state = ?',
+                [$visitor->user_id, 'visible']
+            );
             
             $participatedForums = [];
-            foreach ($forums as $forum) {
-                if ($forum && $forum->canView()) {
-                    // Check viewOthers permission for private info
-                    $hasViewOthers = $visitor->hasNodePermission($forum->node_id, 'viewOthers');
-                    $privateInfo = !$hasViewOthers;
-                    
-                    // Get last post information for forums
-                    $lastPostId = 0;
-                    $lastPostDate = 0;
-                    $lastPostUserId = 0;
-                    $lastPostUsername = '';
-                    $lastThreadId = 0;
-                    $lastThreadTitle = '';
-                    $lastThreadPrefixId = 0;
-                    
-                    if ($hasViewOthers) {
-                        $extras = $forum->getNodeListExtras();
-                        if (!empty($extras['last_post_date'])) {
-                            $lastPostId = $extras['last_post_id'] ?? 0;
-                            $lastPostDate = $extras['last_post_date'] ?? 0;
-                            $lastPostUserId = $extras['last_post_user_id'] ?? 0;
-                            $lastPostUsername = $extras['last_post_username'] ?? '';
-                            $lastThreadId = $extras['last_thread_id'] ?? 0;
-                            $lastThreadTitle = $extras['last_thread_title'] ?? '';
-                            $lastThreadPrefixId = $extras['last_thread_prefix_id'] ?? 0;
-                        }
+            if ($forumIds) {
+                $forums = $this->finder('XF:Forum')
+                    ->whereIds($forumIds)
+                    ->with($this->getForumStatusWith())
+                    ->order('Node.lft')
+                    ->fetch();
+                foreach ($forums as $forum) {
+                    if ($forum->canView()) {
+                        $participatedForums[] = $this->getForumStatusRow($forum);
                     }
-                    
-                    $fcForum = new FCForum([
-                        'id' => (string)$forum->node_id,
-                        'name' => $forum->Node->title,
-                        'description' => $forum->Node->description,
-                        'parentId' => $forum->Node->parent_node_id ? (string)$forum->Node->parent_node_id : '',
-                        'displayOrder' => $forum->Node->display_order,
-                        'threadCount' => $hasViewOthers ? $forum->discussion_count : 0,
-                        'postCount' => $hasViewOthers ? $forum->message_count : 0,
-                        'canPost' => $forum->canCreateThread(),
-                        'canReply' => $forum->canCreateThread(),
-                        'canViewContent' => $forum->canViewThreadContent(),
-                        'isRead' => !$forum->isUnread(),
-                        'url' => $this->buildLink('canonical:forums', $forum),
-                        'privateInfo' => $privateInfo,
-                        'lastPostId' => $lastPostId,
-                        'lastPostDate' => $lastPostDate,
-                        'lastPostUserId' => $lastPostUserId,
-                        'lastPostUsername' => $lastPostUsername,
-                        'lastThreadId' => $lastThreadId,
-                        'lastThreadTitle' => $lastThreadTitle,
-                        'lastThreadPrefixId' => $lastThreadPrefixId,
-                    ]);
-                    $participatedForums[] = $fcForum;
                 }
             }
 
@@ -696,7 +731,7 @@ class ForumController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get participated forums');
         }
     }

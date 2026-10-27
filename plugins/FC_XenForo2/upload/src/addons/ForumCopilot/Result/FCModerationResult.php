@@ -114,17 +114,23 @@ class FCDeleteTopicResult extends FCResult
 class FCDeletePostResult extends FCResult
 {
     public $isLoginMod;
+    /** @var bool|null Whether the whole thread went with its first post (since 1.11.0) */
+    public $threadDeleted;
 
-    public function __construct($result = true, $resultText = 'success', $isLoginMod = true)
+    public function __construct($result = true, $resultText = 'success', $isLoginMod = true, $threadDeleted = null)
     {
         parent::__construct($result, $resultText);
         $this->isLoginMod = $isLoginMod;
+        $this->threadDeleted = $threadDeleted;
     }
 
     public function toArray()
     {
         $data = parent::toArray();
         $data['isLoginMod'] = $this->isLoginMod;
+        if ($this->threadDeleted !== null) {
+            $data['threadDeleted'] = $this->threadDeleted;
+        }
         return $data;
     }
 }

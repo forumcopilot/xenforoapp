@@ -185,17 +185,10 @@ class ModerationController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicId = $params->get('topicId', '');
-        $hardDelete = $params->get('hardDelete', false);
-        $reason = $params->get('reason', '');
-        $starterAlert = $params->get('starterAlert', false);
-        $starterAlertReason = $params->get('starterAlertReason', '');
-
-        // Backward compatibility: support old 'mode' parameter
-        // mode: 0 = soft delete, 1 = hard delete
-        $mode = $params->get('mode', null);
-        if ($mode !== null) {
-            $hardDelete = ($mode == 1);
-        }
+        $hardDelete = $this->readHardDelete($params);
+        $reason = (string)$params->get('reason', '');
+        $starterAlert = $this->readBool($params, 'starterAlert');
+        $starterAlertReason = (string)$params->get('starterAlertReason', '');
 
         if (empty($topicId)) {
             return $this->apiError('Topic ID is required', null, ErrorCode::BAD_REQUEST);
@@ -208,8 +201,9 @@ class ModerationController extends AbstractController
             // Determine delete type
             $type = $hardDelete ? 'hard' : 'soft';
 
-            // Check permissions for the specific delete type
-            if (!$thread->canDelete($type, $error)) {
+            // Check permissions as ThreadController::actionDelete does: the
+            // soft delete first, then the type asked for
+            if (!$thread->canDelete('soft', $error) || !$thread->canDelete($type, $error)) {
                 return $this->apiError('Cannot delete this topic' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
@@ -238,15 +232,11 @@ class ModerationController extends AbstractController
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $postId = $params->get('postId', '');
-        $hardDelete = $params->get('hardDelete', false);
-        $reason = $params->get('reason', '');
-
-        // Backward compatibility: support old 'mode' parameter
-        // mode: 0 = soft delete, 1 = hard delete
-        $mode = $params->get('mode', null);
-        if ($mode !== null) {
-            $hardDelete = ($mode == 1);
-        }
+        $hardDelete = $this->readHardDelete($params);
+        $reason = (string)$params->get('reason', '');
+        // Since 1.11.0: alert the author, as XenForo's delete form offers
+        $authorAlert = $this->readBool($params, 'authorAlert');
+        $authorAlertReason = (string)$params->get('authorAlertReason', '');
 
         if (empty($postId)) {
             return $this->apiError('Post ID is required', null, ErrorCode::BAD_REQUEST);
@@ -259,17 +249,26 @@ class ModerationController extends AbstractController
             // Determine delete type
             $type = $hardDelete ? 'hard' : 'soft';
 
-            // Check permissions for the specific delete type
-            if (!$post->canDelete($type, $error)) {
+            // Check permissions as PostController::actionDelete does: the
+            // soft delete first, then the type asked for
+            if (!$post->canDelete('soft', $error) || !$post->canDelete($type, $error)) {
                 return $this->apiError('Cannot delete this post' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Post Deleter service
             /** @var \XF\Service\Post\Deleter $deleter */
             $deleter = $this->service('XF:Post\Deleter', $post);
+            if ($authorAlert
+                && method_exists($post, 'canSendModeratorActionAlert')
+                && $post->canSendModeratorActionAlert()
+            ) {
+                $deleter->setSendAlert(true, $authorAlertReason);
+            }
             $deleter->delete($type, $reason);
 
-            $result = new FCDeletePostResult(true, null, true);
+            // threadDeleted (since 1.11.0): deleting a thread's first post
+            // deletes the whole thread
+            $result = new FCDeletePostResult(true, null, true, (bool)$deleter->wasThreadDeleted());
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
@@ -360,7 +359,16 @@ class ModerationController extends AbstractController
 
         $topicId = $params->get('topicId', '');
         $forumId = $params->get('forumId', '');
-        $redirect = $params->get('redirect', false);
+        $redirect = $this->readBool($params, 'redirect');
+        // Since 1.11.0, the options of XenForo's move form
+        // (ThreadController::setupThreadMove): how long the redirect stays
+        // (seconds; 0 or absent = permanent), alert the starter, notify the
+        // target forum's watchers, and the thread's prefix in the new forum
+        $redirectLength = max(0, (int)$params->get('redirectLength', 0));
+        $starterAlert = $this->readBool($params, 'starterAlert');
+        $starterAlertReason = (string)$params->get('starterAlertReason', '');
+        $notifyWatchers = $this->readBool($params, 'notifyWatchers');
+        $prefixId = $params->get('prefixId', null);
 
         if (empty($topicId) || empty($forumId)) {
             return $this->apiError('Topic ID and Forum ID are required', null, ErrorCode::BAD_REQUEST);
@@ -371,17 +379,26 @@ class ModerationController extends AbstractController
             $forum = $this->assertViewableForum($forumId);
             $visitor = \XF::visitor();
 
-            if (!$thread->canMove()) {
-                return $this->apiError('Cannot move this topic', null, ErrorCode::NO_PERMISSION);
+            if (!$thread->canMove($error)) {
+                return $this->apiError('Cannot move this topic' . ($error ? ': ' . $error : ''), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Thread Mover service
             /** @var \XF\Service\Thread\Mover $mover */
             $mover = $this->service('XF:Thread\Mover', $thread);
             
+            if ($starterAlert) {
+                $mover->setSendAlert(true, $starterAlertReason);
+            }
+            if ($notifyWatchers) {
+                $mover->setNotifyWatchers();
+            }
             // Set redirect if requested
             if ($redirect) {
-                $mover->setRedirect(true);
+                $mover->setRedirect(true, $redirectLength);
+            }
+            if ($prefixId !== null && $prefixId !== '') {
+                $mover->setPrefix((int)$prefixId);
             }
             
             // Move thread (this handles validation internally and throws PrintableException on error)
@@ -710,12 +727,12 @@ class ModerationController extends AbstractController
 
             // Check permission to clean spam
             if (!$visitor->canCleanSpam()) {
-                return $this->apiError('You do not have permission to use the spam cleaner', 403, ErrorCode::NO_PERMISSION);
+                return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Check if user is a possible spammer
             if (!$user->isPossibleSpammer($error)) {
-                return $this->apiError('User cannot be spam cleaned: ' . ($error ?: 'User does not meet spam criteria'), 400, ErrorCode::NO_PERMISSION);
+                return $this->apiError('User cannot be spam cleaned: ' . ($error ?: 'User does not meet spam criteria'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Perform spam cleanup
@@ -725,7 +742,7 @@ class ModerationController extends AbstractController
             // Finalize (commits transaction and writes log)
             if (!$cleaner->finalize()) {
                 $errors = $cleaner->getErrors();
-                return $this->apiError('Spam cleanup failed: ' . implode(', ', $errors), 500, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors ?: [\XF::phrase('unexpected_error_occurred')]);
             }
 
             // Create result object
@@ -758,5 +775,34 @@ class ModerationController extends AbstractController
         $approver = $this->service('XF:Thread\Approver', $thread);
         $approver->setNotifyRunTime(1); // as the approval queue: the rest is queued
         return $approver->approve();
+    }
+
+    /**
+     * A boolean param. JSON true/false, and also "true"/"false", "1"/"0",
+     * "yes"/"no" from clients that send strings: the string "false" was
+     * read as true.
+     */
+    protected function readBool(ParameterBag $params, string $key, bool $default = false): bool
+    {
+        $value = $params->get($key, null);
+        if ($value === null || $value === '') {
+            return $default;
+        }
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Whether a delete is permanent: hardDelete when sent (what the app
+     * sends). Otherwise the older mode param, read as the app's own delete
+     * modes are numbered (1 = soft, 2 = permanent); mode 1 used to mean a
+     * permanent delete here.
+     */
+    protected function readHardDelete(ParameterBag $params): bool
+    {
+        if ($params->get('hardDelete', null) !== null) {
+            return $this->readBool($params, 'hardDelete');
+        }
+        $mode = $params->get('mode', null);
+        return $mode !== null && (int)$mode === 2;
     }
 }

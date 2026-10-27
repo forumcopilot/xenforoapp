@@ -65,7 +65,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get thread');
         }
     }
@@ -112,7 +112,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get thread by post');
         }
     }
@@ -210,7 +210,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get thread by unread');
         }
     }
@@ -451,7 +451,7 @@ class PostController extends AbstractController
                 $byPost[$reaction->content_id][] = $reaction;
             }
             return $byPost;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \XF::logException($e, false, 'ForumCopilot: reactions for posts failed: ');
             return null;
         }
@@ -496,7 +496,7 @@ class PostController extends AbstractController
                 ->addProcessorAction('censor', $bbCodeContainer->processorAction('censor'));
 
             return $processor->render($bbCode, $bbCodeContainer->parser(), $bbCodeContainer->rules($context));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \XF::logException($e, false, 'ForumCopilot: censoring a message failed: ');
             return $formatter->censorText($bbCode);
         }
@@ -665,7 +665,7 @@ class PostController extends AbstractController
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \XF::logException($e, false, 'ForumCopilot: content votes failed: ');
         }
 
@@ -708,7 +708,7 @@ class PostController extends AbstractController
             if ($countView && $this->isThreadViewCounted()) {
                 $this->repository('XF:Thread')->logThreadView($thread);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \XF::logException($e, false, 'ForumCopilot: thread view follow-up failed: ');
         }
     }
@@ -750,7 +750,7 @@ class PostController extends AbstractController
             $thread = null;
             try {
                 $thread = $this->assertViewableThread($topicId);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 return $this->apiException($e, 'Failed to get thread');
             }
 
@@ -761,7 +761,7 @@ class PostController extends AbstractController
             $poll = null;
             try {
                 $poll = $thread->Poll;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $poll = null;
             }
 
@@ -793,7 +793,7 @@ class PostController extends AbstractController
             return $this->apiSuccess([
                 'poll' => $this->buildPollDataForThread($thread),
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to vote on poll');
         }
     }
@@ -867,7 +867,7 @@ class PostController extends AbstractController
                 if ($post->message_state == 'moderated' && method_exists($this->session(), 'setHasContentPendingApproval')) {
                     $this->session()->setHasContentPendingApproval();
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 \XF::logException($e, false, 'ForumCopilot: reply follow-up failed: ');
             }
 
@@ -890,7 +890,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to post reply');
         }
     }
@@ -980,7 +980,7 @@ class PostController extends AbstractController
                         }
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // If add-on conflict occurs, skip thread title and prefix info
             }
 
@@ -1004,7 +1004,7 @@ class PostController extends AbstractController
                         'constraints' => (object)$editorData['constraints'],
                     ];
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Optional data: the edit form works without it
                 \XF::logException($e, false, 'ForumCopilot: post editor data failed: ');
             }
@@ -1025,7 +1025,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get raw post');
         }
     }
@@ -1144,7 +1144,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to update post');
         }
     }
@@ -1181,7 +1181,7 @@ class PostController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get quote');
         }
     }
@@ -1232,7 +1232,7 @@ class PostController extends AbstractController
             $result = new FCReportPostResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to report post');
         }
     }
@@ -1295,7 +1295,7 @@ class PostController extends AbstractController
                 },
                 $bbCode
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // If processing fails, return original BBCode
         }
         
@@ -1360,11 +1360,11 @@ class PostController extends AbstractController
                         $url = method_exists($attachment, 'getDirectUrl')
                             ? $this->getAbsoluteUrl($attachment->getDirectUrl(true))
                             : $this->buildLink('canonical:attachments', $attachment);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         // If URL building fails, try alternative method
                         try {
                             $url = $this->buildLink('canonical:attachments', $attachment);
-                        } catch (\Exception $e2) {
+                        } catch (\Throwable $e2) {
                             // If both fail, leave URL empty
                         }
                     }
@@ -1375,7 +1375,7 @@ class PostController extends AbstractController
                 if ($attachment->has_thumbnail) {
                     try {
                         $thumbnailUrl = $this->getAbsoluteUrl($attachment->thumbnail_url);
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         // If thumbnail URL building fails, leave as null
                     }
                 }
@@ -1404,7 +1404,7 @@ class PostController extends AbstractController
 
                 $attachments[] = array_merge($fcAttachment->toArray(), $this->getAttachmentTypeFields($attachment));
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // If attachment loading fails, log error and return empty array
             \XF::logException($e, false, 'ForumCopilot: Error loading post attachments: ');
         }

@@ -130,7 +130,7 @@ class AttachmentController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to upload attachment');
         }
     }
@@ -205,7 +205,7 @@ class AttachmentController extends AbstractController
             $result = new FCAttachmentRemoveResult(true, null, $hash);
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to remove attachment');
         }
     }
@@ -280,7 +280,7 @@ class AttachmentController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to upload avatar');
         }
     }

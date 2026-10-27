@@ -78,7 +78,7 @@ class DraftController extends AbstractController
         $draft->extra_data = array_replace($kept, $extra);
         try {
             $saved = $draft->save();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'saveDraft');
         }
         if (!$saved) {

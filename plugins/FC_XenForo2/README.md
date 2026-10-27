@@ -27,7 +27,7 @@ plugins/FC_XenForo2/
         ├── addon.json        id, title, version_id / version_string, requirements
         ├── hashes.json       SHA-256 of every shipped file (XenForo's file-health check)
         ├── _data/            phrases, options, code event listeners, routes…
-        ├── Api/, App.php     the forumcopilot.php dispatcher and its controllers
+        ├── Api/              the controllers behind forumcopilot.php (one per area)
         ├── Push/, Service/   push dispatch (hosted, or direct FCM HTTP v1)
         ├── Setup.php         install / upgrade; copies forumcopilot.php to the webroot
         └── webroot_files/    the forumcopilot.php entry file that Setup.php copies
@@ -51,7 +51,7 @@ import json, os, hashlib
 m = 'src/addons/ForumCopilot/hashes.json'
 h = {os.path.relpath(os.path.join(r, f), '.'): hashlib.sha256(open(os.path.join(r, f), 'rb').read().replace(b'\r', b'')).hexdigest()
      for r, _, fs in os.walk('.') for f in fs if f != '.DS_Store' and os.path.relpath(os.path.join(r, f), '.') != m}
-json.dump(h, open(m, 'w'), indent=4, sort_keys=True); open(m, 'a').write('\n')
+json.dump(h, open(m, 'w'), indent=2, sort_keys=True); open(m, 'a').write('\n')
 PY
 ```
 

@@ -123,6 +123,18 @@ class Setup extends AbstractSetup
     }
 
     /**
+     * 1.11.0 removed App.php, an unused second copy of the method list.
+     * XenForo's upgrade doesn't delete files a new version no longer ships.
+     */
+    public function upgrade1110000Step1()
+    {
+        $file = __DIR__ . '/App.php';
+        if (file_exists($file)) {
+            @unlink($file);
+        }
+    }
+
+    /**
      * Called after installation is complete (including options import)
      */
     public function postInstall(array &$stateChanges)

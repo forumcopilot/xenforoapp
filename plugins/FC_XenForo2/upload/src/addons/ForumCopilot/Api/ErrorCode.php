@@ -91,7 +91,8 @@ class ErrorCode
     {
         $errorId = bin2hex(random_bytes(4));
         $prefix = 'Forum Copilot API [' . $errorId . ']' . ($context !== '' ? ' ' . $context : '') . ': ';
-        \XF::logException($e, false, $prefix);
+        // Rolls back an open transaction, as XenForo's own dispatcher does
+        \XF::logException($e, true, $prefix);
         return $errorId;
     }
 

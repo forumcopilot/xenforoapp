@@ -16,10 +16,15 @@ use ForumCopilot\Entity\FCTopic;
  */
 abstract class AbstractController extends Controller
 {
+    /**
+     * Not called: forumcopilot.php runs actions directly. Apps send no CSRF
+     * token; the dispatcher instead accepts only requests whose Content-Type
+     * is exactly application/json, which browsers can't send cross-site
+     * without a preflight. Don't wire XenForo's checkCsrfIfNeeded in here: it
+     * would refuse every app request.
+     */
     protected function preDispatchType($action, ParameterBag $params)
     {
-        $this->checkCsrfIfNeeded($action, $params);
-        // TODO: Add any other pre-dispatch checks if needed
     }
 
     public function applyReplyChanges($action, ParameterBag $params, AbstractReply &$reply)
@@ -72,7 +77,7 @@ abstract class AbstractController extends Controller
 
         // Create and return a proper XF\Http\Response object
         $response = $this->app->response();
-        $response->header('Content-Type', 'application/json; charset=UTF-8');
+        $response->contentType('application/json', 'utf-8');
         
         // Add fc_is_login header to indicate if user is logged in
         $this->addLoginStatusHeader($response);
@@ -107,13 +112,13 @@ abstract class AbstractController extends Controller
 
             // Create and return a proper XF\Http\Response object
             $response = $this->app->response();
-            $response->header('Content-Type', 'application/json; charset=UTF-8');
+            $response->contentType('application/json', 'utf-8');
 
             // Add fc_is_login header to indicate if user is logged in
             $this->addLoginStatusHeader($response);
 
             $response->body(json_encode($responseData));
-            $response->httpCode($code ?: 400);
+            $response->httpCode($code ?: 200);
 
             return $response;
         }
@@ -271,7 +276,7 @@ abstract class AbstractController extends Controller
 
         // Create and return a proper XF\Http\Response object
         $response = $this->app->response();
-        $response->header('Content-Type', 'application/json; charset=UTF-8');
+        $response->contentType('application/json', 'utf-8');
         
         // Add fc_is_login header to indicate if user is logged in
         $this->addLoginStatusHeader($response);
@@ -307,7 +312,8 @@ abstract class AbstractController extends Controller
         if (!$visitor->user_id) {
             // Use apiError() which returns Response directly, not AbstractReply
             // This ensures complete() receives a Response object
-            return $this->apiError('Authentication required - please log in first', 401, ErrorCode::LOGIN_REQUIRED);
+            // HTTP 200: the app shows resultText only from 2xx replies (401 before 1.11.0)
+            return $this->apiError(\XF::phrase('login_required'), null, ErrorCode::LOGIN_REQUIRED);
         }
         return null;
     }
@@ -389,7 +395,7 @@ abstract class AbstractController extends Controller
         }
 
         if ($visitor->user_id && $visitor->security_lock) {
-            return $this->apiError('Your account is currently security locked', null, ErrorCode::SECURITY_LOCKED);
+            return $this->apiError(\XF::phrase('your_account_is_currently_security_locked'), null, ErrorCode::SECURITY_LOCKED);
         }
 
         return null;
@@ -581,27 +587,6 @@ abstract class AbstractController extends Controller
         }
 
         return $userConv;
-    }
-
-    /**
-     * Get pagination data
-     */
-    protected function getPaginationData($results, $page, $perPage, $total)
-    {
-        $page = max(1, intval($page));
-        $perPage = max(1, intval($perPage));
-        $total = max(0, intval($total));
-        $maxPage = ceil($total / $perPage);
-
-        $page = min($page, $maxPage);
-
-        return [
-            'current_page' => $page,
-            'last_page' => $maxPage,
-            'per_page' => $perPage,
-            'shown' => count($results),
-            'total' => $total,
-        ];
     }
 
     /**

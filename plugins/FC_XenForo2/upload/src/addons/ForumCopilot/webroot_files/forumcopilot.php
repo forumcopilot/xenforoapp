@@ -86,22 +86,26 @@ class ForumCopilotPubApp extends PubApp
                 return $this->createJsonSuccess();
             }
 
-            // Check if this is an API request by looking for JSON POST data
+            // An API request is a JSON POST. The media type must be exactly
+            // application/json (parameters such as charset allowed): browsers
+            // can send other types from another site without asking first,
+            // and the app always sends this one.
             $contentType = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
+            $mediaType = strtolower(trim(explode(';', $contentType)[0]));
 
-            if (strpos($contentType, 'application/json') !== false && $_SERVER['REQUEST_METHOD'] === 'POST')
+            if ($mediaType === 'application/json' && $_SERVER['REQUEST_METHOD'] === 'POST')
             {
                 // Parse JSON input
                 $input = json_decode(file_get_contents('php://input'), true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    return $this->createJsonError('Invalid JSON request', 400, 'bad_request');
+                    return $this->createJsonError('Invalid JSON request', 200, 'bad_request');
                 }
 
                 $method = $input['method'] ?? '';
                 $params = $input['params'] ?? [];
 
                 if (empty($method)) {
-                    return $this->createJsonError('Method parameter is required', 400, 'bad_request');
+                    return $this->createJsonError('Method parameter is required', 200, 'bad_request');
                 }
 
                 // Route to appropriate handler using full add-on loaded controller system
@@ -263,7 +267,7 @@ class ForumCopilotPubApp extends PubApp
             ];
 
             if (!isset($map[$method])) {
-                return $this->createJsonError("Unknown method: $method", 400, 'bad_request');
+                return $this->createJsonError("Unknown method: $method", 200, 'bad_request');
             }
 
             // Extract controller and action
@@ -483,11 +487,13 @@ class ForumCopilotPubApp extends PubApp
                 return $this->createJsonError('API key not configured', 400);
             }
             
-            // Calculate MD5 hash of stored API key
+            // One check per address every few seconds, compared in constant time
+            if (!$this->allowGuestHelperCall('fcVerifyKey', 5)) {
+                return $this->createJsonError('Too many requests', 200, 'flood');
+            }
             $expectedHash = md5($apikey);
             
-            // Compare hashes
-            if ($expectedHash === $md5Hash) {
+            if (hash_equals($expectedHash, (string)$md5Hash)) {
                 return $this->createJsonSuccess(['verified' => true]);
             } else {
                 return $this->createJsonError('Invalid API key', 400);
@@ -505,6 +511,11 @@ class ForumCopilotPubApp extends PubApp
      */
     protected function handleValidateConnection()
     {
+        // Each check makes an outbound request: at most one per address every 10 seconds
+        if (!$this->allowGuestHelperCall('fcValidateConnection', 10)) {
+            return $this->createJsonError('Too many requests', 200, 'flood');
+        }
+
         $url = \ForumCopilot\BackendApi::apiUrl() . \ForumCopilot\BackendApi::VALIDATE_CONNECTION_PATH;
 
         $ch = curl_init($url);
@@ -534,6 +545,42 @@ class ForumCopilotPubApp extends PubApp
         }
 
         return $this->createJsonResponse($data, 200);
+    }
+
+    /**
+     * A flood check for the GET helpers, keyed by the caller's IP address
+     * since they work without signing in. XenForo's FloodCheck service skips
+     * guests, so this writes its table (xf_flood_check, pruned by XenForo's
+     * cron) under user id 0 itself.
+     */
+    protected function allowGuestHelperCall($action, $seconds)
+    {
+        try
+        {
+            $db = \XF::db();
+            $key = substr($action, 0, 12) . substr(md5($this->request()->getIp()), 0, 13);
+            $updated = $db->query(
+                'UPDATE xf_flood_check SET flood_time = ? WHERE user_id = 0 AND flood_action = ? AND flood_time <= ?',
+                [\XF::$time, $key, \XF::$time - $seconds]
+            )->rowsAffected();
+            if ($updated)
+            {
+                return true;
+            }
+            try
+            {
+                $db->insert('xf_flood_check', ['user_id' => 0, 'flood_action' => $key, 'flood_time' => \XF::$time]);
+                return true;
+            }
+            catch (\XF\Db\DuplicateKeyException $e)
+            {
+                return false;
+            }
+        }
+        catch (\Throwable $e)
+        {
+            return true;
+        }
     }
 
     /**

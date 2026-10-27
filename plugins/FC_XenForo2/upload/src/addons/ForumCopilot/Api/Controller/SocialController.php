@@ -492,7 +492,7 @@ class SocialController extends AbstractController
 
             // Create response manually to include visitor counts
             $response = $this->app->response();
-            $response->header('Content-Type', 'application/json; charset=UTF-8');
+            $response->contentType('application/json', 'utf-8');
             $this->addLoginStatusHeader($response);
             $response->body(json_encode($responseData));
             $response->httpCode(200);

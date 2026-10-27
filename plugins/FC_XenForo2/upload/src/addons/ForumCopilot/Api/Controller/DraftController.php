@@ -48,7 +48,15 @@ class DraftController extends AbstractController
             return $this->apiError('You cannot post there', null, ErrorCode::NO_PERMISSION);
         }
 
-        $message = (string)$params->get('message', '');
+        // The forum's "Save drafts" option off: nothing is saved, as
+        // Controller::assertDraftsEnabled answers ({draft: {saved: false}})
+        $saveDrafts = $this->options()->saveDrafts;
+        if (empty($saveDrafts['enabled'])) {
+            return $this->apiSuccess(['draft' => null, 'saved' => false]);
+        }
+
+        $message = $params->get('message', '');
+        $message = is_string($message) ? $message : '';
         $extra = $params->get('extra', []);
         $extra = is_array($extra) ? array_intersect_key($extra, array_flip(self::EXTRA_KEYS)) : [];
 
@@ -60,8 +68,20 @@ class DraftController extends AbstractController
         }
 
         $draft->message = $message;
-        $draft->extra_data = $extra;
-        if (!$draft->save()) {
+        // Keep what the website's editor stored with the draft (the upload
+        // hash of files attached on the web, tags, thread type, custom
+        // fields, poll). Title, prefix and recipients are the app's to set:
+        // it leaves out the ones that are empty, so they are replaced as
+        // before.
+        $existing = $draft->extra_data;
+        $kept = is_array($existing) ? array_diff_key($existing, array_flip(self::EXTRA_KEYS)) : [];
+        $draft->extra_data = array_replace($kept, $extra);
+        try {
+            $saved = $draft->save();
+        } catch (\Exception $e) {
+            return $this->apiException($e, 'saveDraft');
+        }
+        if (!$saved) {
             return $this->apiError('The draft could not be saved', null, ErrorCode::VALIDATION);
         }
         return $this->apiSuccess(['draft' => $this->draftData($draft->getDraftEntity())]);
@@ -79,17 +99,25 @@ class DraftController extends AbstractController
     }
 
     /**
-     * The member's drafts, newest first, 20 a page from page 0.
+     * The member's drafts, newest first, 20 a page from page 0 (perPage,
+     * optional, up to 100). Only the kinds of draft the app knows are listed
+     * and counted in total.
      */
     public function actionGetDrafts(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
         $page = max(0, (int)$params->get('page', 0));
-        $perPage = 20;
+        $perPage = max(1, min(100, (int)$params->get('perPage', 20)));
 
         $finder = $this->finder('XF:Draft')
             ->where('user_id', \XF::visitor()->user_id)
             ->order('last_update', 'DESC');
+        $finder->whereOr([
+            ['draft_key', 'LIKE', $finder->escapeLike('thread-', '?%')],
+            ['draft_key', 'LIKE', $finder->escapeLike('forum-', '?%')],
+            ['draft_key', 'LIKE', $finder->escapeLike('conversation-reply-', '?%')],
+            ['draft_key', '=', 'conversation'],
+        ]);
         $total = $finder->total();
         $drafts = $finder->limit($perPage, $page * $perPage)->fetch();
 

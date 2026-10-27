@@ -976,7 +976,7 @@ class PostController extends AbstractController
             $visitor = \XF::visitor();
 
             if (!$thread->canReply($error)) {
-                return $this->apiError('Cannot reply to this thread: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Use XenForo's Thread Replier service (like Tapatalk does)
@@ -993,15 +993,24 @@ class PostController extends AbstractController
                 $replier->setAttachmentHash($groupId);
             }
 
-            // Validate before saving
+            // XenForo's spam check (spam phrases, Akismet and the other
+            // content checkers) for members who still need it, as
+            // ThreadController::actionAddReply does before validating. It can
+            // reject the reply or hold it for approval (state 1 below).
+            $replier->checkForSpam();
+
             if (!$replier->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
+            }
+
+            if ($floodError = $this->checkFlooding('post')) {
+                return $floodError;
             }
 
             // Save reply post
             $post = $replier->save();
-            
-            // Send notifications
+
+            // The follow-ups of ThreadController::finalizeThreadReply
             $replier->sendNotifications();
 
             $this->autoWatchThread($thread, false);
@@ -1009,13 +1018,21 @@ class PostController extends AbstractController
             // Mark thread as read for replier
             $this->repository('XF:Thread')->markThreadReadByVisitor($thread);
 
-            // Get post content safely - always return BBCode
-            $postContent = '';
+            // The reply is saved: these never fail the call
             try {
-                $postContent = $post->message; // Always return BBCode
+                // The reply draft the forum's editor keeps for this thread
+                $thread->draft_reply->delete();
+
+                // XenForo's "awaiting approval" notice for the member's session
+                if ($post->message_state == 'moderated' && method_exists($this->session(), 'setHasContentPendingApproval')) {
+                    $this->session()->setHasContentPendingApproval();
+                }
             } catch (\Exception $e) {
-                $postContent = $post->message;
+                \XF::logException($e, false, 'ForumCopilot: reply follow-up failed: ');
             }
+
+            // Always the raw message (BBCode)
+            $postContent = $post->message;
 
             $result = new FCReplyPostResult(
                 true,
@@ -1176,29 +1193,26 @@ class PostController extends AbstractController
         }
 
         try {
-            // Use basic finder to avoid add-on conflicts
-            $post = $this->em()->find('XF:Post', (int)$postId);
-            
-            if (!$post) {
-                return $this->apiError('Post not found', null, ErrorCode::NOT_FOUND);
-            }
+            // XenForo's not-found and no-permission messages
+            $post = $this->assertViewablePost((int)$postId);
 
-            $visitor = \XF::visitor();
-
-            // Check if post is viewable
-            $error = null;
-            if (!$post->canView($error)) {
-                return $this->apiError('Cannot view this post', null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Check edit permission - use canEdit() which exists in base Post entity
+            // As PostController::actionEdit: XenForo's reason (edit time
+            // limit passed, thread closed, ...)
             if (!$post->canEdit($error)) {
-                return $this->apiError('Cannot edit this post: ' . ($error ? $error : 'Permission denied'), null, ErrorCode::NO_PERMISSION);
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
-            // Use XenForo's Post Editor service (like core does)
+            // Use XenForo's Post Editor service, set up as
+            // PostController::setupPostEdit does
             /** @var \XF\Service\Post\Editor $editor */
             $editor = $this->service('XF:Post\Editor', $post);
+
+            // Optional: a moderator's silent edit, which leaves no "last
+            // edited" mark
+            if ($this->isTrueParam($params->get('silent', false)) && $post->canEditSilently()) {
+                $editor->logEdit(false);
+            }
+
             $editor->setMessage($postContent);
 
             // New uploads come as the upload hash (groupId), attached only
@@ -1212,6 +1226,16 @@ class PostController extends AbstractController
             ) {
                 $editor->setAttachmentHash($groupId);
             }
+
+            // Optional: alert the author that a moderator edited their post,
+            // with `reason` as the alert's reason
+            if ($this->isTrueParam($params->get('authorAlert', false)) && $post->canSendModeratorActionAlert()) {
+                $editor->setSendAlert(true, is_string($reason) ? $reason : '');
+            }
+
+            // XenForo's spam check for members who still need it, right after
+            // setup as PostController::actionEdit runs it
+            $editor->checkForSpam();
 
             // If this is the first post, handle thread-level edits (title and/or prefix)
             $threadEditor = null;
@@ -1249,9 +1273,8 @@ class PostController extends AbstractController
                 }
             }
 
-            // Validate before saving
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             // Save post (and thread if first post)
@@ -1352,6 +1375,17 @@ class PostController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Failed to report post');
         }
+    }
+
+    /**
+     * An optional bool param: true, 1, "1", "true", "yes" or "on".
+     */
+    protected function isTrueParam($value): bool
+    {
+        if (is_string($value)) {
+            return in_array(strtolower(trim($value)), ['1', 'true', 'yes', 'on'], true);
+        }
+        return (bool)$value;
     }
 
     /**

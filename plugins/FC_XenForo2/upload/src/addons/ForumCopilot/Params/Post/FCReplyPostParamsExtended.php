@@ -8,7 +8,7 @@ namespace ForumCopilot\Params\Post;
  */
 class FCReplyPostParamsExtended
 {
-    /** @var string Forum ID */
+    /** @var string Forum ID (optional, unused: the thread comes from topicId) */
     public $forumId;
     
     /** @var string Topic ID to reply to */
@@ -63,10 +63,9 @@ class FCReplyPostParamsExtended
     {
         $errors = [];
         
-        if (empty($this->forumId)) {
-            $errors[] = 'forumId is required';
-        }
-        
+        // forumId is accepted and not needed: the thread comes from topicId.
+        // The app sends "" when it opened the reply without a forum id.
+
         if (empty($this->topicId)) {
             $errors[] = 'topicId is required';
         }

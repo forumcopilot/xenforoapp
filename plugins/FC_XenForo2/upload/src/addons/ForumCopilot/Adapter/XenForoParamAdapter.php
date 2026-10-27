@@ -14,9 +14,6 @@ use ForumCopilot\Params\Topic\FCGetLatestTopicParams;
 use ForumCopilot\Params\Topic\FCGetParticipatedTopicParams;
 use ForumCopilot\Params\Topic\FCGetTopicByIdsParams;
 use ForumCopilot\Params\Account\FCLoginParams;
-use ForumCopilot\Params\Account\FCUpdatePasswordParams;
-use ForumCopilot\Params\Account\FCUpdateEmailParams;
-use ForumCopilot\Params\Account\FCUpdateProfileParams;
 use ForumCopilot\Params\User\FCGetUserInfoParams;
 use ForumCopilot\Params\User\FCSearchUserParams;
 use ForumCopilot\Params\User\FCGetOnlineUsersParams;
@@ -235,39 +232,6 @@ class XenForoParamAdapter
             'perpage' => $params->get('perpage', 20),
             'id' => $params->get('id', ''),
             'area' => $params->get('area', ''),
-        ]);
-    }
-
-    /**
-     * Convert ParameterBag to FCUpdatePasswordParams
-     */
-    public static function toUpdatePasswordParams(ParameterBag $params): FCUpdatePasswordParams
-    {
-        return FCUpdatePasswordParams::fromArray([
-            'currentPassword' => $params->get('currentPassword', ''),
-            'newPassword' => $params->get('newPassword', ''),
-            'confirmPassword' => $params->get('confirmPassword', ''),
-        ]);
-    }
-
-    /**
-     * Convert ParameterBag to FCUpdateEmailParams
-     */
-    public static function toUpdateEmailParams(ParameterBag $params): FCUpdateEmailParams
-    {
-        return FCUpdateEmailParams::fromArray([
-            'newEmail' => $params->get('newEmail', ''),
-            'password' => $params->get('password', ''),
-        ]);
-    }
-
-    /**
-     * Convert ParameterBag to FCUpdateProfileParams
-     */
-    public static function toUpdateProfileParams(ParameterBag $params): FCUpdateProfileParams
-    {
-        return FCUpdateProfileParams::fromArray([
-            'profileFields' => $params->get('profileFields', []),
         ]);
     }
 

@@ -5,85 +5,6 @@ namespace ForumCopilot\Result;
 use ForumCopilot\Entity\FCCustomFieldDefinition;
 
 /**
- * ForumCopilot Signin Result
- * Maps from SigninData_Output
- */
-class FCSigninResult extends FCResult
-{
-    public $userId;
-    public $email;
-    public $userType;
-    public $username;
-    public $login;
-    public $usergroupId;
-    public $iconUrl;
-    public $postCount;
-    public $canPm;
-    public $canSendPm;
-    public $canModerate;
-    public $canSearch;
-    public $canWhosonline;
-    public $canProfile;
-    public $canUploadAvatar;
-    public $maxAttachment;
-    public $maxPngSize;
-    public $maxJpgSize;
-    public $register;
-    public $status;
-
-    public function __construct($result = true, $resultText = 'success', $userId = null, $email = null, $userType = null, $username = null, $login = null, $usergroupId = null, $iconUrl = null, $postCount = 0, $canPm = false, $canSendPm = false, $canModerate = false, $canSearch = false, $canWhosonline = false, $canProfile = false, $canUploadAvatar = false, $maxAttachment = 0, $maxPngSize = 0, $maxJpgSize = 0, $register = false, $status = '')
-    {
-        parent::__construct($result, $resultText);
-        $this->userId = $userId;
-        $this->email = $email;
-        $this->userType = $userType;
-        $this->username = $username;
-        $this->login = $login;
-        $this->usergroupId = $usergroupId;
-        $this->iconUrl = $iconUrl;
-        $this->postCount = $postCount;
-        $this->canPm = $canPm;
-        $this->canSendPm = $canSendPm;
-        $this->canModerate = $canModerate;
-        $this->canSearch = $canSearch;
-        $this->canWhosonline = $canWhosonline;
-        $this->canProfile = $canProfile;
-        $this->canUploadAvatar = $canUploadAvatar;
-        $this->maxAttachment = $maxAttachment;
-        $this->maxPngSize = $maxPngSize;
-        $this->maxJpgSize = $maxJpgSize;
-        $this->register = $register;
-        $this->status = $status;
-    }
-
-    public function toArray()
-    {
-        $data = parent::toArray();
-        if ($this->userId !== null) $data['userId'] = $this->userId;
-        if ($this->email !== null) $data['email'] = $this->email;
-        if ($this->userType !== null) $data['userType'] = $this->userType;
-        if ($this->username !== null) $data['username'] = $this->username;
-        if ($this->login !== null) $data['login'] = $this->login;
-        if ($this->usergroupId !== null) $data['usergroupId'] = $this->usergroupId;
-        if ($this->iconUrl !== null) $data['iconUrl'] = $this->iconUrl;
-        $data['postCount'] = $this->postCount;
-        $data['canPm'] = $this->canPm;
-        $data['canSendPm'] = $this->canSendPm;
-        $data['canModerate'] = $this->canModerate;
-        $data['canSearch'] = $this->canSearch;
-        $data['canWhosonline'] = $this->canWhosonline;
-        $data['canProfile'] = $this->canProfile;
-        $data['canUploadAvatar'] = $this->canUploadAvatar;
-        $data['maxAttachment'] = $this->maxAttachment;
-        $data['maxPngSize'] = $this->maxPngSize;
-        $data['maxJpgSize'] = $this->maxJpgSize;
-        $data['register'] = $this->register;
-        $data['status'] = $this->status;
-        return $data;
-    }
-}
-
-/**
  * ForumCopilot Forget Password Result
  * Maps from ForgetPasswordData_Output
  */
@@ -127,23 +48,6 @@ class FCUpdatePasswordResult extends FCResult
  * Maps from UpdateProfileData_Output
  */
 class FCUpdateProfileResult extends FCResult
-{
-    public function __construct($result = true, $resultText = 'success')
-    {
-        parent::__construct($result, $resultText);
-    }
-
-    public function toArray()
-    {
-        return parent::toArray();
-    }
-}
-
-/**
- * ForumCopilot Update Password SSO Result
- * Maps from UpdatePasswordSSOData_Output
- */
-class FCUpdatePasswordSSOResult extends FCResult
 {
     public function __construct($result = true, $resultText = 'success')
     {

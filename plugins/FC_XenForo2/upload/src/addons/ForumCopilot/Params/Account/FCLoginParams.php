@@ -14,10 +14,10 @@ class FCLoginParams
     /** @var string User password */
     public $password;
     
-    /** @var bool Whether to login as anonymous user */
+    /** @var bool Sent by the app; ignored (XenForo has no anonymous sign-in) */
     public $anonymous;
     
-    /** @var string|null Trust code for two-factor authentication */
+    /** @var string|null Sent by the app; ignored (two-step trust is the tfa_trust cookie) */
     public $trustCode;
     
     /** @var string|null Two-factor authentication code */
@@ -26,7 +26,7 @@ class FCLoginParams
     /** @var string|null TFA provider ID (totp, email, backup) */
     public $tfaProvider;
     
-    /** @var bool Whether to trust this device for 45 days */
+    /** @var bool Whether to trust this device (fc_app_tfa_trust_days, default 365) */
     public $trustDevice;
 
     /** @var bool Whether to create XenForo remember cookie */

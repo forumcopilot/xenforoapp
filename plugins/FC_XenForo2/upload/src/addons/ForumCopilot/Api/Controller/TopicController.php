@@ -799,6 +799,17 @@ class TopicController extends AbstractController
         }
     }
 
+    /**
+     * Threads a member has posted in, as XenForo's "Threads you've posted in"
+     * page lists them (Pub FindThreadsController::actionContributed): every
+     * such thread in a forum the visitor can see, newest activity first,
+     * however old. It used to be What's New: only threads active in the last
+     * 30 days, in forums shown in What's New.
+     *
+     * The member is userId, else username, else the visitor. A username that
+     * is the visitor's current or a former one (the app sends the name it
+     * cached at sign-in) means the visitor.
+     */
     public function actionGetParticipatedTopic(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) {
@@ -815,23 +826,22 @@ class TopicController extends AbstractController
         try {
             $visitor = \XF::visitor();
 
-            // Resolve target user: userId or username, or default to visitor
-            $targetUser = $visitor;
-            if (!empty($fcParams->userId)) {
-                $targetUser = $this->em()->find('XF:User', (int)$fcParams->userId);
-                if (!$targetUser) {
-                    return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
-                }
-            } elseif (!empty(trim((string)$fcParams->username))) {
-                $targetUser = $this->em()->findOne('XF:User', ['username' => $fcParams->username]);
-                if (!$targetUser) {
-                    return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
-                }
+            $targetUser = $this->getParticipatedTopicUser($fcParams);
+            if (!$targetUser) {
+                return $this->apiError(\XF::phrase('requested_member_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
-            // Use same finder pattern as getLatestTopic/getUnreadTopic: viewable forums + participated filter
-            $finder = $this->setupTopicListFinder(['restrictViewable' => true]);
-            $this->applyTopicFilters($finder, ['participated' => true], $targetUser);
+            $finder = $this->repository('XF:Thread')->findThreadsWithPostsByUser($targetUser->user_id);
+            $finder->where('discussion_state', 'visible');
+            $this->addTopicListWith($finder);
+
+            // Forums the visitor may read, in the query so pages stay full
+            $forums = $this->getReadableForumIds();
+            $readable = [['node_id', $forums['full']]];
+            if ($forums['own']) {
+                $readable[] = [['node_id', $forums['own']], ['user_id', $visitor->user_id]];
+            }
+            $finder->whereOr($readable);
 
             $result = $this->buildTopicListFromFinder(
                 $finder,
@@ -846,8 +856,44 @@ class TopicController extends AbstractController
                 $result['total'],
                 $result['topics']
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get participated topics');
         }
+    }
+
+    /**
+     * getParticipatedTopic's member: userId, else username (the visitor
+     * when it is one of their own names), else the visitor.
+     *
+     * @return \XF\Entity\User|null null when no such member
+     */
+    protected function getParticipatedTopicUser($fcParams)
+    {
+        $visitor = \XF::visitor();
+
+        if (!empty($fcParams->userId)) {
+            return $this->em()->find('XF:User', (int)$fcParams->userId);
+        }
+
+        $username = trim((string)$fcParams->username);
+        if ($username === '' || strcasecmp($username, $visitor->username) === 0) {
+            return $visitor;
+        }
+
+        // A former name of the visitor (XenForo 2.2+ keeps the history)
+        try {
+            $formerName = $this->finder('XF:UsernameChange')
+                ->where('user_id', $visitor->user_id)
+                ->where('old_username', $username)
+                ->where('change_state', 'approved')
+                ->fetchOne();
+            if ($formerName) {
+                return $visitor;
+            }
+        } catch (\Exception $e) {
+            // No username history on this version
+        }
+
+        return $this->em()->findOne('XF:User', ['username' => $username]);
     }
 }

@@ -646,35 +646,53 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Get forum watch status using ForumWatch repository
-     * This avoids entity relationship issues by using the repository directly
-     * 
+     * The visitor's watch on a forum and its options, as XenForo's forum
+     * page and "Watch forum" form show them. Pass the ForumWatch (or null)
+     * when it was loaded already, as getForum does for every forum in one
+     * query; otherwise it is looked up through the forum's Watch relation
+     * (no query when the forum was loaded with Watch|<user id>).
+     *
      * @param \XF\Entity\Forum $forum The forum entity
      * @param \XF\Entity\User|null $visitor The visitor (defaults to current visitor)
-     * @return array Array with 'canWatch' and 'isWatched' boolean values
+     * @param \XF\Entity\ForumWatch|null|false $watch false = look it up
+     * @return array canWatch, isWatched, and since 1.11.0 notifyOn ("thread",
+     *               "message" or "" for no notifications; null when not
+     *               watched), sendAlert, sendEmail, allowedWatchNotifications
+     *               (what the forum offers: "all", "thread" or "none")
      */
-    protected function getForumWatchStatus($forum, $visitor = null)
+    protected function getForumWatchStatus($forum, $visitor = null, $watch = false)
     {
         if ($visitor === null) {
             $visitor = \XF::visitor();
         }
 
-        // If guest user, cannot watch and not watched
+        $status = [
+            'canWatch' => false,
+            'isWatched' => false,
+            'notifyOn' => null,
+            'sendAlert' => false,
+            'sendEmail' => false,
+            'allowedWatchNotifications' => (string)$forum->allowed_watch_notifications,
+        ];
+
+        // Guests cannot watch
         if (!$visitor->user_id) {
-            return ['canWatch' => false, 'isWatched' => false];
+            return $status;
         }
 
-        // Use Forum entity's canWatch method (this should work as it checks permissions)
-        $canWatch = $forum->canWatch();
+        $status['canWatch'] = (bool)$forum->canWatch();
 
-        // Check if forum is watched by finding the ForumWatch entity
-        $forumWatch = $this->em()->find('XF:ForumWatch', [
-            'node_id' => $forum->node_id,
-            'user_id' => $visitor->user_id
-        ]);
-        $isWatched = ($forumWatch !== null);
+        if ($watch === false) {
+            $watch = $forum->Watch[$visitor->user_id];
+        }
+        if ($watch) {
+            $status['isWatched'] = true;
+            $status['notifyOn'] = (string)$watch->notify_on;
+            $status['sendAlert'] = (bool)$watch->send_alert;
+            $status['sendEmail'] = (bool)$watch->send_email;
+        }
 
-        return ['canWatch' => $canWatch, 'isWatched' => $isWatched];
+        return $status;
     }
 
     /**

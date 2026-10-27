@@ -19,6 +19,15 @@ use ForumCopilot\Entity\FCTopic;
  */
 class SubscriptionController extends AbstractController
 {
+    /**
+     * The member's watched forums, in forum list order, as XenForo's
+     * "Watched forums" page lists them (Pub WatchedController::actionForums).
+     *
+     * subscribeMode is a number, as the app reads it: 1 = emails on, 0 = no
+     * emails. It used to be XenForo's notify_on text ("thread"), which the
+     * app could not read, so its "Subscribed forums" section stayed empty.
+     * That text is now notifyOn, next to sendAlert and sendEmail.
+     */
     public function actionGetSubscribedForum(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) {
@@ -28,46 +37,47 @@ class SubscriptionController extends AbstractController
         try {
             $visitor = \XF::visitor();
             
-            // Get subscribed forums using finder directly
             $finder = $this->finder('XF:ForumWatch');
             $finder->where('user_id', $visitor->user_id);
-            $finder->with('Forum');
+            $finder->with('Forum', true);
+            $finder->with('Forum.Node', true);
+            $finder->with([
+                'Forum.Node.Permissions|' . $visitor->permission_combination_id,
+                'Forum.Read|' . $visitor->user_id,
+            ]);
+            $finder->order('Forum.Node.lft');
             
             $watches = $finder->fetch();
 
             $forumList = [];
             foreach ($watches as $watch) {
-                try {
-                    $forum = $watch->Forum;
-                    if (!$forum) {
-                        continue;
-                    }
-                    
-                    // Load Node separately to avoid relation issues
-                    $node = $this->em()->find('XF:Node', $forum->node_id);
-                    if (!$node) {
-                        continue;
-                    }
-                    
-                    if (!$forum->canView()) {
-                        continue;
-                    }
-                    
-                    $forumList[] = [
-                        'id' => (string)$forum->node_id,
-                        'name' => $node->title,
-                        'description' => $node->description,
-                        'threadCount' => $forum->discussion_count,
-                        'postCount' => $forum->message_count,
-                        'canPost' => $forum->canCreateThread(),
-                        'isRead' => !$forum->isUnread(),
-                        'url' => $this->buildLink('canonical:forums', $forum),
-                        'subscribeMode' => $watch->notify_on,
-                    ];
-                } catch (\Exception $e) {
-                    // Skip this forum if there's an error
+                $forum = $watch->Forum;
+                if (!$forum || !$forum->Node || !$forum->canView()) {
                     continue;
                 }
+
+                $node = $forum->Node;
+                // Counts need "View others' threads", as on getForum and the forum list
+                $hasViewOthers = $visitor->hasNodePermission($forum->node_id, 'viewOthers');
+                $watchStatus = $this->getForumWatchStatus($forum, $visitor, $watch);
+
+                $forumList[] = [
+                    'id' => (string)$forum->node_id,
+                    'name' => $node->title,
+                    'description' => $node->description,
+                    'parentId' => $node->parent_node_id ? (string)$node->parent_node_id : '',
+                    'threadCount' => $hasViewOthers ? $forum->discussion_count : 0,
+                    'postCount' => $hasViewOthers ? $forum->message_count : 0,
+                    'canPost' => $forum->canCreateThread(),
+                    'canViewContent' => $forum->canViewThreadContent(),
+                    'isRead' => !$forum->isUnread(),
+                    'url' => $this->buildLink('canonical:forums', $forum),
+                    'subscribeMode' => $watchStatus['sendEmail'] ? 1 : 0,
+                    'notifyOn' => $watchStatus['notifyOn'],
+                    'sendAlert' => $watchStatus['sendAlert'],
+                    'sendEmail' => $watchStatus['sendEmail'],
+                    'allowedWatchNotifications' => $watchStatus['allowedWatchNotifications'],
+                ];
             }
 
             $result = new FCSubscribedForumResult(
@@ -79,7 +89,7 @@ class SubscriptionController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get subscribed forums');
         }
     }

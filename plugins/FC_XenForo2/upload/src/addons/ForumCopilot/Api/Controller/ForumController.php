@@ -649,7 +649,7 @@ class ForumController extends AbstractController
 
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get board stats');
         }
     }

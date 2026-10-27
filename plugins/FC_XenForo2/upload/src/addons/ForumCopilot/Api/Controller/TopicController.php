@@ -526,7 +526,7 @@ class TopicController extends AbstractController
                 $result['total'],
                 $result['topics']
             ));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get unread topics');
         }
     }
@@ -579,7 +579,7 @@ class TopicController extends AbstractController
             }
 
             return $this->apiSuccess(new FCTopicByIdsResult(true, null, $topicList));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to get topics');
         }
     }
@@ -745,11 +745,21 @@ class TopicController extends AbstractController
         }
     }
 
+    /**
+     * Marks threads read for the member, with XenForo's own read marking.
+     *
+     * Optional (1.11.0), as XenForo's thread page marks read up to the last
+     * post it showed: lastPostId (a post in one of the threads: that thread
+     * is read up to it) or lastPostDate (Unix seconds, for every thread).
+     * Without them each thread is read up to now, as before.
+     */
     public function actionMarkTopicRead(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $topicIds = $params->get('topicIds', []);
+        $lastPostId = $params->get('lastPostId', null);
+        $lastPostDate = $params->get('lastPostDate', null);
 
         if (empty($topicIds) || !is_array($topicIds)) {
             return $this->apiError('Topic IDs array is required', null, ErrorCode::BAD_REQUEST);
@@ -764,7 +774,7 @@ class TopicController extends AbstractController
 
         try {
             // Convert topic IDs to integers for query
-            $threadIds = array_map('intval', $topicIds);
+            $threadIds = array_map('intval', array_filter($topicIds, 'is_scalar'));
 
             // Load the visitor's thread and forum read markers with the threads
             $finder = $this->finder('XF:Thread');
@@ -772,6 +782,9 @@ class TopicController extends AbstractController
             $finder->withReadData();
 
             $threads = $finder->fetch();
+
+            $lastPost = is_numeric($lastPostId) ? $this->em()->find('XF:Post', (int)$lastPostId) : null;
+            $readDate = is_numeric($lastPostDate) && $lastPostDate > 0 ? min((int)$lastPostDate, \XF::$time) : null;
 
             /** @var \XF\Repository\Thread $threadRepo */
             $threadRepo = $this->repository('XF:Thread');
@@ -783,18 +796,23 @@ class TopicController extends AbstractController
                     continue;
                 }
 
+                $newRead = $readDate;
+                if ($lastPost && $lastPost->thread_id == $thread->thread_id) {
+                    $newRead = $lastPost->post_date;
+                }
+
                 // XenForo's own read marking, as when the thread is viewed on the web:
-                // xf_thread_read moves to the later of now and the last post, and the
-                // forum is marked read once none of its threads are unread. Watched-thread
-                // reply alerts depend on this date (AbstractWatch::canNotify).
-                $threadRepo->markThreadReadByVisitor($thread);
+                // xf_thread_read moves to the given date (default: the later of now and
+                // the last post), and the forum is marked read once none of its threads
+                // are unread. Watched-thread reply alerts depend on this date
+                // (AbstractWatch::canNotify).
+                $threadRepo->markThreadReadByVisitor($thread, $newRead);
             }
 
             $result = new FCMarkTopicReadResult(true, null);
             return $this->apiSuccess($result);
 
-        } catch (\Exception $e) {
-            \XF::logException($e, false, 'ForumCopilot markTopicRead: ');
+        } catch (\Throwable $e) {
             return $this->apiException($e, 'Failed to mark topics as read');
         }
     }

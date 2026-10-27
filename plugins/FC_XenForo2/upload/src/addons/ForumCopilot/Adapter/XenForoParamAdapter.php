@@ -279,6 +279,7 @@ class XenForoParamAdapter
             'lastNum' => $params->get('lastNum', 19),
             'searchId' => $params->get('searchId', ''),
             'filters' => $params->get('filters', []),
+            'includeModerated' => $params->get('includeModerated', false),
         ]);
     }
 

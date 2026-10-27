@@ -1828,6 +1828,9 @@ abstract class AbstractController extends Controller
     /** Most rows one topic list call returns (the app asks for 20 or 21) */
     const TOPIC_LIST_MAX_ROWS = 100;
 
+    /** @var \XF\Mvc\Entity\AbstractCollection|null getViewableForums(), once per call */
+    protected $viewableForums = null;
+
     /**
      * Offset and row count for the startNum..lastNum window of a topic list,
      * capped at TOPIC_LIST_MAX_ROWS rows. Rows are counted from startNum
@@ -1894,7 +1897,11 @@ abstract class AbstractController extends Controller
         $visitor = \XF::visitor();
         $ids = ['full' => [], 'own' => [], 'moderated' => []];
 
-        foreach ($this->repository('XF:Forum')->getViewableForums() as $nodeId => $forum) {
+        if ($this->viewableForums === null) {
+            $this->viewableForums = $this->repository('XF:Forum')->getViewableForums();
+        }
+
+        foreach ($this->viewableForums as $nodeId => $forum) {
             if ($findNewOnly && !$forum->find_new) {
                 continue;
             }
@@ -1912,6 +1919,38 @@ abstract class AbstractController extends Controller
         }
 
         return $ids;
+    }
+
+    /**
+     * The prefixes the visitor may pick when starting a thread in the forum
+     * (Forum::getUsablePrefixes), as [{id, title, group}]; group is the
+     * prefix group's title, "" for ungrouped prefixes.
+     */
+    protected function getUsablePrefixList(\XF\Entity\Forum $forum): array
+    {
+        $prefixes = [];
+        try {
+            foreach ($forum->getUsablePrefixes() as $groupId => $group) {
+                foreach ($group as $prefix) {
+                    if (!$prefix instanceof \XF\Entity\ThreadPrefix) {
+                        continue;
+                    }
+                    $groupTitle = '';
+                    if ($groupId && $prefix->prefix_group_id) {
+                        $groupTitle = (string)\XF::phrase('thread_prefix_group.' . $prefix->prefix_group_id);
+                    }
+                    $prefixes[] = [
+                        'id' => (string)$prefix->prefix_id,
+                        'title' => (string)$prefix->title,
+                        'group' => $groupTitle,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // If prefix retrieval fails, offer none
+            $prefixes = [];
+        }
+        return $prefixes;
     }
 
     /**

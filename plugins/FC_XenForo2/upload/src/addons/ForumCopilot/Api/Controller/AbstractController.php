@@ -1724,7 +1724,10 @@ abstract class AbstractController extends Controller
                     'isInline' => $isInline,
                 ]);
                 
-                $attachments[] = $fcAttachment;
+                // The edit page shows the size as XenForo writes it
+                $attachments[] = $fcAttachment->toArray() + [
+                    'fileSizePrintable' => \XF::language()->fileSizeFormat($attachment->file_size),
+                ];
             }
         } catch (\Exception $e) {
             // If attachment loading fails, log error and return empty array

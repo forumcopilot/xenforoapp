@@ -970,63 +970,67 @@ class AccountController extends AbstractController
         }
     }
 
+    /**
+     * Saves the signed-in member's own profile: what XenForo's account
+     * details page saves (Pub\Controller\Account::accountDetailsSaveProcess),
+     * plus the privacy (visible, activityVisible), preferences (timezone)
+     * and signature fields of the pages next to it.
+     *
+     * Only the visitor's own profile: like XenForo's account pages, it never
+     * edits another member. userId is optional; another member's id is
+     * refused. (Staff edit members on the website, where User::canEdit()
+     * applies.)
+     */
     public function actionUpdateProfile(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
+        $visitor = \XF::visitor();
+
         $userId = $params->get('userId', '');
-        
+        if (!is_scalar($userId) || ((string)$userId !== '' && (int)$userId !== (int)$visitor->user_id)) {
+            return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+        if (!$visitor->canEditProfile()) {
+            return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+
         // Extract all profile fields from parameters
-        $profileData = $params->get('profile', []);
-        $userData = $params->get('user', []);
-        $optionData = $params->get('option', []);
-        $customFields = $params->get('customFields', []);
+        $profileData = $this->arrayParam($params, 'profile');
+        $userData = $this->arrayParam($params, 'user');
+        $optionData = $this->arrayParam($params, 'option');
+        $hasCustomFields = $params->offsetExists('customFields');
+        $customFields = $this->arrayParam($params, 'customFields');
         $dobDay = $params->get('dobDay', null);
         $dobMonth = $params->get('dobMonth', null);
         $dobYear = $params->get('dobYear', null);
         $enableActivitySummaryEmail = $params->get('enableActivitySummaryEmail', null);
 
-        if (empty($userId)) {
-            return $this->apiError('User ID is required', null, ErrorCode::BAD_REQUEST);
-        }
-
         try {
-            $visitor = \XF::visitor();
-            
-            $user = $this->em()->find('XF:User', $userId);
-            if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
-            }
-
-            // Check if user can edit this profile
-            if ($visitor->user_id != $user->user_id) {
-                if (!$visitor->canEditProfile()) {
-                    return $this->apiError('Permission denied', null, ErrorCode::NO_PERMISSION);
-                }
-            } else {
-                // User editing own profile - check canEditProfile
-                if (!$visitor->canEditProfile()) {
-                    return $this->apiError('You do not have permission to edit your profile', null, ErrorCode::NO_PERMISSION);
-                }
-            }
-
+            $user = $visitor;
             $form = $this->formAction();
+
+            // Which of XenForo's account pages the change belongs to, for
+            // the IP log entry each of those pages writes.
+            $changed = [];
 
             // Prepare user table input
             $userInput = [];
-            if (isset($userData['customTitle'])) {
-                if ($visitor->hasPermission('general', 'editCustomTitle')) {
-                    $userInput['custom_title'] = $userData['customTitle'];
-                }
+            if (isset($userData['customTitle']) && $visitor->hasPermission('general', 'editCustomTitle')) {
+                $userInput['custom_title'] = (string)$userData['customTitle'];
+                $changed['account_details_edit'] = true;
             }
             if (isset($userData['visible'])) {
                 $userInput['visible'] = (bool)$userData['visible'];
+                $changed['privacy_edit'] = true;
             }
             if (isset($userData['activityVisible'])) {
                 $userInput['activity_visible'] = (bool)$userData['activityVisible'];
+                $changed['privacy_edit'] = true;
             }
             if (isset($userData['timezone'])) {
-                $userInput['timezone'] = $userData['timezone'];
+                $userInput['timezone'] = (string)$userData['timezone'];
+                $changed['preferences_edit'] = true;
             }
 
             // Save user fields
@@ -1050,59 +1054,61 @@ class AccountController extends AbstractController
             if (!empty($optionInput)) {
                 $userOptions = $user->getRelationOrDefault('Option');
                 $form->setupEntityInput($userOptions, $optionInput);
+                $changed['account_details_edit'] = true;
             }
 
-            // Handle activity summary email toggle
-            if ($enableActivitySummaryEmail !== null) {
+            // Handle activity summary email toggle (needs a 2.2 check:
+            // guarded so a forum without it ignores the field)
+            if ($enableActivitySummaryEmail !== null && method_exists($user, 'toggleActivitySummaryEmail')) {
                 $form->setup(function () use ($user, $enableActivitySummaryEmail) {
                     $user->toggleActivitySummaryEmail((bool)$enableActivitySummaryEmail);
                 });
+                $changed['account_details_edit'] = true;
             }
 
             // Prepare profile input
             $profileInput = [];
-            if (isset($profileData['location'])) {
-                $profileInput['location'] = $profileData['location'];
-            }
-            if (isset($profileData['website'])) {
-                $profileInput['website'] = $profileData['website'];
-            }
-            if (isset($profileData['about'])) {
-                $profileInput['about'] = $profileData['about'];
+            foreach (['location', 'website', 'about'] as $field) {
+                if (isset($profileData[$field])) {
+                    $profileInput[$field] = (string)$profileData[$field];
+                    $changed['account_details_edit'] = true;
+                }
             }
 
-            // Handle signature with proper service
+            // The signature, as XenForo's signature page checks and parses it
+            // (Pub\Controller\Account::actionSignature).
             if (isset($profileData['signature'])) {
-                // Check if visitor can edit signature (for own profile) or if moderator editing other's profile
-                $canEditSig = ($visitor->user_id == $user->user_id && $visitor->canEditSignature()) 
-                    || ($visitor->user_id != $user->user_id && $visitor->is_moderator);
-                
-                if ($canEditSig) {
-                    /** @var \XF\Service\User\SignatureEdit $sigEditor */
-                    $sigEditor = $this->service('XF:User\SignatureEdit', $user);
-                    if ($sigEditor->setSignature($profileData['signature'], $errors)) {
-                        $profileInput['signature'] = $sigEditor->getNewSignature();
-                    } else {
-                        return $this->apiError('Signature validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
-                    }
-                } else {
-                    return $this->apiError('You do not have permission to edit signature', null, ErrorCode::NO_PERMISSION);
+                if (!$visitor->canEditSignature()) {
+                    return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
                 }
+                /** @var \XF\Service\User\SignatureEdit $sigEditor */
+                $sigEditor = $this->service('XF:User\SignatureEdit', $user);
+                if (!$sigEditor->setSignature((string)$profileData['signature'], $errors)) {
+                    return $this->apiFieldErrors(is_array($errors) ? $errors : [$errors]);
+                }
+                $profileInput['signature'] = $sigEditor->getNewSignature();
+                $changed['signature_edit'] = true;
             }
 
             // Get profile entity
             /** @var \XF\Entity\UserProfile $userProfile */
             $userProfile = $user->getRelationOrDefault('Profile');
 
-            // Handle date of birth
+            // Date of birth: only filled in while it is incomplete, as on
+            // XenForo's account details page, so a member cannot change
+            // their age once it is set.
             if ($dobDay !== null || $dobMonth !== null || $dobYear !== null) {
                 $form->setup(function () use ($userProfile, $dobDay, $dobMonth, $dobYear) {
-                    if ($dobDay === null || $dobMonth === null) {
+                    if ($userProfile->dob_day && $userProfile->dob_month && $userProfile->dob_year) {
+                        return;
+                    }
+                    if (!$dobDay || !$dobMonth) {
                         $userProfile->error(\XF::phrase('please_enter_valid_date_of_birth'), 'dob');
                     } else {
                         $userProfile->setDob((int)$dobDay, (int)$dobMonth, $dobYear ? (int)$dobYear : 0);
                     }
                 });
+                $changed['account_details_edit'] = true;
             }
 
             // Save profile fields
@@ -1110,35 +1116,28 @@ class AccountController extends AbstractController
                 $form->setupEntityInput($userProfile, $profileInput);
             }
 
-            // Handle custom fields for personal group
-            if (!empty($customFields) && is_array($customFields)) {
+            // Personal and contact custom fields, as XenForo's account
+            // details page sets them (customFieldsSaveProcess). When the app
+            // sends customFields, even empty, the required ones are checked.
+            if ($hasCustomFields) {
                 $fieldSet = $userProfile->custom_fields;
-                $fieldDefinition = $fieldSet->getDefinitionSet()
-                    ->filterGroup('personal')
-                    ->filterEditable($fieldSet, 'user');
-                $customFieldsShown = array_keys($fieldDefinition->getFieldDefinitions());
-                
-                if ($customFieldsShown) {
-                    $form->setup(function () use ($fieldSet, $customFields, $customFieldsShown) {
-                        $fieldSet->bulkSet($customFields, $customFieldsShown, 'user');
-                    });
-                }
+                foreach (['personal', 'contact'] as $group) {
+                    $fieldDefinition = $fieldSet->getDefinitionSet()
+                        ->filterGroup($group)
+                        ->filterEditable($fieldSet, 'user');
+                    $customFieldsShown = array_keys($fieldDefinition->getFieldDefinitions());
 
-                // Handle custom fields for contact group
-                $fieldDefinitionContact = $fieldSet->getDefinitionSet()
-                    ->filterGroup('contact')
-                    ->filterEditable($fieldSet, 'user');
-                $customFieldsShownContact = array_keys($fieldDefinitionContact->getFieldDefinitions());
-                
-                if ($customFieldsShownContact) {
-                    $form->setup(function () use ($fieldSet, $customFields, $customFieldsShownContact) {
-                        $fieldSet->bulkSet($customFields, $customFieldsShownContact, 'user');
-                    });
+                    if ($customFieldsShown) {
+                        $form->setup(function () use ($fieldSet, $customFields, $customFieldsShown) {
+                            $fieldSet->bulkSet($customFields, $customFieldsShown, 'user');
+                        });
+                    }
                 }
+                $changed['account_details_edit'] = true;
             }
 
             // Spam check for about field
-            if (isset($profileInput['about']) && $user->isSpamCheckRequired()) {
+            if (!empty($profileInput['about']) && $user->isSpamCheckRequired()) {
                 $form->validate(function (\XF\Mvc\FormAction $form) use ($user, $profileInput) {
                     $checker = $this->app()->spam()->contentChecker();
                     $checker->check($user, $profileInput['about'], [
@@ -1160,10 +1159,12 @@ class AccountController extends AbstractController
             // Validate and save
             $form->validateEntity($userProfile)->saveEntity($userProfile);
 
-            // Log IP address
-            $form->complete(function () use ($user) {
-                $ipRepo = $this->repository('XF:Ip');
-                $ipRepo->logIp($user->user_id, $this->request->getIp(), 'user', $user->user_id, 'account_details_edit');
+            // The IP log entries XenForo's own pages write for these changes
+            $form->complete(function () use ($user, $changed) {
+                $ipRepo = $this->getIpRepository();
+                foreach (array_keys($changed) as $action) {
+                    $ipRepo->logIp($user->user_id, $this->request->getIp(), 'user', $user->user_id, $action);
+                }
             });
 
             // Run the form action
@@ -1175,6 +1176,15 @@ class AccountController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Profile update failed');
         }
+    }
+
+    /**
+     * An object/array parameter, or [] when it is missing or not one.
+     */
+    protected function arrayParam(ParameterBag $params, string $key): array
+    {
+        $value = $params->get($key, []);
+        return is_array($value) ? $value : [];
     }
 
     public function actionLogout(ParameterBag $params)

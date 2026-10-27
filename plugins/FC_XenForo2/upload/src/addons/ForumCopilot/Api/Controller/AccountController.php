@@ -408,7 +408,9 @@ class AccountController extends AbstractController
         // account is ready the API answers them getConfig,
         // resendEmailConfirmation and logout, and tells them why otherwise.
         if (!$user->hasPermission('general', 'view') && !$this->isAwaitingMember($user)) {
-            return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE, null, ErrorCode::NO_PERMISSION);
+            // Not no_permission: the visitor is still a guest here, and the
+            // API would turn that into guest_denied ("signing in may help").
+            return $this->apiError(self::NO_BOARD_ACCESS_MESSAGE, null, ErrorCode::ERROR);
         }
 
         return null;

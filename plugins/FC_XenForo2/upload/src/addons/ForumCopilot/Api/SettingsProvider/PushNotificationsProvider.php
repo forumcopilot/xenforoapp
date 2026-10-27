@@ -19,7 +19,8 @@ class PushNotificationsProvider implements SettingsProviderInterface
 
     public function getCategoryDisplayName(): string
     {
-        return 'Push Notifications';
+        $text = \XF::phrase('push_notifications')->render('raw');
+        return ($text !== '' && $text !== 'push_notifications') ? $text : 'Push Notifications';
     }
 
     public function getCategoryDescription(): string
@@ -33,8 +34,15 @@ class PushNotificationsProvider implements SettingsProviderInterface
         return isset($options->fc_push_enabled) && $options->fc_push_enabled;
     }
 
+    /**
+     * One toggle per alert type. A type the member turned off as an alert
+     * on the website gets no push either (UserOption::doesReceiveFcPush):
+     * its toggle is read-only and says so, instead of looking off with no
+     * way to turn it on here.
+     */
     public function getSettingsDefinition(User $user): array
     {
+        $userOptions = $user->Option;
         $alertRepo = $this->app->repository('XF:UserAlert');
         $optOutActions = $alertRepo->getAlertOptOutActions();
 
@@ -62,14 +70,18 @@ class PushNotificationsProvider implements SettingsProviderInterface
                     continue;
                 }
                 
+                $alertOff = $userOptions && !$userOptions->doesReceiveAlert($contentType, $action);
+
                 $definition[$key] = [
                     'fieldType' => 'toggle', // Toggle switch for boolean settings
                     'dataType' => 'boolean',
                     'title' => $displayName,
-                    'description' => null,
+                    'description' => $alertOff
+                        ? 'This alert is turned off in your alert preferences on the website. Turn it on there to get it as a push notification.'
+                        : null,
                     'default' => true,
                     'required' => false,
-                    'readOnly' => false,
+                    'readOnly' => $alertOff,
                     'displayOrder' => $displayOrder++,
                     'group' => 'notification_types',
                 ];

@@ -33,17 +33,39 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         return true;
     }
 
+    /**
+     * The settings of XenForo's preferences and privacy pages the app shows
+     * (Pub\Controller\Account::actionPreferences / actionPrivacy), with
+     * XenForo's own labels and the forum's defaults for new members
+     * (registrationDefaults). "Yes, with email" is one of the watch
+     * choices, as on the website.
+     */
     public function getSettingsDefinition(User $user): array
     {
+        $defaults = $this->app->options()->registrationDefaults;
+        $defaults = is_array($defaults) ? $defaults : [];
+        $boolDefault = function (string $key, bool $fallback) use ($defaults): bool {
+            return array_key_exists($key, $defaults) ? (bool)$defaults[$key] : $fallback;
+        };
+        $watchDefault = function (string $key) use ($defaults): string {
+            $value = (string)($defaults[$key] ?? '');
+            return in_array($value, ['watch_no_email', 'watch_email'], true) ? $value : '';
+        };
+        $watchChoices = [
+            '' => $this->phrase('no', 'No'),
+            'watch_no_email' => $this->phrase('yes', 'Yes'),
+            'watch_email' => $this->phrase('yes_with_email', 'Yes, with email'),
+        ];
+
         $definition = [];
 
         // Email options group
         $definition['receive_admin_email'] = [
             'fieldType' => 'toggle',
             'dataType' => 'boolean',
-            'title' => 'Receive news and update emails',
+            'title' => $this->phrase('receive_site_mailings_option', 'Receive news and update emails'),
             'description' => null,
-            'default' => true,
+            'default' => $boolDefault('receive_admin_email', true),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 1,
@@ -53,9 +75,12 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         $definition['email_on_conversation'] = [
             'fieldType' => 'toggle',
             'dataType' => 'boolean',
-            'title' => 'Receive email when a new direct message is received',
+            'title' => $this->phrase(
+                'receive_email_when_new_direct_message_is_received',
+                'Receive email when a new direct message is received'
+            ),
             'description' => null,
-            'default' => true,
+            'default' => $boolDefault('email_on_conversation', true),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 2,
@@ -66,75 +91,35 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         $definition['creation_watch_state'] = [
             'fieldType' => 'select',
             'dataType' => 'string',
-            'title' => 'Automatically watch content you create...',
+            'title' => $this->phrase('automatically_watch_content_you_create', 'Automatically watch content you create'),
             'description' => null,
-            'default' => '',
+            'default' => $watchDefault('creation_watch_state'),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 3,
             'group' => 'content_options',
-            'choices' => [
-                '' => 'No',
-                'watch_no_email' => 'Yes',
-                'watch_email' => 'Yes, with email',
-            ],
-        ];
-
-        $definition['creation_watch_email'] = [
-            'fieldType' => 'toggle',
-            'dataType' => 'boolean',
-            'title' => '...and receive email notifications',
-            'description' => 'Only shown when "Automatically watch content you create" is enabled',
-            'default' => false,
-            'required' => false,
-            'readOnly' => false,
-            'displayOrder' => 4,
-            'group' => 'content_options',
-            'dependsOn' => [
-                'key' => 'creation_watch_state',
-                'value' => 'watch_no_email', // Show when watch_state is not empty (watch_no_email or watch_email)
-            ],
+            'choices' => $watchChoices,
         ];
 
         $definition['interaction_watch_state'] = [
             'fieldType' => 'select',
             'dataType' => 'string',
-            'title' => 'Automatically watch content you interact with...',
+            'title' => $this->phrase('automatically_watch_content_you_interact_with', 'Automatically watch content you interact with'),
             'description' => null,
-            'default' => '',
+            'default' => $watchDefault('interaction_watch_state'),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 5,
             'group' => 'content_options',
-            'choices' => [
-                '' => 'No',
-                'watch_no_email' => 'Yes',
-                'watch_email' => 'Yes, with email',
-            ],
-        ];
-
-        $definition['interaction_watch_email'] = [
-            'fieldType' => 'toggle',
-            'dataType' => 'boolean',
-            'title' => '...and receive email notifications',
-            'description' => 'Only shown when "Automatically watch content you interact with" is enabled',
-            'default' => false,
-            'required' => false,
-            'readOnly' => false,
-            'displayOrder' => 6,
-            'group' => 'content_options',
-            'dependsOn' => [
-                'key' => 'interaction_watch_state',
-                'value' => 'watch_no_email', // Show when watch_state is not empty (watch_no_email or watch_email)
-            ],
+            'choices' => $watchChoices,
         ];
 
         $definition['content_show_signature'] = [
             'fieldType' => 'toggle',
             'dataType' => 'boolean',
-            'title' => 'Show people\'s signatures with their messages',
+            'title' => $this->phrase('show_peoples_signatures_with_their_messages', 'Show people\'s signatures with their messages'),
             'description' => null,
-            'default' => true,
+            'default' => $boolDefault('content_show_signature', true),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 7,
@@ -145,9 +130,12 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         $definition['visible'] = [
             'fieldType' => 'toggle',
             'dataType' => 'boolean',
-            'title' => 'Show your online status',
-            'description' => 'This will allow other people to see when you are online.',
-            'default' => true,
+            'title' => $this->phrase('show_your_online_status', 'Show your online status'),
+            'description' => $this->phrase(
+                'this_will_allow_other_people_to_see_when_you_online',
+                'This will allow other people to see when you are online.'
+            ),
+            'default' => $boolDefault('visible', true),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 8,
@@ -157,9 +145,12 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         $definition['activity_visible'] = [
             'fieldType' => 'toggle',
             'dataType' => 'boolean',
-            'title' => 'Show your current activity',
-            'description' => 'This will allow other people to see what page you are currently viewing.',
-            'default' => true,
+            'title' => $this->phrase('show_your_current_activity', 'Show your current activity'),
+            'description' => $this->phrase(
+                'this_will_allow_other_people_to_see_what_page_you_currently_viewing',
+                'This will allow other people to see what page you are currently viewing.'
+            ),
+            'default' => $boolDefault('activity_visible', true),
             'required' => false,
             'readOnly' => false,
             'displayOrder' => 9,
@@ -167,6 +158,19 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         ];
 
         return $definition;
+    }
+
+    /**
+     * A XenForo phrase as plain text, or [$fallback] where the forum has no
+     * phrase of that name (some were renamed between 2.2 and 2.3).
+     */
+    protected function phrase(string $name, string $fallback): string
+    {
+        $text = \XF::phrase($name)->render('raw');
+        if ($text === '' || $text === $name) {
+            return $fallback;
+        }
+        return trim(html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     }
 
     public function getCurrentValues(User $user): array
@@ -183,12 +187,10 @@ class EmailPrivacyProvider implements SettingsProviderInterface
         $values['receive_admin_email'] = (bool)$userOptions->receive_admin_email;
         $values['email_on_conversation'] = (bool)$userOptions->email_on_conversation;
 
-        // Content options
+        // Content options. (creation_watch_email / interaction_watch_email,
+        // toggles of earlier versions, are still accepted by updateSettings.)
         $values['creation_watch_state'] = (string)$userOptions->creation_watch_state;
-        $values['creation_watch_email'] = ($userOptions->creation_watch_state === 'watch_email');
-        
         $values['interaction_watch_state'] = (string)$userOptions->interaction_watch_state;
-        $values['interaction_watch_email'] = ($userOptions->interaction_watch_state === 'watch_email');
         
         $values['content_show_signature'] = (bool)$userOptions->content_show_signature;
 

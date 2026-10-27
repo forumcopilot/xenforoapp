@@ -437,7 +437,7 @@ class ModerationController extends AbstractController
             $editor->setTitle($title);
 
             if (!$editor->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             $editor->save();
@@ -652,7 +652,7 @@ class ModerationController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
             // Check if user is actually banned
@@ -720,7 +720,7 @@ class ModerationController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();

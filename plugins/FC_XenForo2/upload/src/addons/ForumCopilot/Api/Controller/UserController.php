@@ -779,7 +779,7 @@ class UserController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
             $visitor = \XF::visitor();
@@ -796,7 +796,7 @@ class UserController extends AbstractController
 
             // Validate before saving
             if (!$creator->validate($errors)) {
-                return $this->apiError('Validation failed: ' . implode(', ', $errors), null, ErrorCode::VALIDATION);
+                return $this->apiFieldErrors($errors);
             }
 
             // Flood check (like web version) - prevent spam reporting

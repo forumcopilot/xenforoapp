@@ -8,7 +8,6 @@ use ForumCopilot\Result\FCNewConversationResult;
 use ForumCopilot\Result\FCReplyConversationResult;
 use ForumCopilot\Result\FCConversationsResult;
 use ForumCopilot\Result\FCConversationResult;
-use ForumCopilot\Result\FCConversationInboxStatResult;
 use ForumCopilot\Result\FCMarkConversationReadResult;
 use ForumCopilot\Result\FCMarkConversationUnreadResult;
 use ForumCopilot\Result\FCCloseConversationResult;
@@ -733,31 +732,6 @@ class PrivateConversationController extends AbstractController
         }
     }
 
-    public function actionGetInboxStat(ParameterBag $params)
-    {
-        if ($error = $this->assertRegisteredUser()) { return $error; }
-
-        try {
-            $visitor = \XF::visitor();
-            
-            $conversationRepo = $this->repository('XF:ConversationMaster');
-            $stats = $conversationRepo->getConversationStatsForUser($visitor);
-
-            $result = new FCConversationInboxStatResult(
-                true,
-                null,
-                $stats['total'] ?? 0,
-                $stats['unread'] ?? 0,
-                $stats['unread_messages'] ?? 0
-            );
-
-            return $this->apiSuccess($result);
-
-        } catch (\Exception $e) {
-            return $this->apiException($e, 'Failed to get inbox stats');
-        }
-    }
-
     public function actionMarkConversationRead(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
@@ -856,20 +830,16 @@ class PrivateConversationController extends AbstractController
             // mode 1 = deleted, mode 2 = deleted_ignored
             // Note: XenForo core also directly sets recipient_state (see ConversationController::actionLeave)
             // The recipient entity's _postSave will handle ConversationUser deletion and conversation updates
-            $recipientState = 'deleted';
-            if ($mode == 2) {
-                $recipientState = 'deleted_ignored';
-            } else {
-                // Default to deleted if mode is not 2
-                $recipientState = 'deleted';
-            }
+            // Optional (1.11.0): ignore: true, the name XenForo's REST API uses, is mode 2
+            $recipientState = ($mode == 2 || $params->get('ignore')) ? 'deleted_ignored' : 'deleted';
 
             // Update recipient state (following XenForo core pattern)
             $recipient = $userConv->Recipient;
-            if ($recipient) {
-                $recipient->recipient_state = $recipientState;
-                $recipient->save(); // _postSave will handle ConversationUser deletion and conversation updates
+            if (!$recipient) {
+                return $this->apiError(\XF::phrase('requested_direct_message_not_found'), null, ErrorCode::NOT_FOUND);
             }
+            $recipient->recipient_state = $recipientState;
+            $recipient->save(); // _postSave will handle ConversationUser deletion and conversation updates
 
             $result = new FCLeaveConversationResult(true, null);
             return $this->apiSuccess($result);
@@ -971,6 +941,11 @@ class PrivateConversationController extends AbstractController
 
         try {
             $message = $this->assertViewableMessage($messageId);
+
+            // Quoting is for replying, as XenForo's ConversationController::actionReply
+            if (!$message->Conversation->canReply()) {
+                return $this->apiError(\XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
 
             // Process message through getBbCodeForQuote (matches XenForo web behavior)
             // This handles nested quotes and censoring

@@ -47,7 +47,6 @@ class FCConversationResult extends FCResult
         $data['messages'] = array_map(function($item) {
             return is_object($item) ? $item->toArray() : $item;
         }, $this->messages);
-        $data['list'] = $data['messages']; // Compatibility alias
         $data['participants'] = array_map(function($item) {
             return is_object($item) ? $item->toArray() : $item;
         }, $this->participants);

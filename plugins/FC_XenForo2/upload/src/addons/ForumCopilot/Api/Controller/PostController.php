@@ -254,21 +254,28 @@ class PostController extends AbstractController
      */
     protected function buildThreadPostRows(\XF\Entity\Thread $thread, $posts): array
     {
+        $context = [
+            // XenForo shows online status beside messages only with this option on
+            'showOnline' => (bool)$this->options()->showMessageOnlineStatus,
+        ];
+
         $rows = [];
         foreach ($posts as $post) {
             // Respect XenForo's permission system
             if (!$post->canView()) {
                 continue;
             }
-            $rows[] = $this->buildThreadPostRow($thread, $post);
+            $rows[] = $this->buildThreadPostRow($thread, $post, $context);
         }
         return $rows;
     }
 
     /**
      * One post as the app reads it (FCPost, plus fields added later).
+     *
+     * @param array $context per-page values from buildThreadPostRows
      */
-    protected function buildThreadPostRow(\XF\Entity\Thread $thread, \XF\Entity\Post $post): array
+    protected function buildThreadPostRow(\XF\Entity\Thread $thread, \XF\Entity\Post $post, array $context = []): array
     {
         $user = $post->User;
 
@@ -279,7 +286,9 @@ class PostController extends AbstractController
             'id' => (string)$post->post_id,
             'topicId' => (string)$post->thread_id,
             'authorId' => (string)$post->user_id,
-            'authorName' => $user ? $user->username : 'Unknown',
+            // The name stored with the post for guests and deleted members,
+            // as XenForo shows it
+            'authorName' => $user ? $user->username : ($post->username !== '' ? $post->username : 'Unknown'),
             'authorUserType' => $user ? (string)$user->user_group_id : '0',
             'timestamp' => $post->post_date * 1000,
             'content' => $this->postContentForApp($post->message),
@@ -287,7 +296,9 @@ class PostController extends AbstractController
             'authorIconUrl' => $user ? $this->getAbsoluteUrl($user->getAvatarUrl('s')) : '',
             'canEdit' => $post->canEdit(),
             'canDelete' => $post->canDelete(),
-            'canReport' => false,
+            // XenForo's check for the post's Report link (the member's
+            // "report content" permission)
+            'canReport' => $post->canReport(),
             'canLike' => $likeFlags['canLike'],
             'isLiked' => $likeFlags['isLiked'],
             'likeCount' => $this->getReactionCount($post),
@@ -299,7 +310,13 @@ class PostController extends AbstractController
             'attachments' => $this->getPostAttachments($post),
         ]);
 
-        return $fcPost->toArray();
+        $row = $fcPost->toArray();
+
+        // The author's online dot, where the forum shows it and the author's
+        // privacy allows (User::isOnline)
+        $row['isAuthorOnline'] = !empty($context['showOnline']) && $user && $user->isOnline();
+
+        return $row;
     }
 
     /**
@@ -321,6 +338,23 @@ class PostController extends AbstractController
         $author = $thread->User;
         $firstPost = $thread->first_post_id ? $thread->FirstPost : null;
         $pollData = $this->buildPollDataForThread($thread);
+        $firstPostFlags = $firstPost
+            ? $this->getPostLikeFlags($firstPost)
+            : ['canLike' => false, 'isLiked' => false];
+
+        // A redirect left behind when a thread was moved: XenForo's thread
+        // page sends the visitor on to the target (RedirectHandler::
+        // overrideDisplay). Its key is "thread-{target id}-{forum id}-"
+        // (ThreadRedirectRepository::createThreadRedirectionDouble).
+        $isMoved = false;
+        $realTopicId = (string)$thread->thread_id;
+        if ($thread->discussion_type === 'redirect') {
+            $isMoved = true;
+            $redirect = $thread->Redirect;
+            if ($redirect && preg_match('/^thread-(\d+)-/', (string)$redirect->redirect_key, $match)) {
+                $realTopicId = $match[1];
+            }
+        }
 
         return [
             'id' => (string)$thread->thread_id,
@@ -328,7 +362,7 @@ class PostController extends AbstractController
             'forumId' => (string)$thread->node_id,
             'forumName' => ($forum && $forum->Node) ? $forum->Node->title : 'Unknown',
             'authorId' => (string)$thread->user_id,
-            'authorName' => $author ? $author->username : 'Unknown',
+            'authorName' => $author ? $author->username : ($thread->username !== '' ? $thread->username : 'Unknown'),
             'authorUserType' => $author ? (string)$author->user_group_id : '0',
             'timestamp' => $thread->post_date * 1000,
             'prefix' => $this->getThreadPrefixLabel($thread),
@@ -354,16 +388,18 @@ class PostController extends AbstractController
             'canMerge' => $thread->canMerge(),
             'canBan' => false,
             'canReply' => $thread->canReply(),
-            'canReport' => false,
-            'canUpload' => false,
+            // Thread-level flags from the same checks as the first post's
+            // links and the reply form
+            'canReport' => \XF::visitor()->canReport(),
+            'canUpload' => $forum ? $forum->canUploadAndManageAttachments() : false,
             'isBanned' => false,
             'isApproved' => $thread->discussion_state === 'visible',
             'isDeleted' => $thread->discussion_state === 'deleted',
-            'isMoved' => false,
+            'isMoved' => $isMoved,
             'isMerged' => false,
-            'realTopicId' => (string)$thread->thread_id,
-            'canLike' => false,
-            'isLiked' => false,
+            'realTopicId' => $realTopicId,
+            'canLike' => $firstPostFlags['canLike'],
+            'isLiked' => $firstPostFlags['isLiked'],
             'likeCount' => $this->getReactionCount($firstPost),
             'hasPoll' => ($pollData !== null),
             'poll' => $pollData,

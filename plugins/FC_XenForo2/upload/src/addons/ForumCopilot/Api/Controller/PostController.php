@@ -59,7 +59,9 @@ class PostController extends AbstractController
                 $this->buildThreadTopicData($thread)
             );
 
-            $this->finishThreadView($thread, $posts);
+            // A view is counted when the thread is opened at its start, not
+            // for every further page the app loads while scrolling
+            $this->finishThreadView($thread, $posts, $startNum <= 1);
 
             return $this->apiSuccess($result);
 
@@ -105,7 +107,7 @@ class PostController extends AbstractController
                 $topicData
             );
 
-            $this->finishThreadView($thread, $posts);
+            $this->finishThreadView($thread, $posts, true);
 
             return $this->apiSuccess($result);
 
@@ -155,6 +157,11 @@ class PostController extends AbstractController
                 $finder->where('message_state', 'visible');
                 $finder->where('post_date', '>', $readDate);
                 $finder->order([['post_date', 'ASC'], ['post_id', 'ASC']]);
+                // Not a post by a member the visitor ignores, as
+                // ThreadController::actionUnread skips them
+                if (method_exists($finder, 'skipIgnored')) {
+                    $finder->skipIgnored();
+                }
 
                 $firstUnreadPost = $finder->fetchOne();
             }
@@ -202,7 +209,7 @@ class PostController extends AbstractController
                 $topicData
             );
 
-            $this->finishThreadView($thread, $posts);
+            $this->finishThreadView($thread, $posts, true);
 
             return $this->apiSuccess($result);
 
@@ -355,6 +362,9 @@ class PostController extends AbstractController
         // privacy allows (User::isOnline)
         $row['isAuthorOnline'] = !empty($context['showOnline']) && $user && $user->isOnline();
 
+        // A member the visitor ignores: XenForo shows the post collapsed
+        $row['isIgnored'] = $post->isIgnored();
+
         return $row;
     }
 
@@ -481,29 +491,58 @@ class PostController extends AbstractController
     }
 
     /**
-     * What the thread page does once a page is shown: the thread is read up
-     * to the last post shown (ThreadController::actionIndex).
+     * What XenForo's thread page does once a page is shown
+     * (ThreadController::actionIndex): alerts about the posts shown are
+     * marked read, the thread is read up to the last post shown, and the
+     * view is counted. Best-effort: a failure here never fails the call.
      *
      * @param \XF\Entity\Thread $thread
      * @param \XF\Mvc\Entity\AbstractCollection $posts
+     * @param bool $countView count a view of the thread (the first page
+     *                        the app opens, not every page it loads)
      */
-    protected function finishThreadView(\XF\Entity\Thread $thread, $posts)
+    protected function finishThreadView(\XF\Entity\Thread $thread, $posts, bool $countView = false)
     {
         $visitor = \XF::visitor();
-        if (!$visitor->user_id || !$posts->count() || $this->request->isPrefetch()) {
-            return;
-        }
-
-        $lastPostDate = 0;
-        foreach ($posts as $post) {
-            $lastPostDate = max($lastPostDate, (int)$post->post_date);
-        }
 
         try {
-            $this->repository('XF:Thread')->markThreadReadByVisitor($thread, $lastPostDate);
+            if ($visitor->user_id && $posts->count()) {
+                // A member who reads the quoted or mentioned post here has
+                // seen the alert about it
+                $alertRepo = $this->repository('XF:UserAlert');
+                if (method_exists($alertRepo, 'markUserAlertsReadForContent')) {
+                    $alertRepo->markUserAlertsReadForContent('post', $posts->keys());
+                }
+
+                if (!$this->request->isPrefetch()) {
+                    $lastPostDate = 0;
+                    foreach ($posts as $post) {
+                        $lastPostDate = max($lastPostDate, (int)$post->post_date);
+                    }
+                    $this->repository('XF:Thread')->markThreadReadByVisitor($thread, $lastPostDate);
+                }
+            }
+
+            if ($countView && $this->isThreadViewCounted()) {
+                $this->repository('XF:Thread')->logThreadView($thread);
+            }
         } catch (\Exception $e) {
-            // Silently fail if marking as read fails (e.g., add-on conflicts)
+            \XF::logException($e, false, 'ForumCopilot: thread view follow-up failed: ');
         }
+    }
+
+    /**
+     * Whether XenForo would count this view: not for prefetches, and for
+     * guests and robots only as the "Count views" option says
+     * (Controller::isContentViewCounted, XenForo 2.3).
+     */
+    protected function isThreadViewCounted(): bool
+    {
+        if (method_exists($this, 'isContentViewCounted')) {
+            return $this->isContentViewCounted();
+        }
+
+        return !$this->request->isPrefetch();
     }
 
     /**

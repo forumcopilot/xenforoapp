@@ -775,23 +775,35 @@ class AccountController extends AbstractController
         return (bool)\XF\Util\Ip::checkIpsAgainstBinaryRangeList($this->request->getAllIps(), $discouragedIps['data']);
     }
 
+    /**
+     * Changes the signed-in member's password, as XenForo's password page
+     * does (Pub\Controller\Account::actionSecuritySave): the current
+     * password is required, the member gets the "password changed" email,
+     * and every other device is signed out while this session stays.
+     *
+     * The other devices also stop getting the member's push notifications:
+     * their registrations are removed. Optional deviceId names this device,
+     * whose registration stays; without it every registration goes, and the
+     * app registers again on its next start.
+     */
     public function actionUpdatePassword(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }
 
         $oldPassword = $params->get('oldPassword', '');
         $newPassword = $params->get('newPassword', '');
+        $deviceId = $params->get('deviceId', '');
+        $deviceId = is_scalar($deviceId) ? trim((string)$deviceId) : '';
 
-        if (empty($oldPassword) || empty($newPassword)) {
+        if (!is_string($oldPassword) || !is_string($newPassword) || $oldPassword === '' || $newPassword === '') {
             return $this->apiError('Old password and new password are required', null, ErrorCode::VALIDATION);
         }
 
         try {
             $visitor = \XF::visitor();
             
-            // Verify old password
-            if (!$visitor->authenticate($oldPassword)) {
-                return $this->apiError('Current password is incorrect', null, ErrorCode::VALIDATION);
+            if ($error = $this->currentPasswordError($visitor, $oldPassword, \XF::phrase('your_existing_password_is_not_correct'))) {
+                return $error;
             }
 
             // Use XenForo's Password Change service
@@ -805,8 +817,12 @@ class AccountController extends AbstractController
 
             // Validate before saving
             if (!$passwordChange->isValid($error)) {
-                return $this->apiError('Password change validation failed: ' . ($error ? $error : 'Unknown error'), null, ErrorCode::VALIDATION);
+                return $this->apiError($error ?: \XF::phrase('please_enter_valid_password'), null, ErrorCode::VALIDATION);
             }
+
+            /** @var \ForumCopilot\Repository\DeviceToken $deviceRepo */
+            $deviceRepo = $this->repository('ForumCopilot:DeviceToken');
+            $deviceRepo->keepDeviceOnPasswordChange((int)$visitor->user_id, $deviceId);
 
             // Save password change
             $passwordChange->save();
@@ -818,12 +834,49 @@ class AccountController extends AbstractController
             // with the new password.
             $this->getLoginPlugin()->handleVisitorPasswordChange();
 
+            // The signed-out devices' push registrations (the UserProfile
+            // class extension does this for every password change once it
+            // is registered; here it covers the app's own change either way).
+            try {
+                $deviceRepo->onPasswordChanged((int)$visitor->user_id);
+            } catch (\Exception $e) {
+                \XF::logException($e, false, 'ForumCopilot: updatePassword device tokens: ');
+            }
+
             $result = new FCUpdatePasswordResult(true, null);
             return $this->apiSuccess($result);
 
         } catch (\Exception $e) {
             return $this->apiException($e, 'Password update failed');
         }
+    }
+
+    /**
+     * Checks the signed-in member's current password with XenForo's login
+     * attempt limits, as its "confirm your password" page does
+     * (ControllerPlugin\Login::actionPasswordConfirm uses LoginService), so
+     * wrong guesses are counted and limited. Returns an error reply, or
+     * null when the password is right.
+     *
+     * @param string|\XF\Phrase $wrongMessage what to say when it is wrong
+     */
+    protected function currentPasswordError(\XF\Entity\User $visitor, string $password, $wrongMessage)
+    {
+        $loginService = $this->getLoginService($visitor->username, $this->request->getIp());
+        if ($loginService->isLoginLimited()) {
+            return $this->apiError(
+                \XF::phrase('your_account_has_temporarily_been_locked_due_to_failed_login_attempts'),
+                null,
+                ErrorCode::FLOOD
+            );
+        }
+
+        $user = $password !== '' ? $loginService->validate($password, $error) : null;
+        if (!$user || (int)$user->user_id !== (int)$visitor->user_id) {
+            return $this->apiError($wrongMessage, null, ErrorCode::VALIDATION);
+        }
+
+        return null;
     }
 
     /**

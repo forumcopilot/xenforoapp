@@ -161,6 +161,35 @@ class DeviceToken extends Repository
     }
 
     /**
+     * The device each member is changing their password on in this request
+     * (the app's updatePassword names it), user id => device id.
+     *
+     * @var array<int, string>
+     */
+    protected static $keepOnPasswordChange = [];
+
+    /**
+     * Keeps [$deviceId]'s registration when [$userId]'s password changes in
+     * this request: the member changes it on that device, which stays
+     * signed in. '' keeps none.
+     */
+    public function keepDeviceOnPasswordChange(int $userId, string $deviceId): void
+    {
+        static::$keepOnPasswordChange[$userId] = $deviceId;
+    }
+
+    /**
+     * After [$userId]'s password changed: every other device was signed
+     * out, so it stops getting the member's notifications too. Keeps only
+     * the device named with keepDeviceOnPasswordChange in this request.
+     */
+    public function onPasswordChanged(int $userId): int
+    {
+        $keep = static::$keepOnPasswordChange[$userId] ?? '';
+        return $this->deleteForUser($userId, $keep !== '' ? $keep : null);
+    }
+
+    /**
      * Removes devices whose token FCM refused (is_token_valid = 0) and those
      * the app has not registered for [$unseenDays] days (the app registers
      * on every start, so such an install is gone). For a daily cron entry.

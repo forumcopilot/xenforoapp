@@ -19,7 +19,15 @@ class PasskeyChallengeService
     public const SESSION_KEY_TIME = 'forumcopilot_passkey_challenge_time';
     public const CHALLENGE_TTL = 900; // 15 minutes, same as XF
     public const CHALLENGE_BYTES = 32;
-    private const APP_PACKAGE_NAME = 'com.forumcopilot.mobile';
+
+    /** How long the Android app signing hashes read from assetlinks.json are kept. */
+    protected const ASSET_LINKS_TTL = 3600;
+    /** ...and how long a failed read is kept, so it is not retried on every sign-in. */
+    protected const ASSET_LINKS_FAILURE_TTL = 300;
+    protected const SIMPLE_CACHE_KEY = 'passkeyAndroidKeyHashes';
+
+    /** @var string[]|null this request's copy of the hashes */
+    protected $androidKeyHashes;
 
     /** @var \XF\App */
     protected $app;
@@ -68,20 +76,30 @@ class PasskeyChallengeService
      * Validate the assertion: stored challenge must match provided challenge,
      * then verify with lbuchs WebAuthn processGet() using binary challenge.
      *
+     * As XenForo's own passkey sign-in does (Service\Passkey\ManagerService::
+     * validateWithUser): the origin must be the board's own (or one of the
+     * Android apps the board's assetlinks.json lists), the authenticator's
+     * signature counter must move forward (a counter that goes back means a
+     * copied authenticator), and an unknown passkey or a failed check counts
+     * as a failed login attempt for the IP address (and the member).
+     * Callers check hasTooManyLoginAttempts first.
+     *
      * @param string $webauthnChallenge The challenge string the client sent back (must match stored)
      * @param array $webauthnPayload Keys: clientDataJSON, authenticatorData, signature, id (credential id)
-     * @param string|null $error Set to error message on failure
+     * @param string|\XF\Phrase|null $error Set to error message on failure
      * @return Passkey|null The passkey entity on success, null on failure
      */
     public function validateAssertion(Session $session, string $webauthnChallenge, array $webauthnPayload, &$error = null): ?Passkey
     {
+        $ip = (string)$this->app->request()->getIp();
+
         $storedChallenge = $this->getStoredChallenge($session);
         if ($storedChallenge === null) {
-            $error = 'No passkey challenge found in session. Please call getPasskeyChallenge first.';
+            $error = \XF::phrase('page_no_longer_available_back_try_again');
             return null;
         }
         if ($webauthnChallenge !== $storedChallenge) {
-            $error = 'Challenge mismatch';
+            $error = \XF::phrase('something_went_wrong_please_try_again');
             return null;
         }
 
@@ -90,8 +108,10 @@ class PasskeyChallengeService
         $signatureB64 = $webauthnPayload['signature'] ?? '';
         $credentialId = $webauthnPayload['id'] ?? '';
 
-        if ($clientDataJsonB64 === '' || $authenticatorDataB64 === '' || $signatureB64 === '' || $credentialId === '') {
-            $error = 'Invalid webauthn_payload';
+        if (!is_string($clientDataJsonB64) || !is_string($authenticatorDataB64) || !is_string($signatureB64) || !is_string($credentialId)
+            || $clientDataJsonB64 === '' || $authenticatorDataB64 === '' || $signatureB64 === '' || $credentialId === ''
+        ) {
+            $error = \XF::phrase('something_went_wrong_please_try_again');
             return null;
         }
 
@@ -100,60 +120,194 @@ class PasskeyChallengeService
         $signature = $this->decodePayloadField($signatureB64);
 
         if ($clientDataJSON === null || $authenticatorData === null || $signature === null) {
-            $error = 'Invalid base64 in webauthn_payload';
+            $error = \XF::phrase('something_went_wrong_please_try_again');
+            return null;
+        }
+
+        // The board's own origin only, as XenForo checks it (ManagerService::
+        // validateOrigin) before the WebAuthn library, whose own check also
+        // takes other hosts under the same domain.
+        $clientData = json_decode($clientDataJSON);
+        if (!is_object($clientData) || !isset($clientData->origin) || !is_string($clientData->origin)
+            || !$this->isAllowedOrigin($clientData->origin)
+        ) {
+            $error = \XF::phrase('something_went_wrong_please_try_again');
             return null;
         }
 
         $passkey = $this->findPasskeyByCredentialId($credentialId);
         if (!$passkey) {
-            $error = 'Passkey or security key could not be verified';
+            $this->recordFailedAttempt($ip, null);
+            $error = \XF::phrase('given_passkey_or_security_key_could_not_be_verified');
             return null;
         }
 
         $challengeBinary = $this->base64UrlDecode($storedChallenge);
         if ($challengeBinary === null) {
-            $error = 'Invalid stored challenge';
+            $error = \XF::phrase('something_went_wrong_please_try_again');
             return null;
         }
 
-        $webAuthn = $this->getWebAuthn();
         try {
-            $isValid = $webAuthn->processGet(
-                $clientDataJSON,
-                $authenticatorData,
-                $signature,
-                $passkey->credential_public_key,
-                $challengeBinary
-            );
-        } catch (\Throwable $e) {
-            // Legacy lbuchs/WebAuthn versions don't expose addAndroidKeyHashes()
-            // and therefore reject native Android origin (android:apk-key-hash:*).
-            if (
-                strpos($e->getMessage(), 'invalid origin') !== false
-                && !method_exists($webAuthn, 'addAndroidKeyHashes')
-            ) {
-                $isValid = $this->processGetCompatForAndroid(
+            $webAuthn = $this->getWebAuthn();
+            try {
+                $isValid = $webAuthn->processGet(
                     $clientDataJSON,
                     $authenticatorData,
                     $signature,
                     $passkey->credential_public_key,
                     $challengeBinary
                 );
-            } else {
-                throw $e;
+            } catch (\Throwable $e) {
+                // Legacy lbuchs/WebAuthn versions don't expose addAndroidKeyHashes()
+                // and therefore reject native Android origin (android:apk-key-hash:*).
+                if (
+                    strpos($e->getMessage(), 'invalid origin') !== false
+                    && !method_exists($webAuthn, 'addAndroidKeyHashes')
+                ) {
+                    $isValid = $this->processGetCompatForAndroid(
+                        $clientDataJSON,
+                        $authenticatorData,
+                        $signature,
+                        $passkey->credential_public_key,
+                        $challengeBinary
+                    );
+                } else {
+                    throw $e;
+                }
             }
+        } catch (\Throwable $e) {
+            $this->logValidationFailure($e);
+            $isValid = false;
         }
 
         if (!$isValid) {
-            $error = 'Passkey or security key could not be verified';
+            $this->recordFailedAttempt($ip, $passkey);
+            $error = \XF::phrase('given_passkey_or_security_key_could_not_be_verified');
             return null;
+        }
+
+        $newCounter = $this->getSignatureCounter($authenticatorData);
+        if ($this->hasSignatureCounter($passkey)) {
+            if (!$this->isValidSignatureCounter((int)$passkey->signature_counter, $newCounter, $passkey)) {
+                $this->recordFailedAttempt($ip, $passkey);
+                $error = \XF::phrase('given_passkey_or_security_key_could_not_be_verified');
+                return null;
+            }
+            // Saved with the last use (updatePasskeyLastUse).
+            $passkey->signature_counter = $newCounter;
         }
 
         return $passkey;
     }
 
     /**
-     * Update passkey last use date and IP (same as XenForo ManagerService).
+     * Whether [$ip] (and, given [$login], that member) has had too many
+     * failed sign-ins lately: XenForo's login limits, which its passkey
+     * sign-in uses too (Pub\Controller\Login::actionLogin).
+     */
+    public function hasTooManyLoginAttempts(string $ip, ?string $login = null): bool
+    {
+        $limiter = $this->getLoginLimiter();
+        return $limiter ? (bool)$limiter->hasTooManyLoginAttempts($ip, $login) : false;
+    }
+
+    /**
+     * Clears [$login]'s failed sign-ins from [$ip] after a successful one.
+     */
+    public function clearFailedAttempts(string $ip, string $login): void
+    {
+        if ($ip === '' || $login === '') {
+            return;
+        }
+        try {
+            $this->app->repository('XF:LoginAttempt')->clearLoginAttempts($login, $ip);
+        } catch (\Exception $e) {
+            // as XenForo's LoginLimitTrait: never blocks the sign-in
+        }
+    }
+
+    protected function recordFailedAttempt(string $ip, ?Passkey $passkey): void
+    {
+        $limiter = $this->getLoginLimiter();
+        if (!$limiter || $ip === '') {
+            return;
+        }
+        $user = $passkey ? $passkey->User : null;
+        $limiter->recordFailedAttempt($ip, $user ? $user->username : null);
+    }
+
+    /**
+     * XenForo's passkey manager, for its login limits (LoginLimitTrait).
+     */
+    protected function getLoginLimiter(): ?\XF\Service\Passkey\ManagerService
+    {
+        if (!class_exists(\XF\Service\Passkey\ManagerService::class)) {
+            return null;
+        }
+        return $this->app->service(\XF\Service\Passkey\ManagerService::class);
+    }
+
+    /**
+     * The signature counter in authenticator data (bytes 33-36, big endian),
+     * as XenForo reads it.
+     */
+    protected function getSignatureCounter(string $authenticatorData): int
+    {
+        if (strlen($authenticatorData) < 37) {
+            return 0;
+        }
+        $unpacked = unpack('N', substr($authenticatorData, 33, 4));
+        return (int)($unpacked[1] ?? 0);
+    }
+
+    protected function hasSignatureCounter(Passkey $passkey): bool
+    {
+        return $passkey->isValidColumn('signature_counter');
+    }
+
+    /**
+     * XenForo's counter rule (ManagerService::validateSignatureCounter):
+     * authenticators that keep no counter send 0 every time; one that keeps
+     * a counter must send a higher value than last time.
+     */
+    protected function isValidSignatureCounter(int $storedCounter, int $newCounter, Passkey $passkey): bool
+    {
+        if ($storedCounter === 0) {
+            return true;
+        }
+        if ($newCounter === 0 || $newCounter <= $storedCounter) {
+            \XF::logError(sprintf(
+                'Forum Copilot: passkey signature counter for user %d (passkey %d) went from %d to %d. This may mean the authenticator was copied, reset or replaced.',
+                $passkey->user_id,
+                $passkey->passkey_id,
+                $storedCounter,
+                $newCounter
+            ));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * A failed check is logged in the server error log when it points at the
+     * forum's set-up (the board URL does not match the passkey's domain), as
+     * XenForo logs it; other failures (a wrong signature, ...) only with
+     * diagnostic logging on.
+     */
+    protected function logValidationFailure(\Throwable $e): void
+    {
+        $message = 'Forum Copilot: passkey validation failed: ' . $e->getMessage();
+        if (strpos($e->getMessage(), 'rpId') !== false) {
+            \XF::logError($message . ' (Board URL: ' . $this->app->options()->boardUrl . ')');
+        } else {
+            \ForumCopilot\Util\Log::debug($message);
+        }
+    }
+
+    /**
+     * Update passkey last use date and IP (same as XenForo ManagerService),
+     * and the signature counter validateAssertion read.
      * Call after successful login so the passkey entity reflects usage.
      */
     public function updatePasskeyLastUse(Passkey $passkey, string $ip): void
@@ -264,9 +418,15 @@ class PasskeyChallengeService
         return true;
     }
 
+    /**
+     * The board's own origin (scheme, host and port of the board URL), as
+     * XenForo accepts it (ManagerService::validateOrigin); iOS apps send
+     * that too. Or a native Android app whose signing certificate the
+     * board's assetlinks.json lists.
+     */
     protected function isAllowedOrigin(string $origin): bool
     {
-        if (str_starts_with($origin, 'android:apk-key-hash:')) {
+        if (strpos($origin, 'android:apk-key-hash:') === 0) {
             $hash = substr($origin, strlen('android:apk-key-hash:'));
             if ($hash === '') {
                 return false;
@@ -281,16 +441,22 @@ class PasskeyChallengeService
             return false;
         }
 
-        if ($this->getRpId() !== 'localhost' && parse_url($origin, PHP_URL_SCHEME) !== 'https') {
-            return false;
+        $boardOrigin = $this->getBoardOrigin();
+        if ($boardOrigin !== '' && strtolower(rtrim($origin, '/')) === strtolower($boardOrigin)) {
+            return true;
         }
 
-        $host = parse_url($origin, PHP_URL_HOST);
-        if (!is_string($host) || $host === '') {
-            return false;
+        $this->logPasskeyDebug('Origin rejected: "' . $origin . '" is not the board\'s origin "' . $boardOrigin . '"');
+        return false;
+    }
+
+    protected function getBoardOrigin(): string
+    {
+        $parts = parse_url((string)$this->app->options()->boardUrl);
+        if (!$parts || empty($parts['scheme']) || empty($parts['host'])) {
+            return '';
         }
-        $host = trim($host, '.');
-        return preg_match('/' . preg_quote($this->getRpId(), '/') . '$/i', $host) === 1;
+        return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '');
     }
 
     protected function verifySignature(string $dataToVerify, string $signature, string $credentialPublicKey): bool
@@ -322,32 +488,72 @@ class PasskeyChallengeService
         return (string)parse_url($options->boardUrl, PHP_URL_HOST);
     }
 
+    /**
+     * A passkey diagnostic line: in the server error log only while the
+     * add-on's diagnostic logging (fc_debug_logging) is on.
+     */
     protected function logPasskeyDebug(string $message): void
     {
-        $logFile = \XF::getRootDirectory() . '/internal_data/forumcopilot_passkey.log';
-        @file_put_contents($logFile, '[' . date('c') . '] ' . $message . PHP_EOL, FILE_APPEND);
+        \ForumCopilot\Util\Log::debug('Forum Copilot passkey: ' . $message);
     }
 
     /**
-     * Read Android signing certificate fingerprints from /.well-known/assetlinks.json
-     * via the forum's public URL (same resource the app and Android use).
+     * The signing certificate hashes of the Android apps the board's
+     * /.well-known/assetlinks.json lists (every android_app target: the
+     * forum lists the apps it lets sign in with its passkeys, the Forum
+     * Copilot app and its own). Kept for an hour (a failed read for five
+     * minutes), so a sign-in does not wait for the fetch each time.
      *
      * @return string[] base64url-encoded SHA-256 hashes (without padding)
      */
     protected function getAndroidKeyHashesFromAssetLinks(): array
     {
+        if ($this->androidKeyHashes !== null) {
+            return $this->androidKeyHashes;
+        }
+
+        $simpleCache = $this->app->simpleCache();
+        $cached = $simpleCache->getValue('ForumCopilot', self::SIMPLE_CACHE_KEY);
+        if (is_array($cached) && isset($cached['hashes'], $cached['until'])
+            && is_array($cached['hashes']) && $cached['until'] > \XF::$time
+        ) {
+            return $this->androidKeyHashes = $cached['hashes'];
+        }
+
+        $hashes = $this->fetchAndroidKeyHashesFromAssetLinks();
+        $this->androidKeyHashes = $hashes ?? [];
+        try {
+            $simpleCache->setValue('ForumCopilot', self::SIMPLE_CACHE_KEY, [
+                'hashes' => $this->androidKeyHashes,
+                'until' => \XF::$time + ($hashes ? self::ASSET_LINKS_TTL : self::ASSET_LINKS_FAILURE_TTL),
+            ]);
+        } catch (\Exception $e) {
+            // Only a cache; the hashes are read again next time.
+        }
+
+        return $this->androidKeyHashes;
+    }
+
+    /**
+     * Reads the hashes from the forum's public URL (the same resource
+     * Android itself checks). Null when it could not be read.
+     *
+     * @return string[]|null
+     */
+    protected function fetchAndroidKeyHashesFromAssetLinks(): ?array
+    {
         $boardUrl = (string)\XF::options()->boardUrl;
         $scheme = parse_url($boardUrl, PHP_URL_SCHEME);
         $host = parse_url($boardUrl, PHP_URL_HOST);
         if (!is_string($scheme) || $scheme === '' || !is_string($host) || $host === '') {
-            return [];
+            return null;
         }
         $url = $scheme . '://' . $host . '/.well-known/assetlinks.json';
 
         $ch = curl_init($url);
         if ($ch === false) {
-            $this->logPasskeyDebug('assetlinks.json: curl_init failed');
-            return [];
+            \XF::logError('Forum Copilot passkey: assetlinks.json: curl_init failed');
+            return null;
         }
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
@@ -361,15 +567,17 @@ class PasskeyChallengeService
         curl_close($ch);
 
         if ($curlError !== '' || $httpCode !== 200 || !is_string($json) || $json === '') {
-            $this->logPasskeyDebug(
-                'assetlinks.json fetch failed: url=' . $url . ' http=' . $httpCode . ($curlError !== '' ? ' curl=' . $curlError : '')
+            // Native Android passkeys cannot work until this is fixed.
+            \XF::logError(
+                'Forum Copilot passkey: could not read ' . $url . ' (HTTP ' . $httpCode
+                . ($curlError !== '' ? ', ' . $curlError : '') . '); Android app passkey sign-in needs it'
             );
-            return [];
+            return null;
         }
 
         $statements = json_decode($json, true);
         if (!is_array($statements)) {
-            return [];
+            return null;
         }
 
         $hashes = [];
@@ -384,10 +592,6 @@ class PasskeyChallengeService
             }
 
             if (($target['namespace'] ?? '') !== 'android_app') {
-                continue;
-            }
-
-            if (($target['package_name'] ?? '') !== self::APP_PACKAGE_NAME) {
                 continue;
             }
 

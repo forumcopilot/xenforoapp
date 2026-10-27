@@ -69,7 +69,7 @@ class SubscriptionController extends AbstractController
                     'threadCount' => $hasViewOthers ? $forum->discussion_count : 0,
                     'postCount' => $hasViewOthers ? $forum->message_count : 0,
                     'canPost' => $forum->canCreateThread(),
-                    'canViewContent' => $forum->canViewThreadContent(),
+                    'canViewContent' => $visitor->hasNodePermission($forum->node_id, 'viewContent'),
                     'isRead' => !$forum->isUnread(),
                     'url' => $this->buildLink('canonical:forums', $forum),
                     'subscribeMode' => $watchStatus['sendEmail'] ? 1 : 0,

@@ -140,7 +140,7 @@ class TopicController extends AbstractController
             }
 
             $result = $this->newForumTopicDataResult($forum, $fcParams->forumId, (int)$total, $topicList);
-            $result->extra = $this->getForumListDetails($forum, $filters, $fcParams, $dateLimitDays);
+            $result->extra = array_merge($result->extra, $this->getForumListDetails($forum, $filters, $fcParams, $dateLimitDays));
             return $this->apiSuccess($result);
 
         } catch (\Throwable $e) {
@@ -376,7 +376,7 @@ class TopicController extends AbstractController
 
         $prefixes = $this->getUsablePrefixList($forum);
 
-        return new FCTopicDataResult(
+        $result = new FCTopicDataResult(
             $success,
             $resultText,
             $total,
@@ -392,6 +392,16 @@ class TopicController extends AbstractController
             $prefixes,
             $topics
         );
+
+        // The watch's options (1.11.0), as getForum has them
+        $result->extra = [
+            'notifyOn' => $forumWatchStatus['notifyOn'],
+            'sendAlert' => $forumWatchStatus['sendAlert'],
+            'sendEmail' => $forumWatchStatus['sendEmail'],
+            'allowedWatchNotifications' => $forumWatchStatus['allowedWatchNotifications'],
+        ];
+
+        return $result;
     }
 
     /**

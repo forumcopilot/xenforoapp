@@ -376,15 +376,52 @@ class AccountController extends AbstractController
 
     /**
      * Gives this device a two-step trust cookie (tfa_trust), as "Trust this
-     * device" does on the website, for good: the app holds no code to answer
-     * two-step with when XenForo next signs its session in from the remember
-     * cookie (XF\Pub\App::loginFromRememberCookie).
+     * device" does on the website (LoginPlugin::setDeviceTrusted): the app
+     * holds no code to answer two-step with when XenForo next signs its
+     * session in from the remember cookie (XF\Pub\App::loginFromRememberCookie).
+     *
+     * For fc_app_tfa_trust_days days (default 365, the remember cookie's
+     * lifetime; XenForo's website uses 45). After that the app's member
+     * passes two-step again when they next sign in. Signing out of the app
+     * ends the trust (untrustThisDevice).
      */
     protected function trustThisDevice(\XF\Entity\User $user): void
     {
-        $trustedUntil = 4102444800; // 2100-01-01, so in effect for good
-        $key = $this->getUserTfaTrustedRepository()->createTrustedKey($user->user_id, $trustedUntil);
-        $this->app->response()->setCookie('tfa_trust', $key, $trustedUntil - \XF::$time, null, true);
+        $days = (int)(\XF::options()->fc_app_tfa_trust_days ?? 365);
+        if ($days < 1 || $days > 3650) {
+            $days = 365;
+        }
+        $lifetime = $days * 86400;
+
+        // The entity directly rather than createTrustedKey($userId, $until),
+        // whose second argument needs a 2.2 check.
+        $trusted = $this->em()->create('XF:UserTfaTrusted');
+        $trusted->user_id = $user->user_id;
+        $trusted->trusted_until = \XF::$time + $lifetime;
+        $trusted->save();
+
+        $this->app->response()->setCookie('tfa_trust', $trusted->trusted_key, $lifetime, null, true);
+    }
+
+    /**
+     * Ends this device's two-step trust (the one trustThisDevice gave the
+     * app), when the member signs the app out or deletes their account.
+     * The website keeps its trust on sign-out; the app's sign-out is meant
+     * to leave nothing behind on the phone.
+     */
+    protected function untrustThisDevice(int $userId): void
+    {
+        $trustKey = $this->request->getCookie('tfa_trust');
+        if ($userId && is_string($trustKey) && $trustKey !== '') {
+            $this->app()->db()->delete(
+                'xf_user_tfa_trusted',
+                'user_id = ? AND trusted_key = ?',
+                [$userId, $trustKey]
+            );
+        }
+        if ($trustKey !== null && $trustKey !== false) {
+            $this->app->response()->setCookie('tfa_trust', false);
+        }
     }
 
     /**

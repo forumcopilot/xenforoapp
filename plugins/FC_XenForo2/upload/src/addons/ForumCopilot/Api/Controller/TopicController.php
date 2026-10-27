@@ -54,13 +54,13 @@ class TopicController extends AbstractController
                 ['allowOwnPending' => $this->hasContentPendingApproval()]
             );
             
+            // Everything the rows read, loaded with the threads
+            $this->addTopicListWith($threadList);
+
             // Apply forum type handler adjustments (matches XenForo web implementation)
             $forumTypeHandler = $forum->TypeHandler;
-            $perPage = $fcParams->lastNum - $fcParams->startNum + 1;
-            $page = floor($fcParams->startNum / $perPage) + 1;
-            if ($page < 1) {
-                $page = 1;
-            }
+            [$offset, $perPage] = $this->getTopicListWindow($fcParams->startNum, $fcParams->lastNum);
+            $page = (int)floor($offset / $perPage) + 1;
             $forumTypeHandler->adjustForumThreadListFinder($forum, $threadList, $page, $this->request);
             
             // Apply date limit filters (matches XenForo web/API implementation)
@@ -74,11 +74,9 @@ class TopicController extends AbstractController
             // Order by last post date to show most recent activity first
             $threadList->order('last_post_date', 'DESC');
             
-            // Apply pagination using limitByPage() (matches XenForo web/API implementation)
-            $threadList->limitByPage($page, $perPage);
-            
-            $threads = $threadList->fetch();
+            // Rows startNum..lastNum, at most 100
             $total = $threadList->total();
+            $threads = $threadList->limit($perPage, $offset)->fetch();
 
             $topicList = [];
             foreach ($threads as $thread) {
@@ -227,22 +225,21 @@ class TopicController extends AbstractController
                 ['allowOwnPending' => $this->hasContentPendingApproval()]
             );
 
+            // Everything the rows read, loaded with the threads
+            $this->addTopicListWith($threadList);
+
             // Apply forum type handler adjustments (matches XenForo web implementation)
             $forumTypeHandler = $forum->TypeHandler;
-            $perPage = $fcParams->lastNum - $fcParams->startNum + 1;
-            $page = floor($fcParams->startNum / $perPage) + 1;
-            if ($page < 1) {
-                $page = 1;
-            }
+            [$offset, $perPage] = $this->getTopicListWindow($fcParams->startNum, $fcParams->lastNum);
+            $page = (int)floor($offset / $perPage) + 1;
             $forumTypeHandler->adjustForumThreadListFinder($forum, $threadList, $page, $this->request);
 
             // Sticky topics only (web clones thread list and filters sticky=1; we do not apply date limit to sticky list per web)
             $threadList->where('sticky', 1);
             $threadList->order('last_post_date', 'DESC');
-            $threadList->limitByPage($page, $perPage);
 
-            $threads = $threadList->fetch();
             $total = $threadList->total();
+            $threads = $threadList->limit($perPage, $offset)->fetch();
 
             $topicList = [];
             foreach ($threads as $thread) {
@@ -516,14 +513,22 @@ class TopicController extends AbstractController
         if (empty($threadIds)) {
             return $this->apiSuccess(new FCTopicByIdsResult(true, null, []));
         }
+        if (count($threadIds) > self::TOPIC_LIST_MAX_ROWS) {
+            return $this->apiError(
+                'Invalid parameters: at most ' . self::TOPIC_LIST_MAX_ROWS . ' topicIds',
+                null,
+                ErrorCode::BAD_REQUEST
+            );
+        }
 
         try {
             $visitor = \XF::visitor();
 
+            // canView below decides, as on the thread page: soft-deleted
+            // threads show to moderators who may see them
             $finder = $this->finder('XF:Thread');
             $finder->where('thread_id', $threadIds);
-            $finder->where('discussion_state', '<>', 'deleted');
-            $finder->with(['Forum', 'Forum.Node', 'User']);
+            $this->addTopicListWith($finder, false);
 
             $threads = $finder->fetch();
 
@@ -717,6 +722,13 @@ class TopicController extends AbstractController
 
         if (empty($topicIds) || !is_array($topicIds)) {
             return $this->apiError('Topic IDs array is required', null, ErrorCode::BAD_REQUEST);
+        }
+        if (count($topicIds) > self::TOPIC_LIST_MAX_ROWS) {
+            return $this->apiError(
+                'Invalid parameters: at most ' . self::TOPIC_LIST_MAX_ROWS . ' topicIds',
+                null,
+                ErrorCode::BAD_REQUEST
+            );
         }
 
         try {

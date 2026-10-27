@@ -53,6 +53,34 @@ class FCTopic
     public $likeCount;
     public $hasPoll;
 
+    /**
+     * Fields added in 1.11.0, sent only when set (so rows built elsewhere,
+     * such as search results, keep their shape). Topic lists set them all.
+     */
+    const OPTIONAL_FIELDS = [
+        // Who started the thread and when (ms); author* may describe the last post
+        'starterId', 'starterName', 'startDate',
+        // The last post's author and date (ms)
+        'lastPosterId', 'lastPosterName', 'lastPosterIconUrl', 'lastPostedAt',
+        // XenForo thread type: discussion, question, poll, article, suggestion, redirect...
+        'threadType',
+        // Question threads: the accepted answer (0 = none)
+        'isSolved', 'solutionPostId',
+        // Suggestion threads (vote_score / vote_count; XenForo 2.2+)
+        'voteScore', 'voteCount', 'canVote', 'userVoted',
+        // Tag names
+        'tags',
+        // Moved threads: where the redirect points
+        'redirectUrl',
+        // Started by a member the visitor ignores
+        'isIgnored',
+        // The visitor's thread watch sends emails
+        'emailSubscribe',
+    ];
+
+    /** @var array Values of OPTIONAL_FIELDS that are set */
+    public $optional = [];
+
     public function __construct($data = [])
     {
         $this->id = $data['id'] ?? '';
@@ -99,6 +127,12 @@ class FCTopic
         $this->isLiked = $data['isLiked'] ?? false;
         $this->likeCount = $data['likeCount'] ?? 0;
         $this->hasPoll = $data['hasPoll'] ?? false;
+
+        foreach (self::OPTIONAL_FIELDS as $field) {
+            if (isset($data[$field])) {
+                $this->optional[$field] = $data[$field];
+            }
+        }
     }
 
     public function toArray()
@@ -148,6 +182,6 @@ class FCTopic
             'isLiked' => $this->isLiked,
             'likeCount' => $this->likeCount,
             'hasPoll' => $this->hasPoll,
-        ];
+        ] + $this->optional;
     }
 }

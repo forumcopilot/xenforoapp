@@ -594,28 +594,6 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Convert XenForo forum to FC format
-     */
-    protected function xenforoToFcForum(\XF\Entity\Forum $forum)
-    {
-        $visitor = \XF::visitor();
-
-        return [
-            'id' => (string)$forum->node_id,
-            'name' => $forum->Node->title ?: $forum->title,
-            'description' => $forum->description ?: $forum->Node->description,
-            'parent_id' => $forum->Node->parent_node_id ? (string)$forum->Node->parent_node_id : '',
-            'display_order' => $forum->Node->display_order,
-            'thread_count' => $forum->discussion_count,
-            'post_count' => $forum->message_count,
-            'can_post' => $forum->canCreateThread(),
-            'can_reply' => $forum->canCreateThread(),
-            'is_read' => $visitor->user_id ? !$forum->isUnread() : true,
-            'url' => $this->buildLink('canonical:forums', $forum),
-        ];
-    }
-    
-    /**
      * Convert relative URL to absolute URL
      * @param string $relativeUrl The relative URL (e.g., /xf2/data/avatars/s/0/1.jpg)
      * @return string The absolute URL
@@ -696,12 +674,13 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Get thread watch status using ThreadWatch repository
-     * This avoids entity relationship issues by using the repository directly
-     * 
+     * The visitor's watch on a thread. Reads the thread's Watch relation, so
+     * lists that load threads with Watch|<user id> (addTopicListWith) need
+     * no query per row.
+     *
      * @param \XF\Entity\Thread $thread The thread entity
      * @param \XF\Entity\User|null $visitor The visitor (defaults to current visitor)
-     * @return array Array with 'canWatch' and 'isWatched' boolean values
+     * @return array canWatch, isWatched, emailSubscribe (1.11.0)
      */
     protected function getThreadWatchStatus($thread, $visitor = null)
     {
@@ -711,20 +690,16 @@ abstract class AbstractController extends Controller
 
         // If guest user, cannot watch and not watched
         if (!$visitor->user_id) {
-            return ['canWatch' => false, 'isWatched' => false];
+            return ['canWatch' => false, 'isWatched' => false, 'emailSubscribe' => false];
         }
 
-        // Use Thread entity's canWatch method (this should work as it checks permissions)
-        $canWatch = $thread->canWatch();
+        $watch = $thread->Watch[$visitor->user_id];
 
-        // Check if thread is watched by finding the ThreadWatch entity
-        $threadWatch = $this->em()->find('XF:ThreadWatch', [
-            'thread_id' => $thread->thread_id,
-            'user_id' => $visitor->user_id
-        ]);
-        $isWatched = ($threadWatch !== null);
-
-        return ['canWatch' => $canWatch, 'isWatched' => $isWatched];
+        return [
+            'canWatch' => (bool)$thread->canWatch(),
+            'isWatched' => (bool)$watch,
+            'emailSubscribe' => $watch ? (bool)$watch->email_subscribe : false,
+        ];
     }
 
     /**
@@ -1073,12 +1048,19 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Setup base finder for topic listing queries
-     * Matches "What's New" page behavior from findThreadsWithLatestPosts()
-     * 
+     * Thread finder for the What's New style lists (getLatestTopic,
+     * getUnreadTopic, getParticipatedTopic), as XenForo's FindNew thread
+     * handler builds it, with the relations every row needs
+     * (addTopicListWith).
+     *
      * @param array $options Optional options:
-     *   - 'requireFindNew' (bool): If true, only show threads from forums enabled for "What's New" (default: true)
-     *   - 'skipIgnored' (bool): If true, filter out ignored threads (default: true)
+     *   - 'requireFindNew' (bool): only forums shown in What's New (default: true)
+     *   - 'skipIgnored' (bool): leave out threads started by ignored members (default: true)
+     *   - 'restrictViewable' (bool): only threads the visitor may read, decided in the
+     *     query (getReadableForumIds), so pages are full and totals match (default: false)
+     *   - 'includeModerated' (bool): also threads awaiting approval that the visitor may
+     *     see, as What's New lists them for moderators and their authors (default: false)
+     *   - 'useLastPost' (bool): rows describe the last post (default: true)
      * @return \XF\Finder\Thread
      */
     protected function setupTopicListFinder(array $options = [])
@@ -1088,11 +1070,10 @@ abstract class AbstractController extends Controller
         $requireFindNew = $options['requireFindNew'] ?? true;
         $skipIgnored = $options['skipIgnored'] ?? true;
         $restrictViewable = $options['restrictViewable'] ?? false;
+        $includeModerated = $options['includeModerated'] ?? false;
 
         $finder = $this->finder('XF:Thread');
-        // Eager-load Poll so we can set hasPoll on FCTopic for thread list and thread view.
-        $finder->with(['Forum', 'Forum.Node', 'Poll']);
-        $finder->where('discussion_state', 'visible');
+        $this->addTopicListWith($finder, $options['useLastPost'] ?? true);
 
         if ($requireFindNew) {
             $finder->where('Forum.find_new', true);
@@ -1102,9 +1083,31 @@ abstract class AbstractController extends Controller
         $finder->order('last_post_date', 'DESC');
         $finder->indexHint('FORCE', 'last_post_date');
 
-        if ($restrictViewable) {
-            $forums = $this->repository('XF:Forum')->getViewableForums();
-            $finder->where('node_id', $forums->keys());
+        $forums = $restrictViewable ? $this->getReadableForumIds($requireFindNew) : null;
+
+        if ($includeModerated) {
+            // ThreadHandler (What's New) takes every state but deleted, then canView
+            $states = [['discussion_state', 'visible']];
+            if ($forums === null) {
+                $states[] = ['discussion_state', 'moderated'];
+            } elseif ($forums['moderated']) {
+                $states[] = [['discussion_state', 'moderated'], ['node_id', $forums['moderated']]];
+            }
+            if ($visitor->user_id) {
+                $states[] = [['discussion_state', 'moderated'], ['user_id', $visitor->user_id]];
+            }
+            $finder->whereOr($states);
+        } else {
+            $finder->where('discussion_state', 'visible');
+        }
+
+        if ($forums !== null) {
+            $readable = [['node_id', $forums['full']]];
+            if ($forums['own']) {
+                // "View threads by others" off: only the member's own threads
+                $readable[] = [['node_id', $forums['own']], ['user_id', $visitor->user_id]];
+            }
+            $finder->whereOr($readable);
         }
 
         if ($skipIgnored && $visitor->user_id) {
@@ -1115,29 +1118,49 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Apply filters to thread finder (similar to ThreadHandler::applyFilters)
-     * 
+     * Apply filters to thread finder (as XenForo's FindNew ThreadHandler
+     * applyFilters does)
+     *
      * @param \XF\Finder\Thread $threadFinder
-     * @param array $filters Filter options:
+     * @param array $filters Filter names, as a list (["unread", "watched"]) or a
+     *   map ({"unread": true}):
      *   - 'unread' (bool): Show only unread threads (applies date cutoff automatically)
-     *   - 'watched' (bool): Show only watched/subscribed threads
+     *   - 'watched' (bool): Show only watched threads, or threads in watched forums
      *   - 'participated' (bool): Show threads where user has posted
      *   - 'started' (bool): Show threads started by user
      *   - 'unanswered' (bool): Show threads with no replies
+     *   unread, watched, participated and started need a member: XenForo
+     *   ignores them for guests.
      * @param \XF\Entity\User|null $user User to apply filters for (default: visitor)
+     * @param array $options 'noCutoff' (bool): no "recent activity" date limit,
+     *   for lists that are not What's New (default: false)
      */
-    protected function applyTopicFilters(\XF\Finder\Thread $threadFinder, array $filters, $user = null)
+    protected function applyTopicFilters(\XF\Finder\Thread $threadFinder, array $filters, $user = null, array $options = [])
     {
         if (!$user) {
             $user = \XF::visitor();
+        }
+
+        // The SDK sends a list of names; older callers a map of name => bool
+        $normalized = [];
+        foreach ($filters as $key => $value) {
+            if (is_int($key) && is_string($value)) {
+                $normalized[$value] = true;
+            } elseif (is_string($key)) {
+                $normalized[$key] = !empty($value) && $value !== 'false';
+            }
+        }
+        $filters = $normalized;
+
+        if (!$user->user_id) {
+            unset($filters['unread'], $filters['watched'], $filters['participated'], $filters['started']);
         }
         
         // If unread filter is set, use unreadOnly (which already applies date cutoff)
         if (!empty($filters['unread'])) {
             $threadFinder->unreadOnly($user->user_id);
-        } else {
+        } elseif (empty($options['noCutoff'])) {
             // Apply date cutoff for recent posts (matches web behavior)
-            // Only apply if unread filter is not set (unreadOnly already handles it)
             $readMarkingCutOff = \XF::$time - (\XF::options()->readMarkingDataLifetime * 86400);
             $threadFinder->where('last_post_date', '>', $readMarkingCutOff);
         }
@@ -1165,12 +1188,16 @@ abstract class AbstractController extends Controller
 
     /**
      * Convert thread entity to FCTopic entity
-     * Centralized conversion logic used across all topic listing methods
-     * 
+     * Centralized conversion logic used across all topic listing methods.
+     * Load threads with addTopicListWith() first: every value here then
+     * comes from the loaded rows, with no query per thread.
+     *
      * @param \XF\Entity\Thread $thread
      * @param \XF\Entity\User|null $visitor Visitor user (default: current visitor)
      * @param array $options Optional options:
-     *   - 'useLastPost' (bool): If true, use last post for preview/author info (default: false)
+     *   - 'useLastPost' (bool): author fields, timestamp and preview describe the
+     *     last post (default: false: the thread starter and first post).
+     *     starter* and lastPoster* fields always say which is which.
      * @return FCTopic
      */
     protected function convertThreadToFCTopic(\XF\Entity\Thread $thread, $visitor = null, array $options = [])
@@ -1191,83 +1218,47 @@ abstract class AbstractController extends Controller
             // If add-on conflict occurs, skip this relation
         }
         
-        // Get like count from first post
+        // Reactions on the first post, from the thread's copy of them
+        // (first_post_reactions, XenForo 2.1+): no need to load the post
         $likeCount = 0;
-        try {
-            if ($thread->first_post_id) {
-                $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                if ($firstPost) {
-                    $likeCount = $this->getReactionCount($firstPost);
-                }
-            }
-        } catch (\Exception $e) {
-            // If reaction score access fails, leave as 0
+        if ($thread->isValidColumn('first_post_reactions') && is_array($thread->first_post_reactions)) {
+            $likeCount = (int)array_sum($thread->first_post_reactions);
+        } elseif ($thread->isValidColumn('first_post_reaction_score')) {
+            $likeCount = max(0, (int)$thread->first_post_reaction_score);
         }
-        
-        // Get short content and author info
-        $shortContent = '';
-        $authorName = 'Unknown';
-        $authorId = (string)$thread->user_id;
-        $authorUserType = '0';
-        $authorIconUrl = '';
+
+        // Who started the thread; thread.username keeps the name of a deleted member
+        $starter = $thread->User;
+        $starterName = $starter ? $starter->username : (string)$thread->username;
+        $starterIconUrl = $starter ? $this->getAbsoluteUrl($starter->getAvatarUrl('s')) : '';
+
+        // Who posted last (the starter when there are no replies)
+        $lastPoster = $thread->last_post_user_id ? $thread->LastPoster : null;
+        $lastPosterName = $lastPoster ? $lastPoster->username : (string)$thread->last_post_username;
+        $lastPosterIconUrl = $lastPoster ? $this->getAbsoluteUrl($lastPoster->getAvatarUrl('s')) : '';
+
         // Use last_post_date for timestamp to match ordering by last_post_date DESC in topic listings
         $timestamp = $thread->last_post_date * 1000;
-        
+        $shortContent = '';
         try {
-            if ($useLastPost && $thread->last_post_id) {
-                // Use last post for preview (matches getSubscribedTopic behavior)
-                $lastPost = $this->em()->find('XF:Post', $thread->last_post_id);
-                if ($lastPost) {
-                    if ($lastPost->message) {
-                        $shortContent = $this->getShortContent($lastPost->message);
-                    }
-                    
-                    if ($lastPost->User) {
-                        $authorName = $lastPost->User->username;
-                        $authorId = (string)$lastPost->user_id;
-                        $authorUserType = (string)$lastPost->User->user_group_id;
-                        $authorIconUrl = $this->getAbsoluteUrl($lastPost->User->getAvatarUrl('s'));
-                    } else {
-                        $authorName = $thread->last_post_username ?: 'Unknown';
-                        $authorId = (string)$thread->last_post_user_id;
-                    }
-                    $timestamp = $lastPost->post_date * 1000;
-                }
+            if ($useLastPost) {
+                $authorName = $lastPosterName ?: 'Unknown';
+                $authorId = (string)$thread->last_post_user_id;
+                $authorUserType = $lastPoster ? (string)$lastPoster->user_group_id : '0';
+                $authorIconUrl = $lastPosterIconUrl;
+                $post = $thread->last_post_id ? $thread->LastPost : null;
             } else {
-                // Use first post for preview (default behavior)
-                if ($thread->first_post_id) {
-                    $firstPost = $this->em()->find('XF:Post', $thread->first_post_id);
-                    if ($firstPost && $firstPost->message) {
-                        $message = is_array($firstPost->message) ? '' : (string)$firstPost->message;
-                        $message = strip_tags($message);
-                        $shortContent = mb_substr($message, 0, 200);
-                        if (mb_strlen($message) > 200) {
-                            $shortContent .= '...';
-                        }
-                    }
-                }
-                
-                // Get author info from thread creator
-                if ($thread->User) {
-                    $authorName = $thread->User->username;
-                    $authorId = (string)$thread->user_id;
-                    $authorUserType = (string)$thread->User->user_group_id;
-                    $authorIconUrl = $this->getAbsoluteUrl($thread->User->getAvatarUrl('s'));
-                }
-                // timestamp already set to last_post_date above to match ordering
+                $authorName = $starterName ?: 'Unknown';
+                $authorId = (string)$thread->user_id;
+                $authorUserType = $starter ? (string)$starter->user_group_id : '0';
+                $authorIconUrl = $starterIconUrl;
+                $post = $thread->first_post_id ? $thread->FirstPost : null;
+            }
+            if ($post && $post->message) {
+                $shortContent = $this->getShortContent($post->message);
             }
         } catch (\Exception $e) {
-            // If preview generation fails, use thread creator info as fallback
-            try {
-                if ($thread->User) {
-                    $authorName = $thread->User->username;
-                    $authorId = (string)$thread->user_id;
-                    $authorUserType = (string)$thread->User->user_group_id;
-                    $authorIconUrl = $this->getAbsoluteUrl($thread->User->getAvatarUrl('s'));
-                }
-            } catch (\Exception $e2) {
-                // If add-on conflict occurs, use defaults
-            }
+            // If add-on conflict occurs, leave the preview empty
         }
         
         // For listing, use defaults for permissions that may not exist in XFMG entities
@@ -1286,17 +1277,41 @@ abstract class AbstractController extends Controller
         // Note: If thread appears in list, canView() already passed (which includes viewContent check)
         // This flag explicitly indicates the viewContent permission for the client
         $canViewContent = $visitor->hasNodePermission($thread->node_id, 'viewContent');
-        // Determine if thread has a poll: discussion_type is 'poll' or Poll relation is present.
-        $hasPoll = ($thread->discussion_type === 'poll');
-        if (!$hasPoll) {
+
+        // Thread types (XenForo 2.2+): a thread with a poll is a "poll" thread
+        $threadType = (string)$thread->discussion_type;
+        $hasPoll = ($threadType === 'poll');
+
+        // Moved threads leave a "redirect" thread behind pointing at the new place
+        $isMoved = ($threadType === 'redirect');
+        $realTopicId = null;
+        $redirectUrl = null;
+        if ($isMoved) {
             try {
-                $hasPoll = (bool)$thread->Poll;
+                $redirect = $thread->Redirect;
+                if ($redirect) {
+                    $redirectUrl = (string)$redirect->target_url;
+                    $threadRepo = $this->repository('XF:Thread');
+                    $target = method_exists($threadRepo, 'getThreadFromUrl')
+                        ? $threadRepo->getThreadFromUrl($redirectUrl, 'public')
+                        : null;
+                    if ($target) {
+                        $realTopicId = (string)$target->thread_id;
+                    }
+                }
             } catch (\Exception $e) {
-                $hasPoll = false;
+                // An external or broken link: no thread to point to
             }
         }
 
-        return new FCTopic([
+        // Question threads: the accepted answer is kept in type_data
+        $solutionPostId = 0;
+        if ($threadType === 'question' && $thread->isValidColumn('type_data')) {
+            $typeData = $thread->type_data;
+            $solutionPostId = (int)($typeData['solution_post_id'] ?? 0);
+        }
+
+        $row = [
             'id' => (string)$thread->thread_id,
             'title' => $thread->title,
             'forumId' => (string)$thread->node_id,
@@ -1336,14 +1351,42 @@ abstract class AbstractController extends Controller
             'isApproved' => $thread->discussion_state === 'visible',
             // Soft-deleted threads, which getTopic lists for moderators who may see them
             'isDeleted' => $thread->discussion_state === 'deleted',
-            'isMoved' => false,
+            'isMoved' => $isMoved,
             'isMerged' => false,
-            'realTopicId' => null,
+            'realTopicId' => $realTopicId,
             'canLike' => $canLike,
             'isLiked' => $isLiked,
             'likeCount' => $likeCount,
             'hasPoll' => $hasPoll,
-        ]);
+
+            // 1.11.0 (FCTopic::OPTIONAL_FIELDS)
+            'starterId' => (string)$thread->user_id,
+            'starterName' => $starterName,
+            'startDate' => $thread->post_date * 1000,
+            'lastPosterId' => (string)$thread->last_post_user_id,
+            'lastPosterName' => $lastPosterName,
+            'lastPosterIconUrl' => $lastPosterIconUrl,
+            'lastPostedAt' => $thread->last_post_date * 1000,
+            'threadType' => $threadType,
+            'isSolved' => $solutionPostId > 0,
+            'solutionPostId' => $solutionPostId,
+            'tags' => $this->getThreadTagNames($thread),
+            'redirectUrl' => $redirectUrl,
+            'isIgnored' => $thread->isIgnored(),
+            'emailSubscribe' => $threadWatchStatus['emailSubscribe'],
+        ];
+
+        // Suggestion votes: columns of XenForo 2.2+
+        if ($thread->isValidColumn('vote_score')) {
+            $row['voteScore'] = (int)$thread->vote_score;
+            $row['voteCount'] = (int)$thread->vote_count;
+            if ($threadType === 'suggestion' && method_exists($thread, 'canVoteOnContent')) {
+                $row['canVote'] = $thread->canVoteOnContent();
+                $row['userVoted'] = $thread->getVisitorContentVote() !== null;
+            }
+        }
+
+        return new FCTopic($row);
     }
 
     /**
@@ -1400,7 +1443,8 @@ abstract class AbstractController extends Controller
 
     /**
      * Build topic list from threads with pagination
-     * Common logic for fetching, converting, and filtering threads
+     * Common logic for fetching, converting, and filtering threads.
+     * Rows startNum..lastNum (at most TOPIC_LIST_MAX_ROWS of them).
      * 
      * @param \XF\Finder\Thread $finder
      * @param int $startNum Starting position (0-indexed)
@@ -1412,15 +1456,10 @@ abstract class AbstractController extends Controller
     {
         $visitor = \XF::visitor();
 
-        $perPage = $lastNum - $startNum + 1;
-        $page = floor($startNum / $perPage) + 1;
-        if ($page < 1) {
-            $page = 1;
-        }
-        $finder->limitByPage($page, $perPage);
+        [$offset, $perPage] = $this->getTopicListWindow($startNum, $lastNum);
 
-        $threads = $finder->fetch();
         $total = $finder->total();
+        $threads = $finder->limit($perPage, $offset)->fetch();
         
         $topicList = [];
         foreach ($threads as $thread) {
@@ -1782,6 +1821,114 @@ abstract class AbstractController extends Controller
         }
 
         return null;
+    }
+
+    // Topic lists (topics, forums, subscriptions)
+
+    /** Most rows one topic list call returns (the app asks for 20 or 21) */
+    const TOPIC_LIST_MAX_ROWS = 100;
+
+    /**
+     * Offset and row count for the startNum..lastNum window of a topic list,
+     * capped at TOPIC_LIST_MAX_ROWS rows. Rows are counted from startNum
+     * itself, so a window that doesn't start on a page boundary still gets
+     * the rows it asked for.
+     *
+     * @return int[] [offset, rows]
+     */
+    protected function getTopicListWindow($startNum, $lastNum): array
+    {
+        $offset = max(0, (int)$startNum);
+        $rows = (int)$lastNum - $offset + 1;
+
+        return [$offset, max(1, min(self::TOPIC_LIST_MAX_ROWS, $rows))];
+    }
+
+    /**
+     * Eager-loads what convertThreadToFCTopic and the thread permission
+     * checks read, so a topic list costs a fixed number of queries whatever
+     * its length (as XenForo's own lists load "fullForum" and node
+     * permissions).
+     *
+     * @param \XF\Finder\Thread $finder
+     * @param bool $useLastPost Load the last post (the preview of most lists)
+     *                          or the first post
+     * @return \XF\Finder\Thread
+     */
+    protected function addTopicListWith($finder, bool $useLastPost = true)
+    {
+        $visitor = \XF::visitor();
+
+        $with = [
+            'Forum',
+            'Forum.Node',
+            'Forum.Node.Permissions|' . $visitor->permission_combination_id,
+            'User',
+            'LastPoster',
+            'Prefix',
+            $useLastPost ? 'LastPost' : 'FirstPost',
+        ];
+        if ($userId = $visitor->user_id) {
+            $with[] = 'Read|' . $userId;
+            $with[] = 'Forum.Read|' . $userId;
+            $with[] = 'Watch|' . $userId;
+            $with[] = 'ReplyBans|' . $userId;
+        }
+
+        return $finder->with($with);
+    }
+
+    /**
+     * The forums whose threads the visitor may read, split the way
+     * Thread::canView decides:
+     *   - full: others' threads and their content;
+     *   - own: content, but only of the member's own threads ("View threads
+     *     by others" off; never for guests);
+     *   - moderated: full forums where threads awaiting approval show too.
+     *
+     * @param bool $findNewOnly Only forums shown in What's New
+     * @return array ['full' => int[], 'own' => int[], 'moderated' => int[]]
+     */
+    protected function getReadableForumIds(bool $findNewOnly = false): array
+    {
+        $visitor = \XF::visitor();
+        $ids = ['full' => [], 'own' => [], 'moderated' => []];
+
+        foreach ($this->repository('XF:Forum')->getViewableForums() as $nodeId => $forum) {
+            if ($findNewOnly && !$forum->find_new) {
+                continue;
+            }
+            if (!$visitor->hasNodePermission($nodeId, 'viewContent')) {
+                continue;
+            }
+            if ($visitor->hasNodePermission($nodeId, 'viewOthers')) {
+                $ids['full'][] = $nodeId;
+                if ($visitor->hasNodePermission($nodeId, 'viewModerated')) {
+                    $ids['moderated'][] = $nodeId;
+                }
+            } elseif ($visitor->user_id) {
+                $ids['own'][] = $nodeId;
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Tag names of a thread, from its cached tag list (no query).
+     */
+    protected function getThreadTagNames(\XF\Entity\Thread $thread): array
+    {
+        $names = [];
+        $tags = $thread->tags;
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                if (is_array($tag) && isset($tag['tag'])) {
+                    $names[] = (string)$tag['tag'];
+                }
+            }
+        }
+        return $names;
     }
 
     /**

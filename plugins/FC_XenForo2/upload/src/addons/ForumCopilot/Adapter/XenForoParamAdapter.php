@@ -94,11 +94,26 @@ class XenForoParamAdapter
      */
     public static function toGetTopicParams(ParameterBag $params): FCGetTopicParams
     {
-        return FCGetTopicParams::fromArray([
+        return FCGetTopicParams::fromArray(array_merge([
             'forumId' => $params->get('forumId', ''),
             'startNum' => $params->get('startNum', 0),
             'lastNum' => $params->get('lastNum', 19),
-        ]);
+        ], self::forumListFilterParams($params)));
+    }
+
+    /**
+     * getTopic / getTopTopic sort and filter params (1.11.0), as sent
+     */
+    private static function forumListFilterParams(ParameterBag $params): array
+    {
+        $filters = [];
+        foreach (['order', 'direction', 'prefixId', 'starterId', 'starterName', 'unread', 'lastDays',
+            'noDateLimit', 'threadType', 'typeFilters'] as $key) {
+            if ($params->get($key, null) !== null) {
+                $filters[$key] = $params->get($key);
+            }
+        }
+        return $filters;
     }
 
     /**
@@ -250,11 +265,11 @@ class XenForoParamAdapter
      */
     public static function toGetTopTopicParams(ParameterBag $params): FCGetTopTopicParams
     {
-        return FCGetTopTopicParams::fromArray([
+        return FCGetTopTopicParams::fromArray(array_merge([
             'forumId' => $params->get('forumId', ''),
             'startNum' => $params->get('startNum', 0),
             'lastNum' => $params->get('lastNum', 19),
-        ]);
+        ], self::forumListFilterParams($params)));
     }
 
     /**

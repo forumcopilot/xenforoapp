@@ -21,6 +21,9 @@ use ForumCopilot\Adapter\XenForoParamAdapter;
  */
 class TopicController extends AbstractController
 {
+    /** The forum page's "last N days" choices (-1 = any time), as XenForo's getAvailableDateLimits */
+    const FORUM_DATE_LIMITS = [-1, 7, 14, 30, 60, 90, 182, 365];
+
     /**
      * One page of a forum's threads (not the sticky ones: getTopTopic), as
      * XenForo's forum page lists them.
@@ -87,27 +90,33 @@ class TopicController extends AbstractController
             // Everything the rows read, loaded with the threads
             $this->addTopicListWith($threadList);
 
+            // The forum page's sort and filters (XenForo applies them to the sticky list too)
+            $filters = $this->getForumFilterInput($forum, $fcParams);
+            $this->applyForumFilters($forum, $threadList, $filters);
+
             // Apply forum type handler adjustments (matches XenForo web implementation)
             $forumTypeHandler = $forum->TypeHandler;
             [$offset, $perPage] = $this->getTopicListWindow($fcParams->startNum, $fcParams->lastNum);
             $page = (int)floor($offset / $perPage) + 1;
             $forumTypeHandler->adjustForumThreadListFinder($forum, $threadList, $page, $this->request);
 
+            $dateLimitDays = 0;
             if ($sticky) {
                 // The web clones the thread list and filters sticky=1, with no date limit
                 $threadList->where('sticky', 1);
             } else {
-                // Apply date limit filters (matches XenForo web/API implementation)
-                if ($forum->list_date_limit_days) {
-                    $threadList->where('last_post_date', '>=', \XF::$time - ($forum->list_date_limit_days * 86400));
-                }
+                // The forum's date limit, or lastDays, unless noDateLimit (applyDateLimitFilters)
+                $dateLimitDays = $this->applyDateLimitFilters($forum, $threadList, $filters);
 
                 // Exclude sticky topics (they're retrieved via getTopTopic)
                 $threadList->where('sticky', 0);
             }
             
-            // Order by last post date to show most recent activity first
-            $threadList->order('last_post_date', 'DESC');
+            if (empty($filters['order']) && $fcParams->order !== 'forum') {
+                // Without order: by last message, newest first, as before 1.11.0
+                // (order "forum" keeps the forum's own default order)
+                $threadList->order('last_post_date', 'DESC');
+            }
             
             // Rows startNum..lastNum, at most 100
             $total = $threadList->total();
@@ -131,11 +140,183 @@ class TopicController extends AbstractController
             }
 
             $result = $this->newForumTopicDataResult($forum, $fcParams->forumId, (int)$total, $topicList);
+            $result->extra = $this->getForumListDetails($forum, $filters, $fcParams, $dateLimitDays);
             return $this->apiSuccess($result);
 
         } catch (\Throwable $e) {
             return $this->apiException($e, $sticky ? 'Failed to get pinned topics' : 'Failed to get topics');
         }
+    }
+
+    /**
+     * The sort and filters for a forum's thread list, checked as XenForo's
+     * ForumController::getForumFilterInput checks them: a prefix the forum
+     * uses, a member by id or name, a date limit from the forum page's
+     * choices, a sort the forum type offers, a thread type the forum allows,
+     * then the forum type's own filters (questions: unsolved, ...). Values
+     * that don't apply are left out, as on the website.
+     *
+     * @param \ForumCopilot\Params\Topic\FCGetTopicParams $fcParams
+     * @return array XenForo's filter names (prefix_id, starter_id, ...)
+     */
+    protected function getForumFilterInput(\XF\Entity\Forum $forum, $fcParams): array
+    {
+        $visitor = \XF::visitor();
+        $filters = [];
+
+        if ($fcParams->noDateLimit) {
+            $filters['no_date_limit'] = true;
+        }
+
+        if ($fcParams->prefixId && $forum->isPrefixValid($fcParams->prefixId)) {
+            $filters['prefix_id'] = $fcParams->prefixId;
+        }
+
+        if ($fcParams->starterId) {
+            $filters['starter_id'] = $fcParams->starterId;
+        } elseif ($fcParams->starterName !== '') {
+            $user = $this->em()->findOne('XF:User', ['username' => $fcParams->starterName]);
+            if ($user) {
+                $filters['starter_id'] = $user->user_id;
+            }
+        }
+
+        $lastDays = $fcParams->lastDays;
+        if ($lastDays !== null
+            && in_array($lastDays, self::FORUM_DATE_LIMITS, true)
+            && (($lastDays > 0 && $lastDays != $forum->list_date_limit_days) || ($lastDays < 0 && $forum->list_date_limit_days))
+        ) {
+            $filters['last_days'] = $lastDays;
+        }
+
+        $sorts = $forum->TypeHandler->getThreadListSortOptions($forum);
+        if ($fcParams->order && isset($sorts[$fcParams->order])) {
+            // Kept even when it is the forum's default: without it the API sorts by last message
+            $filters['order'] = $fcParams->order;
+            $filters['direction'] = $fcParams->direction === 'asc' ? 'asc' : 'desc';
+        }
+
+        if ($fcParams->threadType !== '' && $forum->TypeHandler->isThreadTypeAllowed($fcParams->threadType, $forum)) {
+            $filters['thread_type'] = $fcParams->threadType;
+        }
+
+        if ($fcParams->unread && $visitor->user_id) {
+            // As the REST API's thread list offers it
+            $filters['unread'] = true;
+        }
+
+        // The forum type reads its own filters from the request, as the form sends them
+        $typeRequest = new \XF\Http\Request($this->app->container('inputFilterer'), $fcParams->typeFilters);
+
+        return $forum->TypeHandler->getForumFilterInput($forum, $typeRequest, $filters);
+    }
+
+    /**
+     * XenForo's ForumController::applyForumFilters, plus unread.
+     */
+    protected function applyForumFilters(\XF\Entity\Forum $forum, \XF\Finder\Thread $threadFinder, array $filters)
+    {
+        if (!empty($filters['prefix_id'])) {
+            $threadFinder->where('prefix_id', (int)$filters['prefix_id']);
+        }
+
+        if (!empty($filters['starter_id'])) {
+            $threadFinder->where('user_id', (int)$filters['starter_id']);
+        }
+
+        if (!empty($filters['thread_type'])) {
+            $threadFinder->where('discussion_type', $filters['thread_type']);
+        }
+
+        if (!empty($filters['unread'])) {
+            $threadFinder->unreadOnly(\XF::visitor()->user_id);
+        }
+
+        $sorts = $forum->TypeHandler->getThreadListSortOptions($forum);
+        if (!empty($filters['order']) && isset($sorts[$filters['order']])) {
+            $threadFinder->order($sorts[$filters['order']], $filters['direction']);
+        }
+
+        $forum->TypeHandler->applyForumFilters($forum, $threadFinder, $filters);
+    }
+
+    /**
+     * XenForo's ForumController::applyDateLimitFilters.
+     *
+     * @return int the date limit applied, in days (0 = none)
+     */
+    protected function applyDateLimitFilters(\XF\Entity\Forum $forum, \XF\Finder\Thread $threadFinder, array $filters): int
+    {
+        if (!empty($filters['no_date_limit'])) {
+            return 0;
+        }
+
+        $days = !empty($filters['last_days']) ? (int)$filters['last_days'] : (int)$forum->list_date_limit_days;
+        if ($days > 0) {
+            $threadFinder->where('last_post_date', '>=', \XF::$time - ($days * 86400));
+            return $days;
+        }
+
+        return 0;
+    }
+
+    /**
+     * getTopic's sort and filter details (1.11.0):
+     *   - appliedFilters: the filters in effect, by param name (values that
+     *     didn't apply are missing), and the order used;
+     *   - sortOptions: [{key, title}], the orders this forum offers;
+     *   - defaultOrder / defaultDirection: the forum's own default order
+     *     (order "forum");
+     *   - dateLimitDays / isDateLimited: the date limit in effect (getTopic
+     *     only), and dateLimitOptions, the forum page's choices for lastDays
+     *     (-1 = any time). When a date-limited list runs out, noDateLimit or
+     *     lastDays -1 shows the older threads, like the website's "Show older
+     *     items".
+     */
+    protected function getForumListDetails(\XF\Entity\Forum $forum, array $filters, $fcParams, int $dateLimitDays): array
+    {
+        $names = [
+            'prefix_id' => 'prefixId',
+            'starter_id' => 'starterId',
+            'last_days' => 'lastDays',
+            'no_date_limit' => 'noDateLimit',
+            'thread_type' => 'threadType',
+            'unread' => 'unread',
+            'order' => 'order',
+            'direction' => 'direction',
+        ];
+        $applied = [];
+        $typeFilters = [];
+        foreach ($filters as $key => $value) {
+            if (isset($names[$key])) {
+                $applied[$names[$key]] = $value;
+            } else {
+                $typeFilters[$key] = $value;
+            }
+        }
+        if ($typeFilters) {
+            $applied['typeFilters'] = $typeFilters;
+        }
+        if (!isset($applied['order'])) {
+            $useForumOrder = ($fcParams->order === 'forum');
+            $applied['order'] = $useForumOrder ? (string)$forum->default_sort_order : 'last_post_date';
+            $applied['direction'] = $useForumOrder ? (string)$forum->default_sort_direction : 'desc';
+        }
+
+        $sortOptions = [];
+        foreach (array_keys($forum->TypeHandler->getThreadListSortOptions($forum)) as $key) {
+            $sortOptions[] = ['key' => $key, 'title' => $this->plainText(\XF::phrase('forum_sort.' . $key))];
+        }
+
+        return [
+            'appliedFilters' => $applied,
+            'sortOptions' => $sortOptions,
+            'defaultOrder' => (string)$forum->default_sort_order,
+            'defaultDirection' => (string)$forum->default_sort_direction,
+            'dateLimitDays' => $dateLimitDays,
+            'isDateLimited' => $dateLimitDays > 0,
+            'dateLimitOptions' => self::FORUM_DATE_LIMITS,
+        ];
     }
 
     /**

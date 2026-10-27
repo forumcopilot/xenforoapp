@@ -21,6 +21,9 @@ class FCTopicDataResult extends FCResult
     public $prefixes;
     public $topics;
 
+    /** @var array More fields for the reply (1.11.0): sort and filter details */
+    public $extra = [];
+
     public function __construct($result = true, $resultText = 'success', $totalTopicNum = 0, $forumId = '', $forumName = '', $canPost = false, $canUpload = false, $unreadStickyCount = 0, $unreadAnnounceCount = 0, $canSubscribe = false, $isSubscribed = false, $requirePrefix = false, $prefixes = [], $topics = [])
     {
         parent::__construct($result, $resultText);
@@ -57,7 +60,7 @@ class FCTopicDataResult extends FCResult
         $data['topics'] = array_map(function($topic) {
             return is_object($topic) ? $topic->toArray() : $topic;
         }, $this->topics);
-        return $data;
+        return array_merge($data, $this->extra);
     }
 }
 

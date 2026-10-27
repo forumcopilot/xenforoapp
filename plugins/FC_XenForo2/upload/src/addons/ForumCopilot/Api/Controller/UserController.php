@@ -644,7 +644,15 @@ class UserController extends AbstractController
             }
 
             if (!$user) {
-                return $this->apiError('User not found', null, ErrorCode::NOT_FOUND);
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
+            }
+
+            // A member's posts are listed on their profile's Postings tab,
+            // which needs the full profile (MemberController, assertViewableUser):
+            // members who limit who may view their profile are refused here too.
+            $error = null;
+            if (!$user->canViewFullProfile($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
             }
 
             // Get user's posts (replies) with proper filtering
@@ -671,8 +679,14 @@ class UserController extends AbstractController
             
             // Apply the conditions (visible OR own moderated)
             // Note: Deleted posts and other users' moderated posts are filtered out here
-            // canView() checks in the loop will further filter by thread/forum permissions
             $finder->whereOr($conditions);
+
+            // Only threads the visitor may view, in SQL, so that total and
+            // the paging count the same rows the list holds
+            // (Thread::canView). Rows were dropped after LIMIT before, so the
+            // app's next page repeated posts, or kept loading when the last
+            // ones were hidden.
+            $this->restrictToViewableThreads($finder, $visitor);
             
             // Load necessary relations for permission checks
             $finder->with(['Thread', 'Thread.Forum', 'Thread.Forum.Node', 'User']);
@@ -681,9 +695,10 @@ class UserController extends AbstractController
             $finder->order('post_date', 'DESC');
             
             // Calculate pagination from startNum and lastNum
-            // startNum is the starting index (0-based), lastNum is the ending index
+            // startNum is the starting index (0-based), lastNum is the ending
+            // index; at most 50 posts per call (the app asks for 20)
             $startNum = max(0, (int)$fcParams->startNum);
-            $lastNum = max($startNum, (int)$fcParams->lastNum);
+            $lastNum = min(max($startNum, (int)$fcParams->lastNum), $startNum + 49);
             $limit = $lastNum - $startNum + 1; // +1 because lastNum is inclusive
             $offset = $startNum;
             
@@ -700,8 +715,8 @@ class UserController extends AbstractController
                 $thread = $post->Thread;
                 $forum = $thread ? $thread->Forum : null;
                 
-                // Check if visitor can view the post, thread, and forum
-                // This filters out posts from private forums or threads visitor cannot access
+                // Safety net: the query above already keeps only what these
+                // allow (an add-on may extend canView)
                 if (!$post->canView() || !$thread || !$forum || !$thread->canView() || !$forum->canView()) {
                     continue;
                 }
@@ -803,6 +818,83 @@ class UserController extends AbstractController
         } catch (\Exception $e) {
             return $this->apiException($e, 'Failed to report user');
         }
+    }
+
+    /**
+     * Limits a post finder to threads the visitor may view, as
+     * Thread::canView decides: forums the visitor may view with "View
+     * threads" (view) and "View thread content" (viewContent); without "View
+     * others' threads" (viewOthers), only the visitor's own threads.
+     * Moderated threads where the visitor may view them (viewModerated, or
+     * their own) and deleted ones with viewDeleted.
+     *
+     * @param \XF\Mvc\Entity\Finder $finder a finder for XF:Post
+     * @param \XF\Entity\User $visitor
+     */
+    protected function restrictToViewableThreads(\XF\Mvc\Entity\Finder $finder, \XF\Entity\User $visitor)
+    {
+        $nodeIds = [];
+        $ownOnlyNodeIds = [];
+        $moderatedNodeIds = [];
+        $deletedNodeIds = [];
+        foreach ($this->repository('XF:Forum')->getViewableForums() as $nodeId => $forum) {
+            if (!$visitor->hasNodePermission($nodeId, 'view')
+                || !$visitor->hasNodePermission($nodeId, 'viewContent')
+            ) {
+                continue;
+            }
+            if ($visitor->hasNodePermission($nodeId, 'viewOthers')) {
+                $nodeIds[] = $nodeId;
+            } elseif ($visitor->user_id) {
+                $ownOnlyNodeIds[] = $nodeId;
+            } else {
+                continue;
+            }
+            if ($visitor->hasNodePermission($nodeId, 'viewModerated')) {
+                $moderatedNodeIds[] = $nodeId;
+            }
+            if ($visitor->hasNodePermission($nodeId, 'viewDeleted')) {
+                $deletedNodeIds[] = $nodeId;
+            }
+        }
+
+        if (!$nodeIds && !$ownOnlyNodeIds) {
+            $finder->whereSql('1 = 0');
+            return;
+        }
+
+        $forumConditions = [];
+        if ($nodeIds) {
+            $forumConditions[] = ['Thread.node_id', $nodeIds];
+        }
+        if ($ownOnlyNodeIds) {
+            $forumConditions[] = [
+                ['Thread.node_id', $ownOnlyNodeIds],
+                ['Thread.user_id', $visitor->user_id],
+            ];
+        }
+        $finder->whereOr($forumConditions);
+
+        $stateConditions = [['Thread.discussion_state', 'visible']];
+        if ($moderatedNodeIds) {
+            $stateConditions[] = [
+                ['Thread.discussion_state', 'moderated'],
+                ['Thread.node_id', $moderatedNodeIds],
+            ];
+        }
+        if ($visitor->user_id) {
+            $stateConditions[] = [
+                ['Thread.discussion_state', 'moderated'],
+                ['Thread.user_id', $visitor->user_id],
+            ];
+        }
+        if ($deletedNodeIds) {
+            $stateConditions[] = [
+                ['Thread.discussion_state', 'deleted'],
+                ['Thread.node_id', $deletedNodeIds],
+            ];
+        }
+        $finder->whereOr($stateConditions);
     }
 
     /**

@@ -1009,53 +1009,17 @@ class PrivateConversationController extends AbstractController
 
         try {
             $message = $this->assertViewableMessage($messageId);
-            $visitor = \XF::visitor();
 
-            // Check if can like/react
-            $canLike = false;
-            $error = null;
-            if (method_exists($message, 'canReact')) {
-                $canLike = $message->canReact($error);
-            } elseif (method_exists($message, 'canLike')) {
-                $canLike = $message->canLike($error);
+            // Added, switched, or toggled off when it is the member's current
+            // one. reactionId defaults to 1 (Like) for app builds that don't send it.
+            $reacted = $this->toggleVisitorReaction($message, max(1, (int)$params->get('reactionId', 1)));
+            if (!is_array($reacted)) {
+                return $reacted;
             }
-            
-            if (!$canLike) {
-                $errorMessage = $error ? (is_string($error) ? $error : 'Cannot like this message') : 'Cannot like this message';
-                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Apply the reaction the user picked via XenForo's reaction
-            // repository. reactToContent() adds / switches / toggles-off
-            // automatically. reactionId defaults to 1 (Like) so older app
-            // builds that don't send it behave exactly as before.
-            $contentType = 'conversation_message';
-            $contentId = (int) $message->message_id;
-            $reactionId = (int) $params->get('reactionId', 1);
-            if ($reactionId < 1) {
-                $reactionId = 1;
-            }
-
-            try {
-                $reactionRepo = $this->repository('XF:Reaction');
-                $reaction = $reactionRepo->reactToContent(
-                    $reactionId,
-                    $contentType,
-                    $contentId,
-                    $visitor,
-                    true,
-                    false
-                );
-            } catch (\Throwable $e) {
-                return $this->apiException($e, 'Failed to react to message');
-            }
+            $visitorReactionId = $reacted['reactionId'];
 
             // Refresh the message so its reaction counts reflect the change.
-            $message = $this->em()->find('XF:ConversationMessage', $contentId);
-
-            $visitorReactionId = ($reaction && isset($reaction->reaction_id))
-                ? (int) $reaction->reaction_id
-                : null;
+            $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
 
             $result = new FCLikePostResult(
                 true,
@@ -1084,100 +1048,20 @@ class PrivateConversationController extends AbstractController
 
         try {
             $message = $this->assertViewableMessage($messageId);
-            $visitor = \XF::visitor();
 
-            // Check if can like/react
-            $canLike = false;
-            $error = null;
-            if (method_exists($message, 'canReact')) {
-                $canLike = $message->canReact($error);
-            } elseif (method_exists($message, 'canLike')) {
-                $canLike = $message->canLike($error);
-            }
-            
-            if (!$canLike) {
-                $errorMessage = $error ? (is_string($error) ? $error : 'Cannot unlike this message') : 'Cannot unlike this message';
-                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
+            if ($error = $this->removeVisitorReaction($message)) {
+                return $error;
             }
 
-            // Use like system
-            $contentType = 'conversation_message';
-            $contentId = $message->message_id;
-            
-            // Check if already reacted/liked
-            $isReacted = false;
-            try {
-                if (method_exists($message, 'isReactedTo')) {
-                    $isReacted = $message->isReactedTo();
-                } else {
-                    $isReacted = $message->isLiked();
-                }
-            } catch (\Exception $e) {
-                // If check fails, assume not liked and return
-                $result = new FCUnlikePostResult(
-                    true,
-                    null,
-                    false,
-                    $this->getReactionCount($message)
-                );
-                return $this->apiSuccess($result);
-            }
-            
-            if (!$isReacted) {
-                // Not liked, return current state
-                $result = new FCUnlikePostResult(
-                    true,
-                    null,
-                    false,
-                    $this->getReactionCount($message)
-                );
-            } else {
-                // Use unlike system
-                $contentType = 'conversation_message';
-                $contentId = $message->message_id;
-                
-                // Check if reaction system is available
-                if (class_exists('\XF\ControllerPlugin\Reaction')) {
-                    try {
-                        $reactionRepo = $this->repository('XF:Reaction');
-                        $existingReaction = $reactionRepo->getReactionByContentAndReactionUser('conversation_message', $contentId, $visitor->user_id);
-                        if ($existingReaction && $existingReaction->reaction_id) {
-                            $existingReaction->setOption('is_like_only', false);
-                            $existingReaction->delete();
-                        }
-                        
-                        // Refresh message
-                        $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
-                        
-                        $result = new FCUnlikePostResult(
-                            true,
-                            null,
-                            false,
-                            $this->getReactionCount($message)
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiException($e, 'Failed to unlike message');
-                    }
-                } else {
-                    // Use old like system
-                    try {
-                        $likeRepo = $this->repository('XF:LikedContent');
-                        $likeRepo->toggleLike($contentType, $contentId, $visitor);
-                        
-                        // Refresh message
-                        $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
-                        
-                        $result = new FCUnlikePostResult(
-                            true,
-                            null,
-                            false,
-                            $this->getReactionCount($message)
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiException($e, 'Failed to unlike message');
-                    }
-                }
-            }
+            // Refresh the message so its reaction counts reflect the change.
+            $message = $this->em()->find('XF:ConversationMessage', $message->message_id);
+
+            $result = new FCUnlikePostResult(
+                true,
+                null,
+                false,
+                $this->getReactionCount($message)
+            );
 
             return $this->apiSuccess($result);
 

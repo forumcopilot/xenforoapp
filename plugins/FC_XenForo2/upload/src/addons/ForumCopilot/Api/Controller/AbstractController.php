@@ -1734,6 +1734,79 @@ abstract class AbstractController extends Controller
         return $attachments;
     }
 
+    // Reactions (posts and direct messages)
+
+    /**
+     * Adds, switches or toggles off the visitor's reaction on a post or
+     * direct message, as XenForo's ReactionPlugin does: canReact first (with
+     * XenForo's reason), then the reaction must exist and be active; an
+     * inactive one is accepted only to take the visitor's own reaction off.
+     *
+     * @param \XF\Mvc\Entity\Entity $content a post or conversation message
+     * @return array|Response ['reactionId' => the visitor's reaction now, or
+     *                        null when toggled off], or an error reply
+     */
+    protected function toggleVisitorReaction($content, int $reactionId)
+    {
+        $error = null;
+        if (!$content->canReact($error)) {
+            return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+
+        $visitor = \XF::visitor();
+        $contentType = $content->getEntityContentType();
+        $contentId = $content->getEntityId();
+        $reactionRepo = $this->repository('XF:Reaction');
+
+        $reaction = $reactionId > 0 ? $this->em()->find('XF:Reaction', $reactionId) : null;
+        $existing = $reactionRepo->getReactionByContentAndReactionUser($contentType, $contentId, $visitor->user_id);
+        if (!$reaction
+            || (!$reaction->active && (!$existing || $existing->reaction_id != $reaction->reaction_id))
+        ) {
+            return $this->apiError(\XF::phrase('requested_page_not_found'), null, ErrorCode::NOT_FOUND);
+        }
+
+        $new = $reactionRepo->reactToContent($reaction->reaction_id, $contentType, $contentId, $visitor, true, false);
+
+        return ['reactionId' => $new ? (int)$new->reaction_id : null];
+    }
+
+    /**
+     * Takes the visitor's reaction off a post or direct message, whichever it
+     * is, through reactToContent as XenForo's toggle does (so its alerts and
+     * counters are undone the same way). Nothing to do is not an error.
+     *
+     * @param \XF\Mvc\Entity\Entity $content
+     * @return Response|null an error reply, or null
+     */
+    protected function removeVisitorReaction($content)
+    {
+        $error = null;
+        if (!$content->canReact($error)) {
+            return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+        }
+
+        $visitor = \XF::visitor();
+        $reactionRepo = $this->repository('XF:Reaction');
+        $existing = $reactionRepo->getReactionByContentAndReactionUser(
+            $content->getEntityContentType(),
+            $content->getEntityId(),
+            $visitor->user_id
+        );
+        if ($existing) {
+            $reactionRepo->reactToContent(
+                $existing->reaction_id,
+                $content->getEntityContentType(),
+                $content->getEntityId(),
+                $visitor,
+                true,
+                false
+            );
+        }
+
+        return null;
+    }
+
     /**
      * Whether the app's own sign-up form may be used (prefetchAccount says so
      * in canRegisterViaAPI, and register refuses otherwise): the board is

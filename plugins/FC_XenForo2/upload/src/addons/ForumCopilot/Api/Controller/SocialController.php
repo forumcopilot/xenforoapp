@@ -33,55 +33,18 @@ class SocialController extends AbstractController
 
         try {
             $post = $this->assertViewablePost($fcParams->postId);
-            $visitor = \XF::visitor();
 
-            // Check if can like/react (like Tapatalk does)
-            $canLike = false;
-            $error = null;
-            if (method_exists($post, 'canReact')) {
-                $canLike = $post->canReact($error);
-            } elseif (method_exists($post, 'canLike')) {
-                $canLike = $post->canLike($error);
+            // The reaction the member picked: added, switched, or toggled
+            // off when it is the one they already have. reactionId defaults
+            // to 1 (Like) for app builds that don't send it.
+            $reacted = $this->toggleVisitorReaction($post, (int)$fcParams->reactionId);
+            if (!is_array($reacted)) {
+                return $reacted;
             }
-            
-            if (!$canLike) {
-                $errorMessage = $error ? (is_string($error) ? $error : 'Cannot like this post') : 'Cannot like this post';
-                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
-            }
-
-            // Apply the reaction the user picked via XenForo's reaction
-            // repository. reactToContent() handles every case atomically:
-            //   - no existing reaction   → add the chosen reaction
-            //   - existing, different id → switch to the chosen reaction
-            //   - existing, same id      → remove it (toggle off)
-            // $fcParams->reactionId defaults to 1 (Like) so older app builds
-            // that don't send a reactionId behave exactly as before.
-            $contentType = 'post';
-            $contentId = (int) $post->post_id;
-            $reactionId = (int) $fcParams->reactionId;
-
-            try {
-                $reactionRepo = $this->repository('XF:Reaction');
-                $reaction = $reactionRepo->reactToContent(
-                    $reactionId,
-                    $contentType,
-                    $contentId,
-                    $visitor,
-                    true,
-                    false
-                );
-            } catch (\Throwable $e) {
-                return $this->apiException($e, 'Failed to react to post');
-            }
+            $visitorReactionId = $reacted['reactionId'];
 
             // Refresh the post so its reaction counts reflect the change.
-            $post = $this->em()->find('XF:Post', $contentId);
-
-            // reactToContent returns the new reaction entity when one was
-            // added or switched, and null when the reaction was toggled off.
-            $visitorReactionId = ($reaction && isset($reaction->reaction_id))
-                ? (int) $reaction->reaction_id
-                : null;
+            $post = $this->em()->find('XF:Post', $post->post_id);
 
             $result = new FCLikePostResult(
                 true,
@@ -110,100 +73,20 @@ class SocialController extends AbstractController
 
         try {
             $post = $this->assertViewablePost($postId);
-            $visitor = \XF::visitor();
 
-            // Check if can like/react (like Tapatalk does)
-            $canLike = false;
-            $error = null;
-            if (method_exists($post, 'canReact')) {
-                $canLike = $post->canReact($error);
-            } elseif (method_exists($post, 'canLike')) {
-                $canLike = $post->canLike($error);
-            }
-            
-            if (!$canLike) {
-                $errorMessage = $error ? (is_string($error) ? $error : 'Cannot unlike this post') : 'Cannot unlike this post';
-                return $this->apiError($errorMessage, null, ErrorCode::NO_PERMISSION);
+            if ($error = $this->removeVisitorReaction($post)) {
+                return $error;
             }
 
-            // Use like system (like Tapatalk does)
-            $contentType = 'post'; // Use 'post' directly, not getEntityContentType()
-            $contentId = $post->post_id; // Use post_id directly
-            
-            // Check if already reacted/liked
-            $isReacted = false;
-            try {
-                if (method_exists($post, 'isReactedTo')) {
-                    $isReacted = $post->isReactedTo();
-                } else {
-                    $isReacted = $post->isLiked();
-                }
-            } catch (\Exception $e) {
-                // If check fails, assume not liked and return
-                $result = new FCUnlikePostResult(
-                    true,
-                    null,
-                    false,
-                    $this->getReactionCount($post)
-                );
-                return $this->apiSuccess($result);
-            }
-            
-            if (!$isReacted) {
-                // Not liked, return current state (like Tapatalk does)
-                $result = new FCUnlikePostResult(
-                    true,
-                    null,
-                    false,
-                    $this->getReactionCount($post)
-                );
-            } else {
-                // Use unlike system (like Tapatalk does)
-                $contentType = 'post';
-                $contentId = $post->post_id;
-                
-                // Check if reaction system is available (like Tapatalk does)
-                if (class_exists('\XF\ControllerPlugin\Reaction')) {
-                    try {
-                        $reactionRepo = $this->repository('XF:Reaction');
-                        $existingReaction = $reactionRepo->getReactionByContentAndReactionUser('post', $contentId, $visitor->user_id);
-                        if ($existingReaction && $existingReaction->reaction_id) {
-                            $existingReaction->setOption('is_like_only', false);
-                            $existingReaction->delete();
-                        }
-                        
-                        // Refresh post
-                        $post = $this->em()->find('XF:Post', $post->post_id);
-                        
-                        $result = new FCUnlikePostResult(
-                            true,
-                            null,
-                            false,
-                            $this->getReactionCount($post)
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiException($e, 'Failed to unlike post');
-                    }
-                } else {
-                    // Use old like system
-                    try {
-                        $likeRepo = $this->repository('XF:LikedContent');
-                        $likeRepo->toggleLike($contentType, $contentId, $visitor);
-                        
-                        // Refresh post
-                        $post = $this->em()->find('XF:Post', $post->post_id);
-                        
-                        $result = new FCUnlikePostResult(
-                            true,
-                            null,
-                            false,
-                            $this->getReactionCount($post)
-                        );
-                    } catch (\Exception $e) {
-                        return $this->apiException($e, 'Failed to unlike post');
-                    }
-                }
-            }
+            // Refresh the post so its reaction counts reflect the change.
+            $post = $this->em()->find('XF:Post', $post->post_id);
+
+            $result = new FCUnlikePostResult(
+                true,
+                null,
+                false,
+                $this->getReactionCount($post)
+            );
 
             return $this->apiSuccess($result);
 

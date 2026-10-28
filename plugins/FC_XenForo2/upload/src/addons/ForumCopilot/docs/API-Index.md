@@ -562,6 +562,28 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 
 ## Post
 
+### Content as HTML (1.11.0)
+
+With `contentHtml: true`, `getThread`, `getThreadByPost`, `getThreadByUnread`,
+`getConversation` and `getConversationByMessage` also send each post or
+message as HTML in `contentHtml` (posts also `signatureHtml`), next to the
+BBCode in `content`. XenForo renders it, so the forum's custom BBCodes, media
+sites, smilies and censored words come out as on the website. It is plain HTML
+without the website's scripts or classes, all URLs absolute, and data
+attributes on the parts an app draws itself:
+
+| HTML | Attributes |
+|---|---|
+| `<blockquote>` (a quote) | `data-quote-name`; `data-quote-type` and `data-quote-id` (e.g. `post`, 1206); `data-quote-member-id` |
+| `<a>` (a mention) | `data-user-id` |
+| `<span>` around an attachment | `data-attachment-id`, `data-attachment-full` (1 or 0) |
+| `<div>` (a media embed, BBCode MEDIA) | `data-media-site`, `data-media-key`, `data-media-url` (a link when the site has a plain URL pattern) |
+| `<details>` (a spoiler) | `data-spoiler`, `data-spoiler-title`; inline spoilers: `<span data-inline-spoiler>` |
+| `<div>` (a link preview) | `data-unfurl`, `data-url`, `data-title`, `data-description`, `data-image`, `data-favicon` |
+
+Code blocks are `<pre data-lang>`, tables `<div class="xfBb-table"><table>`.
+`contentHtml` is empty if rendering fails; `content` is always sent.
+
 **Poll (view & vote):** See [API-Poll.md](API-Poll.md) for full poll object schema, `hasPoll`/`poll` in thread responses, and `votePoll`.
 
 ### `getThread`
@@ -573,6 +595,7 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
   - `startNum` (int, optional, default 1) — Number of the first post, 1-based (0 is read as 1).
   - `lastNum` (int, optional, default 19) — Number of the last post, inclusive; at most 100 posts.
   - `includeHidden` (bool, optional, default false, 1.11.0) — Also the moderated and deleted posts the visitor may see, and the member's own posts awaiting approval, as XenForo's thread page lists them. Such a post comes with the page of the visible post before it and shares its number.
+  - `contentHtml` (bool, optional, default false, 1.11.0) — Also send each post (and signature) as HTML: `contentHtml`, `signatureHtml`. See "Content as HTML" below.
 - **Response:**
   - `totalPostNum` (int) — Visible posts in the thread.
   - `posts` (array) — Each post: `id`, `topicId`, `authorId`, `authorName`, `authorUserType`, `authorIconUrl`, `timestamp` (ms), `title` (first post only), `content` (BBCode, with the forum's censored words replaced and images through its image proxy), `position` (the post's number), `isFirstPost`, `isApproved`, `isDeleted`, `canEdit`, `canDelete`, `canReport`, `canLike`, `isLiked`, `likeCount`, `likesInfo`, `attachments`. From 1.11.0: `isAuthorOnline`, `isIgnored` (the visitor ignores the author), `canApprove`, `canUndelete`, `signature` (BBCode; null when there is none or the visitor hides signatures), `isSolution`, `voteScore`, `visitorVote` (`up`, `down` or null), `canContentVote`.
@@ -589,6 +612,7 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
   - `postId` (string, required)
   - `postsPerRequest` (int, optional, default 20, from 1 to 100)
   - `includeHidden` (bool, optional, default false, 1.11.0) — As in `getThread`.
+  - `contentHtml` (bool, optional, default false, 1.11.0) — As in `getThread`.
 - **Response:** as `getThread`, plus `position` (the post's number; a hidden post shares the number of the visible post before it), `canReply`, `canReport`, `canUpload`.
 
 ### `getThreadByUnread`
@@ -599,6 +623,7 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
   - `topicId` (string, required)
   - `postsPerRequest` (int, optional, default 20, from 1 to 100)
   - `includeHidden` (bool, optional, default false, 1.11.0) — As in `getThread`.
+  - `contentHtml` (bool, optional, default false, 1.11.0) — As in `getThread`.
 - **Response:** as `getThreadByPost`; `position` is the first unread post's number (the last post's when all is read).
 
 ### `votePoll`
@@ -1086,6 +1111,7 @@ conversation: a conversation the member isn't in is "not found".
   - `conversationId` (string, required)
   - `startNum` (int, optional, default 0) — first message number (1-based).
   - `lastNum` (int, optional, default 19) — last message number, inclusive; at most 100 messages.
+  - `contentHtml` (bool, optional, default false, 1.11.0) — Also send each message as HTML in `contentHtml`; see "Content as HTML".
 - **Response:** `convId`, `convTitle`, `messages`, `participants`, `totalMessageNum`, `lastRead`, `canReply`, `canInvite`, `canEdit`, `canClose`, `isClosed`, `canUpload`.
 
 ### `getConversationByMessage`
@@ -1095,6 +1121,7 @@ conversation: a conversation the member isn't in is "not found".
 - **Params:**
   - `messageId` (string, required)
   - `messagesPerRequest` (int, optional, default 20, at most 100)
+  - `contentHtml` (bool, optional, default false, 1.11.0) — As in `getConversation`.
 
 ### `getRawConversation` / `saveRawConversation`
 

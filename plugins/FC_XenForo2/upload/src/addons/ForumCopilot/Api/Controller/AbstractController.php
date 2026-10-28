@@ -1970,6 +1970,55 @@ abstract class AbstractController extends Controller
         return $names;
     }
 
+    // contentHtml (posts and direct messages)
+
+    /**
+     * Loads what HTML rendering needs for a page of posts or messages in a
+     * few queries, as ThreadPlugin::fetchExtraContentForPostsFullView does:
+     * link previews (2.2+) and embeds (2.3). Attachments are loaded by the
+     * callers already.
+     *
+     * @param \XF\Mvc\Entity\AbstractCollection $content
+     */
+    protected function preloadAppHtmlContent($content)
+    {
+        if (!$content->count()) {
+            return;
+        }
+        try {
+            $unfurlRepo = $this->repository('XF:Unfurl');
+            if (method_exists($unfurlRepo, 'addUnfurlsToContent')) {
+                $unfurlRepo->addUnfurlsToContent($content, true);
+            }
+            if (class_exists('XF\Repository\EmbedResolverRepository')) {
+                $this->repository('XF:EmbedResolver')->addEmbedsToContent($content);
+            }
+        } catch (\Throwable $e) {
+            \XF::logException($e, false, 'Forum Copilot contentHtml preload: ');
+        }
+    }
+
+    /**
+     * BBCode as the app's HTML (ForumCopilot\BbCode\Renderer\AppHtml), with
+     * the content's own render options (attachments, link previews, the
+     * forum's censoring). Empty when rendering fails; the BBCode is always
+     * sent too.
+     *
+     * @param \XF\Mvc\Entity\Entity|null $content the post, message or user it belongs to
+     */
+    protected function renderAppHtml($bbCode, string $context, $content = null): string
+    {
+        if ((string)$bbCode === '') {
+            return '';
+        }
+        try {
+            return (string)$this->app()->bbCode()->render((string)$bbCode, 'ForumCopilot:AppHtml', $context, $content);
+        } catch (\Throwable $e) {
+            \XF::logException($e, false, 'Forum Copilot contentHtml (' . $context . '): ');
+            return '';
+        }
+    }
+
     /**
      * Whether the app's own sign-up form may be used (prefetchAccount says so
      * in canRegisterViaAPI, and register refuses otherwise): the board is

@@ -374,9 +374,12 @@ class PrivateConversationController extends AbstractController
      * @param int $offset how many messages come before this page
      * @return array
      */
-    protected function buildConversationMessageRows($messages, $lastRead, $offset): array
+    protected function buildConversationMessageRows($messages, $lastRead, $offset, bool $withHtml = false): array
     {
         $this->repository('XF:Attachment')->addAttachmentsToContent($messages, 'conversation_message');
+        if ($withHtml) {
+            $this->preloadAppHtmlContent($messages);
+        }
 
         $alertRepo = $this->repository('XF:UserAlert');
         if ($messages->count() && method_exists($alertRepo, 'markUserAlertsReadForContent')) {
@@ -418,6 +421,10 @@ class PrivateConversationController extends AbstractController
                 'isFirstMessage' => $message->message_id == $message->Conversation->first_message_id,
                 'isIgnored' => $message->isIgnored(),
             ];
+            if ($withHtml) {
+                // Optional (1.11.0, contentHtml: true): the message as HTML
+                $rows[count($rows) - 1]['contentHtml'] = $this->renderAppHtml($message->message, 'conversation_message', $message);
+            }
         }
 
         return $rows;
@@ -503,7 +510,7 @@ class PrivateConversationController extends AbstractController
             $finder->limit($perPage, $offset);
             
             $messages = $finder->fetch();
-            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset);
+            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset, (bool)filter_var($params->get('contentHtml', false), FILTER_VALIDATE_BOOLEAN));
 
             // Mark conversation as read after viewing (like web version)
             $lastMessage = $messages->last();
@@ -665,7 +672,7 @@ class PrivateConversationController extends AbstractController
             
             $messages = $messageFinder->fetch();
             $total = $conversation->reply_count + 1; // +1 for first message
-            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset);
+            $messageList = $this->buildConversationMessageRows($messages, $lastRead, $offset, (bool)filter_var($params->get('contentHtml', false), FILTER_VALIDATE_BOOLEAN));
 
             // Mark conversation as read after viewing
             $lastMessage = $messages->last();

@@ -55,7 +55,7 @@ class PostController extends AbstractController
                 true,
                 null,
                 $total,
-                $this->buildThreadPostRows($thread, $posts),
+                $this->buildThreadPostRows($thread, $posts, $this->isTrueParam($params->get('contentHtml', false))),
                 $this->buildThreadTopicData($thread)
             );
 
@@ -103,7 +103,7 @@ class PostController extends AbstractController
                 $thread->canReply(),
                 $topicData['canReport'],
                 $topicData['canUpload'],
-                $this->buildThreadPostRows($thread, $posts),
+                $this->buildThreadPostRows($thread, $posts, $this->isTrueParam($params->get('contentHtml', false))),
                 $position,
                 $topicData
             );
@@ -201,7 +201,7 @@ class PostController extends AbstractController
                 $thread->canReply(),
                 $topicData['canReport'],
                 $topicData['canUpload'],
-                $this->buildThreadPostRows($thread, $posts),
+                $this->buildThreadPostRows($thread, $posts, $this->isTrueParam($params->get('contentHtml', false))),
                 $position,
                 $topicData
             );
@@ -314,7 +314,7 @@ class PostController extends AbstractController
      * @param \XF\Mvc\Entity\AbstractCollection $posts
      * @return array
      */
-    protected function buildThreadPostRows(\XF\Entity\Thread $thread, $posts): array
+    protected function buildThreadPostRows(\XF\Entity\Thread $thread, $posts, bool $withHtml = false): array
     {
         if (!$posts->count()) {
             return [];
@@ -323,6 +323,9 @@ class PostController extends AbstractController
         // Attachments for the whole page in one query, only for posts that
         // have some, as ThreadPlugin::fetchExtraContentForPostsFullView does
         $this->repository('XF:Attachment')->addAttachmentsToContent($posts, 'post');
+        if ($withHtml) {
+            $this->preloadAppHtmlContent($posts);
+        }
 
         $visitor = \XF::visitor();
         $context = [
@@ -333,6 +336,7 @@ class PostController extends AbstractController
             // option for guests), as message_macros::signature checks it
             'showSignatures' => $visitor->Option && $visitor->Option->content_show_signature,
             'solutionPostId' => $this->getQuestionSolutionPostId($thread),
+            'withHtml' => $withHtml,
         ];
 
         $rows = [];
@@ -413,6 +417,15 @@ class PostController extends AbstractController
 
         // The author's signature (BBCode), when the visitor shows signatures
         $row['signature'] = !empty($context['showSignatures']) ? $this->getPostSignature($post) : null;
+
+        // Optional (1.11.0, contentHtml: true): the post and signature as
+        // HTML, rendered by XenForo with the app's data attributes
+        if (!empty($context['withHtml'])) {
+            $row['contentHtml'] = $this->renderAppHtml($post->message, 'post', $post);
+            $row['signatureHtml'] = ($row['signature'] !== null && $post->User)
+                ? $this->renderAppHtml($post->User->Profile->signature, 'user:signature', $post->User)
+                : null;
+        }
 
         // Question threads: the solution (Post::isQuestionSolution), and
         // votes on answers

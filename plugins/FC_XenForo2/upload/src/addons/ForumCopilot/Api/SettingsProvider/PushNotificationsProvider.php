@@ -44,7 +44,7 @@ class PushNotificationsProvider implements SettingsProviderInterface
     {
         $userOptions = $user->Option;
         $alertRepo = $this->app->repository('XF:UserAlert');
-        $optOutActions = $alertRepo->getAlertOptOutActions();
+        $optOutActions = $alertRepo->getFcAlertOptOutLabels();
 
         // Get the nested structure to preserve display order from handlers
         $alertOptOuts = $alertRepo->getAlertOptOuts();
@@ -101,7 +101,7 @@ class PushNotificationsProvider implements SettingsProviderInterface
         $fcPushOptOuts = $userOptions->fc_push_optout ?? [];
         
         $alertRepo = $this->app->repository('XF:UserAlert');
-        $optOutActions = $alertRepo->getAlertOptOutActions();
+        $optOutActions = $alertRepo->getFcAlertOptOutLabels();
         
         $values = [];
         foreach (array_keys($optOutActions) as $key) {
@@ -123,7 +123,7 @@ class PushNotificationsProvider implements SettingsProviderInterface
         }
 
         $alertRepo = $this->app->repository('XF:UserAlert');
-        $optOutActions = $alertRepo->getAlertOptOutActions();
+        $optOutActions = $alertRepo->getFcAlertOptOutLabels();
         $validKeys = array_keys($optOutActions);
 
         foreach (array_keys($settings) as $key) {
@@ -144,7 +144,7 @@ class PushNotificationsProvider implements SettingsProviderInterface
     public function updateSettings(User $user, array $settings): void
     {
         $alertRepo = $this->app->repository('XF:UserAlert');
-        $optOutActions = $alertRepo->getAlertOptOutActions();
+        $optOutActions = $alertRepo->getFcAlertOptOutLabels();
         $validKeys = array_keys($optOutActions);
 
         // Get current opt-out state (preserve existing opt-outs for settings not being updated)

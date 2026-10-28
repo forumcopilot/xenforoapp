@@ -6,9 +6,15 @@ use XF\Entity\User;
 
 class UserAlert extends XFCP_UserAlert
 {
-    public function getAlertOptOutActions()
+    /**
+     * The alert types a member can opt out of, keyed as XenForo's
+     * getAlertOptOutActions() keys them ("{content type}_{action}"), with
+     * their display names, for the app's push settings. XenForo's own method
+     * is left as it is (it returns true for each key).
+     */
+    public function getFcAlertOptOutLabels()
     {
-        $alertOptOuts = parent::getAlertOptOuts();
+        $alertOptOuts = $this->getAlertOptOuts();
 
         $result = [];
 

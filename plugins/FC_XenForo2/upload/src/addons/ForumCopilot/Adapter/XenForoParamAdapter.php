@@ -19,18 +19,10 @@ use ForumCopilot\Params\User\FCSearchUserParams;
 use ForumCopilot\Params\User\FCGetOnlineUsersParams;
 use ForumCopilot\Params\User\FCGetUserReplyPostParams;
 use ForumCopilot\Params\Post\FCGetThreadParams;
-use ForumCopilot\Params\Post\FCReplyPostParams;
 use ForumCopilot\Params\Post\FCReplyPostParamsExtended;
-use ForumCopilot\Params\Search\FCSearchParams;
 use ForumCopilot\Params\Search\FCSearchTopicParams;
 use ForumCopilot\Params\Social\FCLikePostParams;
-use ForumCopilot\Params\Social\FCFollowUserParams;
-use ForumCopilot\Params\Social\FCGetAlertParams;
-use ForumCopilot\Params\Subscription\FCSubscribeForumParams;
-use ForumCopilot\Params\Subscription\FCSubscribeTopicParams;
 use ForumCopilot\Params\Subscription\FCSubscribeForumParamsExtended;
-use ForumCopilot\Params\Moderation\FCModerateTopicParams;
-use ForumCopilot\Params\Moderation\FCModeratePostParams;
 
 /**
  * XenForo-specific adapter for converting ParameterBag to forum-agnostic parameter classes
@@ -174,40 +166,7 @@ class XenForoParamAdapter
         ]);
     }
 
-    /**
-     * Convert ParameterBag to FCReplyPostParams
-     */
-    public static function toReplyPostParams(ParameterBag $params): FCReplyPostParams
-    {
-        return FCReplyPostParams::fromArray([
-            'topicId' => $params->get('topicId', ''),
-            'textBody' => $params->get('textBody', ''),
-            'attachmentIds' => $params->get('attachmentIds', []),
-            'groupId' => $params->get('groupId', null),
-            'quotePostId' => $params->get('quotePostId', null),
-        ]);
-    }
 
-    /**
-     * Convert ParameterBag to FCSearchParams
-     */
-    public static function toSearchParams(ParameterBag $params): FCSearchParams
-    {
-        return FCSearchParams::fromArray([
-            'keywords' => $params->get('keywords', ''),
-            'page' => $params->get('page', 1),
-            'perpage' => $params->get('perpage', 20),
-            'searchId' => $params->get('searchId', null),
-            'titleOnly' => $params->get('titleOnly', false),
-            'userId' => $params->get('userId', null),
-            'searchUser' => $params->get('searchUser', null),
-            'forumId' => $params->get('forumId', null),
-            'topicId' => $params->get('topicId', null),
-            'onlyIn' => $params->get('onlyIn', []),
-            'notIn' => $params->get('notIn', []),
-            'startedBy' => $params->get('startedBy', false),
-        ]);
-    }
 
     /**
      * Convert ParameterBag to FCGetUserInfoParams
@@ -363,50 +322,9 @@ class XenForoParamAdapter
         ]);
     }
 
-    /**
-     * Convert ParameterBag to FCFollowUserParams
-     */
-    public static function toFollowUserParams(ParameterBag $params): FCFollowUserParams
-    {
-        return FCFollowUserParams::fromArray([
-            'userId' => $params->get('userId', ''),
-            'follow' => $params->get('follow', true),
-        ]);
-    }
 
-    /**
-     * Convert ParameterBag to FCGetAlertParams
-     */
-    public static function toGetAlertParams(ParameterBag $params): FCGetAlertParams
-    {
-        return FCGetAlertParams::fromArray([
-            'page' => $params->get('page', 1),
-            'perpage' => $params->get('perpage', 20),
-            'unreadOnly' => $params->get('unreadOnly', false),
-        ]);
-    }
 
-    /**
-     * Convert ParameterBag to FCSubscribeForumParams
-     */
-    public static function toSubscribeForumParams(ParameterBag $params): FCSubscribeForumParams
-    {
-        return FCSubscribeForumParams::fromArray([
-            'forumId' => $params->get('forumId', ''),
-            'subscribe' => $params->get('subscribe', true),
-        ]);
-    }
 
-    /**
-     * Convert ParameterBag to FCSubscribeTopicParams
-     */
-    public static function toSubscribeTopicParams(ParameterBag $params): FCSubscribeTopicParams
-    {
-        return FCSubscribeTopicParams::fromArray([
-            'topicId' => $params->get('topicId', ''),
-            'subscribe' => $params->get('subscribe', true),
-        ]);
-    }
 
     /**
      * Convert ParameterBag to FCSubscribeForumParamsExtended
@@ -423,25 +341,5 @@ class XenForoParamAdapter
         ]);
     }
 
-    /**
-     * Convert ParameterBag to FCModerateTopicParams
-     */
-    public static function toModerateTopicParams(ParameterBag $params): FCModerateTopicParams
-    {
-        return FCModerateTopicParams::fromArray([
-            'topicId' => $params->get('topicId', ''),
-            'action' => $params->get('action', ''),
-        ]);
-    }
 
-    /**
-     * Convert ParameterBag to FCModeratePostParams
-     */
-    public static function toModeratePostParams(ParameterBag $params): FCModeratePostParams
-    {
-        return FCModeratePostParams::fromArray([
-            'postId' => $params->get('postId', ''),
-            'action' => $params->get('action', ''),
-        ]);
-    }
 }

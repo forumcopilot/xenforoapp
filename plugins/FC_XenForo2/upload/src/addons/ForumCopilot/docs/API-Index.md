@@ -396,37 +396,49 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 ### `getForum`
 
 - **Auth:** `optional`
-- **Description:** List forums, or a subtree under `forumId`. May include link subforums (external links): entries with `isLinkForum: true` have only `name` and `url` meaningful; the app should open `url` (e.g. in browser or webview).
+- **Description:** The forum list as XenForo's node list shows it to the visitor: categories, forums and link forums, nested in `subForums`, in display order. Link forums have `isLinkForum: true`, and only `name` and `url` mean something: the app should open `url` (e.g. in browser or webview).
 - **Params:**
-  - `forumId` (string, optional)
-  - `returnDescription` (bool, optional, default false)
+  - `forumId` (string, optional) — A forum or category (id or node name): only what is under it. Empty, absent or `0`: the whole list.
+  - `returnDescription` (bool, optional, default true) — Include each forum's description.
+- **Response:** `forums` (array). Each row:
+  - `id`, `name`, `description`, `parentId`, `displayOrder`, `url`, `subForums`, `isLinkForum`.
+  - `isRead` (forums; the member's read state), `canPost` (start a thread), `canReply` ("Post replies"), `canViewContent` ("View thread content").
+  - `threadCount`, `postCount`, and the last post: `lastPostId`, `lastPostDate` (Unix time), `lastPostUserId`, `lastPostUsername`, `lastThreadId`, `lastThreadTitle`, `lastThreadPrefixId`. Zero or empty without "View threads by others" (`privateInfo: true`).
+  - From 1.11.0, for forums:
+    - The member's watch: `canSubscribe`, `isSubscribed`, `notifyOn` (`thread`, `message`, `""` for none; null when not watched), `sendAlert`, `sendEmail`, `allowedWatchNotifications` (what the forum offers: `all`, `thread` or `none`).
+    - What starting a thread there takes, as XenForo's "Post thread" form: `canUpload`, `prefixes` (`id`, `title`, `group`: the prefixes the member may use), `requirePrefix`, `canTag`, `minTags`, `threadFields` (the custom thread fields the member fills in: `id`, `title`, `description`, `type`, `required`, `choices` (`value`, `title`), `group`, `maxLength`, `matchType`), `threadTypes` (`type`, `title`), `defaultThreadType`, `canCreatePoll`, `forumType`.
+    - `lastPostDateMs` (ms), `lastPostUserIconUrl`.
+  - Categories and link forums have `canUpload`, `canSubscribe` and `isSubscribed` (false), and none of the other 1.11.0 fields.
 
 ### `markAllAsRead`
 
 - **Auth:** `required`
-- **Description:** Marks forum(s) as read.
+- **Description:** Marks forums read, as XenForo's "Mark read" links: a forum with its sub-forums, every forum in a category, or every forum.
 - **Params:**
-  - `forumId` (string, optional)
-  - `date` (int, optional) — Unix timestamp.
+  - `forumId` (string, optional) — A forum or category (id or node name). Empty, `0` or `ALL`: every forum.
+  - `date` (int, optional) — Unix time to mark read up to; default (and for a future date): now.
 
 ### `getForumStatus`
 
 - **Auth:** `required`
-- **Description:** Returns status for multiple forums.
+- **Description:** Some forums' rows, as `getForum` has them (without the 1.11.0 fields and sub-forums). Forums the member can't see, categories and unknown ids are left out.
 - **Params:**
-  - `forumIds` (array<int>, required)
+  - `forumIds` (array<string>, required) — At most 100.
+- **Response:** `forums` (array).
 
 ### `getBoardStat`
 
 - **Auth:** `none`
-- **Description:** Returns board stats.
+- **Description:** The board's statistics, from XenForo's cached counts.
 - **Params:** none
+- **Response:** `totalThreads`, `totalPosts`, `totalMembers`, `activeMembers` (active in the last 30 days; counted at most every 10 minutes), `totalOnline`, `guestOnline`, `latestUserId`, `latestUsername`, `latestUserRegisterDate` (Unix time).
 
 ### `getParticipatedForum`
 
 - **Auth:** `required`
-- **Description:** Forums where the user posted.
+- **Description:** The forums the member has posted in (visible threads), in forum list order. Forums the member can't see are left out.
 - **Params:** none
+- **Response:** `forums` (array; rows as `getForumStatus`).
 
 ### `loginForum`
 
@@ -436,80 +448,117 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 
 ## Topic
 
+**Topic rows.** The topic lists (`getTopic`, `getTopTopic`, `getLatestTopic`,
+`getUnreadTopic`, `getParticipatedTopic`, `getSubscribedTopic`) and
+`getTopicByIds` return threads the visitor may view, each as:
+
+- `id`, `title`, `forumId`, `forumName`, `prefix` (title), `url`, `replyCount`, `viewCount`, `timestamp` (the last post's date, ms), `hasNewPosts`, `isClosed`, `isPinned`, `isApproved`, `isDeleted`, `hasPoll`, `likeCount` (reactions to the first post), `isSubscribed`, `canSubscribe`, `canReply`, `canViewContent`, `canRename`, `canDelete`, `canClose`, `canApprove`, `canStick`, `canMove`, `canMerge`, `isMoved` and `realTopicId` (a redirect left by a move, and the thread it points to; null when it doesn't point to a thread here).
+- `authorId`, `authorName`, `authorUserType`, `authorIconUrl`, `shortContent`: the last post in the lists, the thread starter and first post in `getTopicByIds`.
+- From 1.11.0: `starterId`, `starterName`, `startDate` (ms), `lastPosterId`, `lastPosterName`, `lastPosterIconUrl`, `lastPostedAt` (ms), `threadType`, `isSolved` and `solutionPostId` (questions; 0 when none), `tags` (names), `isIgnored` (started by a member the visitor ignores), `emailSubscribe` (the member's watch sends emails), `voteScore` and `voteCount` (XenForo 2.2+), `canVote` and `userVoted` (suggestions), `redirectUrl` (moved threads).
+- Kept for older apps, always the same: `participatedUserIds` ([]), `isStickySource` (as `isPinned`), `isAnnouncement`, `canBan`, `canReport`, `canUpload`, `isBanned`, `isMerged`, `canLike`, `isLiked` (false).
+
 ### `getTopic`
 
 - **Auth:** `optional`
-- **Description:** List threads in a forum.
+- **Description:** One page of a forum's threads, as XenForo's forum page lists them, without the sticky ones (`getTopTopic`). Moderators also get the moderated and deleted threads they may see; a member gets their own threads awaiting approval for a while after posting one. The forum's date limit applies ("Show older items" on the website: `noDateLimit` or `lastDays: -1`). Refused for a forum that doesn't exist or that the visitor can't see. For a forum whose threads the visitor may not read, the reply is `result: false` (`guest_denied` for a guest, `no_permission` for a member), with the list's fields still present (`topics` empty). A member without "View threads by others" gets their own threads.
 - **Params:**
-  - `forumId` (string, required)
-  - `startNum` (int, optional, default 0)
-  - `lastNum` (int, optional, default 19)
-  - `searchId` (string, optional)
+  - `forumId` (string, required) — Id or node name.
+  - `startNum` (int, optional, default 0) — First row, 0-based.
+  - `lastNum` (int, optional, default 19) — Last row, inclusive; at most 100 rows.
+  - `order` (string, optional, 1.11.0) — One of the forum's `sortOptions` keys (`last_post_date`, `post_date`, `title`, `reply_count`, `view_count`, `first_post_reaction_score`, and `vote_score` in suggestion forums), or `forum` for the forum's own default order. Default: by last post, newest first.
+  - `direction` (string, optional, default `desc`, 1.11.0) — `asc` or `desc`, with `order`.
+  - `prefixId` (int, optional, 1.11.0) — Only threads with this prefix (one the forum uses).
+  - `starterId` (int, optional, 1.11.0) or `starterName` (string, optional, 1.11.0) — Only threads this member started.
+  - `unread` (bool, optional, 1.11.0) — Only threads unread by the member.
+  - `lastDays` (int, optional, 1.11.0) — Threads with a post in the last N days, one of `dateLimitOptions` (-1: any time).
+  - `noDateLimit` (bool, optional, 1.11.0) — No date limit.
+  - `threadType` (string, optional, 1.11.0) — Only threads of this type (one the forum allows).
+  - `typeFilters` (object, optional, 1.11.0) — The forum type's own filters, as its filter form sends them: question forums `unanswered`, `unsolved`, `your_questions`; suggestion forums `your_suggestions`, `your_votes`, `suggestion_state`.
+  - Filters that don't apply to the forum are left out, as on the website.
+- **Response:**
+  - `totalTopicNum`, `topics` (topic rows).
+  - The forum: `forumId`, `forumName`, `canPost`, `canUpload`, `canSubscribe`, `isSubscribed`, `requirePrefix`, `prefixes` (`id`, `title`, and from 1.11.0 `group`), `unreadStickyCount` and `unreadAnnounceCount` (always 0); from 1.11.0 `notifyOn`, `sendAlert`, `sendEmail`, `allowedWatchNotifications` (as in `getForum`).
+  - From 1.11.0: `appliedFilters` (the filters in effect, by param name, with the `order` and `direction` used), `sortOptions` (`key`, `title`), `defaultOrder`, `defaultDirection` (the forum's own), `dateLimitDays` (0: none), `isDateLimited`, `dateLimitOptions` (-1, 7, 14, 30, 60, 90, 182, 365).
 
 ### `getTopTopic`
 
 - **Auth:** `optional`
-- **Description:** Sticky topics in a forum.
-- **Params:** same as `getTopic`
+- **Description:** A forum's sticky threads, as `getTopic` (with its filters and sort; no date limit).
+- **Params:** same as `getTopic`.
+- **Response:** as `getTopic` (`dateLimitDays` is 0).
 
 ### `getAnnTopic`
 
 - **Auth:** `optional`
-- **Description:** Announcement topics in a forum.
-- **Params:** same as `getTopic`
+- **Description:** Kept for older apps: XenForo has no announcements, so it always answers an empty list.
+- **Params:** `forumId` (string, required), `startNum`, `lastNum` (int, optional).
+- **Response:** `totalTopicNum` (0), `topics` ([]).
 
 ### `getLatestTopic`
 
 - **Auth:** `optional`
-- **Description:** Latest topics across the forum.
+- **Description:** What's New: recent threads in the forums shown there, newest activity first: threads the visitor may read, not those started by members they ignore, with a post within XenForo's read marking period (30 days by default; any age with the `unread` filter). A guest who may read no thread there gets `result: false` with `guest_denied`.
 - **Params:**
-  - `startNum` (int, optional, default 0)
-  - `lastNum` (int, optional, default 19)
-  - `searchId` (string, optional)
-  - `filters` (array, optional)
+  - `startNum` (int, optional, default 0), `lastNum` (int, optional, default 19) — At most 100 rows.
+  - `filters` (array<string>, optional) — Any of `unread`, `watched` (watched threads, and threads in watched forums), `participated`, `started`, `unanswered` (no replies); an object of name => bool works too. Guests get only `unanswered`.
+  - `includeModerated` (bool, optional, default false, 1.11.0) — Also threads awaiting approval that the visitor may see (moderators, and the member's own), as What's New shows them.
+- **Response:** `totalLatestNum` (also as `totalTopicNum`), `topics` (topic rows).
 
 ### `getUnreadTopic`
 
 - **Auth:** `required`
-- **Description:** Unread topics for current user.
-- **Params:** same as `getLatestTopic`
+- **Description:** The member's unread threads, as `getLatestTopic` with the `unread` filter always on.
+- **Params:** `startNum`, `lastNum`, `filters` — as `getLatestTopic`.
+- **Response:** `totalUnreadNum` (also as `totalTopicNum`), `topics`.
 
 ### `getParticipatedTopic`
 
 - **Auth:** `required`
-- **Description:** Topics the user participated in.
+- **Description:** The visible threads a member has posted in, newest activity first, however old, in forums the visitor may read, as XenForo's "Threads you've posted in".
 - **Params:**
-  - `userId` (string, optional)
-  - `username` (string, optional)
-  - `startNum` (int, optional, default 0)
-  - `lastNum` (int, optional, default 19)
-  - `searchId` (string, optional)
+  - `userId` (string, optional) or `username` (string, optional) — The member; default (and the member's own current or former name): the member themself. An unknown member is `not_found`.
+  - `startNum` (int, optional, default 0), `lastNum` (int, optional, default 19) — At most 100 rows.
+- **Response:** `totalParticipatedNum` (also as `totalTopicNum`), `topics`.
 
 ### `getTopicByIds`
 
 - **Auth:** `optional`
-- **Description:** Fetch topics by ids.
+- **Description:** Threads by id. Those the visitor can't view are left out (moderators may see soft-deleted ones).
 - **Params:**
-  - `topicIds` (array<string>, required)
+  - `topicIds` (array<string>, required) — At most 100.
+- **Response:** `topics` (topic rows describing the starter and first post).
 
 ### `newTopic`
 
 - **Auth:** `required`
-- **Description:** Create a new topic.
+- **Description:** Starts a thread, as XenForo's "Post thread" form: needs the permission to post threads in the forum, and XenForo's spam check, validation (title, message, prefix, tags, custom fields, poll; errors tied to a field come in `errors`) and flood limit apply. The thread may be held for approval. Afterwards the member watches it as their preference says, it is marked read, and the member's draft for the forum is deleted. `getForum` says what each forum requires.
 - **Params:**
-  - `forumId` (string, required)
-  - `subject` (string, required)
-  - `textBody` (string, required)
-  - `prefixId` (string, optional)
-  - `attachmentIds` (array<string>, optional)
-  - `groupId` (string, optional) — attachment temp hash.
+  - `forumId` (string, required) — Id or node name.
+  - `subject` (string, required) — The title (`title` is read too).
+  - `textBody` (string, required) — BBCode.
+  - `prefixId` (string, optional) — A prefix the member may use there; others are ignored.
+  - `groupId` (string, optional) — The upload hash of files uploaded for it (`uploadAttachment`).
+  - `tags` (array<string> or comma-separated string, optional, 1.11.0) — Where the member may tag threads in the forum.
+  - `customFields` (object, optional, 1.11.0) — Thread field id to value (a list for multiple choices). Required fields are checked even when it is absent.
+  - `threadType` (string, optional, 1.11.0) — One of the forum's `threadTypes`; default: the forum's default type. Another type is refused.
+  - `isPoll` (bool, optional, 1.11.0) — The same as `threadType: "poll"`.
+  - `pollQuestion` (string, 1.11.0), `pollOptions` (array<string>, 1.11.0) — For a poll.
+  - `pollMaxVotes` (int, optional, default 1, 1.11.0) — Choices a voter may pick; 0: unlimited.
+  - `pollChangeVote`, `pollPublicVotes` (bool, optional, default false, 1.11.0) — Voters may change their vote; votes are public.
+  - `pollViewResultsUnvoted` (bool, optional, default true, 1.11.0) — Results can be seen without voting.
+  - `pollCloseDays` (int, optional, default 0, 1.11.0) — Close the poll after N days; 0: never.
+  - `attachmentIds` — accepted and ignored.
+- **Response:** `topicId`, `state` (1: awaiting approval, 0: visible), and `attachmentsIgnored: true` (1.11.0) when `groupId` was sent to a forum where the member may not attach files.
 
 ### `markTopicRead`
 
 - **Auth:** `required`
-- **Description:** Mark topics as read.
+- **Description:** Marks threads read for the member, with XenForo's read marking (a forum is read once none of its threads are). Threads the member can't view are skipped.
 - **Params:**
-  - `topicIds` (array<string>, required)
+  - `topicIds` (array<string>, required) — At most 100.
+  - `lastPostId` (string, optional, 1.11.0) — A post in one of the threads: that thread is read up to it.
+  - `lastPostDate` (int, optional, 1.11.0) — Unix time: the threads are read up to it.
+  - Without them, each thread is read up to now.
 
 ## Post
 
@@ -824,45 +873,58 @@ for the signed-in member.
 
 ## Subscription
 
+XenForo's watched forums and threads.
+
 ### `getSubscribedForum`
 
 - **Auth:** `required`
-- **Description:** List watched forums.
+- **Description:** The member's watched forums, in forum list order, as XenForo's "Watched forums" page. Forums the member can no longer see are left out.
 - **Params:** none
+- **Response:** `totalForumsNum`, `forums`. Each: `id`, `name`, `description`, `threadCount`, `postCount` (0 without "View threads by others"), `canPost`, `isRead`, `url`, `subscribeMode` (number: 1 when the watch sends emails, otherwise 0); from 1.11.0 `parentId`, `canViewContent`, `notifyOn`, `sendAlert`, `sendEmail`, `allowedWatchNotifications` (as in `getForum`).
 
 ### `subscribeForum`
 
 - **Auth:** `required`
-- **Description:** Watch a forum.
+- **Description:** Watches a forum, as XenForo's "Watch forum" form: needs the permission to watch it. A new watch takes the options sent, and otherwise: new threads, alerts on, emails when `subscribeMode` is 1. A forum already watched keeps its options unless `notifyOn`, `sendAlert` or `sendEmail` is sent; then only those change. `notifyOn` is limited to what the forum allows.
 - **Params:**
-  - `forumId` (string, required)
-  - `notifyType` (string, optional) — e.g., `watch_no_email`, `watch_email`.
+  - `forumId` (string, required) — Id or node name, or `ALL`: every watched forum gets emails on or off (`sendEmail`, or else `subscribeMode` 1 / other), and alerts on or off when `sendAlert` is sent.
+  - `subscribeMode` (int, optional, default 0) — 0 to 3; 1: emails.
+  - `notifyOn` (string, optional, 1.11.0) — `thread` (new threads), `message` (new messages) or `""` (none).
+  - `sendAlert` (bool, optional, 1.11.0)
+  - `sendEmail` (bool, optional, 1.11.0)
+- **Response:** (1.11.0, not with `ALL`) `isSubscribed`, `notifyOn`, `sendAlert`, `sendEmail` — the watch as saved.
 
 ### `unsubscribeForum`
 
 - **Auth:** `required`
-- **Description:** Unwatch a forum.
-- **Params:** same as `subscribeForum`
+- **Description:** Stops watching a forum, also one the member can no longer see, as on the "Watched forums" page. A forum that isn't watched is still checked: an unknown or hidden forum is an error.
+- **Params:**
+  - `forumId` (string, required) — Forum id, or `ALL`: every watched forum.
 
 ### `getSubscribedTopic`
 
 - **Auth:** `required`
-- **Description:** List watched topics.
-- **Params:** none
+- **Description:** The member's watched threads, newest activity first, however old, as XenForo's "Watched threads" page.
+- **Params:**
+  - `startNum` (int, optional, default 0), `lastNum` (int, optional, default 19) — At most 100 rows.
+- **Response:** `totalSubscribedNum` (also as `totalTopicNum`), `topics` (topic rows).
 
 ### `subscribeTopic`
 
 - **Auth:** `required`
-- **Description:** Watch a topic.
+- **Description:** Watches a thread, as XenForo's "Watch thread" form: needs the permission to watch it. A thread already watched keeps its email option unless `emailSubscribe` is sent.
 - **Params:**
-  - `topicId` (string, required)
-  - `notifyType` (string, optional)
+  - `topicId` (string, required) — Thread id, or `ALL`: emails on or off for every watched thread.
+  - `emailSubscribe` (bool, optional, 1.11.0) — Also send emails.
+  - `subscribeMode` (int, optional, default 0) — Used without `emailSubscribe`: 1, 2 or 3 mean emails, 0 alerts only.
+- **Response:** (1.11.0, not with `ALL`) `isSubscribed` (true), `emailSubscribe` — the watch as saved.
 
 ### `unsubscribeTopic`
 
 - **Auth:** `required`
-- **Description:** Unwatch a topic.
-- **Params:** same as `subscribeTopic`
+- **Description:** Stops watching a thread, also one the member can no longer see (moved to a staff forum, deleted), as on the "Watched threads" page. A thread that isn't watched is still checked: an unknown or hidden thread is an error.
+- **Params:**
+  - `topicId` (string, required) — Thread id, or `ALL`: every watched thread.
 
 ## Moderation
 

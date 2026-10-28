@@ -228,6 +228,10 @@ class ForumCopilotPubApp extends PubApp
             'unlikePost' => 'SocialController@actionUnlikePost',
             'follow' => 'SocialController@actionFollow',
             'unfollow' => 'SocialController@actionUnfollow',
+            // 1.11.0: ignore a member (App Store guideline 1.2)
+            'ignoreUser' => 'SocialController@actionIgnoreUser',
+            'unignoreUser' => 'SocialController@actionUnignoreUser',
+            'getIgnoredUsers' => 'SocialController@actionGetIgnoredUsers',
             'getAlert' => 'SocialController@actionGetAlert',
 
             // Subscription

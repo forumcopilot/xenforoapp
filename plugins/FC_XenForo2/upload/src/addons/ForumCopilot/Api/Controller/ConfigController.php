@@ -93,7 +93,8 @@ class ConfigController extends AbstractController
             'userState' => $visitor->user_id ? (string)$visitor->user_state : '',
             'alert' => true,
             'searchUser' => true,
-            'ignoreUser' => false,
+            // ignoreUser / unignoreUser / getIgnoredUsers (1.11.0)
+            'ignoreUser' => true,
             'advancedMerge' => false,
             'advancedMove' => false,
             'pushType' => 'fcm',

@@ -144,6 +144,103 @@ class SocialController extends AbstractController
         }
     }
 
+    /**
+     * Ignore a member (1.11.0), as XenForo's Ignore button
+     * (MemberController::actionIgnore): their content shows collapsed
+     * (isIgnored on posts and messages), and their conversations and alerts
+     * stop. Staff can't be ignored. Params: userId (an id or a user name).
+     */
+    public function actionIgnoreUser(ParameterBag $params)
+    {
+        return $this->setIgnored($params, true);
+    }
+
+    /**
+     * Stop ignoring a member (1.11.0). Params: userId (an id or a user name).
+     */
+    public function actionUnignoreUser(ParameterBag $params)
+    {
+        return $this->setIgnored($params, false);
+    }
+
+    protected function setIgnored(ParameterBag $params, bool $ignore)
+    {
+        if ($error = $this->assertRegisteredUser()) { return $error; }
+
+        $userId = $params->get('userId', '');
+        if (!is_scalar($userId) || (string)$userId === '') {
+            return $this->apiError('User ID is required', null, ErrorCode::BAD_REQUEST);
+        }
+
+        try {
+            $user = is_numeric($userId)
+                ? $this->em()->find('XF:User', (int)$userId)
+                : $this->em()->findOne('XF:User', ['username' => (string)$userId]);
+            if (!$user) {
+                return $this->apiError(\XF::phrase('requested_user_not_found'), null, ErrorCode::NOT_FOUND);
+            }
+
+            $visitor = \XF::visitor();
+            $error = null;
+            if (!$user->canViewBasicProfile($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
+
+            $isIgnoring = $visitor->isIgnoring($user);
+            if ($ignore !== $isIgnoring) {
+                if ($ignore && !$visitor->canIgnoreUser($user, $error)) {
+                    return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+                }
+
+                // XF:User\Ignore on 2.2; aliased to IgnoreService on 2.3
+                $service = $this->service('XF:User\Ignore', $user, $visitor);
+                $userIgnored = $ignore ? $service->ignore() : $service->unignore();
+                if ($userIgnored && $userIgnored->hasErrors()) {
+                    return $this->apiFieldErrors($userIgnored->getErrors());
+                }
+            }
+
+            return $this->apiSuccess(['isIgnored' => $ignore]);
+
+        } catch (\Throwable $e) {
+            return $this->apiException($e, $ignore ? 'Failed to ignore member' : 'Failed to unignore member');
+        }
+    }
+
+    /**
+     * The members the visitor ignores (1.11.0), by name, as XenForo's
+     * account "Ignoring" page lists them.
+     */
+    public function actionGetIgnoredUsers(ParameterBag $params)
+    {
+        if ($error = $this->assertRegisteredUser()) { return $error; }
+
+        try {
+            $visitor = \XF::visitor();
+            $ignored = $visitor->Profile ? (array)$visitor->Profile->ignored : [];
+
+            $list = [];
+            if ($ignored) {
+                $users = $this->finder('XF:User')
+                    ->where('user_id', array_keys($ignored))
+                    ->order('username')
+                    ->fetch();
+                foreach ($users as $user) {
+                    $list[] = [
+                        'id' => (string)$user->user_id,
+                        'username' => $user->username,
+                        'iconUrl' => $this->getAbsoluteUrl($user->getAvatarUrl('s')),
+                    ];
+                }
+            }
+
+            return $this->apiSuccess(['total' => count($list), 'list' => $list]);
+
+        } catch (\Throwable $e) {
+            return $this->apiException($e, 'Failed to get ignored members');
+        }
+    }
+
     public function actionUnfollow(ParameterBag $params)
     {
         if ($error = $this->assertRegisteredUser()) { return $error; }

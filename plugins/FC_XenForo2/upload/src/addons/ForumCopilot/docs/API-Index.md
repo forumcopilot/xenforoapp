@@ -108,7 +108,7 @@ verification and security lock. A refused call returns HTTP 200 with
   - `browserLoginSchemes` (string[]) — App schemes the website may hand a sign-in to (see "Signing in and up on the website"); empty when that is off.
   - `userState` (string) — The signed-in member's XenForo state (`valid`, `email_confirm`, `moderated`, ...); empty for a guest.
   - `guestOkay`, `guestSearch`, `guestWhosOnline` (bool) — what guests may do (view some forum, search, see the online list).
-  - `conversation` and `alert` are always `true`; `ignoreUser`, `multiQuote`, `getTopicStatus`, `advancedMerge`, `advancedMove`, `modApprove`, `modDelete` and `modReport` are `false` because the API has no method behind them. `hookVersion`, `apiLevel`, `pushSlug`, `apiKey` and `releaseTimestamp` are kept for older apps and mean nothing.
+  - `conversation` and `alert` are always `true`; `ignoreUser` is `true` from 1.11.0 (ignoreUser, unignoreUser, getIgnoredUsers); `multiQuote`, `getTopicStatus`, `advancedMerge`, `advancedMove`, `modApprove`, `modDelete` and `modReport` are `false` because the API has no method behind them. `hookVersion`, `apiLevel`, `pushSlug`, `apiKey` and `releaseTimestamp` are kept for older apps and mean nothing.
   - Added in 1.11.0:
     - `advancedSearch` (true: search with `advanceSearchTopic`/`advanceSearchPost`), `minSearchLength`, `disableSearch`.
     - `boardInactiveMessage` (string) — why the board is closed; empty when open.
@@ -883,6 +883,29 @@ for the signed-in member.
 - **Params:**
   - `userId` (string, required) — an id, or a user name.
 
+
+### `ignoreUser` (1.11.0)
+
+- **Auth:** `required`
+- **Description:** Ignore a member, as XenForo's Ignore button: their posts and messages come with `isIgnored: true` (the app shows them collapsed), and their direct messages and alerts stop reaching the member. Staff members and oneself can't be ignored.
+- **Params:**
+  - `userId` (string, required) — an id, or a user name.
+- **Response:** `isIgnored` (true).
+
+### `unignoreUser` (1.11.0)
+
+- **Auth:** `required`
+- **Description:** Stop ignoring a member.
+- **Params:**
+  - `userId` (string, required) — an id, or a user name.
+- **Response:** `isIgnored` (false).
+
+### `getIgnoredUsers` (1.11.0)
+
+- **Auth:** `required`
+- **Description:** The members the member ignores, by name.
+- **Params:** none
+- **Response:** `total`, `list` (`id`, `username`, `iconUrl`).
 ### `getAlert`
 
 - **Auth:** `required`

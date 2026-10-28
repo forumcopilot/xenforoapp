@@ -322,8 +322,13 @@ class SocialController extends AbstractController
             // Optional (1.11.0): mark alerts read or unread before listing,
             // as XenForo's alert toggle and "Mark read" do
             $this->applyAlertMarking($params, $visitor, $alertRepo);
+            // The list below reads the alerts again, not the marked copies
+            $this->em()->clearEntityCache('XF:UserAlert');
 
             $alertsFinder = $alertRepo->findAlertsForUser($visitor->user_id);
+            // After XenForo's newest-first: alerts from the same second stay in
+            // one order from page to page
+            $alertsFinder->order('alert_id', 'DESC');
             if ($unreadOnly) {
                 $alertsFinder->where('read_date', 0);
             }

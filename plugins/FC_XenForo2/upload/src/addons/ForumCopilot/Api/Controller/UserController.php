@@ -238,10 +238,12 @@ class UserController extends AbstractController
             $signature = null;
             if ($canViewFullProfile && $user->Profile) {
                 try {
-                    $location = $user->Profile->location ?: null;
+                    // With the forum's censored words replaced, as the profile page shows them
+                    $censor = $this->app()->stringFormatter();
+                    $location = $user->Profile->location ? $censor->censorText($user->Profile->location) : null;
                     $website = $user->Profile->website ?: null;
-                    $about = $user->Profile->about ?: null;
-                    $signature = $user->Profile->signature ?: null;
+                    $about = $user->Profile->about ? $censor->censorText($user->Profile->about) : null;
+                    $signature = $user->Profile->signature ? $censor->censorText($user->Profile->signature) : null;
                 } catch (\Exception $e) {
                     // If Profile access fails, leave as null
                 }

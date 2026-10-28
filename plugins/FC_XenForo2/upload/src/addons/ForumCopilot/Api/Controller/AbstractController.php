@@ -17,6 +17,12 @@ use ForumCopilot\Entity\FCTopic;
 abstract class AbstractController extends Controller
 {
     /**
+     * A guest's no_permission is reported as guest_denied ("signing in may
+     * help"). Off where the methods are the sign-in pages themselves.
+     */
+    protected $guestDeniedForGuests = true;
+
+    /**
      * Not called: forumcopilot.php runs actions directly. Apps send no CSRF
      * token; the dispatcher instead accepts only requests whose Content-Type
      * is exactly application/json, which browsers can't send cross-site
@@ -125,7 +131,7 @@ abstract class AbstractController extends Controller
 
         $isGuest = !\XF::visitor()->user_id;
         $errorCode = $errorCode ?? ErrorCode::infer($message, $code, $isGuest);
-        if ($isGuest && $errorCode === ErrorCode::NO_PERMISSION) {
+        if ($isGuest && $errorCode === ErrorCode::NO_PERMISSION && $this->guestDeniedForGuests) {
             // A member might be allowed; tell the app that signing in may help
             $errorCode = ErrorCode::GUEST_DENIED;
         }

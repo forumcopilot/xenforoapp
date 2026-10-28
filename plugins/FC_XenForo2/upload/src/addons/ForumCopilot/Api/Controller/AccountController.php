@@ -24,6 +24,9 @@ require_once(__DIR__ . '/../../Result/FCAccountResult.php');
  */
 class AccountController extends AbstractController
 {
+    /** Sign-in and account methods: signing in is not what a guest's refusal here asks for */
+    protected $guestDeniedForGuests = false;
+
     protected const NO_BOARD_ACCESS_MESSAGE = 'Your account does not currently have access to this forum';
 
     /** XenForo's phrase (you_already_logged_in) links to the forum list. */
@@ -1250,10 +1253,9 @@ class AccountController extends AbstractController
                 $optionInput['show_dob_date'] = (bool)$optionData['showDobDate'];
             }
 
-            // Save user options
+            // User options
             if (!empty($optionInput)) {
-                $userOptions = $user->getRelationOrDefault('Option');
-                $form->setupEntityInput($userOptions, $optionInput);
+                $form->setupEntityInput($user->getRelationOrDefault('Option'), $optionInput);
                 $changed['account_details_edit'] = true;
             }
 
@@ -1264,6 +1266,13 @@ class AccountController extends AbstractController
                     $user->toggleActivitySummaryEmail((bool)$enableActivitySummaryEmail);
                 });
                 $changed['account_details_edit'] = true;
+            }
+
+            // The options are saved on their own: the user is saved only when
+            // user fields are sent, and options alone were otherwise lost
+            if (!empty($optionInput) || ($enableActivitySummaryEmail !== null && method_exists($user, 'toggleActivitySummaryEmail'))) {
+                $userOptions = $user->getRelationOrDefault('Option');
+                $form->validateEntity($userOptions)->saveEntity($userOptions);
             }
 
             // Prepare profile input
@@ -1532,7 +1541,8 @@ class AccountController extends AbstractController
             
             // Check if password reset can be triggered
             if (!$passwordReset->canTriggerConfirmation($error)) {
-                return $this->apiError($error ? $error : 'Password reset cannot be triggered at this time', null, ErrorCode::VALIDATION);
+                // XenForo's only refusal here is its time limit between requests
+                return $this->apiError($error ? $error : 'Password reset cannot be triggered at this time', null, ErrorCode::FLOOD);
             }
 
             // Trigger the confirmation (sends email)
@@ -1566,7 +1576,7 @@ class AccountController extends AbstractController
         if ($attemptRepo->countLoginAttemptsSince($cutOff, $ip, self::LOST_PASSWORD_LOGIN) >= self::LOST_PASSWORD_LIMIT) {
             $oldest = (int)$this->app()->db()->fetchOne(
                 'SELECT MIN(attempt_date) FROM xf_login_attempt WHERE attempt_date >= ? AND ip_address = ? AND login = ?',
-                [$cutOff, \XF\Util\Ip::stringToBinary($ip), self::LOST_PASSWORD_LOGIN]
+                [$cutOff, \XF\Util\Ip::convertIpStringToBinary($ip), self::LOST_PASSWORD_LOGIN]
             );
             $wait = max(1, ($oldest ?: \XF::$time) + self::LOST_PASSWORD_WINDOW - \XF::$time);
             return $this->apiError(

@@ -377,13 +377,19 @@ class SearchController extends AbstractController
     }
 
     /**
-     * Post rows for search results (post results only).
+     * Post rows for search results. XenForo's post search also finds threads
+     * by their title; those come as the thread's first post, once.
      */
     protected function postRowsForResults(array $results): array
     {
         $rows = [];
+        $seen = [];
         foreach ($results as $entity) {
-            if ($entity instanceof \XF\Entity\Post) {
+            if ($entity instanceof \XF\Entity\Thread) {
+                $entity = $entity->FirstPost;
+            }
+            if ($entity instanceof \XF\Entity\Post && !isset($seen[$entity->post_id]) && $entity->canView()) {
+                $seen[$entity->post_id] = true;
                 $rows[] = $this->convertPostToApiFormat($entity);
             }
         }

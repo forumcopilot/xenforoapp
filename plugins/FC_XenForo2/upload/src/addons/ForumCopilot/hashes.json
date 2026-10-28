@@ -5,8 +5,8 @@
   "src/addons/ForumCopilot/Adapter/XenForoParamAdapter.php": "58ceb9160b5190c2f199fb45f67975b7a9f9382a52303f42f37e093123d57c06",
   "src/addons/ForumCopilot/Admin/Controller/Option.php": "0664e88e477f3d3f6517075478ddd9ad4ce2fd6b225062aa7883a92f52e648ae",
   "src/addons/ForumCopilot/Admin/View/Option/Index.php": "2f6a1de78ecfa7cfa3be14f2404f6f6ddc48b248a884e976f662f8adc2a41bfe",
-  "src/addons/ForumCopilot/Api/Controller/AbstractController.php": "32ae6d045e757409e07f39d44c5523a7a8bc9878596a796d452a055b82306a37",
-  "src/addons/ForumCopilot/Api/Controller/AccountController.php": "382345a5401dd042346e7f12be7d03ddce9f40993fbda1cfcf75377e1edaf61c",
+  "src/addons/ForumCopilot/Api/Controller/AbstractController.php": "4ce601ccf7022bbecb8db3630a19c267173df94799984505f8772014444c98e3",
+  "src/addons/ForumCopilot/Api/Controller/AccountController.php": "77757c74beedff2339ec2439747bff1408b98e542ea1f39caa68c794f87b6257",
   "src/addons/ForumCopilot/Api/Controller/AttachmentController.php": "2953a355485ad5dd5e48a845470a88b867e07e07b11f73d242b2e5ab305e7e07",
   "src/addons/ForumCopilot/Api/Controller/ConfigController.php": "4498bf737b869449077c8b0b9a79bc761c8d60400117ac850d5597e6cdb61c37",
   "src/addons/ForumCopilot/Api/Controller/DeviceController.php": "1dac79af4eaf36b6054f604e4a34809f1e04385ee7fb9412cba9a9c03fa8bff4",
@@ -15,11 +15,11 @@
   "src/addons/ForumCopilot/Api/Controller/ModerationController.php": "44d33cf143a50a0a5ad1a52a531e1b5b55a09a0c754f54b4fa9e78cdc779ee51",
   "src/addons/ForumCopilot/Api/Controller/PostController.php": "6b5f983a3ad58da3a1d6d56bc10846a17798ca7a6ba7319de91fd447ec3c2940",
   "src/addons/ForumCopilot/Api/Controller/PrivateConversationController.php": "9a823d9fbc436784449ad644d6da1b9c8e86d77f6dce9c1e4f5635d871d0d5e3",
-  "src/addons/ForumCopilot/Api/Controller/SearchController.php": "8ad2806bcf0bb67f232512771178abadee8c8cbac8995c90f41bf71a2eaa3c01",
-  "src/addons/ForumCopilot/Api/Controller/SocialController.php": "adfee0154ecf7c1e776d174189d94e5cdf72a22868e80d765d42636d77854620",
+  "src/addons/ForumCopilot/Api/Controller/SearchController.php": "3c06fcf8de8fc72414e8af0c51a0c191a0b5e20fa35c1cb2f81f4145452bb9b4",
+  "src/addons/ForumCopilot/Api/Controller/SocialController.php": "8936c6a4358488a7065b9c62f3e5e4e8d12b165e42e909142aaf875722311a23",
   "src/addons/ForumCopilot/Api/Controller/SubscriptionController.php": "d6fa77788aa6ed4de0e38113e85317fc61750298ae8085216f67723dd64c9bfc",
   "src/addons/ForumCopilot/Api/Controller/TopicController.php": "a07c90233d3cd456fc068f3425d0009bd66f1efd1efbc2ba0262d9ccb031f088",
-  "src/addons/ForumCopilot/Api/Controller/UserController.php": "5705ff465fd7b6ca868bafffb4a3679a9841d834931aaa23cedf274451f0ec4d",
+  "src/addons/ForumCopilot/Api/Controller/UserController.php": "4cf6f2b26e80995a986c4e4d0bfeecf779c264b02ed8ae656f43429b05774a3e",
   "src/addons/ForumCopilot/Api/ErrorCode.php": "44c3944d82b1bb5a8ce5d7c14dca56d5d4e9e085df7d80e7036da28a98be140c",
   "src/addons/ForumCopilot/Api/SettingsProvider/EmailPrivacyProvider.php": "ce15295a3fc18653374d7d752232fe4cdda15685955fc3b7b32f8b74457bf069",
   "src/addons/ForumCopilot/Api/SettingsProvider/PushNotificationsProvider.php": "5cc10ced88b7d0acf0535f96cab09ddef2ce0433185bc798f8793ea0942b98cb",
@@ -183,5 +183,5 @@
   "src/addons/ForumCopilot/docs/GET-FORUM-LINK-SUBFORUMS.md": "8208631a8cfb4331ae4b504a7a4bc56fd5fbf4871695c9d1c4a0cfaa992c69fc",
   "src/addons/ForumCopilot/docs/URL-Parsing-Rules.md": "041c68b754c9df192d20b3b29ec3de7b122b64788358fdfe8b5b728afa4f2ee8",
   "src/addons/ForumCopilot/docs/iOS-Passkeys-Associated-Domains.md": "262c2b4c1de6e8e11342c33e9a723585a2c9787963ee69e25ce4c9d5feefcf4e",
-  "src/addons/ForumCopilot/webroot_files/forumcopilot.php": "909ec45bdb892dbbe090959dc36483325dd134c88ab7eae80bbd2fd0389ea368"
+  "src/addons/ForumCopilot/webroot_files/forumcopilot.php": "b340308effec5cd7a7a572df6d0cb847587101991f811cb32075d4b8298b0124"
 }

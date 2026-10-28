@@ -114,6 +114,9 @@ class ForumCopilotPubApp extends PubApp
 
                 $method = $input['method'] ?? '';
                 $params = $input['params'] ?? [];
+                if (!is_array($params)) {
+                    return $this->createJsonError('params must be an object', 200, 'bad_request');
+                }
 
                 if (empty($method)) {
                     return $this->createJsonError('Method parameter is required', 200, 'bad_request');

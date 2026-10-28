@@ -130,8 +130,12 @@ class SubscriptionController extends AbstractController
             $forumWatchRepo = $this->repository('XF:ForumWatch');
 
             if ($fcParams->forumId === 'ALL') {
-                $sendEmail = $fcParams->sendEmail ?? ($fcParams->subscribeMode == 1);
-                $forumWatchRepo->setWatchStateForAll($visitor, $sendEmail ? 'watch_email' : 'watch_no_email');
+                // Emails change only when asked: sendEmail, or subscribeMode
+                // (1-3 = emails, as for threads)
+                if ($fcParams->sendEmail !== null || $params->get('subscribeMode') !== null) {
+                    $sendEmail = $fcParams->sendEmail ?? ((int)$fcParams->subscribeMode >= 1);
+                    $forumWatchRepo->setWatchStateForAll($visitor, $sendEmail ? 'watch_email' : 'watch_no_email');
+                }
                 if ($fcParams->sendAlert !== null) {
                     $forumWatchRepo->setWatchStateForAll($visitor, $fcParams->sendAlert ? 'watch_alert' : 'watch_no_alert');
                 }
@@ -152,7 +156,8 @@ class SubscriptionController extends AbstractController
             if (!$watch || $fcParams->hasWatchOptions()) {
                 $notifyOn = $fcParams->notifyOn ?? ($watch ? $watch->notify_on : 'thread');
                 $sendAlert = $fcParams->sendAlert ?? ($watch ? (bool)$watch->send_alert : true);
-                $sendEmail = $fcParams->sendEmail ?? ($watch ? (bool)$watch->send_email : $fcParams->subscribeMode == 1);
+                // subscribeMode 1-3 (instant, daily, weekly) all mean emails, as for threads
+                $sendEmail = $fcParams->sendEmail ?? ($watch ? (bool)$watch->send_email : (int)$fcParams->subscribeMode >= 1);
 
                 // What the forum allows, as actionWatch limits it
                 if ($forum->allowed_watch_notifications == 'none') {
@@ -206,8 +211,12 @@ class SubscriptionController extends AbstractController
             if ($forumId === 'ALL') {
                 $forumWatchRepo->setWatchStateForAll($visitor, 'delete');
             } else {
-                $watch = is_numeric($forumId) ? $this->em()->find('XF:ForumWatch', [
-                    'node_id' => (int)$forumId,
+                // A node name, as subscribeForum accepts, names the same forum
+                $nodeId = is_numeric($forumId)
+                    ? (int)$forumId
+                    : (int)$this->app()->db()->fetchOne('SELECT node_id FROM xf_node WHERE node_name = ?', (string)$forumId);
+                $watch = $nodeId ? $this->em()->find('XF:ForumWatch', [
+                    'node_id' => $nodeId,
                     'user_id' => $visitor->user_id,
                 ]) : null;
                 if ($watch) {
@@ -251,6 +260,7 @@ class SubscriptionController extends AbstractController
             $visitor = \XF::visitor();
 
             $finder = $this->repository('XF:Thread')->findThreadsForWatchedList();
+            $this->addTopicListWith($finder);
             // XenForo filters each page by canView; leaving out forums the
             // member can't see first keeps pages full and the total right.
             $finder->where('node_id', $this->repository('XF:Forum')->getViewableForums()->keys());

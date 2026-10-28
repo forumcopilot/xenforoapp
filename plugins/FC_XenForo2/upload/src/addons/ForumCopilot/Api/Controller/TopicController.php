@@ -849,6 +849,12 @@ class TopicController extends AbstractController
                 return $this->apiError(\XF::phrase('requested_member_not_found'), null, ErrorCode::NOT_FOUND);
             }
 
+            // Another member's threads follow their profile privacy, as getUserReplyPost does
+            $error = null;
+            if ($targetUser->user_id != $visitor->user_id && !$targetUser->canViewFullProfile($error)) {
+                return $this->apiError($error ?: \XF::phrase('do_not_have_permission'), null, ErrorCode::NO_PERMISSION);
+            }
+
             $finder = $this->repository('XF:Thread')->findThreadsWithPostsByUser($targetUser->user_id);
             $finder->where('discussion_state', 'visible');
             $this->addTopicListWith($finder);

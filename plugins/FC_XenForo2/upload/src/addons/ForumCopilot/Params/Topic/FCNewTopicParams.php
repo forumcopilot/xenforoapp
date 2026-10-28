@@ -84,7 +84,7 @@ class FCNewTopicParams
             $data['prefixId'] ?? '',
             $data['attachmentIds'] ?? [],
             $data['groupId'] ?? null,
-            $data['isPoll'] ?? false,
+            self::toBool($data['isPoll'] ?? false),
             $data['pollQuestion'] ?? null,
             $data['pollOptions'] ?? []
         );
@@ -92,9 +92,9 @@ class FCNewTopicParams
         $params->customFields = $data['customFields'] ?? null;
         $params->threadType = $data['threadType'] ?? '';
         $params->pollMaxVotes = $data['pollMaxVotes'] ?? null;
-        $params->pollChangeVote = $data['pollChangeVote'] ?? null;
-        $params->pollPublicVotes = $data['pollPublicVotes'] ?? null;
-        $params->pollViewResultsUnvoted = $data['pollViewResultsUnvoted'] ?? null;
+        $params->pollChangeVote = isset($data['pollChangeVote']) ? self::toBool($data['pollChangeVote']) : null;
+        $params->pollPublicVotes = isset($data['pollPublicVotes']) ? self::toBool($data['pollPublicVotes']) : null;
+        $params->pollViewResultsUnvoted = isset($data['pollViewResultsUnvoted']) ? self::toBool($data['pollViewResultsUnvoted']) : null;
         $params->pollCloseDays = $data['pollCloseDays'] ?? null;
         return $params;
     }
@@ -131,7 +131,7 @@ class FCNewTopicParams
             $errors[] = 'groupId must be string or null';
         }
 
-        if (!is_bool($this->isPoll)) {
+        if (!is_bool($this->isPoll) && $this->isPoll !== null) {
             $errors[] = 'isPoll must be boolean';
         }
 
@@ -231,5 +231,21 @@ class FCNewTopicParams
             'public_votes' => $this->pollPublicVotes ? 1 : 0,
             'view_results_unvoted' => ($this->pollViewResultsUnvoted ?? true) ? 1 : 0,
         ];
+    }
+
+    /**
+     * A flag as JSON true/false, 1/0 or the strings "true"/"false"/"1"/"0";
+     * anything else is left for validate() to refuse.
+     */
+    protected static function toBool($value)
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+        if (is_int($value) || (is_string($value) && $value !== '')) {
+            $bool = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            return $bool ?? $value;
+        }
+        return $value;
     }
 }

@@ -117,6 +117,10 @@ verification and security lock. A refused call returns HTTP 200 with
     - `tosUrl`, `privacyPolicyUrl`, `contactUrl` (string) — empty when the forum has no such page.
     - `helpPages` (array) — `id`, `title`, `url` of the active help pages.
     - `policyAcceptance` — `required`, `termsRequired`, `privacyRequired`, `acceptUrl`: the member still has to accept updated terms or privacy policy on the website. Reported only; the app isn't refused.
+  - Added after 1.11.0 (unreleased): the forum itself, so the app can add a forum from its address alone.
+    - `boardTitle`, `boardUrl` (string) — the forum's name and address (XenForo's options).
+    - `boardIcon` (string) — the default style's app icon (the large one first) or its favicon, as an absolute URL; empty when the style has none.
+    - `siteId` (string) — the site id forumcopilot.com gave the forum; empty until the add-on's options are saved.
 
 ## Account
 

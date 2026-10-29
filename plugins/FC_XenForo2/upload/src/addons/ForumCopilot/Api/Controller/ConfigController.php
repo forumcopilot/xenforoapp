@@ -129,6 +129,15 @@ class ConfigController extends AbstractController
             'contactUrl' => $this->getAbsoluteUrl((string)$this->app->container('contactUrl')),
             'helpPages' => $this->getHelpPages(),
             'policyAcceptance' => $this->getPolicyAcceptance(),
+
+            // The forum itself, so the app can add a forum from its address
+            // alone: the name and address it gives itself, its icon, and
+            // the site id forumcopilot.com gave it (empty until the add-on's
+            // options are saved).
+            'boardTitle' => (string)$options->boardTitle,
+            'boardUrl' => (string)$options->boardUrl,
+            'boardIcon' => $this->getBoardIcon(),
+            'siteId' => (string)($options->fc_site_id ?? ''),
         ];
 
         // Create FCConfigResult object and return it
@@ -273,6 +282,37 @@ class ConfigController extends AbstractController
      *
      * @return array<string, mixed>|null
      */
+    /**
+     * The forum's icon as an absolute URL: the default style's app icon (the
+     * large one first, as XenForo's web app manifest has them), else its
+     * favicon; empty when the style has none.
+     */
+    protected function getBoardIcon(): string
+    {
+        try
+        {
+            $style = \XF::app()->style((int)\XF::options()->defaultStyleId);
+            if (!$style)
+            {
+                return '';
+            }
+            foreach (['publicIconUrlLarge', 'publicIconUrl', 'publicFaviconUrl'] AS $name)
+            {
+                $url = $style->getProperty($name);
+                // Template code or, on 2.3, a CSS variable is not an address
+                if (is_string($url) && trim($url) !== '' && strpos($url, '{') === false && stripos(trim($url), 'var(') !== 0)
+                {
+                    return $this->getAbsoluteUrl(trim($url));
+                }
+            }
+        }
+        catch (\Throwable $e)
+        {
+            \XF::logException($e, false, 'ForumCopilot: reading the icon for getConfig: ');
+        }
+        return '';
+    }
+
     protected function getStyleInfo(): ?array
     {
         try

@@ -108,6 +108,20 @@ class FCConfigResult
     /** @var array{required: bool, privacyRequired: bool, termsRequired: bool, acceptUrl: string} Updated policies the member hasn't accepted */
     public $policyAcceptance = [];
 
+    // After 1.11.0: the forum itself, for adding a forum by its address
+
+    /** @var string The forum's name (XenForo's boardTitle) */
+    public $boardTitle = '';
+
+    /** @var string The forum's own address (XenForo's boardUrl) */
+    public $boardUrl = '';
+
+    /** @var string The default style's app icon or favicon, absolute; empty when it has none */
+    public $boardIcon = '';
+
+    /** @var string The site id forumcopilot.com gave the forum; empty until the add-on's options are saved */
+    public $siteId = '';
+
     public function __construct($data = [])
     {
         // Set all properties from data array

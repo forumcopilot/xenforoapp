@@ -6,6 +6,9 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon, not yet released (after v1.11.0)
+- `getConfig` names the forum, so the app can add a forum from its address alone: `boardTitle` and `boardUrl` (XenForo's options), `boardIcon` (the default style's app icon, large first, else its favicon, as an absolute URL; empty when the style has none) and `siteId` (the site id forumcopilot.com gave the forum; empty until the add-on's options are saved). Checked on XenForo 2.2.19 and 2.3.7, with and without an icon set.
+
 ### Bundled addon (v1.10.0 → v1.11.0, the `addon-v1.11.0` release)
 - A review of all 105 API methods against XenForo's own pages and services; each method now does what the matching XenForo page does. New behaviour comes as new response fields and new optional params, plus three new methods for ignoring members, so a 1.x app keeps working; where a 1.x app sees a difference, it is a fix (listed below). `docs/API-Index.md` describes every method as it now is.
 - Errors: every refusal answers HTTP 200 (the app reads `resultText` only from 2xx replies), including "log in first" (was 401), flood checks (was 429) and the dispatcher's own errors. Requests must be JSON with the media type `application/json`. Replies carry `Content-Type: application/json` (it was `unknown/unknown`).

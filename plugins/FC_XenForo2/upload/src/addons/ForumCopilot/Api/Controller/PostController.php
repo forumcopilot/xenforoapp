@@ -415,6 +415,17 @@ class PostController extends AbstractController
         $row['canApprove'] = $post->canApproveUnapprove();
         $row['canUndelete'] = $post->message_state === 'deleted' && $post->canUndelete();
 
+        // The author's title under their name, as on the website
+        $row['authorTitle'] = $this->getMessageUserTitle($user);
+
+        // XenForo's "Last edited" line (post_macros::post_last_edit): when,
+        // and whether someone other than the author edited it ("Last edited
+        // by a moderator"); the website never names the editor. XenForo
+        // dates an edit only as its "Display 'last edited' message" option
+        // says. 0 and false for a post that shows no such line.
+        $row['lastEditDate'] = $post->last_edit_date * 1000;
+        $row['lastEditByModerator'] = $post->last_edit_date > 0 && $post->last_edit_user_id != $post->user_id;
+
         // The author's signature (BBCode), when the visitor shows signatures
         $row['signature'] = !empty($context['showSignatures']) ? $this->getPostSignature($post) : null;
 
@@ -528,6 +539,7 @@ class PostController extends AbstractController
             ? $this->getPostLikeFlags($firstPost)
             : ['canLike' => false, 'isLiked' => false];
         $solutionPostId = $this->getQuestionSolutionPostId($thread);
+        $watchStatus = $this->getThreadWatchStatus($thread);
 
         // A redirect left behind when a thread was moved: XenForo's thread
         // page sends the visitor on to the target (RedirectHandler::
@@ -558,8 +570,8 @@ class PostController extends AbstractController
             'viewCount' => $thread->view_count,
             'hasNewPosts' => $thread->isUnread(),
             'isClosed' => !$thread->discussion_open,
-            'isSubscribed' => $thread->isWatched(),
-            'canSubscribe' => $thread->canWatch(),
+            'isSubscribed' => $watchStatus['isWatched'],
+            'canSubscribe' => $watchStatus['canWatch'],
             'url' => $this->buildLink('canonical:threads', $thread),
             'shortContent' => $firstPost ? $this->getShortContent($firstPost->message) : '',
             'participatedUserIds' => [],
@@ -595,6 +607,10 @@ class PostController extends AbstractController
             // suggestions and questions. Read-only.
             'threadType' => (string)$thread->discussion_type,
             'solutionPostId' => $solutionPostId ? (string)$solutionPostId : null,
+            // As in topic rows: the tags the thread page lists, and whether
+            // the member's watch also sends emails (the Watch form's option)
+            'tags' => $this->getThreadTagNames($thread),
+            'emailSubscribe' => $watchStatus['emailSubscribe'],
         ] + $this->getContentVoteFields($thread);
     }
 

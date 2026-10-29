@@ -458,7 +458,7 @@ Not API methods: pages of the forum the app opens in the system browser sheet.
 
 - `id`, `title`, `forumId`, `forumName`, `prefix` (title), `url`, `replyCount`, `viewCount`, `timestamp` (the last post's date, ms), `hasNewPosts`, `isClosed`, `isPinned`, `isApproved`, `isDeleted`, `hasPoll`, `likeCount` (reactions to the first post), `isSubscribed`, `canSubscribe`, `canReply`, `canViewContent`, `canRename`, `canDelete`, `canClose`, `canApprove`, `canStick`, `canMove`, `canMerge`, `isMoved` and `realTopicId` (a redirect left by a move, and the thread it points to; null when it doesn't point to a thread here).
 - `authorId`, `authorName`, `authorUserType`, `authorIconUrl`, `shortContent`: the last post in the lists, the thread starter and first post in `getTopicByIds`.
-- From 1.11.0: `starterId`, `starterName`, `startDate` (ms), `lastPosterId`, `lastPosterName`, `lastPosterIconUrl`, `lastPostedAt` (ms), `threadType`, `isSolved` and `solutionPostId` (questions; 0 when none), `tags` (names), `isIgnored` (started by a member the visitor ignores), `emailSubscribe` (the member's watch sends emails), `voteScore` and `voteCount` (XenForo 2.2+), `canVote` and `userVoted` (suggestions), `redirectUrl` (moved threads).
+- From 1.11.0: `starterId`, `starterName`, `startDate` (ms), `lastPosterId`, `lastPosterName`, `lastPosterIconUrl`, `lastPostedAt` (ms), `threadType`, `isSolved` and `solutionPostId` (questions; 0 when none), `tags` (names; none while the forum's tagging is off, after 1.11.0), `isIgnored` (started by a member the visitor ignores), `emailSubscribe` (the member's watch sends emails), `voteScore` and `voteCount` (XenForo 2.2+), `canVote` and `userVoted` (suggestions), `redirectUrl` (moved threads).
 - Kept for older apps, always the same: `participatedUserIds` ([]), `isStickySource` (as `isPinned`), `isAnnouncement`, `canBan`, `canReport`, `canUpload`, `isBanned`, `isMerged`, `canLike`, `isLiked` (false).
 
 ### `getTopic`
@@ -581,12 +581,22 @@ attributes on the parts an app draws itself:
 | `<blockquote>` (a quote) | `data-quote-name`; `data-quote-type` and `data-quote-id` (e.g. `post`, 1206); `data-quote-member-id` |
 | `<a>` (a mention) | `data-user-id` |
 | `<span>` around an attachment | `data-attachment-id`, `data-attachment-full` (1 or 0) |
-| `<div>` (a media embed, BBCode MEDIA) | `data-media-site`, `data-media-key`, `data-media-url` (a link when the site has a plain URL pattern) |
+| `<div>` (a media embed, BBCode MEDIA) | `data-media-site`, `data-media-key`, `data-media-url` (the media's page; empty when none can be built) |
 | `<details>` (a spoiler) | `data-spoiler`, `data-spoiler-title`; inline spoilers: `<span data-inline-spoiler>` |
 | `<div>` (a link preview) | `data-unfurl`, `data-url`, `data-title`, `data-description`, `data-image`, `data-favicon` |
 
 Code blocks are `<pre data-lang>`, tables `<div class="xfBb-table"><table>`.
 `contentHtml` is empty if rendering fails; `content` is always sent.
+
+`data-media-url` (in 1.11.0 only for sites with a plain URL pattern; after
+1.11.0 for every site): for the sites XenForo ships, built from the key as
+XenForo writes it, with the start time, playlist or private link it holds
+(`https://www.youtube.com/watch?v=…&t=…&list=…`, `https://vimeo.com/…/…#t=…s`,
+`https://clips.twitch.tv/…`, `https://open.spotify.com/track/…`); posts on X
+are `https://x.com/i/status/{id}` (was `twitter.com/statuses/{id}`), TikTok
+videos `https://www.tiktok.com/@/video/{id}`. For other sites, the site's
+oEmbed URL scheme or a match URL with the key filled in, as long as the site's
+own patterns read that address back as the same key; otherwise empty.
 
 **Poll (view & vote):** See [API-Poll.md](API-Poll.md) for full poll object schema, `hasPoll`/`poll` in thread responses, and `votePoll`.
 
@@ -602,9 +612,9 @@ Code blocks are `<pre data-lang>`, tables `<div class="xfBb-table"><table>`.
   - `contentHtml` (bool, optional, default false, 1.11.0) — Also send each post (and signature) as HTML: `contentHtml`, `signatureHtml`. See "Content as HTML" below.
 - **Response:**
   - `totalPostNum` (int) — Visible posts in the thread.
-  - `posts` (array) — Each post: `id`, `topicId`, `authorId`, `authorName`, `authorUserType`, `authorIconUrl`, `timestamp` (ms), `title` (first post only), `content` (BBCode, with the forum's censored words replaced and images through its image proxy), `position` (the post's number), `isFirstPost`, `isApproved`, `isDeleted`, `canEdit`, `canDelete`, `canReport`, `canLike`, `isLiked`, `likeCount`, `likesInfo`, `attachments`. From 1.11.0: `isAuthorOnline`, `isIgnored` (the visitor ignores the author), `canApprove`, `canUndelete`, `signature` (BBCode; null when there is none or the visitor hides signatures), `isSolution`, `voteScore`, `visitorVote` (`up`, `down` or null), `canContentVote`.
+  - `posts` (array) — Each post: `id`, `topicId`, `authorId`, `authorName`, `authorUserType`, `authorIconUrl`, `timestamp` (ms), `title` (first post only), `content` (BBCode, with the forum's censored words replaced and images through its image proxy), `position` (the post's number), `isFirstPost`, `isApproved`, `isDeleted`, `canEdit`, `canDelete`, `canReport`, `canLike`, `isLiked`, `likeCount`, `likesInfo`, `attachments`. From 1.11.0: `isAuthorOnline`, `isIgnored` (the visitor ignores the author), `canApprove`, `canUndelete`, `signature` (BBCode; null when there is none or the visitor hides signatures), `isSolution`, `voteScore`, `visitorVote` (`up`, `down` or null), `canContentVote`. After 1.11.0 (unreleased): `authorTitle` (the title under the author's name, as the website shows it: custom title, group title or title ladder, "Guest"-style group titles for guests; empty when the website shows none, and plain text), `lastEditDate` (ms; 0 when the post shows no "Last edited" line, which XenForo adds only as its "Display 'last edited' message" option says) and `lastEditByModerator` (true when someone other than the author made that edit: the website says "Last edited by a moderator" and never names the editor).
   - Each attachment: `id`, `fileName`, `fileSize`, `mimeType`, `url` (empty without the permission to view attachments), `thumbnailUrl`, `isImage`, `width`, `height`, `isInline`, `canViewUrl`, `canViewThumbnailUrl`, and from 1.11.0 `fileSizePrintable`, `isVideo`, `isAudio`, `typeGrouping`, `icon`, `iconName` (where the XenForo version has them).
-  - The thread, as in topic rows: `id`, `title`, `forumId`, `forumName`, `prefix`, `authorId`, `authorName`, `authorIconUrl`, `timestamp`, `replyCount`, `viewCount`, `url`, `isClosed`, `isPinned`, `isApproved`, `isDeleted`, `isSubscribed`, `canSubscribe`, `canReply`, `canReport`, `canUpload`, `canRename`, `canDelete`, `canClose`, `canApprove`, `canStick`, `canMove`, `canMerge`, `isMoved` and `realTopicId` (a redirect left by a move, and the thread it points to), `canLike`, `isLiked`, `likeCount` (of the first post). From 1.11.0: `threadType` (`discussion`, `question`, `suggestion`, `article`, `poll`, `redirect`...), `solutionPostId` (a question's solution), `voteScore`, `visitorVote`, `canContentVote`.
+  - The thread, as in topic rows: `id`, `title`, `forumId`, `forumName`, `prefix`, `authorId`, `authorName`, `authorIconUrl`, `timestamp`, `replyCount`, `viewCount`, `url`, `isClosed`, `isPinned`, `isApproved`, `isDeleted`, `isSubscribed`, `canSubscribe`, `canReply`, `canReport`, `canUpload`, `canRename`, `canDelete`, `canClose`, `canApprove`, `canStick`, `canMove`, `canMerge`, `isMoved` and `realTopicId` (a redirect left by a move, and the thread it points to), `canLike`, `isLiked`, `likeCount` (of the first post). From 1.11.0: `threadType` (`discussion`, `question`, `suggestion`, `article`, `poll`, `redirect`...), `solutionPostId` (a question's solution), `voteScore`, `visitorVote`, `canContentVote`. After 1.11.0 (unreleased): `tags` (the names the thread page lists; none while the forum's tagging is off) and `emailSubscribe` (the member's watch also sends emails; false when not watched), so the Watch sheet needs no `subscribeTopic` call to read it.
   - `hasPoll` (bool) — Whether the thread has a poll.
   - `poll` (object|null) — Full poll data when the thread has a poll; otherwise `null`. See [API-Poll.md](API-Poll.md).
 
@@ -1139,7 +1149,7 @@ conversation: a conversation the member isn't in is "not found".
   - `startNum` (int, optional, default 0) — first message number (1-based).
   - `lastNum` (int, optional, default 19) — last message number, inclusive; at most 100 messages.
   - `contentHtml` (bool, optional, default false, 1.11.0) — Also send each message as HTML in `contentHtml`; see "Content as HTML".
-- **Response:** `convId`, `convTitle`, `messages`, `participants`, `totalMessageNum`, `lastRead`, `canReply`, `canInvite`, `canEdit`, `canClose`, `isClosed`, `canUpload`.
+- **Response:** `convId`, `convTitle`, `messages`, `participants`, `totalMessageNum`, `lastRead`, `canReply`, `canInvite`, `canEdit`, `canClose`, `isClosed`, `canUpload`. After 1.11.0 (unreleased), each message also has `authorTitle`, as posts in `getThread` (XenForo keeps no edit date for messages).
 
 ### `getConversationByMessage`
 

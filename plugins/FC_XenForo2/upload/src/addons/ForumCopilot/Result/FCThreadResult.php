@@ -60,6 +60,9 @@ class FCThreadResult extends FCResult
     public $voteScore;
     public $visitorVote;
     public $canContentVote;
+    // Tags and the watch's email option, as in topic rows (after 1.11.0)
+    public $tags;
+    public $emailSubscribe;
     
     // Thread-specific properties
     public $totalPostNum;
@@ -99,7 +102,8 @@ class FCThreadResult extends FCResult
             'canStick', 'canMove', 'canMerge', 'canBan', 'canReply', 'canReport',
             'canUpload', 'isBanned', 'isApproved', 'isDeleted', 'isMoved', 'isMerged',
             'realTopicId', 'canLike', 'isLiked', 'likeCount', 'hasPoll', 'poll',
-            'threadType', 'solutionPostId', 'voteScore', 'visitorVote', 'canContentVote'
+            'threadType', 'solutionPostId', 'voteScore', 'visitorVote', 'canContentVote',
+            'tags', 'emailSubscribe'
         ];
         
         foreach ($topicProperties as $prop) {

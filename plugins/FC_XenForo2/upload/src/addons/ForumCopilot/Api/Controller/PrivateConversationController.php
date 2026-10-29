@@ -404,6 +404,8 @@ class PrivateConversationController extends AbstractController
                 'authorId' => (string)$message->user_id,
                 'authorName' => $message->User ? $message->User->username : $message->username,
                 'authorIconUrl' => $message->User ? $this->getAbsoluteUrl($message->User->getAvatarUrl('s')) : '',
+                // The author's title under their name, as on the website
+                'authorTitle' => $this->getMessageUserTitle($message->User),
                 'timestamp' => $message->message_date * 1000,
                 // Always the raw message (BBCode)
                 'messageContent' => $message->message,

@@ -1960,11 +1960,15 @@ abstract class AbstractController extends Controller
     }
 
     /**
-     * Tag names of a thread, from its cached tag list (no query).
+     * Tag names of a thread, from its cached tag list (no query). None while
+     * the forum's tagging is off: the thread page then lists no tags.
      */
     protected function getThreadTagNames(\XF\Entity\Thread $thread): array
     {
         $names = [];
+        if (!$this->options()->enableTagging) {
+            return $names;
+        }
         $tags = $thread->tags;
         if (is_array($tags)) {
             foreach ($tags as $tag) {
@@ -1974,6 +1978,24 @@ abstract class AbstractController extends Controller
             }
         }
         return $names;
+    }
+
+    /**
+     * The title under a member's name on their posts and messages, as the
+     * website shows it (message_macros::user_info, <xf:usertitle
+     * banner="true">): the custom title, else the display group's title or
+     * the forum's title ladder, the guest group's title for guests and
+     * deleted members. Empty where the website shows none, as where the
+     * forum hides titles of members who have a banner. Plain text.
+     */
+    protected function getMessageUserTitle(?\XF\Entity\User $user): string
+    {
+        try {
+            return $this->plainText($this->app()->templater()->func('user_title', [$user, true]));
+        } catch (\Throwable $e) {
+            \XF::logException($e, false, 'ForumCopilot: user title failed: ');
+            return '';
+        }
     }
 
     // contentHtml (posts and direct messages)

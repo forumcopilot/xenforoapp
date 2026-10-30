@@ -2137,6 +2137,12 @@ class FCConversationMessageMapper
     _$isIgnored,
     opt: true,
   );
+  static String? _$authorTitle(FCConversationMessage v) => v.authorTitle;
+  static const Field<FCConversationMessage, String> _f$authorTitle = Field(
+    'authorTitle',
+    _$authorTitle,
+    opt: true,
+  );
   static String? _$contentHtml(FCConversationMessage v) => v.contentHtml;
   static const Field<FCConversationMessage, String> _f$contentHtml = Field(
     'contentHtml',
@@ -2181,6 +2187,7 @@ class FCConversationMessageMapper
     #isFirstMessage: _f$isFirstMessage,
     #canReport: _f$canReport,
     #isIgnored: _f$isIgnored,
+    #authorTitle: _f$authorTitle,
     #contentHtml: _f$contentHtml,
     #canEdit: _f$canEdit,
     #messageNumber: _f$messageNumber,
@@ -2205,6 +2212,7 @@ class FCConversationMessageMapper
       isFirstMessage: data.dec(_f$isFirstMessage),
       canReport: data.dec(_f$canReport),
       isIgnored: data.dec(_f$isIgnored),
+      authorTitle: data.dec(_f$authorTitle),
       contentHtml: data.dec(_f$contentHtml),
       canEdit: data.dec(_f$canEdit),
       messageNumber: data.dec(_f$messageNumber),
@@ -2307,6 +2315,7 @@ abstract class FCConversationMessageCopyWith<
     bool? isFirstMessage,
     bool? canReport,
     bool? isIgnored,
+    String? authorTitle,
     String? contentHtml,
     bool? canEdit,
     int? messageNumber,
@@ -2368,6 +2377,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     Object? isFirstMessage = $none,
     Object? canReport = $none,
     Object? isIgnored = $none,
+    Object? authorTitle = $none,
     Object? contentHtml = $none,
     Object? canEdit = $none,
     Object? messageNumber = $none,
@@ -2390,6 +2400,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
       if (isFirstMessage != $none) #isFirstMessage: isFirstMessage,
       if (canReport != $none) #canReport: canReport,
       if (isIgnored != $none) #isIgnored: isIgnored,
+      if (authorTitle != $none) #authorTitle: authorTitle,
       if (contentHtml != $none) #contentHtml: contentHtml,
       if (canEdit != $none) #canEdit: canEdit,
       if (messageNumber != $none) #messageNumber: messageNumber,
@@ -2417,6 +2428,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     isFirstMessage: data.get(#isFirstMessage, or: $value.isFirstMessage),
     canReport: data.get(#canReport, or: $value.canReport),
     isIgnored: data.get(#isIgnored, or: $value.isIgnored),
+    authorTitle: data.get(#authorTitle, or: $value.authorTitle),
     contentHtml: data.get(#contentHtml, or: $value.contentHtml),
     canEdit: data.get(#canEdit, or: $value.canEdit),
     messageNumber: data.get(#messageNumber, or: $value.messageNumber),

@@ -374,6 +374,21 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     _$authorTitle,
     opt: true,
   );
+  static DateTime? _$lastEditDate(FCPost v) => v.lastEditDate;
+  static const Field<FCPost, DateTime> _f$lastEditDate = Field(
+    'lastEditDate',
+    _$lastEditDate,
+    opt: true,
+    hook: MillisDateOrNullHook(),
+  );
+  static bool _$lastEditByModerator(FCPost v) => v.lastEditByModerator;
+  static const Field<FCPost, bool> _f$lastEditByModerator = Field(
+    'lastEditByModerator',
+    _$lastEditByModerator,
+    opt: true,
+    def: false,
+    hook: FlexibleBoolHook(),
+  );
   static String? _$authorFlairName(FCPost v) => v.authorFlairName;
   static const Field<FCPost, String> _f$authorFlairName = Field(
     'authorFlairName',
@@ -438,6 +453,8 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #replyToIconUrl: _f$replyToIconUrl,
     #replyCount: _f$replyCount,
     #authorTitle: _f$authorTitle,
+    #lastEditDate: _f$lastEditDate,
+    #lastEditByModerator: _f$lastEditByModerator,
     #authorFlairName: _f$authorFlairName,
   };
 
@@ -498,6 +515,8 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       replyToIconUrl: data.dec(_f$replyToIconUrl),
       replyCount: data.dec(_f$replyCount),
       authorTitle: data.dec(_f$authorTitle),
+      lastEditDate: data.dec(_f$lastEditDate),
+      lastEditByModerator: data.dec(_f$lastEditByModerator),
       authorFlairName: data.dec(_f$authorFlairName),
     );
   }
@@ -628,6 +647,8 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     String? replyToIconUrl,
     int? replyCount,
     String? authorTitle,
+    DateTime? lastEditDate,
+    bool? lastEditByModerator,
     String? authorFlairName,
   });
   FCPostCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -760,6 +781,8 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     Object? replyToIconUrl = $none,
     int? replyCount,
     Object? authorTitle = $none,
+    Object? lastEditDate = $none,
+    bool? lastEditByModerator,
     Object? authorFlairName = $none,
   }) => $apply(
     FieldCopyWithData({
@@ -818,6 +841,9 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (replyToIconUrl != $none) #replyToIconUrl: replyToIconUrl,
       if (replyCount != null) #replyCount: replyCount,
       if (authorTitle != $none) #authorTitle: authorTitle,
+      if (lastEditDate != $none) #lastEditDate: lastEditDate,
+      if (lastEditByModerator != null)
+        #lastEditByModerator: lastEditByModerator,
       if (authorFlairName != $none) #authorFlairName: authorFlairName,
     }),
   );
@@ -890,6 +916,11 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     replyToIconUrl: data.get(#replyToIconUrl, or: $value.replyToIconUrl),
     replyCount: data.get(#replyCount, or: $value.replyCount),
     authorTitle: data.get(#authorTitle, or: $value.authorTitle),
+    lastEditDate: data.get(#lastEditDate, or: $value.lastEditDate),
+    lastEditByModerator: data.get(
+      #lastEditByModerator,
+      or: $value.lastEditByModerator,
+    ),
     authorFlairName: data.get(#authorFlairName, or: $value.authorFlairName),
   );
 

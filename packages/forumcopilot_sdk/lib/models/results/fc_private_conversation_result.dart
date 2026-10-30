@@ -413,6 +413,10 @@ class FCConversationMessage with FCConversationMessageMappable {
   /// Whether the message author is ignored by the current user
   bool? isIgnored;
 
+  /// The title under the author's name, as the forum shows it (XenForo's
+  /// custom, group or ladder title); null or empty when it shows none.
+  String? authorTitle;
+
   /// Whether the current user can edit this message
   bool? canEdit;
 
@@ -442,6 +446,7 @@ class FCConversationMessage with FCConversationMessageMappable {
     this.isFirstMessage,
     this.canReport,
     this.isIgnored,
+    this.authorTitle,
     this.contentHtml,
     this.canEdit,
     this.messageNumber,

@@ -89,6 +89,17 @@ class FCPost with FCPostMappable {
   /// both, and they are frequently different.
   String? authorTitle;
 
+  /// When the post was last edited, for the forum's "Last edited" line; null
+  /// when the forum shows none (XenForo sends 0 then, following its "Display
+  /// 'last edited' message" option) and from forums that don't say.
+  @MappableField(hook: MillisDateOrNullHook())
+  DateTime? lastEditDate;
+
+  /// The last edit was made by someone other than the author: XenForo then
+  /// says "Last edited by a moderator" and never names the editor.
+  @MappableField(hook: FlexibleBoolHook())
+  bool lastEditByModerator;
+
   /// The author's primary-group flair name (Discourse: `flair_name`, e.g.
   /// "team"). Null when they have no flair group.
   String? authorFlairName;
@@ -275,5 +286,7 @@ class FCPost with FCPostMappable {
       this.replyToIconUrl,
       this.replyCount = 0,
       this.authorTitle,
+      this.lastEditDate,
+      this.lastEditByModerator = false,
       this.authorFlairName});
 }

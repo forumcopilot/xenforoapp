@@ -28,6 +28,22 @@ class MillisOrIsoDateHook extends MappingHook {
   }
 }
 
+/// As [MillisOrIsoDateHook], but 0 (or an empty value) means no date: a
+/// field the server always sends, with 0 for "none" (XenForo's
+/// `lastEditDate`).
+class MillisDateOrNullHook extends MappingHook {
+  const MillisDateOrNullHook();
+
+  @override
+  Object? beforeDecode(Object? value) {
+    if (value == null || value == 0 || value == '' || value == '0') return null;
+    return const MillisOrIsoDateHook().beforeDecode(value);
+  }
+
+  @override
+  Object? beforeEncode(Object? value) => const MillisOrIsoDateHook().beforeEncode(value);
+}
+
 /// Coerces 0/1/"0"/"1"/true/false into bool
 class FlexibleBoolHook extends MappingHook {
   const FlexibleBoolHook();

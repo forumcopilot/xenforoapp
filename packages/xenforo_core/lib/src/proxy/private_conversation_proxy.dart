@@ -481,6 +481,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
               'isFirstMessage': msgData['isFirstMessage'],
               'canReport': msgData['canReport'],
               'isIgnored': msgData['isIgnored'],
+              'authorTitle': msgData['authorTitle']?.toString(),
               'canEdit': msgData['canEdit'],
               'messageNumber': msgData['messageNumber'],
             };
@@ -572,6 +573,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
               'isFirstMessage': msgData['isFirstMessage'],
               'canReport': msgData['canReport'],
               'isIgnored': msgData['isIgnored'],
+              'authorTitle': msgData['authorTitle']?.toString(),
               'canEdit': msgData['canEdit'],
               'messageNumber': msgData['messageNumber'],
             };

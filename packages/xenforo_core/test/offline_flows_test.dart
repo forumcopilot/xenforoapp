@@ -922,6 +922,82 @@ void main() {
       expect(conversation.messages.single.textBody, '[B]Hi[/B]', reason: 'the BBCode stays for quoting and editing');
     });
 
+    test("after 1.11.0: the thread's tags and email option, titles and the last edit come through", () async {
+      final edited = DateTime.utc(2026, 10, 29, 18, 0).millisecondsSinceEpoch;
+      final client = _ScriptedClient({
+        'getThread': (_) => _ok({
+              ..._thread(),
+              'tags': ['flutter', 'app lab'],
+              'emailSubscribe': true,
+              'posts': [
+                {
+                  'id': '101', 'title': '', 'content': 'Own edit', 'topicId': '7', 'authorId': '1', 'authorName': 'alice', 'position': 1,
+                  'authorTitle': 'Well-known member', 'lastEditDate': edited, 'lastEditByModerator': false,
+                },
+                {
+                  'id': '102', 'title': '', 'content': 'Moderator edit', 'topicId': '7', 'authorId': '2', 'authorName': 'bob', 'position': 2,
+                  'authorTitle': '', 'lastEditDate': edited, 'lastEditByModerator': true,
+                },
+                {
+                  'id': '103', 'title': '', 'content': 'Never edited', 'topicId': '7', 'authorId': '2', 'authorName': 'bob', 'position': 3,
+                  'authorTitle': 'Administrator', 'lastEditDate': 0, 'lastEditByModerator': false,
+                },
+              ],
+            }),
+        'getConversation': (_) => _ok({
+              'result': true,
+              'convId': '5',
+              'messages': [
+                {'id': '9', 'authorId': '2', 'authorName': 'alice', 'messageContent': 'Hi', 'timestamp': 1760000000000, 'authorTitle': 'Member'},
+              ],
+            }),
+      });
+      final factory = XenForoProxyFactory(client: client);
+
+      final thread = await factory.createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(thread.tags, ['flutter', 'app lab']);
+      expect(thread.emailSubscribe, isTrue, reason: 'the Watch sheet needs no subscribeTopic call to read it');
+      final [own, byModerator, never] = thread.posts;
+      expect((own.authorTitle, own.lastEditDate?.toUtc(), own.lastEditByModerator), ('Well-known member', DateTime.utc(2026, 10, 29, 18, 0), false));
+      expect((byModerator.lastEditDate != null, byModerator.lastEditByModerator), (true, true));
+      expect((never.authorTitle, never.lastEditDate), ('Administrator', null), reason: '0: the forum shows no "Last edited" line');
+
+      final conversation = await factory.createPrivateConversationProxy(_context()).getConversationAsync('5', 0, 19, false);
+      expect(conversation.messages.single.authorTitle, 'Member');
+
+      // 1.11.0 and older send none of these: no tags or edit line, and the
+      // Watch sheet asks the forum (emailSubscribe null)
+      final before = await XenForoProxyFactory(client: _ScriptedClient({'getThread': (_) => _ok(_thread())}))
+          .createPostProxy(_context())
+          .getThreadAsync('7', 0, 19, false);
+      expect(before.tags, isEmpty);
+      expect(before.emailSubscribe, isNull);
+      expect(before.posts.first.authorTitle, isNull);
+      expect(before.posts.first.lastEditDate, isNull);
+      expect(before.posts.first.lastEditByModerator, isFalse);
+    });
+
+    test("a thread the forum won't show gives the forum's reason, not a mapper error", () async {
+      const refusal = {'result': false, 'resultText': 'You do not have permission to view this page or perform this action.', 'errorCode': 'no_permission'};
+      final client = _ScriptedClient({
+        'getThread': (_) => _ok(refusal),
+        'getThreadByPost': (_) => _ok(refusal),
+        'getThreadByUnread': (_) => _ok(refusal),
+      });
+      final posts = XenForoProxyFactory(client: client).createPostProxy(_context());
+      final thread = await posts.getThreadAsync('5', 0, 19, false);
+      final byPost = await posts.getThreadByPostAsync('9', 20, false);
+      final byUnread = await posts.getThreadByUnreadAsync('5', 20, false);
+      for (final (result, text) in [
+        (thread.result, thread.resultText),
+        (byPost.result, byPost.resultText),
+        (byUnread.result, byUnread.resultText),
+      ]) {
+        expect(result, isFalse);
+        expect(text, refusal['resultText']);
+      }
+    });
+
     test('a ban sends its exact end as endTime, beside endDate for older add-ons', () async {
       final client = _ScriptedClient({'banUser': (_) => _ok({'result': true})});
       final mod = XenForoProxyFactory(client: client).createModerationProxy(_context());

@@ -204,6 +204,9 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         // Add-on 1.11.0+: each post also as the forum renders it
         'contentHtml': true,
       }, (response) {
+        // The forum refused (no permission, not found...): its own words,
+        // not a mapper error about the missing thread
+        if (response['result'] == false) throw _ThreadRefused(response['resultText']?.toString());
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();
         if (!responseMap.containsKey('totalPostNum')) {
@@ -258,7 +261,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
       final now = DateTime.now();
       return FCThreadResult(
         result: false,
-        resultText: 'Error getting thread: $e',
+        resultText: e is _ThreadRefused ? e.message : 'Error getting thread: $e',
         posts: [],
         totalPostNum: 0,
         id: '',
@@ -290,6 +293,9 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         // Add-on 1.11.0+: each post also as the forum renders it
         'contentHtml': true,
       }, (response) {
+        // The forum refused (no permission, not found...): its own words,
+        // not a mapper error about the missing thread
+        if (response['result'] == false) throw _ThreadRefused(response['resultText']?.toString());
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();
         if (!responseMap.containsKey('totalPostNum')) {
@@ -323,7 +329,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
       final now = DateTime.now();
       return FCThreadByPostResult(
         result: false,
-        resultText: 'Error getting thread by post: $e',
+        resultText: e is _ThreadRefused ? e.message : 'Error getting thread by post: $e',
         posts: [],
         totalPostNum: 0,
         id: '',
@@ -356,6 +362,9 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         // Add-on 1.11.0+: each post also as the forum renders it
         'contentHtml': true,
       }, (response) {
+        // The forum refused (no permission, not found...): its own words,
+        // not a mapper error about the missing thread
+        if (response['result'] == false) throw _ThreadRefused(response['resultText']?.toString());
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();
         if (!responseMap.containsKey('totalPostNum')) {
@@ -389,7 +398,7 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
       final now = DateTime.now();
       return FCThreadByUnreadResult(
         result: false,
-        resultText: 'Error getting thread by unread: $e',
+        resultText: e is _ThreadRefused ? e.message : 'Error getting thread by unread: $e',
         posts: [],
         totalPostNum: 0,
         position: 0,
@@ -562,4 +571,14 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
       FCPostVoteResult(
           result: false,
           resultText: 'Post voting is not supported on XenForo');
+}
+
+/// A getThread* reply with `result: false`: the forum's message (XenForo's
+/// "You do not have permission to view this page", say) for the result,
+/// rather than the mapper's complaint that the reply has no thread.
+class _ThreadRefused implements Exception {
+  _ThreadRefused(String? message) : message = (message == null || message.isEmpty) ? 'The forum refused to show this thread.' : message;
+  final String message;
+  @override
+  String toString() => message;
 }

@@ -202,6 +202,10 @@ class PostListItem extends StatefulWidget {
   final bool topicPinned;
   final String topicForumName;
 
+  /// The thread's tags, as chips beside the forum (getThread, add-on after
+  /// 1.11.0; empty before, and while the forum's tagging is off).
+  final List<String> topicTags;
+
   /// The rule under the post. Off where the thread summary, or a "3 months
   /// later" divider, already separates it from the next post.
   final bool showBottomDivider;
@@ -227,6 +231,7 @@ class PostListItem extends StatefulWidget {
     this.topicClosed = false,
     this.topicPinned = false,
     this.topicForumName = '',
+    this.topicTags = const [],
     this.showBottomDivider = true,
   });
 
@@ -679,14 +684,24 @@ class _PostListItemState extends State<PostListItem> {
               )
             else
               Text(widget.topicTitle, style: _titleStyle(colorScheme, textTheme)),
-            if (widget.topicForumName.isNotEmpty && widget.forumId != null) ...[
+            // The forum and the tags in one row that wraps, as discourse_ui's
+            // TopicTaxonomyChips
+            if ((widget.topicForumName.isNotEmpty && widget.forumId != null) || widget.topicTags.isNotEmpty) ...[
               const SizedBox(height: DesignTokens.spacingXS),
-              _ForumChip(
-                name: widget.topicForumName,
-                onTap: () {
-                  final url = ForumLinks.forumUrl(widget.siteContext.site, widget.forumId!);
-                  if (url != null) ForumLinks.open(context, url, widget.siteContext);
-                },
+              Wrap(
+                spacing: DesignTokens.spacingS,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (widget.topicForumName.isNotEmpty && widget.forumId != null)
+                    _ForumChip(
+                      name: widget.topicForumName,
+                      onTap: () {
+                        final url = ForumLinks.forumUrl(widget.siteContext.site, widget.forumId!);
+                        if (url != null) ForumLinks.open(context, url, widget.siteContext);
+                      },
+                    ),
+                  for (final tag in widget.topicTags) _TagChip(tag: tag),
+                ],
               ),
             ],
             // Show prefix badge below the topic title if available
@@ -1362,6 +1377,36 @@ class _ForumChip extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A thread's tag, as discourse_ui's TagChip draws one. Not a link yet: the
+/// add-on sends the tag's name, not its page, and the app has no tag list.
+class _TagChip extends StatelessWidget {
+  const _TagChip({required this.tag});
+
+  final String tag;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
+          border: Border.all(color: colorScheme.outlineVariant, width: 0.5),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: Text(
+            tag,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
         ),
       ),

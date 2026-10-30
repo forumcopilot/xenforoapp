@@ -3113,4 +3113,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get thisForum => '本论坛';
+
+  @override
+  String postLastEdited(String date) {
+    return '最后编辑：$date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return '最后由版主编辑：$date';
+  }
 }

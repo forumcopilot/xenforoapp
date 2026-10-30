@@ -5497,6 +5497,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This forum'**
   String get thisForum;
+
+  /// XenForo's line under an edited post, as a tooltip on the pencil after its date: when it was last edited
+  ///
+  /// In en, this message translates to:
+  /// **'Last edited: {date}'**
+  String postLastEdited(String date);
+
+  /// As postLastEdited, when someone other than the author made the edit (XenForo never names the editor)
+  ///
+  /// In en, this message translates to:
+  /// **'Last edited by a moderator: {date}'**
+  String postLastEditedByModerator(String date);
 }
 
 class _AppLocalizationsDelegate

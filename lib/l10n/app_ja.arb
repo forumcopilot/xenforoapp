@@ -1367,5 +1367,7 @@
   "timeGapYearsLater": "{count, plural, other{{count} 年後}}",
   "topicMapViews": "{count, plural, other{閲覧}}",
   "topicMapReplies": "{count, plural, other{返信}}",
-  "thisForum": "このフォーラム"
+  "thisForum": "このフォーラム",
+  "postLastEdited": "最終編集: {date}",
+  "postLastEditedByModerator": "モデレーターによる最終編集: {date}"
 }

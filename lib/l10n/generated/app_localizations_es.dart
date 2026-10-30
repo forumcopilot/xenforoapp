@@ -3324,4 +3324,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get thisForum => 'Este foro';
+
+  @override
+  String postLastEdited(String date) {
+    return 'Última edición: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return 'Última edición por un moderador: $date';
+  }
 }

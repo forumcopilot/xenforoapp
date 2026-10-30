@@ -3160,4 +3160,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get thisForum => 'このフォーラム';
+
+  @override
+  String postLastEdited(String date) {
+    return '最終編集: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return 'モデレーターによる最終編集: $date';
+  }
 }

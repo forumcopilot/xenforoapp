@@ -3153,4 +3153,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get thisForum => '이 포럼';
+
+  @override
+  String postLastEdited(String date) {
+    return '마지막 수정: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return '운영자의 마지막 수정: $date';
+  }
 }

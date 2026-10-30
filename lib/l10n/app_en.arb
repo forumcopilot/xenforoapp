@@ -2015,5 +2015,9 @@
   "@topicMapViews": {"description": "Label under the view count in the summary under a thread's first post; the number is shown above it", "placeholders": {"count": {"type": "int"}}},
   "topicMapReplies": "{count, plural, =1{reply} other{replies}}",
   "@topicMapReplies": {"description": "Label under the reply count in the summary under a thread's first post; the number is shown above it", "placeholders": {"count": {"type": "int"}}},
-  "thisForum": "This forum"
+  "thisForum": "This forum",
+  "postLastEdited": "Last edited: {date}",
+  "@postLastEdited": {"description": "XenForo's line under an edited post, as a tooltip on the pencil after its date: when it was last edited", "placeholders": {"date": {"type": "String"}}},
+  "postLastEditedByModerator": "Last edited by a moderator: {date}",
+  "@postLastEditedByModerator": {"description": "As postLastEdited, when someone other than the author made the edit (XenForo never names the editor)", "placeholders": {"date": {"type": "String"}}}
 }

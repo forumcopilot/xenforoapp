@@ -3355,4 +3355,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get thisForum => 'Этот форум';
+
+  @override
+  String postLastEdited(String date) {
+    return 'Последнее редактирование: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return 'Последнее редактирование модератором: $date';
+  }
 }

@@ -247,23 +247,44 @@ class ConversationHeaderItem extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            AppNavigation.push(context, UserProfilePage(
-                                  siteContext: siteContext,
-                                  userId: message.userId,
-                                  userName: message.username,
-                                  profilePictureUrl: message.iconUrl,
-                                ));
-                          },
-                          child: Text(
-                            message.username,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: DesignTokens.fontWeightMedium,
-                              letterSpacing: DesignTokens.letterSpacingMedium,
-                            ),
-                          ),
+                        Row(
+                          children: [
+                              Flexible(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    AppNavigation.push(context, UserProfilePage(
+                                          siteContext: siteContext,
+                                          userId: message.userId,
+                                          userName: message.username,
+                                          profilePictureUrl: message.iconUrl,
+                                        ));
+                                  },
+                                  child: Text(
+                                    message.username,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontWeight: DesignTokens.fontWeightMedium,
+                                      letterSpacing: DesignTokens.letterSpacingMedium,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            // The title the forum shows under the name, beside it as on posts
+                            if (message.authorTitle?.isNotEmpty ?? false) ...[
+                              SizedBox(width: DesignTokens.spacingS),
+                              Flexible(
+                                child: Text(
+                                  message.authorTitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    letterSpacing: DesignTokens.letterSpacingWide,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         SizedBox(height: DesignTokens.spacingXS),
                         Row(
@@ -632,23 +653,44 @@ class ConversationItem extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            AppNavigation.push(context, UserProfilePage(
-                                  siteContext: siteContext,
-                                  userId: message.userId,
-                                  userName: message.username,
-                                  profilePictureUrl: message.iconUrl,
-                                ));
-                          },
-                          child: Text(
-                            message.username,
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: DesignTokens.fontWeightMedium,
-                              letterSpacing: DesignTokens.letterSpacingMedium,
-                            ),
-                          ),
+                        Row(
+                          children: [
+                              Flexible(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    AppNavigation.push(context, UserProfilePage(
+                                          siteContext: siteContext,
+                                          userId: message.userId,
+                                          userName: message.username,
+                                          profilePictureUrl: message.iconUrl,
+                                        ));
+                                  },
+                                  child: Text(
+                                    message.username,
+                                    style: textTheme.titleMedium?.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontWeight: DesignTokens.fontWeightMedium,
+                                      letterSpacing: DesignTokens.letterSpacingMedium,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            // The title the forum shows under the name, beside it as on posts
+                            if (message.authorTitle?.isNotEmpty ?? false) ...[
+                              SizedBox(width: DesignTokens.spacingS),
+                              Flexible(
+                                child: Text(
+                                  message.authorTitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    letterSpacing: DesignTokens.letterSpacingWide,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         SizedBox(height: DesignTokens.spacingXS),
                         Row(

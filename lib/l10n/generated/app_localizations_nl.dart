@@ -3302,4 +3302,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get thisForum => 'Dit forum';
+
+  @override
+  String postLastEdited(String date) {
+    return 'Laatst bewerkt: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return 'Laatst bewerkt door een moderator: $date';
+  }
 }

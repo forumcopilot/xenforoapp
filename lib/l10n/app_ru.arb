@@ -1390,5 +1390,7 @@
   "timeGapYearsLater": "{count, plural, =1{1 год спустя} few{{count} года спустя} other{{count} лет спустя}}",
   "topicMapViews": "{count, plural, one{просмотр} few{просмотра} many{просмотров} other{просмотра}}",
   "topicMapReplies": "{count, plural, one{ответ} few{ответа} many{ответов} other{ответа}}",
-  "thisForum": "Этот форум"
+  "thisForum": "Этот форум",
+  "postLastEdited": "Последнее редактирование: {date}",
+  "postLastEditedByModerator": "Последнее редактирование модератором: {date}"
 }

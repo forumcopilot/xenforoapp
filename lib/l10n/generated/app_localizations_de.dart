@@ -3346,4 +3346,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get thisForum => 'Dieses Forum';
+
+  @override
+  String postLastEdited(String date) {
+    return 'Zuletzt bearbeitet: $date';
+  }
+
+  @override
+  String postLastEditedByModerator(String date) {
+    return 'Zuletzt von einem Moderator bearbeitet: $date';
+  }
 }

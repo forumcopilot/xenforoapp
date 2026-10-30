@@ -1386,5 +1386,7 @@
   "timeGapYearsLater": "{count, plural, other{{count}년 후}}",
   "topicMapViews": "{count, plural, other{조회}}",
   "topicMapReplies": "{count, plural, other{답글}}",
-  "thisForum": "이 포럼"
+  "thisForum": "이 포럼",
+  "postLastEdited": "마지막 수정: {date}",
+  "postLastEditedByModerator": "운영자의 마지막 수정: {date}"
 }

@@ -1839,5 +1839,7 @@
   "timeGapYearsLater": "{count, plural, =1{1 jaar later} other{{count} jaar later}}",
   "topicMapViews": "{count, plural, =1{weergave} other{weergaven}}",
   "topicMapReplies": "{count, plural, =1{reactie} other{reacties}}",
-  "thisForum": "Dit forum"
+  "thisForum": "Dit forum",
+  "postLastEdited": "Laatst bewerkt: {date}",
+  "postLastEditedByModerator": "Laatst bewerkt door een moderator: {date}"
 }

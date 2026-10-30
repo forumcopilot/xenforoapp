@@ -1043,6 +1043,7 @@ class _PostsState extends State<PostsList> {
       topicClosed: data.topic.isClosed,
       topicPinned: data.topic.isPinned,
       topicForumName: data.topic.forumName,
+      topicTags: post.postNumber == 1 ? data.topic.tags : const [],
       // No rule of its own above the thread summary, or above a "3 months
       // later" divider: theirs already separate the posts.
       showBottomDivider: post.postNumber != 1 && (nextPost == null || PostTimeGap.between(post.timestamp, nextPost.timestamp) == null),

@@ -1390,5 +1390,7 @@
   "timeGapYearsLater": "{count, plural, other{{count} 年后}}",
   "topicMapViews": "{count, plural, other{浏览}}",
   "topicMapReplies": "{count, plural, other{回复}}",
-  "thisForum": "本论坛"
+  "thisForum": "本论坛",
+  "postLastEdited": "最后编辑：{date}",
+  "postLastEditedByModerator": "最后由版主编辑：{date}"
 }

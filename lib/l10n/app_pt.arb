@@ -1390,5 +1390,7 @@
   "timeGapYearsLater": "{count, plural, =1{1 ano depois} other{{count} anos depois}}",
   "topicMapViews": "{count, plural, =1{visualização} other{visualizações}}",
   "topicMapReplies": "{count, plural, =1{resposta} other{respostas}}",
-  "thisForum": "Este fórum"
+  "thisForum": "Este fórum",
+  "postLastEdited": "Última edição: {date}",
+  "postLastEditedByModerator": "Última edição por um moderador: {date}"
 }

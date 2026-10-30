@@ -124,6 +124,25 @@ class PostListItemHeader extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // The title under the name on the website (XenForo's
+                    // custom, group or ladder title), beside it as the
+                    // Discourse app shows titles (discourse_ui's
+                    // post_list_item_header.dart). Flexible: a long title
+                    // truncates.
+                    if (post.authorTitle?.isNotEmpty ?? false) ...[
+                      SizedBox(width: DesignTokens.spacingS),
+                      Flexible(
+                        child: Text(
+                          post.authorTitle!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            letterSpacing: DesignTokens.letterSpacingWide,
+                          ),
+                        ),
+                      ),
+                    ],
                     // Status badges for banned and deleted posts
                     if (post.isBanned) ...[
                       SizedBox(width: DesignTokens.spacingS),
@@ -278,6 +297,14 @@ class PostListItemHeader extends StatelessWidget {
                         letterSpacing: DesignTokens.letterSpacingWide,
                       ),
                     ),
+                    // Edited: a pencil after the date, as the Discourse app
+                    // marks edited posts (discourse_ui's
+                    // post_list_item_header.dart); a tap, or a screen reader,
+                    // gives XenForo's "Last edited" line with its date.
+                    if (post.lastEditDate != null) ...[
+                      SizedBox(width: DesignTokens.spacingXS),
+                      _EditedMark(post: post),
+                    ],
                   ],
                 ),
               ],
@@ -336,6 +363,35 @@ class PostListItemHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The pencil after an edited post's date, saying XenForo's "Last edited:
+/// {date}" (or "Last edited by a moderator: {date}") on a tap.
+class _EditedMark extends StatelessWidget {
+  const _EditedMark({required this.post});
+
+  final FCPost post;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final date = formatSmartDateTime(post.lastEditDate!, context);
+    final label = post.lastEditByModerator ? l10n.postLastEditedByModerator(date) : l10n.postLastEdited(date);
+    return Tooltip(
+      message: label,
+      triggerMode: TooltipTriggerMode.tap,
+      showDuration: const Duration(seconds: 4),
+      child: Semantics(
+        label: label,
+        excludeSemantics: true,
+        // A wider tap than the glyph
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingS, vertical: DesignTokens.spacingXS),
+          child: Icon(Icons.edit_outlined, size: DesignTokens.iconSizeS, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
       ),
     );
   }

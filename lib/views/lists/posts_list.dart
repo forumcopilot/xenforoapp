@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_flutter/models/thread_view_data.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/controllers/post_controller.dart';
@@ -19,6 +20,9 @@ import '../../utils/snackbar_helper.dart';
 import '../../utils/network_utils.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_flutter/views/widgets/position_navigator.dart';
+import 'package:forumcopilot_flutter/theme/design_tokens.dart';
+import 'package:forumcopilot_flutter/views/widgets/post_time_gap.dart';
+import 'package:forumcopilot_flutter/views/widgets/topic_stats_bar.dart';
 import 'package:forumcopilot_flutter/views/widgets/quick_reply_bar.dart';
 import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 
@@ -31,6 +35,7 @@ class PostsList extends StatefulWidget {
     this.onForumIdAvailable,
     this.onRefreshAvailable,
     this.onSubscriptionStatusChanged,
+    this.onTopicLoaded,
     this.onClosedStatusChanged,
     this.onStickyStatusChanged,
     this.onDeletedStatusChanged,
@@ -57,6 +62,8 @@ class PostsList extends StatefulWidget {
   /// and scrolling to it (used after replying so the new post is visible without replacing the route).
   final void Function(void Function([String? scrollToPostId]) refresh)? onRefreshAvailable;
   final void Function(bool)? onSubscriptionStatusChanged;
+  /// The thread as loaded (its type, watch...).
+  final void Function(FCTopic topic)? onTopicLoaded;
   final void Function(bool isClosed)? onClosedStatusChanged;
   final void Function(bool isSticky)? onStickyStatusChanged;
   final void Function(bool isDeleted)? onDeletedStatusChanged;
@@ -309,6 +316,7 @@ class _PostsState extends State<PostsList> {
           widget.onForumIdAvailable?.call(forumId);
         }
         widget.onSubscriptionStatusChanged?.call(data?.topic.isSubscribed ?? false);
+        if (data != null) widget.onTopicLoaded?.call(data.topic);
         // Notify closed and sticky status separately
         widget.onClosedStatusChanged?.call(data?.topic.isClosed ?? false);
         widget.onStickyStatusChanged?.call(data?.topic.isPinned ?? false);
@@ -429,7 +437,10 @@ class _PostsState extends State<PostsList> {
             // Convert targetPosition to 0-based index: targetPosition - 1
             // Then calculate relative position in the loaded list
             int targetIndex0Based = targetPosition - 1;
-            int relativePosition = targetIndex0Based - data.currentStartNum;
+            // The post with that number (hidden posts share their
+            // neighbour's number, so arithmetic alone can land off it)
+            final byNumber = postsList.indexWhere((p) => p.postNumber == targetPosition);
+            int relativePosition = byNumber >= 0 ? byNumber : targetIndex0Based - data.currentStartNum;
             if (relativePosition >= 0 && relativePosition < postsList.length) {
               _pendingInitialScrollIndex = relativePosition;
               _hasJumpedToInitialPost = false; // Reset to allow jumping
@@ -604,8 +615,8 @@ class _PostsState extends State<PostsList> {
       _hasMorePosts = false;
       return;
     }
-    int currentCount = data.loadedCount;
-    _hasMorePosts = data.currentStartNum + currentCount < data.totalPosts;
+    // By position: hidden posts share their neighbour's number
+    _hasMorePosts = data.loadedEnd < data.totalPosts;
   }
 
   /// Loads earlier posts (when user scrolls up near the top).
@@ -1009,7 +1020,7 @@ class _PostsState extends State<PostsList> {
   }
 
   /// Calculates the height of the bottom toolbar to ensure proper padding
-  Widget _buildPostItem(BuildContext context, FCPost post, int postIndex, int postsListLength, ThreadViewData data, {bool isHighlighted = false}) {
+  Widget _buildPostItem(BuildContext context, FCPost post, int postIndex, int postsListLength, ThreadViewData data, {bool isHighlighted = false, FCPost? nextPost}) {
     final avatarActions = _avatarActions;
     final imageActions = _imageActions;
     final postActionsHandler = _postActionsHandler;
@@ -1029,6 +1040,12 @@ class _PostsState extends State<PostsList> {
       isHighlighted: isHighlighted,
       poll: post.postNumber == 1 ? data.topic.poll : null,
       onVoteSuccess: (p) => _postsController.updateThreadPoll(p),
+      topicClosed: data.topic.isClosed,
+      topicPinned: data.topic.isPinned,
+      topicForumName: data.topic.forumName,
+      // No rule of its own above the thread summary, or above a "3 months
+      // later" divider: theirs already separate the posts.
+      showBottomDivider: post.postNumber != 1 && (nextPost == null || PostTimeGap.between(post.timestamp, nextPost.timestamp) == null),
       actions: PostActions(
         onReply: (postId) => postActionsHandler.handleReply(context, postId, widget.topicId, widget.topicTitle, _refreshWithOptionalScrollToPost),
         onQuote: _quoteInReply,
@@ -1041,11 +1058,43 @@ class _PostsState extends State<PostsList> {
         onLoginRequired: (context) => postActionsHandler.showPostLoginPrompt(context, onRefresh: _refreshCurrentPage),
       ),
     );
+    // The thread's summary under its first post, then a band of the page's
+    // container colour in place of the usual rule: the thread's opening ends
+    // here and the replies start (as the Discourse app's posts_list.dart).
+    // On postNumber, not postIndex: paging can put a later post first.
+    if (post.postNumber == 1) {
+      postWidget = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          postWidget,
+          TopicStatsBar(
+            viewCount: data.topic.viewCount,
+            replyCount: data.topic.replyCount,
+            participants: _participants(data.posts),
+          ),
+          ColoredBox(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            child: const SizedBox(height: DesignTokens.spacingS),
+          ),
+        ],
+      );
+    }
     // Key the OUTERMOST widget for this index. Without this the unkeyed Column
     // above (and index-based matching in general) hands a post's element to a
     // different post when the list is prepended to, forcing a full rebuild of
     // rows that did not change.
     return KeyedSubtree(key: ValueKey<String>(post.id), child: postWidget);
+  }
+
+  /// The members taking part, as far as the posts loaded so far tell: each
+  /// author once, first poster first.
+  static List<(String, String?)> _participants(List<FCPost> posts) {
+    final seen = <String>{};
+    return [
+      for (final p in posts)
+        if (p.authorName.isNotEmpty && seen.add(p.authorId.isNotEmpty ? p.authorId : p.authorName)) (p.authorName, p.authorIconUrl),
+    ];
   }
 
   void _showJumpToPostDialog(BuildContext context, ThreadViewData data) {
@@ -1351,7 +1400,19 @@ class _PostsState extends State<PostsList> {
                   if (postIndex < postsList.length) {
                     final post = postsList[postIndex];
                     final isHighlighted = _highlightedPostId == post.id;
-                    return _buildPostItem(context, post, postIndex, postsList.length, data, isHighlighted: isHighlighted);
+                    final item = _buildPostItem(context, post, postIndex, postsList.length, data,
+                        isHighlighted: isHighlighted, nextPost: postIndex + 1 < postsList.length ? postsList[postIndex + 1] : null);
+                    // "3 months later" between posts far apart in time, so a thread
+                    // revived after a long silence doesn't read as one continuous
+                    // conversation. Against the post loaded above, not the post
+                    // number: the loaded posts can start mid-thread.
+                    final gap = postIndex > 0 ? PostTimeGap.between(postsList[postIndex - 1].timestamp, post.timestamp) : null;
+                    if (gap == null) return item;
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [PostTimeGap(daysSince: gap), item],
+                    );
                   }
                   return const SizedBox.shrink();
                 },

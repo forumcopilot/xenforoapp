@@ -69,15 +69,15 @@ class _ProfileLoginFormState extends State<ProfileLoginForm> {
     final siteUrl = siteController.currentSite.value?.url;
 
     if (siteUrl == null || siteUrl.isEmpty) {
-      return AppLocalizations.of(context).thisForum;
+      return AppLocalizations.of(context).thisForumInSentence;
     }
 
     try {
       final uri = Uri.parse(siteUrl);
-      return uri.host.isNotEmpty ? uri.host : AppLocalizations.of(context).thisForum;
+      return uri.host.isNotEmpty ? uri.host : AppLocalizations.of(context).thisForumInSentence;
     } catch (e) {
       // Fallback if URL parsing fails
-      return AppLocalizations.of(context).thisForum;
+      return AppLocalizations.of(context).thisForumInSentence;
     }
   }
 

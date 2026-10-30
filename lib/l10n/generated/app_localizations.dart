@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
+  /// **'Log in'**
   String get loginTitle;
 
   /// No description provided for @usernameLabel.
@@ -143,13 +143,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginButton.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
+  /// **'Log in'**
   String get loginButton;
 
   /// No description provided for @signInWithPasskey.
   ///
   /// In en, this message translates to:
-  /// **'Sign in with Passkey'**
+  /// **'Log in with a passkey'**
   String get signInWithPasskey;
 
   /// No description provided for @usePasskey.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @logIn.
   ///
   /// In en, this message translates to:
-  /// **'Log In'**
+  /// **'Log in'**
   String get logIn;
 
   /// No description provided for @continueButton.
@@ -575,25 +575,25 @@ abstract class AppLocalizations {
   /// No description provided for @noLatestTopics.
   ///
   /// In en, this message translates to:
-  /// **'No Latest Topics'**
+  /// **'No latest threads'**
   String get noLatestTopics;
 
   /// No description provided for @noRecentTopicsToDisplay.
   ///
   /// In en, this message translates to:
-  /// **'There are no recent topics to display. Check back later for new discussions.'**
+  /// **'There are no recent threads to show. Check back later for new discussions.'**
   String get noRecentTopicsToDisplay;
 
   /// No description provided for @noUnreadTopics.
   ///
   /// In en, this message translates to:
-  /// **'No Unread Topics'**
+  /// **'No unread threads'**
   String get noUnreadTopics;
 
   /// No description provided for @thereAreNoUnreadTopics.
   ///
   /// In en, this message translates to:
-  /// **'There are no unread topics. Check back later for new discussions.'**
+  /// **'There are no unread threads. Check back later for new discussions.'**
   String get thereAreNoUnreadTopics;
 
   /// No description provided for @youAreAllCaughtUp.
@@ -605,25 +605,25 @@ abstract class AppLocalizations {
   /// No description provided for @noSubscribedTopics.
   ///
   /// In en, this message translates to:
-  /// **'No Subscribed Topics'**
+  /// **'No watched threads'**
   String get noSubscribedTopics;
 
   /// No description provided for @noSubscribedTopicsMessage.
   ///
   /// In en, this message translates to:
-  /// **'You aren\'t subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.'**
+  /// **'You aren\'t watching any threads yet. Open a thread and choose Watch in its ⋮ menu to be alerted to new replies.'**
   String get noSubscribedTopicsMessage;
 
   /// No description provided for @noParticipatedTopics.
   ///
   /// In en, this message translates to:
-  /// **'No Participated Topics'**
+  /// **'No threads you\'ve posted in'**
   String get noParticipatedTopics;
 
   /// No description provided for @topicsYouParticipatedIn.
   ///
   /// In en, this message translates to:
-  /// **'Topics that you have participated in will be shown here.'**
+  /// **'Threads you have posted in will be shown here.'**
   String get topicsYouParticipatedIn;
 
   /// No description provided for @latest.
@@ -641,7 +641,7 @@ abstract class AppLocalizations {
   /// No description provided for @subscribed.
   ///
   /// In en, this message translates to:
-  /// **'Subscribed'**
+  /// **'Watched'**
   String get subscribed;
 
   /// No description provided for @participated.
@@ -713,7 +713,7 @@ abstract class AppLocalizations {
   /// No description provided for @topicsOnly.
   ///
   /// In en, this message translates to:
-  /// **'Topics Only'**
+  /// **'Threads only'**
   String get topicsOnly;
 
   /// No description provided for @titlesOnly.
@@ -725,44 +725,20 @@ abstract class AppLocalizations {
   /// Error message when sharing topic fails
   ///
   /// In en, this message translates to:
-  /// **'Failed to share topic: {error}'**
+  /// **'Couldn\'t share the thread: {error}'**
   String failedToShareTopic(String error);
-
-  /// Message asking user to login to subscribe/unsubscribe
-  ///
-  /// In en, this message translates to:
-  /// **'Please login to {action} this thread'**
-  String pleaseLoginToSubscribe(String action);
-
-  /// No description provided for @subscribeTo.
-  ///
-  /// In en, this message translates to:
-  /// **'subscribe to'**
-  String get subscribeTo;
-
-  /// No description provided for @unsubscribeFrom.
-  ///
-  /// In en, this message translates to:
-  /// **'unsubscribe from'**
-  String get unsubscribeFrom;
 
   /// No description provided for @subscribe.
   ///
   /// In en, this message translates to:
-  /// **'Subscribe'**
+  /// **'Watch'**
   String get subscribe;
 
   /// No description provided for @unsubscribe.
   ///
   /// In en, this message translates to:
-  /// **'Unsubscribe'**
+  /// **'Unwatch'**
   String get unsubscribe;
-
-  /// Error message when subscribe/unsubscribe fails
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to {action} thread'**
-  String failedToSubscribeToThread(String action);
 
   /// No description provided for @youCannotReplyToThisThread.
   ///
@@ -857,7 +833,7 @@ abstract class AppLocalizations {
   /// No description provided for @newTopic.
   ///
   /// In en, this message translates to:
-  /// **'New Topic'**
+  /// **'Post thread'**
   String get newTopic;
 
   /// No description provided for @markRead.
@@ -989,25 +965,25 @@ abstract class AppLocalizations {
   /// No description provided for @topicClosed.
   ///
   /// In en, this message translates to:
-  /// **'Topic closed'**
+  /// **'Thread locked'**
   String get topicClosed;
 
   /// No description provided for @topicOpened.
   ///
   /// In en, this message translates to:
-  /// **'Topic opened'**
+  /// **'Thread unlocked'**
   String get topicOpened;
 
   /// No description provided for @topicStickied.
   ///
   /// In en, this message translates to:
-  /// **'Topic stickied'**
+  /// **'Thread made sticky'**
   String get topicStickied;
 
   /// No description provided for @topicUnstickied.
   ///
   /// In en, this message translates to:
-  /// **'Topic unstickied'**
+  /// **'Thread no longer sticky'**
   String get topicUnstickied;
 
   /// Error message when cannot edit message
@@ -1085,7 +1061,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginRequired.
   ///
   /// In en, this message translates to:
-  /// **'Login Required'**
+  /// **'Login required'**
   String get loginRequired;
 
   /// No description provided for @tryAgain.
@@ -1253,13 +1229,13 @@ abstract class AppLocalizations {
   /// No description provided for @logout.
   ///
   /// In en, this message translates to:
-  /// **'Logout'**
+  /// **'Log out'**
   String get logout;
 
   /// No description provided for @areYouSureYouWantToLogout.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to logout?'**
+  /// **'Are you sure you want to log out?'**
   String get areYouSureYouWantToLogout;
 
   /// No description provided for @register.
@@ -1271,7 +1247,7 @@ abstract class AppLocalizations {
   /// No description provided for @signIn.
   ///
   /// In en, this message translates to:
-  /// **'Sign In'**
+  /// **'Log in'**
   String get signIn;
 
   /// No description provided for @markForumRead.
@@ -1367,7 +1343,7 @@ abstract class AppLocalizations {
   /// No description provided for @youNeedToBeSignedInToViewConversations.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view your conversations.'**
+  /// **'You need to be logged in to see your conversations.'**
   String get youNeedToBeSignedInToViewConversations;
 
   /// Error message when loading conversations fails
@@ -1709,7 +1685,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterKeywordsToSearchTopics.
   ///
   /// In en, this message translates to:
-  /// **'Enter keywords to search topics...'**
+  /// **'Enter keywords to search threads...'**
   String get enterKeywordsToSearchTopics;
 
   /// No description provided for @pleaseFillInAllRequiredFields.
@@ -1727,49 +1703,49 @@ abstract class AppLocalizations {
   /// No description provided for @signInToViewUnreadTopics.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view unread topics'**
+  /// **'Log in to see unread threads'**
   String get signInToViewUnreadTopics;
 
   /// No description provided for @youNeedToBeSignedInToViewUnreadTopics.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view your unread topics.'**
+  /// **'You need to be logged in to see your unread threads.'**
   String get youNeedToBeSignedInToViewUnreadTopics;
 
   /// No description provided for @signInToViewSubscribedTopics.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view subscribed topics'**
+  /// **'Log in to see your watched threads'**
   String get signInToViewSubscribedTopics;
 
   /// No description provided for @youNeedToBeSignedInToViewSubscribedTopics.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view your subscribed topics.'**
+  /// **'You need to be logged in to see your watched threads.'**
   String get youNeedToBeSignedInToViewSubscribedTopics;
 
   /// No description provided for @signInToViewParticipatedTopics.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view participated topics'**
+  /// **'Log in to see the threads you\'ve posted in'**
   String get signInToViewParticipatedTopics;
 
   /// No description provided for @youNeedToBeSignedInToViewParticipatedTopics.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view topics you have participated in.'**
+  /// **'You need to be logged in to see the threads you\'ve posted in.'**
   String get youNeedToBeSignedInToViewParticipatedTopics;
 
   /// No description provided for @signInToViewLatestTopics.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view latest topics'**
+  /// **'Log in to see the latest threads'**
   String get signInToViewLatestTopics;
 
   /// No description provided for @youNeedToBeSignedInToViewLatestTopics.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view latest topics.'**
+  /// **'You need to be logged in to see the latest threads.'**
   String get youNeedToBeSignedInToViewLatestTopics;
 
   /// No description provided for @markAsUnread.
@@ -1793,7 +1769,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInToAccessYourProfile.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to access your profile and manage your account'**
+  /// **'Log in to see your profile and manage your account'**
   String get signInToAccessYourProfile;
 
   /// No description provided for @enterYourUsername.
@@ -1967,7 +1943,7 @@ abstract class AppLocalizations {
   /// Hint text for searching topics and posts
   ///
   /// In en, this message translates to:
-  /// **'Enter keywords to find topics and posts'**
+  /// **'Enter keywords to find threads and posts'**
   String get enterKeywordsToFindTopicsAndPosts;
 
   /// Hint text for searching forums by keywords or domain
@@ -2117,7 +2093,7 @@ abstract class AppLocalizations {
   /// Title for delete topic dialog
   ///
   /// In en, this message translates to:
-  /// **'Delete Topic'**
+  /// **'Delete thread'**
   String get deleteTopic;
 
   /// Option for soft delete (can be restored)
@@ -2129,7 +2105,7 @@ abstract class AppLocalizations {
   /// Description for soft delete option
   ///
   /// In en, this message translates to:
-  /// **'Topic can be restored later'**
+  /// **'The thread can be restored later'**
   String get topicCanBeRestoredLater;
 
   /// Option for hard delete (permanent)
@@ -2141,7 +2117,7 @@ abstract class AppLocalizations {
   /// Description for hard delete option
   ///
   /// In en, this message translates to:
-  /// **'Topic will be permanently deleted'**
+  /// **'The thread will be permanently deleted'**
   String get topicWillBePermanentlyDeleted;
 
   /// Label for deletion reason field
@@ -2153,7 +2129,7 @@ abstract class AppLocalizations {
   /// Hint text for deletion reason field
   ///
   /// In en, this message translates to:
-  /// **'Enter the reason for deleting this topic'**
+  /// **'Enter the reason for deleting this thread'**
   String get enterReasonForDeletingTopic;
 
   /// Validation message for deletion reason
@@ -2273,7 +2249,7 @@ abstract class AppLocalizations {
   /// Notifications tab title
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
+  /// **'Alerts'**
   String get notifications;
 
   /// Forums tab title (plural)
@@ -2291,7 +2267,7 @@ abstract class AppLocalizations {
   /// Message explaining mark all forums as read action
   ///
   /// In en, this message translates to:
-  /// **'This will mark all forums and topics as read. This action cannot be undone.'**
+  /// **'This will mark all forums and threads as read. This can\'t be undone.'**
   String get markAllForumsAsReadMessage;
 
   /// Button text to mark as read
@@ -2477,7 +2453,7 @@ abstract class AppLocalizations {
   /// Message asking user to login to like messages
   ///
   /// In en, this message translates to:
-  /// **'Please login to like messages'**
+  /// **'Please log in to react to messages'**
   String get pleaseLoginToLikeMessages;
 
   /// Button to load earlier messages
@@ -2585,7 +2561,7 @@ abstract class AppLocalizations {
   /// Message asking user to login to access content
   ///
   /// In en, this message translates to:
-  /// **'Please login to access this content and interact with posts.'**
+  /// **'Please log in to see this content and join in.'**
   String get pleaseLoginToAccessContent;
 
   /// Hint text for searching users
@@ -2687,13 +2663,13 @@ abstract class AppLocalizations {
   /// Message asking user to sign in to view messages
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view messages'**
+  /// **'Log in to see your conversations'**
   String get signInToViewMessages;
 
   /// Message when private messages are not available
   ///
   /// In en, this message translates to:
-  /// **'Private messages not available'**
+  /// **'Conversations aren\'t available'**
   String get privateMessagesNotAvailable;
 
   /// Error message when loading post fails
@@ -3083,7 +3059,7 @@ abstract class AppLocalizations {
   /// No description provided for @signOut.
   ///
   /// In en, this message translates to:
-  /// **'Sign out'**
+  /// **'Log out'**
   String get signOut;
 
   /// No description provided for @changeEmail.
@@ -3323,7 +3299,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginFailed.
   ///
   /// In en, this message translates to:
-  /// **'Login Failed'**
+  /// **'Login failed'**
   String get loginFailed;
 
   /// No description provided for @topicAnnouncement.
@@ -3365,61 +3341,61 @@ abstract class AppLocalizations {
   /// No description provided for @lockTopic.
   ///
   /// In en, this message translates to:
-  /// **'Lock Topic'**
+  /// **'Lock thread'**
   String get lockTopic;
 
   /// No description provided for @unlockTopic.
   ///
   /// In en, this message translates to:
-  /// **'Unlock Topic'**
+  /// **'Unlock thread'**
   String get unlockTopic;
 
   /// No description provided for @lockTopicConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to lock this topic? Other users will not be able to reply or interact with it.'**
+  /// **'Are you sure you want to lock this thread? Other members won\'t be able to reply to it.'**
   String get lockTopicConfirm;
 
   /// No description provided for @unlockTopicConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to unlock this topic? Other users will be able to reply and interact with it again.'**
+  /// **'Are you sure you want to unlock this thread? Other members will be able to reply to it again.'**
   String get unlockTopicConfirm;
 
   /// No description provided for @stickTopic.
   ///
   /// In en, this message translates to:
-  /// **'Stick Topic'**
+  /// **'Stick thread'**
   String get stickTopic;
 
   /// No description provided for @unstickTopic.
   ///
   /// In en, this message translates to:
-  /// **'Unstick Topic'**
+  /// **'Unstick thread'**
   String get unstickTopic;
 
   /// No description provided for @stickTopicConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to stick this topic? It will appear at the top of the forum for all users.'**
+  /// **'Are you sure you want to stick this thread? It will stay at the top of the forum for everyone.'**
   String get stickTopicConfirm;
 
   /// No description provided for @unstickTopicConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to unstick this topic? It will no longer appear at the top of the forum.'**
+  /// **'Are you sure you want to unstick this thread? It will no longer stay at the top of the forum.'**
   String get unstickTopicConfirm;
 
   /// No description provided for @undeleteTopic.
   ///
   /// In en, this message translates to:
-  /// **'Undelete Topic'**
+  /// **'Undelete thread'**
   String get undeleteTopic;
 
   /// No description provided for @undeleteTopicConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to undelete this topic? It will be visible to other users again.'**
+  /// **'Are you sure you want to undelete this thread? Other members will see it again.'**
   String get undeleteTopicConfirm;
 
   /// No description provided for @additionalInformation.
@@ -3557,19 +3533,19 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseLoginToCreateTopic.
   ///
   /// In en, this message translates to:
-  /// **'Please log in to create a new topic'**
+  /// **'Please log in to post a thread'**
   String get pleaseLoginToCreateTopic;
 
   /// No description provided for @pleaseLoginToSubscribeForums.
   ///
   /// In en, this message translates to:
-  /// **'Please log in to subscribe to forums'**
+  /// **'Please log in to watch forums'**
   String get pleaseLoginToSubscribeForums;
 
   /// No description provided for @pleaseLoginToUnsubscribeForums.
   ///
   /// In en, this message translates to:
-  /// **'Please log in to unsubscribe from forums'**
+  /// **'Please log in to unwatch forums'**
   String get pleaseLoginToUnsubscribeForums;
 
   /// No description provided for @errorLoadingContent.
@@ -3581,7 +3557,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPermissionToViewSubforumTopics.
   ///
   /// In en, this message translates to:
-  /// **'You do not have permission to view topics in this subforum.'**
+  /// **'You don\'t have permission to view threads in this sub-forum.'**
   String get noPermissionToViewSubforumTopics;
 
   /// No description provided for @noDiscussionsYet.
@@ -3611,13 +3587,13 @@ abstract class AppLocalizations {
   /// No description provided for @subscribedForums.
   ///
   /// In en, this message translates to:
-  /// **'Subscribed Forums'**
+  /// **'Watched forums'**
   String get subscribedForums;
 
   /// No description provided for @allForumTopicsMarkedRead.
   ///
   /// In en, this message translates to:
-  /// **'All forum topics have been marked as read'**
+  /// **'All the forum\'s threads have been marked read'**
   String get allForumTopicsMarkedRead;
 
   /// Forum post total; {count} is already formatted (e.g. 12.3K)
@@ -3653,19 +3629,19 @@ abstract class AppLocalizations {
   /// No description provided for @topicDeletedHidden.
   ///
   /// In en, this message translates to:
-  /// **'This topic is deleted and hidden from other users'**
+  /// **'This thread is deleted and hidden from other members'**
   String get topicDeletedHidden;
 
   /// No description provided for @topicClosedNoReplies.
   ///
   /// In en, this message translates to:
-  /// **'This topic is closed and no longer accepting replies'**
+  /// **'This thread is locked: it\'s not open for further replies'**
   String get topicClosedNoReplies;
 
   /// No description provided for @youAreSubscribedToTopic.
   ///
   /// In en, this message translates to:
-  /// **'You are subscribed to this topic'**
+  /// **'You are watching this thread'**
   String get youAreSubscribedToTopic;
 
   /// No description provided for @refreshing.
@@ -3947,13 +3923,13 @@ abstract class AppLocalizations {
   /// No description provided for @searchForTopics.
   ///
   /// In en, this message translates to:
-  /// **'Search for topics'**
+  /// **'Search threads'**
   String get searchForTopics;
 
   /// No description provided for @noTopicsFound.
   ///
   /// In en, this message translates to:
-  /// **'No topics found'**
+  /// **'No threads found'**
   String get noTopicsFound;
 
   /// No description provided for @noPostsFound.
@@ -4277,7 +4253,7 @@ abstract class AppLocalizations {
   /// No description provided for @unknownTopic.
   ///
   /// In en, this message translates to:
-  /// **'Unknown Topic'**
+  /// **'Unknown thread'**
   String get unknownTopic;
 
   /// No description provided for @connectionTimeoutTitle.
@@ -4379,13 +4355,13 @@ abstract class AppLocalizations {
   /// No description provided for @passkeyNotSetUp.
   ///
   /// In en, this message translates to:
-  /// **'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.'**
+  /// **'This forum is not yet set up for passkey access on this app. Please log in with your user name and password.'**
   String get passkeyNotSetUp;
 
   /// No description provided for @noPasskeyForForum.
   ///
   /// In en, this message translates to:
-  /// **'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.'**
+  /// **'No passkey found for this forum. Log in with your password, or create a passkey on the forum website first.'**
   String get noPasskeyForForum;
 
   /// No description provided for @pushNotificationsNotReady.
@@ -4571,7 +4547,7 @@ abstract class AppLocalizations {
   /// No description provided for @thisTopicIsPinnedToTopOfForum.
   ///
   /// In en, this message translates to:
-  /// **'This topic is pinned to the top of the forum'**
+  /// **'This thread is sticky: it stays at the top of the forum'**
   String get thisTopicIsPinnedToTopOfForum;
 
   /// No description provided for @editConversation.
@@ -4673,25 +4649,25 @@ abstract class AppLocalizations {
   /// No description provided for @noActionUrlAvailableForThisNotificationType.
   ///
   /// In en, this message translates to:
-  /// **'No action URL available for this notification type.'**
+  /// **'This alert has no link to open.'**
   String get noActionUrlAvailableForThisNotificationType;
 
   /// No description provided for @signInToViewNotifications.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view notifications'**
+  /// **'Log in to see your alerts'**
   String get signInToViewNotifications;
 
   /// No description provided for @youNeedToBeSignedInToViewYourNotifications.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view your notifications.'**
+  /// **'You need to be logged in to see your alerts.'**
   String get youNeedToBeSignedInToViewYourNotifications;
 
   /// No description provided for @errorLoadingNotifications.
   ///
   /// In en, this message translates to:
-  /// **'Error loading notifications'**
+  /// **'Error loading alerts'**
   String get errorLoadingNotifications;
 
   /// No description provided for @pullDownToRefresh.
@@ -4703,19 +4679,19 @@ abstract class AppLocalizations {
   /// No description provided for @youHaveNoNewNotificationsCheckBackLater.
   ///
   /// In en, this message translates to:
-  /// **'You have no new notifications. Check back later for updates on topics you\'re following.'**
+  /// **'You have no new alerts. Check back later for updates on threads you\'re watching.'**
   String get youHaveNoNewNotificationsCheckBackLater;
 
   /// No description provided for @signInToViewProfile.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to view profile'**
+  /// **'Log in to see your profile'**
   String get signInToViewProfile;
 
   /// No description provided for @youNeedToBeSignedInToViewYourProfile.
   ///
   /// In en, this message translates to:
-  /// **'You need to be signed in to view your profile.'**
+  /// **'You need to be logged in to see your profile.'**
   String get youNeedToBeSignedInToViewYourProfile;
 
   /// No description provided for @emailLabel.
@@ -4793,7 +4769,7 @@ abstract class AppLocalizations {
   /// No description provided for @topicIdIsMissingCannotNavigateToThePost.
   ///
   /// In en, this message translates to:
-  /// **'Topic ID is missing. Cannot navigate to the post.'**
+  /// **'The thread\'s ID is missing, so the post can\'t be opened.'**
   String get topicIdIsMissingCannotNavigateToThePost;
 
   /// No description provided for @conversationIsOpenForReplies.
@@ -4860,7 +4836,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'this forum'**
-  String get thisForum;
+  String get thisForumInSentence;
 
   /// Button next to the quick-reply field of a conversation: opens the full Reply page (attachments, formatting) with the text typed so far
   ///
@@ -4877,13 +4853,13 @@ abstract class AppLocalizations {
   /// Forum home header stats, joined with " · "; the number is compact (18.5K)
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{{count} topic} other{{count} topics}}'**
+  /// **'{count, plural, =1{{count} thread} other{{count} threads}}'**
   String statsTopics(int count);
 
   /// Forum home header stats, joined with " · "; the number is compact (1.2M)
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{{count} post} other{{count} posts}}'**
+  /// **'{count, plural, =1{{count} message} other{{count} messages}}'**
   String statsPosts(int count);
 
   /// The search field in the forum home header
@@ -4997,19 +4973,19 @@ abstract class AppLocalizations {
   /// No description provided for @signInOnWebsite.
   ///
   /// In en, this message translates to:
-  /// **'Sign in on the forum\'s website'**
+  /// **'Log in on the forum\'s website'**
   String get signInOnWebsite;
 
   /// No description provided for @signInOnWebsiteHint.
   ///
   /// In en, this message translates to:
-  /// **'For Google, Facebook and the other ways you sign in there'**
+  /// **'For Google, Facebook and the other ways you log in there'**
   String get signInOnWebsiteHint;
 
   /// No description provided for @browserLoginFailed.
   ///
   /// In en, this message translates to:
-  /// **'Signing in on the website didn\'t work. Please try again.'**
+  /// **'Logging in on the website didn\'t work. Please try again.'**
   String get browserLoginFailed;
 
   /// Heading above a forum's sub-forums, before its topics
@@ -5081,7 +5057,7 @@ abstract class AppLocalizations {
   /// No description provided for @trustThisDeviceHint.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t ask for a code the next time you sign in on this device'**
+  /// **'Don\'t ask for a code the next time you log in on this device'**
   String get trustThisDeviceHint;
 
   /// Two-step verification with a passkey, when the device has none for the forum
@@ -5095,6 +5071,432 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This forum is not yet set up for passkeys in this app. Choose another method.'**
   String get passkeyStepNotSetUp;
+
+  /// No description provided for @ignoreMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignore member'**
+  String get ignoreMember;
+
+  /// No description provided for @stopIgnoringMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop ignoring'**
+  String get stopIgnoringMember;
+
+  /// No description provided for @memberIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'You are now ignoring {name}.'**
+  String memberIgnored(String name);
+
+  /// No description provided for @memberNoLongerIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'You are no longer ignoring {name}.'**
+  String memberNoLongerIgnored(String name);
+
+  /// No description provided for @ignoredMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Ignored members'**
+  String get ignoredMembers;
+
+  /// No description provided for @ignoredMembersExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Content by members you ignore is hidden, and they can\'t start conversations with you.'**
+  String get ignoredMembersExplanation;
+
+  /// No description provided for @noIgnoredMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'You aren\'t ignoring anyone.'**
+  String get noIgnoredMembers;
+
+  /// No description provided for @youAreIgnoringMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You are ignoring {name}.'**
+  String youAreIgnoringMember(String name);
+
+  /// No description provided for @showIgnoredContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get showIgnoredContent;
+
+  /// No description provided for @markAllAlertsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get markAllAlertsRead;
+
+  /// No description provided for @topicSolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Solved'**
+  String get topicSolved;
+
+  /// No description provided for @topicQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get topicQuestion;
+
+  /// No description provided for @solutionBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'SOLUTION'**
+  String get solutionBadge;
+
+  /// No description provided for @forumClosedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The forum is closed'**
+  String get forumClosedTitle;
+
+  /// No description provided for @updatedTermsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated terms'**
+  String get updatedTermsTitle;
+
+  /// No description provided for @updatedTermsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The forum has updated its terms or privacy policy. Please review and accept them on the website.'**
+  String get updatedTermsMessage;
+
+  /// No description provided for @reviewTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewTerms;
+
+  /// No description provided for @forumTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms and rules'**
+  String get forumTerms;
+
+  /// No description provided for @contactForum.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get contactForum;
+
+  /// No description provided for @notifyMeOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me of'**
+  String get notifyMeOf;
+
+  /// No description provided for @watchNewThreads.
+  ///
+  /// In en, this message translates to:
+  /// **'New threads'**
+  String get watchNewThreads;
+
+  /// No description provided for @watchNewMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages'**
+  String get watchNewMessages;
+
+  /// No description provided for @watchSendAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get watchSendAlerts;
+
+  /// No description provided for @watchSendEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'Emails'**
+  String get watchSendEmails;
+
+  /// No description provided for @logInToWatchThread.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to watch this thread'**
+  String get logInToWatchThread;
+
+  /// No description provided for @failedToWatchThread.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t watch the thread'**
+  String get failedToWatchThread;
+
+  /// No description provided for @failedToUnwatchThread.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t unwatch the thread'**
+  String get failedToUnwatchThread;
+
+  /// No description provided for @watchThreadAlertsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll get an alert when someone replies.'**
+  String get watchThreadAlertsNote;
+
+  /// No description provided for @threadFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get threadFilters;
+
+  /// No description provided for @anyPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'(Any)'**
+  String get anyPrefix;
+
+  /// No description provided for @startedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Started by'**
+  String get startedBy;
+
+  /// No description provided for @lastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated'**
+  String get lastUpdated;
+
+  /// No description provided for @anyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Any time'**
+  String get anyTime;
+
+  /// No description provided for @periodDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String periodDays(int count);
+
+  /// No description provided for @periodMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String periodMonths(int count);
+
+  /// No description provided for @periodYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year} other{{count} years}}'**
+  String periodYears(int count);
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortAscending.
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get sortAscending;
+
+  /// No description provided for @sortDescending.
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get sortDescending;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get applyFilters;
+
+  /// No description provided for @noThreadsMatchFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No threads match these filters.'**
+  String get noThreadsMatchFilters;
+
+  /// No description provided for @threadTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Thread type'**
+  String get threadTypeLabel;
+
+  /// No description provided for @pollQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Poll question'**
+  String get pollQuestion;
+
+  /// No description provided for @pollResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible responses'**
+  String get pollResponses;
+
+  /// No description provided for @pollResponseNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Response {number}'**
+  String pollResponseNumber(int number);
+
+  /// No description provided for @addPollResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Add response'**
+  String get addPollResponse;
+
+  /// No description provided for @removePollResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove response'**
+  String get removePollResponse;
+
+  /// No description provided for @pollMultipleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Voters may choose more than one response'**
+  String get pollMultipleChoice;
+
+  /// No description provided for @pollChangeVote.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow voters to change their votes'**
+  String get pollChangeVote;
+
+  /// No description provided for @pollPublicVotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Display votes publicly'**
+  String get pollPublicVotes;
+
+  /// No description provided for @pollViewResultsUnvoted.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the results to be viewed without voting'**
+  String get pollViewResultsUnvoted;
+
+  /// No description provided for @pollCloseAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this poll after'**
+  String get pollCloseAfter;
+
+  /// No description provided for @pollNeverCloses.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get pollNeverCloses;
+
+  /// No description provided for @noneOption.
+  ///
+  /// In en, this message translates to:
+  /// **'(None)'**
+  String get noneOption;
+
+  /// No description provided for @tagsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tagsLabel;
+
+  /// No description provided for @tagsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate tags with commas'**
+  String get tagsHint;
+
+  /// No description provided for @addAtLeastTags.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Add at least 1 tag} other{Add at least {count} tags}}'**
+  String addAtLeastTags(int count);
+
+  /// No description provided for @threadFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in {field}.'**
+  String threadFieldRequired(String field);
+
+  /// No description provided for @pollNeedsQuestionAndResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a poll question and at least two responses.'**
+  String get pollNeedsQuestionAndResponses;
+
+  /// No description provided for @awaitingApprovalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'AWAITING APPROVAL'**
+  String get awaitingApprovalBadge;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @postApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Post approved'**
+  String get postApproved;
+
+  /// No description provided for @postUndeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Post undeleted'**
+  String get postUndeleted;
+
+  /// Header of a quote in a post, as XenForo words it: the quoted member's name
+  ///
+  /// In en, this message translates to:
+  /// **'{name} said:'**
+  String quoteSaid(String name);
+
+  /// Divider between posts far apart in time (from the Discourse app)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day later} other{{count} days later}}'**
+  String timeGapDaysLater(int count);
+
+  /// Divider between posts far apart in time (from the Discourse app)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month later} other{{count} months later}}'**
+  String timeGapMonthsLater(int count);
+
+  /// Divider between posts far apart in time (from the Discourse app)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year later} other{{count} years later}}'**
+  String timeGapYearsLater(int count);
+
+  /// Label under the view count in the summary under a thread's first post; the number is shown above it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{view} other{views}}'**
+  String topicMapViews(int count);
+
+  /// Label under the reply count in the summary under a thread's first post; the number is shown above it
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{reply} other{replies}}'**
+  String topicMapReplies(int count);
+
+  /// No description provided for @thisForum.
+  ///
+  /// In en, this message translates to:
+  /// **'This forum'**
+  String get thisForum;
 }
 
 class _AppLocalizationsDelegate

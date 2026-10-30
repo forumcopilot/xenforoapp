@@ -13,7 +13,7 @@ import 'video_card.dart';
 import 'twitter_card.dart';
 import 'cached_redirect_image.dart';
 import 'attachment_item_widget.dart';
-import 'user_avatar.dart';
+import 'quote_box.dart';
 import 'broken_image_widget.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -87,11 +87,13 @@ class CustomBBStylesheet extends BBStylesheet {
     /// embedding the same image URL do not end up sharing a tag.
     String? contentId,
   }) {
-    final effectiveFontSize = fontSize ?? 15.0;
+    // 16/1.5, as Flapp and the Discourse app set posts.
+    final effectiveFontSize = fontSize ?? 16.0;
     final defaultText = context != null
         ? Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontSize: effectiveFontSize,
+                  height: DesignTokens.lineHeightRelaxed,
                 ) ??
             TextStyle(
               fontSize: effectiveFontSize,
@@ -335,6 +337,10 @@ class _HeroTagOrdinal {
 /// [contentId] is the id of the post/message being rendered; it is what keeps
 /// two posts that embed the same image URL from colliding. Callers that have
 /// no id fall back to the URL, which is still stable across rebuilds.
+///
+/// The URL is part of the tag either way: a post drawn from the forum's HTML
+/// (XenForoContent) draws each attachment with a renderer of its own, whose
+/// ordinal starts at zero again, so two attachments in one post shared a tag.
 String _bbCodeHeroTag(
   FlutterRenderer renderer,
   String kind,
@@ -343,7 +349,7 @@ String _bbCodeHeroTag(
 ) {
   final ordinal = _heroTagOrdinals[renderer] ??= _HeroTagOrdinal();
   final scope = (contentId != null && contentId.isNotEmpty)
-      ? contentId
+      ? '$contentId-${url.hashCode}'
       : '${url.hashCode}';
   return '$kind-$scope-${ordinal.next++}';
 }
@@ -587,8 +593,8 @@ class VideoTag extends AdvancedTag {
 
     final String url = videoUrl; // Create a non-null copy
 
-    // Check if it's a YouTube video
-    if (BBCodeProcessor.isYoutubeUrl(url)) {
+    // A video site the video card knows: YouTube, Vimeo, Dailymotion, ...
+    if (BBCodeProcessor.isYoutubeUrl(url) || VideoCard.linkFor(url) != null) {
       return [
         WidgetSpan(
           child: VideoCard(url: url),
@@ -802,32 +808,6 @@ class CustomQuoteTag extends AdvancedTag {
   CustomQuoteTag(String name, this.siteContext) : super(name);
   final SiteContext siteContext;
 
-  /// Generates avatar URL for a given username
-  /// This follows the same pattern used in the liked list implementation
-  String? _generateAvatarUrl(String username) {
-    try {
-      // Use SiteContext to get forum info
-      final baseForumInfo = siteContext.site;
-      final pluginUrl = baseForumInfo.pluginUrl;
-
-      if (pluginUrl.isNotEmpty) {
-        // Use the same pattern as the liked list: replace mobiquo.php with avatar.php
-        // Note: This requires user_id, but we only have username
-        // For now, we'll return null to use the fallback avatar with username
-        // In a future enhancement, we could:
-        // 1. Look up user_id from username using a user service
-        // 2. Cache username -> user_id mappings
-        // 3. Use a different avatar endpoint that accepts username
-        return null;
-      }
-    } catch (e) {
-      // If there's any error accessing forum context, fall back to null
-      debugPrint('Error generating avatar URL for $username: $e');
-    }
-
-    return null;
-  }
-
   /// Extracts username from XenForo quote format: "username, post: X, member: Y"
   /// Returns the username (first part before comma) or null if not found
   String? _extractUsernameFromQuoteAttribute(String? attributeValue) {
@@ -907,24 +887,6 @@ class CustomQuoteTag extends AdvancedTag {
     return cleaned;
   }
 
-  /// Helper method to adjust fontSize in TextSpans to 14.0 for quote content
-  InlineSpan _adjustQuoteSpanFontSize(InlineSpan span, double targetFontSize) {
-    if (span is TextSpan) {
-      final style = span.style;
-      final adjustedStyle = (style ?? const TextStyle()).copyWith(fontSize: targetFontSize);
-      return TextSpan(
-        text: span.text,
-        style: adjustedStyle,
-        children: span.children?.map((child) => _adjustQuoteSpanFontSize(child, targetFontSize)).toList(),
-        recognizer: span.recognizer,
-        semanticsLabel: span.semanticsLabel,
-        locale: span.locale,
-        spellOut: span.spellOut,
-      );
-    }
-    return span;
-  }
-
   List<InlineSpan> parseWithDepth(FlutterRenderer renderer, bbob.Element element, {int depth = 0}) {
     String? authorName;
 
@@ -972,87 +934,21 @@ class CustomQuoteTag extends AdvancedTag {
       WidgetSpan(
         child: Builder(
           builder: (context) {
-            final colorScheme = Theme.of(context).colorScheme;
-            final textTheme = Theme.of(context).textTheme;
-            final quoteColor = StyleBuilders.getQuoteColor(context, depth);
-            return SizedBox(
-              width: double.infinity,
-              child: Card(
-                margin: EdgeInsets.symmetric(vertical: DesignTokens.spacingM),
-                elevation: DesignTokens.elevationNone,
-                color: quoteColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-                  side: BorderSide(
-                    color: colorScheme.outlineVariant.withValues(alpha: 
-                      DesignTokens.opacityLow,
-                    ),
-                    width: DesignTokens.borderWidthThin,
-                  ),
-                ),
-                child: Padding(
-                  padding: DesignTokens.paddingL,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (quoteHeader.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            bottom: DesignTokens.spacingS,
-                          ),
-                          child: Row(
-                            children: [
-                              UserAvatar(
-                                username: quoteHeader,
-                                iconUrl: _generateAvatarUrl(quoteHeader),
-                                radius: DesignTokens.spacingM,
-                              ),
-                              const SizedBox(width: DesignTokens.spacingS),
-                              Text(
-                                quoteHeader,
-                                style: textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onSurfaceVariant,
-                                  letterSpacing: 0.4,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      DefaultTextStyle(
-                        style: textTheme.bodyMedium?.copyWith(
-                              fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
-                              letterSpacing: 0.15,
-                              height: 1.5,
-                            ) ??
-                            TextStyle(
-                              fontSize: 14.0,
-                              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.75),
-                            ),
-                        child: Builder(
-                          builder: (context) {
-                            return Text.rich(
-                              TextSpan(
-                                children: cleanedChildren.map((child) {
-                                  if (child is bbob.Element && (child.tag == 'quote' || child.tag == 'QUOTE')) {
-                                    // Recursively render nested quotes with increased depth
-                                    return parseWithDepth(renderer, child, depth: depth + 1).isNotEmpty ? parseWithDepth(renderer, child, depth: depth + 1).first : const TextSpan();
-                                  } else {
-                                    // Render other children normally, then adjust fontSize to 14.0 for quotes
-                                    final spans = renderer.render([child]);
-                                    if (spans.isNotEmpty) {
-                                      return _adjustQuoteSpanFontSize(spans.first, 14.0);
-                                    }
-                                    return const TextSpan();
-                                  }
-                                }).toList(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: DesignTokens.spacingM),
+              child: QuoteBox(
+                name: quoteHeader,
+                child: Text.rich(
+                  TextSpan(
+                    children: cleanedChildren.map((child) {
+                      if (child is bbob.Element && (child.tag == 'quote' || child.tag == 'QUOTE')) {
+                        // A nested quote: one more box inside this one.
+                        final nested = parseWithDepth(renderer, child, depth: depth + 1);
+                        return nested.isNotEmpty ? nested.first : const TextSpan();
+                      }
+                      final spans = renderer.render([child]);
+                      return spans.isNotEmpty ? spans.first : const TextSpan();
+                    }).toList(),
                   ),
                 ),
               ),

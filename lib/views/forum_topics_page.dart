@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
-import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_flutter/controllers/site_manager.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/utils/forum_navigation.dart';
@@ -11,6 +10,7 @@ import 'package:forumcopilot_flutter/views/widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/views/widgets/subforum_masthead.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/app_navigation.dart';
+import 'widgets/forum_watch_sheet.dart';
 import '../l10n/generated/app_localizations.dart';
 
 class ForumTopicsPage extends StatefulWidget {
@@ -85,6 +85,7 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
           siteContext: widget.siteContext,
           forumId: widget.forum.id,
           forumName: widget.forum.name,
+          postingOptions: widget.forum.postingOptions,
         ),
       ),
     );
@@ -101,20 +102,9 @@ class _ForumTopicsPageState extends State<ForumTopicsPage> {
     }
 
     try {
-      final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
-      final isSubscribed = widget.forum.isSubscribed;
-
-      if (isSubscribed) {
-        await subscriptionProxy.unsubscribeForumAsync(widget.forum.id);
-      } else {
-        await subscriptionProxy.subscribeForumAsync(widget.forum.id, 1);
-      }
-
-      if (mounted) {
-        setState(() {
-          widget.forum.isSubscribed = !isSubscribed;
-        });
-      }
+      // The website's watch options with add-on 1.11.0; a plain toggle before
+      final watched = await ForumWatch.change(context, widget.forum);
+      if (watched != null && mounted) setState(() {});
     } catch (e) {
       // Error handled silently
     }

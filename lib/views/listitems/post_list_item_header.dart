@@ -189,6 +189,73 @@ class PostListItemHeader extends StatelessWidget {
                         ),
                       ),
                     ],
+                    // Awaiting approval: shown to moderators and to its author
+                    // (XenForo add-on 1.11.0's includeHidden)
+                    if (!post.isApproved && !post.isDeleted) ...[
+                      SizedBox(width: DesignTokens.spacingS),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: DesignTokens.spacingM - DesignTokens.spacingXS,
+                          vertical: DesignTokens.spacingXS / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.hourglass_top_rounded,
+                              size: DesignTokens.iconSizeXS,
+                              color: colorScheme.onTertiaryContainer,
+                            ),
+                            SizedBox(width: DesignTokens.spacingXS),
+                            Text(
+                              AppLocalizations.of(context).awaitingApprovalBadge,
+                              style: StyleBuilders.badgeTextStyle(
+                                colorScheme: colorScheme,
+                                textTheme: textTheme,
+                                color: colorScheme.onTertiaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    // A question's accepted answer (XenForo add-on 1.11.0+)
+                    if (post.isSolution) ...[
+                      SizedBox(width: DesignTokens.spacingS),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: DesignTokens.spacingM - DesignTokens.spacingXS,
+                          vertical: DesignTokens.spacingXS / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(DesignTokens.radiusS),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              size: DesignTokens.iconSizeXS,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                            SizedBox(width: DesignTokens.spacingXS),
+                            Text(
+                              AppLocalizations.of(context).solutionBadge,
+                              style: StyleBuilders.badgeTextStyle(
+                                colorScheme: colorScheme,
+                                textTheme: textTheme,
+                                color: colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 SizedBox(height: DesignTokens.spacingXS),

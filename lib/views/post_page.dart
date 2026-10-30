@@ -10,6 +10,7 @@ import 'widgets/delete_topic_dialog.dart';
 import 'appbars/posts_page_app_bar.dart';
 import '../utils/url_utils.dart';
 import '../utils/snackbar_helper.dart';
+import 'widgets/thread_watch_sheet.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({
@@ -43,6 +44,10 @@ class _PostPageState extends State<PostPage> {
   /// the list refreshes by loading the thread at that post and scrolling to it in place.
   void Function([String? scrollToPostId])? _refreshCallback;
   bool _isSubscribed = false;
+  /// Add-on 1.11.0+ (it sends the thread's type): the website's watch
+  /// options; and whether the watch sends emails, when known.
+  bool _hasWatchOptions = false;
+  bool? _emailSubscribe;
   bool _isClosed = false;
   bool _isSticky = false;
   bool _isDeleted = false;
@@ -120,29 +125,23 @@ class _PostPageState extends State<PostPage> {
   void _handleSubscribe() async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
-      SnackbarHelper.showInfo(context, AppLocalizations.of(context).pleaseLoginToSubscribe(_isSubscribed ? AppLocalizations.of(context).unsubscribeFrom : AppLocalizations.of(context).subscribeTo));
+      SnackbarHelper.showInfo(context, AppLocalizations.of(context).logInToWatchThread);
       return;
     }
 
-    try {
-      final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
-
-      final response = _isSubscribed
-          ? await subscriptionProxy.unsubscribeTopicAsync(widget.topicId)
-          : await subscriptionProxy.subscribeTopicAsync(widget.topicId, 1); // mode 1 for subscribe
-      if (!response.result) throw _ActionFailed(response.resultText);
-
-      if (mounted) {
-        setState(() {
-          _isSubscribed = !_isSubscribed;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        // Capture ScaffoldMessengerState to ensure dismiss button works correctly
-        // Hide any existing SnackBar before showing a new one
-        SnackbarHelper.showError(context, AppLocalizations.of(context).failedToSubscribeToThread(_isSubscribed ? AppLocalizations.of(context).unsubscribeFrom : AppLocalizations.of(context).subscribeTo));
-      }
+    final watch = await ThreadWatch.change(
+      context,
+      topicId: widget.topicId,
+      title: _actualTopicTitle.isNotEmpty ? _actualTopicTitle : widget.title,
+      isWatched: _isSubscribed,
+      hasOptions: _hasWatchOptions,
+      emailSubscribe: _emailSubscribe,
+    );
+    if (watch != null && mounted) {
+      setState(() {
+        _isSubscribed = watch.watched;
+        _emailSubscribe = watch.emailSubscribe;
+      });
     }
   }
 
@@ -541,6 +540,10 @@ class _PostPageState extends State<PostPage> {
                     setState(() {
                       _isSubscribed = isSubscribed;
                     });
+                  },
+                  onTopicLoaded: (topic) {
+                    _hasWatchOptions = topic.threadType != null;
+                    _emailSubscribe = topic.emailSubscribe;
                   },
                   onClosedStatusChanged: (isClosed) {
                     setState(() {

@@ -258,11 +258,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get youAreAllCaughtUp => '您已全部查看完毕！';
 
   @override
-  String get noSubscribedTopics => '无订阅主题';
+  String get noSubscribedTopics => '没有关注的主题';
 
   @override
   String get noSubscribedTopicsMessage =>
-      '你还没有订阅任何主题。打开一个主题，在其 ⋮ 菜单中选择“订阅”，即可收到新回复的通知。';
+      '你还没有关注任何主题。打开一个主题，在其 ⋮ 菜单中选择“关注”，即可收到新回复的通知。';
 
   @override
   String get noParticipatedTopics => '无参与主题';
@@ -277,7 +277,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unread => '未读';
 
   @override
-  String get subscribed => '已订阅';
+  String get subscribed => '已关注';
 
   @override
   String get participated => '已参与';
@@ -326,26 +326,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return '请登录以$action此主题';
-  }
+  String get subscribe => '关注';
 
   @override
-  String get subscribeTo => '订阅';
-
-  @override
-  String get unsubscribeFrom => '取消订阅';
-
-  @override
-  String get subscribe => '订阅';
-
-  @override
-  String get unsubscribe => '取消订阅';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return '无法$action主题';
-  }
+  String get unsubscribe => '取消关注';
 
   @override
   String get youCannotReplyToThisThread => '您无法回复此主题';
@@ -883,10 +867,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get youNeedToBeSignedInToViewUnreadTopics => '您需要登录才能查看未读主题';
 
   @override
-  String get signInToViewSubscribedTopics => '登录以查看订阅主题';
+  String get signInToViewSubscribedTopics => '登录以查看关注的主题';
 
   @override
-  String get youNeedToBeSignedInToViewSubscribedTopics => '您需要登录才能查看订阅主题';
+  String get youNeedToBeSignedInToViewSubscribedTopics => '您需要登录才能查看关注的主题';
 
   @override
   String get signInToViewParticipatedTopics => '登录以查看参与的主题';
@@ -1414,10 +1398,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get goBack => '返回';
 
   @override
-  String get signInToViewMessages => '请登录以查看消息';
+  String get signInToViewMessages => '请登录以查看对话';
 
   @override
-  String get privateMessagesNotAvailable => '私信不可用';
+  String get privateMessagesNotAvailable => '对话不可用';
 
   @override
   String failedToLoadPost(String error) {
@@ -1894,10 +1878,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pleaseLoginToCreateTopic => '请登录以创建新主题';
 
   @override
-  String get pleaseLoginToSubscribeForums => '请登录以订阅论坛';
+  String get pleaseLoginToSubscribeForums => '请登录以关注论坛';
 
   @override
-  String get pleaseLoginToUnsubscribeForums => '请登录以取消订阅论坛';
+  String get pleaseLoginToUnsubscribeForums => '请登录以取消关注论坛';
 
   @override
   String errorLoadingContent(String error) {
@@ -1920,7 +1904,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noForumsToDisplay => '没有可显示的论坛。这可能与权限或论坛结构有关。';
 
   @override
-  String get subscribedForums => '已订阅的论坛';
+  String get subscribedForums => '关注的论坛';
 
   @override
   String get allForumTopicsMarkedRead => '已将论坛中的所有主题标记为已读';
@@ -1951,7 +1935,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get topicClosedNoReplies => '此主题已关闭，不再接受回复';
 
   @override
-  String get youAreSubscribedToTopic => '您已订阅此主题';
+  String get youAreSubscribedToTopic => '您已关注此主题';
 
   @override
   String get refreshing => '正在刷新...';
@@ -2543,7 +2527,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get couldNotOpenForumUrl => '无法打开论坛 URL。';
 
   @override
-  String get noActionUrlAvailableForThisNotificationType => '此通知类型没有可用的操作链接。';
+  String get noActionUrlAvailableForThisNotificationType => '此通知没有可打开的链接。';
 
   @override
   String get signInToViewNotifications => '登录后可查看通知';
@@ -2646,7 +2630,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failedToDisablePush => '关闭推送通知失败';
 
   @override
-  String get thisForum => '此论坛';
+  String get thisForumInSentence => '此论坛';
 
   @override
   String get openFullEditor => '完整编辑器';
@@ -2841,4 +2825,292 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get passkeyStepNotSetUp => '该论坛尚未在此应用中设置通行密钥。请选择其他方式。';
+
+  @override
+  String get ignoreMember => '忽略成员';
+
+  @override
+  String get stopIgnoringMember => '取消忽略';
+
+  @override
+  String memberIgnored(String name) {
+    return '你现在忽略了 $name。';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return '你已不再忽略 $name。';
+  }
+
+  @override
+  String get ignoredMembers => '已忽略的成员';
+
+  @override
+  String get ignoredMembersExplanation => '你忽略的成员发布的内容会被隐藏，且他们无法与你发起对话。';
+
+  @override
+  String get noIgnoredMembers => '你没有忽略任何人。';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return '你正在忽略 $name。';
+  }
+
+  @override
+  String get showIgnoredContent => '显示';
+
+  @override
+  String get markAllAlertsRead => '全部标为已读';
+
+  @override
+  String get topicSolved => '已解决';
+
+  @override
+  String get topicQuestion => '问题';
+
+  @override
+  String get solutionBadge => '解决方案';
+
+  @override
+  String get forumClosedTitle => '论坛已关闭';
+
+  @override
+  String get updatedTermsTitle => '条款已更新';
+
+  @override
+  String get updatedTermsMessage => '论坛已更新其条款或隐私政策。请在网站上查看并接受。';
+
+  @override
+  String get reviewTerms => '查看';
+
+  @override
+  String get forumTerms => '条款和规则';
+
+  @override
+  String get contactForum => '联系我们';
+
+  @override
+  String get notifyMeOf => '通知我';
+
+  @override
+  String get watchNewThreads => '新主题';
+
+  @override
+  String get watchNewMessages => '新消息';
+
+  @override
+  String get watchSendAlerts => '通知';
+
+  @override
+  String get watchSendEmails => '电子邮件';
+
+  @override
+  String get logInToWatchThread => '请登录以关注此主题';
+
+  @override
+  String get failedToWatchThread => '无法关注该主题';
+
+  @override
+  String get failedToUnwatchThread => '无法取消关注该主题';
+
+  @override
+  String get watchThreadAlertsNote => '有人回复时你会收到通知。';
+
+  @override
+  String get threadFilters => '筛选';
+
+  @override
+  String get anyPrefix => '（任意）';
+
+  @override
+  String get startedBy => '发起人';
+
+  @override
+  String get lastUpdated => '最后更新';
+
+  @override
+  String get anyTime => '任何时间';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个月',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 年',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => '排序方式';
+
+  @override
+  String get sortAscending => '升序';
+
+  @override
+  String get sortDescending => '降序';
+
+  @override
+  String get clearFilters => '清除筛选';
+
+  @override
+  String get applyFilters => '筛选';
+
+  @override
+  String get noThreadsMatchFilters => '没有符合这些筛选条件的主题。';
+
+  @override
+  String get threadTypeLabel => '主题类型';
+
+  @override
+  String get pollQuestion => '投票问题';
+
+  @override
+  String get pollResponses => '可选答案';
+
+  @override
+  String pollResponseNumber(int number) {
+    return '答案 $number';
+  }
+
+  @override
+  String get addPollResponse => '添加答案';
+
+  @override
+  String get removePollResponse => '删除答案';
+
+  @override
+  String get pollMultipleChoice => '允许选择多个答案';
+
+  @override
+  String get pollChangeVote => '允许投票者更改投票';
+
+  @override
+  String get pollPublicVotes => '公开显示投票';
+
+  @override
+  String get pollViewResultsUnvoted => '允许不投票查看结果';
+
+  @override
+  String get pollCloseAfter => '投票关闭时间';
+
+  @override
+  String get pollNeverCloses => '永不';
+
+  @override
+  String get noneOption => '（无）';
+
+  @override
+  String get tagsLabel => '标签';
+
+  @override
+  String get tagsHint => '用逗号分隔标签';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '请至少添加 $count 个标签',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return '请填写$field。';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses => '请输入投票问题和至少两个答案。';
+
+  @override
+  String get awaitingApprovalBadge => '等待审核';
+
+  @override
+  String get approve => '批准';
+
+  @override
+  String get postApproved => '帖子已批准';
+
+  @override
+  String get postUndeleted => '帖子已恢复';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name 说：';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 天后',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个月后',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 年后',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '浏览',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '回复',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => '本论坛';
 }

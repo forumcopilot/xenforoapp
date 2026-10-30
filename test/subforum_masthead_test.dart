@@ -71,7 +71,7 @@ void main() {
     );
     expect(find.text('Test Forum'), findsOneWidget);
     expect(find.text('Messages from Dolores'), findsOneWidget);
-    expect(find.text('120 topics · 4.52K posts'), findsOneWidget);
+    expect(find.text('120 threads · 4.52K messages'), findsOneWidget);
 
     await tester.tap(find.text('Community'));
     expect(opened, 1);
@@ -150,7 +150,7 @@ void main() {
         compact: true,
       )));
       expect(find.byType(UnreadBadge), findsOneWidget);
-      expect(find.text('1 topic · 25 posts'), findsOneWidget);
+      expect(find.text('1 thread · 25 messages'), findsOneWidget);
     });
 
     testWidgets('a read one is not', (tester) async {

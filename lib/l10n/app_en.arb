@@ -5,11 +5,11 @@
     "description": "The application title"
   },
   
-  "loginTitle": "Login",
+  "loginTitle": "Log in",
   "usernameLabel": "Username",
   "passwordLabel": "Password",
-  "loginButton": "Login",
-  "signInWithPasskey": "Sign in with Passkey",
+  "loginButton": "Log in",
+  "signInWithPasskey": "Log in with a passkey",
   "usePasskey": "Use Passkey",
   "passkeyContinuePrompt": "Use your passkey to continue",
   "forgotPassword": "Forgot password?",
@@ -27,7 +27,7 @@
   
   "createAccount": "Create Account",
   "alreadyHaveAccount": "Already have an account? ",
-  "logIn": "Log In",
+  "logIn": "Log in",
   "continueButton": "Continue",
   "registrationNotAvailable": "Registration Not Available",
   "registrationNotAvailableMessage": "Registration is currently not available. The forum may be closed or registration may be disabled.",
@@ -101,21 +101,19 @@
   "updateEmail": "Update Email",
   "resend": "Resend",
   
-  "noLatestTopics": "No Latest Topics",
-  "noRecentTopicsToDisplay": "There are no recent topics to display. Check back later for new discussions.",
-  
-  "noUnreadTopics": "No Unread Topics",
-  "thereAreNoUnreadTopics": "There are no unread topics. Check back later for new discussions.",
+  "noLatestTopics": "No latest threads",
+  "noRecentTopicsToDisplay": "There are no recent threads to show. Check back later for new discussions.",
+  "noUnreadTopics": "No unread threads",
+  "thereAreNoUnreadTopics": "There are no unread threads. Check back later for new discussions.",
   "youAreAllCaughtUp": "You're all caught up!",
   
-  "noSubscribedTopics": "No Subscribed Topics",
-  "noSubscribedTopicsMessage": "You aren't subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.",
-  "noParticipatedTopics": "No Participated Topics",
-  "topicsYouParticipatedIn": "Topics that you have participated in will be shown here.",
-  
+  "noSubscribedTopics": "No watched threads",
+  "noSubscribedTopicsMessage": "You aren't watching any threads yet. Open a thread and choose Watch in its ⋮ menu to be alerted to new replies.",
+  "noParticipatedTopics": "No threads you've posted in",
+  "topicsYouParticipatedIn": "Threads you have posted in will be shown here.",
   "latest": "Latest",
   "unread": "Unread",
-  "subscribed": "Subscribed",
+  "subscribed": "Watched",
   "participated": "Participated",
   
   "connectionTimedOut": "Connection timed out. The site may be down or unreachable.",
@@ -138,10 +136,10 @@
   "searchSites": "Search Sites",
   
   "all": "All",
-  "topicsOnly": "Topics Only",
+  "topicsOnly": "Threads only",
   "titlesOnly": "Titles Only",
   
-  "failedToShareTopic": "Failed to share topic: {error}",
+  "failedToShareTopic": "Couldn't share the thread: {error}",
   "@failedToShareTopic": {
     "description": "Error message when sharing topic fails",
     "placeholders": {
@@ -150,28 +148,8 @@
       }
     }
   },
-  "pleaseLoginToSubscribe": "Please login to {action} this thread",
-  "@pleaseLoginToSubscribe": {
-    "description": "Message asking user to login to subscribe/unsubscribe",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
-  "subscribeTo": "subscribe to",
-  "unsubscribeFrom": "unsubscribe from",
-  "subscribe": "Subscribe",
-  "unsubscribe": "Unsubscribe",
-  "failedToSubscribeToThread": "Failed to {action} thread",
-  "@failedToSubscribeToThread": {
-    "description": "Error message when subscribe/unsubscribe fails",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
+  "subscribe": "Watch",
+  "unsubscribe": "Unwatch",
   
   "youCannotReplyToThisThread": "You cannot reply to this thread",
   "pleaseWaitForThreadToLoad": "Please wait for the thread to load",
@@ -211,7 +189,7 @@
       }
     }
   },
-  "newTopic": "New Topic",
+  "newTopic": "Post thread",
   "markRead": "Mark Read",
   
   "pleaseSelectReasonForReportingUser": "Please select a reason for reporting this user.",
@@ -245,11 +223,10 @@
   "leaveConversation": "Leave conversation",
   "reportConversation": "Report conversation",
   
-  "topicClosed": "Topic closed",
-  "topicOpened": "Topic opened",
-  "topicStickied": "Topic stickied",
-  "topicUnstickied": "Topic unstickied",
-  
+  "topicClosed": "Thread locked",
+  "topicOpened": "Thread unlocked",
+  "topicStickied": "Thread made sticky",
+  "topicUnstickied": "Thread no longer sticky",
   "cannotEditMessage": "Cannot edit this message: {error}",
   "@cannotEditMessage": {
     "description": "Error message when cannot edit message",
@@ -282,8 +259,7 @@
   
   "userProfile": "User Profile",
   "deletePost": "Delete Post",
-  "loginRequired": "Login Required",
-  
+  "loginRequired": "Login required",
   "tryAgain": "Try Again",
   "memberSince": "Member Since",
   "lastActivity": "Last Activity",
@@ -348,10 +324,10 @@
   
   "search": "Search",
   "moreOptions": "More options",
-  "logout": "Logout",
-  "areYouSureYouWantToLogout": "Are you sure you want to logout?",
+  "logout": "Log out",
+  "areYouSureYouWantToLogout": "Are you sure you want to log out?",
   "register": "Register",
-  "signIn": "Sign In",
+  "signIn": "Log in",
   "markForumRead": "Mark Forum Read",
   "notificationTest": "Notification Test",
   "forum": "Forum",
@@ -391,7 +367,7 @@
       }
     }
   },
-  "youNeedToBeSignedInToViewConversations": "You need to be signed in to view your conversations.",
+  "youNeedToBeSignedInToViewConversations": "You need to be logged in to see your conversations.",
   "errorLoadingConversations": "Error loading conversations: {error}",
   "@errorLoadingConversations": {
     "description": "Error message when loading conversations fails",
@@ -528,22 +504,22 @@
       }
     }
   },
-  "enterKeywordsToSearchTopics": "Enter keywords to search topics...",
+  "enterKeywordsToSearchTopics": "Enter keywords to search threads...",
   "pleaseFillInAllRequiredFields": "Please fill in all required fields",
   "undelete": "Undelete",
   
-  "signInToViewUnreadTopics": "Sign in to view unread topics",
-  "youNeedToBeSignedInToViewUnreadTopics": "You need to be signed in to view your unread topics.",
-  "signInToViewSubscribedTopics": "Sign in to view subscribed topics",
-  "youNeedToBeSignedInToViewSubscribedTopics": "You need to be signed in to view your subscribed topics.",
-  "signInToViewParticipatedTopics": "Sign in to view participated topics",
-  "youNeedToBeSignedInToViewParticipatedTopics": "You need to be signed in to view topics you have participated in.",
-  "signInToViewLatestTopics": "Sign in to view latest topics",
-  "youNeedToBeSignedInToViewLatestTopics": "You need to be signed in to view latest topics.",
+  "signInToViewUnreadTopics": "Log in to see unread threads",
+  "youNeedToBeSignedInToViewUnreadTopics": "You need to be logged in to see your unread threads.",
+  "signInToViewSubscribedTopics": "Log in to see your watched threads",
+  "youNeedToBeSignedInToViewSubscribedTopics": "You need to be logged in to see your watched threads.",
+  "signInToViewParticipatedTopics": "Log in to see the threads you've posted in",
+  "youNeedToBeSignedInToViewParticipatedTopics": "You need to be logged in to see the threads you've posted in.",
+  "signInToViewLatestTopics": "Log in to see the latest threads",
+  "youNeedToBeSignedInToViewLatestTopics": "You need to be logged in to see the latest threads.",
   "markAsUnread": "Mark as unread",
   "invite": "Invite",
   "welcomeBack": "Welcome Back",
-  "signInToAccessYourProfile": "Sign in to access your profile and manage your account",
+  "signInToAccessYourProfile": "Log in to see your profile and manage your account",
   "enterYourUsername": "Enter your username",
   "enterYourPassword": "Enter your password",
   "dontHaveAnAccount": "Don't have an account?",
@@ -685,7 +661,7 @@
       }
     }
   },
-  "enterKeywordsToFindTopicsAndPosts": "Enter keywords to find topics and posts",
+  "enterKeywordsToFindTopicsAndPosts": "Enter keywords to find threads and posts",
   "@enterKeywordsToFindTopicsAndPosts": {
     "description": "Hint text for searching topics and posts"
   },
@@ -793,7 +769,7 @@
   "@searchForums": {
     "description": "Title for the search forums page"
   },
-  "deleteTopic": "Delete Topic",
+  "deleteTopic": "Delete thread",
   "@deleteTopic": {
     "description": "Title for delete topic dialog"
   },
@@ -801,7 +777,7 @@
   "@softDelete": {
     "description": "Option for soft delete (can be restored)"
   },
-  "topicCanBeRestoredLater": "Topic can be restored later",
+  "topicCanBeRestoredLater": "The thread can be restored later",
   "@topicCanBeRestoredLater": {
     "description": "Description for soft delete option"
   },
@@ -809,7 +785,7 @@
   "@hardDelete": {
     "description": "Option for hard delete (permanent)"
   },
-  "topicWillBePermanentlyDeleted": "Topic will be permanently deleted",
+  "topicWillBePermanentlyDeleted": "The thread will be permanently deleted",
   "@topicWillBePermanentlyDeleted": {
     "description": "Description for hard delete option"
   },
@@ -817,7 +793,7 @@
   "@reasonForDeletion": {
     "description": "Label for deletion reason field"
   },
-  "enterReasonForDeletingTopic": "Enter the reason for deleting this topic",
+  "enterReasonForDeletingTopic": "Enter the reason for deleting this thread",
   "@enterReasonForDeletingTopic": {
     "description": "Hint text for deletion reason field"
   },
@@ -911,7 +887,7 @@
   "@home": {
     "description": "Home tab title"
   },
-  "notifications": "Notifications",
+  "notifications": "Alerts",
   "@notifications": {
     "description": "Notifications tab title"
   },
@@ -923,7 +899,7 @@
   "@markAllForumsAsRead": {
     "description": "Dialog title for marking all forums as read"
   },
-  "markAllForumsAsReadMessage": "This will mark all forums and topics as read. This action cannot be undone.",
+  "markAllForumsAsReadMessage": "This will mark all forums and threads as read. This can't be undone.",
   "@markAllForumsAsReadMessage": {
     "description": "Message explaining mark all forums as read action"
   },
@@ -1050,7 +1026,7 @@
   "@conversationOpened": {
     "description": "Success message when opening conversation"
   },
-  "pleaseLoginToLikeMessages": "Please login to like messages",
+  "pleaseLoginToLikeMessages": "Please log in to react to messages",
   "@pleaseLoginToLikeMessages": {
     "description": "Message asking user to login to like messages"
   },
@@ -1174,7 +1150,7 @@
   "@pleaseSelectPrefix": {
     "description": "Validation message when prefix is required but not selected"
   },
-  "pleaseLoginToAccessContent": "Please login to access this content and interact with posts.",
+  "pleaseLoginToAccessContent": "Please log in to see this content and join in.",
   "@pleaseLoginToAccessContent": {
     "description": "Message asking user to login to access content"
   },
@@ -1251,11 +1227,11 @@
   "@goBack": {
     "description": "Button text to go back"
   },
-  "signInToViewMessages": "Sign in to view messages",
+  "signInToViewMessages": "Log in to see your conversations",
   "@signInToViewMessages": {
     "description": "Message asking user to sign in to view messages"
   },
-  "privateMessagesNotAvailable": "Private messages not available",
+  "privateMessagesNotAvailable": "Conversations aren't available",
   "@privateMessagesNotAvailable": {
     "description": "Message when private messages are not available"
   },
@@ -1535,7 +1511,7 @@
   "@notificationsPitchForum": {"description": "Shown under the title on the page that asks to turn on notifications after sign-in"},
   "viewProfile": "View profile",
   "settings": "Settings",
-  "signOut": "Sign out",
+  "signOut": "Log out",
   "changeEmail": "Change email",
   "changePassword": "Change password",
   "save": "Save",
@@ -1577,7 +1553,7 @@
   "errorStorageFull": "Storage is full. Please free up some space.",
   "errorStorageAccessDenied": "Storage access denied. Please check app permissions.",
   "loginInfo": "Login Info",
-  "loginFailed": "Login Failed",
+  "loginFailed": "Login failed",
   "topicAnnouncement": "Announcement",
   "topicPinned": "Pinned",
   "topicLocked": "Locked",
@@ -1586,16 +1562,16 @@
   "@deletedBadge": {"description": "Badge on a deleted post or topic, upper case where the language has it"},
   "protectedBadge": "Protected",
   "@protectedBadge": {"description": "Badge on a password-protected forum"},
-  "lockTopic": "Lock Topic",
-  "unlockTopic": "Unlock Topic",
-  "lockTopicConfirm": "Are you sure you want to lock this topic? Other users will not be able to reply or interact with it.",
-  "unlockTopicConfirm": "Are you sure you want to unlock this topic? Other users will be able to reply and interact with it again.",
-  "stickTopic": "Stick Topic",
-  "unstickTopic": "Unstick Topic",
-  "stickTopicConfirm": "Are you sure you want to stick this topic? It will appear at the top of the forum for all users.",
-  "unstickTopicConfirm": "Are you sure you want to unstick this topic? It will no longer appear at the top of the forum.",
-  "undeleteTopic": "Undelete Topic",
-  "undeleteTopicConfirm": "Are you sure you want to undelete this topic? It will be visible to other users again.",
+  "lockTopic": "Lock thread",
+  "unlockTopic": "Unlock thread",
+  "lockTopicConfirm": "Are you sure you want to lock this thread? Other members won't be able to reply to it.",
+  "unlockTopicConfirm": "Are you sure you want to unlock this thread? Other members will be able to reply to it again.",
+  "stickTopic": "Stick thread",
+  "unstickTopic": "Unstick thread",
+  "stickTopicConfirm": "Are you sure you want to stick this thread? It will stay at the top of the forum for everyone.",
+  "unstickTopicConfirm": "Are you sure you want to unstick this thread? It will no longer stay at the top of the forum.",
+  "undeleteTopic": "Undelete thread",
+  "undeleteTopicConfirm": "Are you sure you want to undelete this thread? Other members will see it again.",
   "additionalInformation": "Additional Information",
   "dateOfBirth": "Date of Birth",
   "selectDateOfBirth": "Select date of birth",
@@ -1622,18 +1598,18 @@
   "estimatedFinalSize": "Estimated Final Size",
   "sizeReduction": "Reduction: {percent}%",
   "@sizeReduction": {"placeholders": {"percent": {"type": "String"}}},
-  "pleaseLoginToCreateTopic": "Please log in to create a new topic",
-  "pleaseLoginToSubscribeForums": "Please log in to subscribe to forums",
-  "pleaseLoginToUnsubscribeForums": "Please log in to unsubscribe from forums",
+  "pleaseLoginToCreateTopic": "Please log in to post a thread",
+  "pleaseLoginToSubscribeForums": "Please log in to watch forums",
+  "pleaseLoginToUnsubscribeForums": "Please log in to unwatch forums",
   "errorLoadingContent": "Error loading content: {error}",
   "@errorLoadingContent": {"placeholders": {"error": {"type": "String"}}},
-  "noPermissionToViewSubforumTopics": "You do not have permission to view topics in this subforum.",
+  "noPermissionToViewSubforumTopics": "You don't have permission to view threads in this sub-forum.",
   "noDiscussionsYet": "No discussions yet.",
   "unableToLoadForums": "Unable to Load Forums",
   "noForumsAvailable": "No Forums Available",
   "noForumsToDisplay": "There are no forums to display. This might be due to permissions or the forum structure.",
-  "subscribedForums": "Subscribed Forums",
-  "allForumTopicsMarkedRead": "All forum topics have been marked as read",
+  "subscribedForums": "Watched forums",
+  "allForumTopicsMarkedRead": "All the forum's threads have been marked read",
   "postsCountFormatted": "{count} Posts",
   "@postsCountFormatted": {"description": "Forum post total; {count} is already formatted (e.g. 12.3K)", "placeholders": {"count": {"type": "String"}}},
   "jumpToPost": "Jump to Post",
@@ -1641,9 +1617,9 @@
   "endOfDiscussion": "End of the discussion",
   "refreshFailed": "Refresh failed: {error}",
   "@refreshFailed": {"placeholders": {"error": {"type": "String"}}},
-  "topicDeletedHidden": "This topic is deleted and hidden from other users",
-  "topicClosedNoReplies": "This topic is closed and no longer accepting replies",
-  "youAreSubscribedToTopic": "You are subscribed to this topic",
+  "topicDeletedHidden": "This thread is deleted and hidden from other members",
+  "topicClosedNoReplies": "This thread is locked: it's not open for further replies",
+  "youAreSubscribedToTopic": "You are watching this thread",
   "refreshing": "Refreshing...",
   "unableToLoadForumsTryAgain": "Unable to load forums. Please try again.",
   "noPostableForums": "No postable forums are available.",
@@ -1696,8 +1672,8 @@
   "noInboxMessages": "No inbox messages",
   "noSentMessages": "No sent messages",
   "unknownDate": "Unknown date",
-  "searchForTopics": "Search for topics",
-  "noTopicsFound": "No topics found",
+  "searchForTopics": "Search threads",
+  "noTopicsFound": "No threads found",
   "noPostsFound": "No posts found",
   "trySearchingDifferentKeywords": "Try searching with different keywords",
   "errorLoadingSettings": "Error loading settings: {error}",
@@ -1767,7 +1743,7 @@
   "@failedToDeletePost": {"placeholders": {"error": {"type": "String"}}},
   "noPermissionToUploadAvatars": "You do not have permission to upload avatars",
   "avatarUploadedSuccessfully": "Avatar uploaded successfully",
-  "unknownTopic": "Unknown Topic",
+  "unknownTopic": "Unknown thread",
   "connectionTimeoutTitle": "Connection Timeout",
   "connectionTimedOutTo": "The connection to {siteName} timed out. Please check your internet connection and try again.",
   "@connectionTimedOutTo": {"placeholders": {"siteName": {"type": "String"}}},
@@ -1789,8 +1765,8 @@
   "loginSucceeded": "Login succeeded",
   "verificationErrorTryAgain": "An error occurred during verification. Please try again.",
   "passkeyChallengeFailed": "Passkey sign-in could not be started.",
-  "passkeyNotSetUp": "This forum is not yet set up for passkey access on this app. Please sign in with your username and password.",
-  "noPasskeyForForum": "No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.",
+  "passkeyNotSetUp": "This forum is not yet set up for passkey access on this app. Please log in with your user name and password.",
+  "noPasskeyForForum": "No passkey found for this forum. Log in with your password, or create a passkey on the forum website first.",
   "pushNotificationsNotReady": "Push notifications are not ready yet",
   "pushEnabledFor": "Push notifications enabled for {siteName}",
   "@pushEnabledFor": {"placeholders": {"siteName": {"type": "String"}}},
@@ -1834,7 +1810,7 @@
   "couldNotOpenEmail": "Could not open email: {email}",
   "@couldNotOpenEmail": {"description": "Error message when email app cannot be opened", "placeholders": {"email": {"type": "String"}}},
   "editPost": "Edit Post",
-  "thisTopicIsPinnedToTopOfForum": "This topic is pinned to the top of the forum",
+  "thisTopicIsPinnedToTopOfForum": "This thread is sticky: it stays at the top of the forum",
   "editConversation": "Edit conversation",
   "failedToLoadConversation": "Failed to load conversation",
   "cannotEditConversation": "Cannot edit this conversation",
@@ -1852,14 +1828,14 @@
   "deleteAccountContactForumMessage": "Your account is managed by the forum. Please contact the forum directly for account removal. Use the Contact Us button at the bottom of the forum home page.",
   "forumUrlUnavailable": "Forum URL is unavailable.",
   "couldNotOpenForumUrl": "Could not open forum URL.",
-  "noActionUrlAvailableForThisNotificationType": "No action URL available for this notification type.",
-  "signInToViewNotifications": "Sign in to view notifications",
-  "youNeedToBeSignedInToViewYourNotifications": "You need to be signed in to view your notifications.",
-  "errorLoadingNotifications": "Error loading notifications",
+  "noActionUrlAvailableForThisNotificationType": "This alert has no link to open.",
+  "signInToViewNotifications": "Log in to see your alerts",
+  "youNeedToBeSignedInToViewYourNotifications": "You need to be logged in to see your alerts.",
+  "errorLoadingNotifications": "Error loading alerts",
   "pullDownToRefresh": "Pull down to refresh",
-  "youHaveNoNewNotificationsCheckBackLater": "You have no new notifications. Check back later for updates on topics you're following.",
-  "signInToViewProfile": "Sign in to view profile",
-  "youNeedToBeSignedInToViewYourProfile": "You need to be signed in to view your profile.",
+  "youHaveNoNewNotificationsCheckBackLater": "You have no new alerts. Check back later for updates on threads you're watching.",
+  "signInToViewProfile": "Log in to see your profile",
+  "youNeedToBeSignedInToViewYourProfile": "You need to be logged in to see your profile.",
   "emailLabel": "Email",
   "confirmPasswordLabel": "Confirm Password",
   "protectedForum": "Protected Forum",
@@ -1874,7 +1850,7 @@
   "pleaseConfirmPassword": "Please confirm your password",
   "pleaseEnterTheForumPassword": "Please enter the forum password",
   "editYourPost": "Edit your post...",
-  "topicIdIsMissingCannotNavigateToThePost": "Topic ID is missing. Cannot navigate to the post.",
+  "topicIdIsMissingCannotNavigateToThePost": "The thread's ID is missing, so the post can't be opened.",
   "conversationIsOpenForReplies": "Conversation is open for replies",
   "conversationIsClosedNoRepliesAllowed": "Conversation is closed (no replies allowed)",
   "pleaseEnterAUsername": "Please enter a username",
@@ -1888,15 +1864,15 @@
   "pushDisabledFor": "Push notifications disabled for {siteName}",
   "@pushDisabledFor": {"placeholders": {"siteName": {"type": "String"}}},
   "failedToDisablePush": "Failed to disable push notifications",
-  "thisForum": "this forum",
-  "@thisForum": {"description": "Stands in for the forum address in \"Your username and password will be sent to {domain}\""},
+  "thisForumInSentence": "this forum",
+  "@thisForumInSentence": {"description": "Stands in for the forum address in \"Your username and password will be sent to {domain}\""},
   "openFullEditor": "Full editor",
   "@openFullEditor": {"description": "Button next to the quick-reply field of a conversation: opens the full Reply page (attachments, formatting) with the text typed so far"},
   "statsMembers": "{count, plural, =1{{count} member} other{{count} members}}",
   "@statsMembers": {"description": "Forum home header stats, joined with \" · \"; the number is compact (56.8K)", "placeholders": {"count": {"type": "int", "format": "compact"}}},
-  "statsTopics": "{count, plural, =1{{count} topic} other{{count} topics}}",
+  "statsTopics": "{count, plural, =1{{count} thread} other{{count} threads}}",
   "@statsTopics": {"description": "Forum home header stats, joined with \" · \"; the number is compact (18.5K)", "placeholders": {"count": {"type": "int", "format": "compact"}}},
-  "statsPosts": "{count, plural, =1{{count} post} other{{count} posts}}",
+  "statsPosts": "{count, plural, =1{{count} message} other{{count} messages}}",
   "@statsPosts": {"description": "Forum home header stats, joined with \" · \"; the number is compact (1.2M)", "placeholders": {"count": {"type": "int", "format": "compact"}}},
   "searchForumName": "Search {forumName}",
   "@searchForumName": {"description": "The search field in the forum home header", "placeholders": {"forumName": {"type": "String"}}},
@@ -1926,9 +1902,9 @@
   "@deleteAccountNoPassword": {"description": "For members who signed up with Google or Facebook"},
   "deleteAccountUsePassword": "Confirm with your password",
   "accountDeleted": "Your account has been deleted.",
-  "signInOnWebsite": "Sign in on the forum's website",
-  "signInOnWebsiteHint": "For Google, Facebook and the other ways you sign in there",
-  "browserLoginFailed": "Signing in on the website didn't work. Please try again.",
+  "signInOnWebsite": "Log in on the forum's website",
+  "signInOnWebsiteHint": "For Google, Facebook and the other ways you log in there",
+  "browserLoginFailed": "Logging in on the website didn't work. Please try again.",
   "subForums": "Sub-forums",
   "@subForums": {"description": "Heading above a forum's sub-forums, before its topics"},
   "postPositionOf": "Post {position} of {total}",
@@ -1949,9 +1925,95 @@
   "@subForumCountLabel": {"description": "Screen reader: how many sub-forums a forum row lists", "placeholders": {"count": {"type": "int"}}},
   "trustThisDevice": "Trust this device",
   "@trustThisDevice": {"description": "Switch on the two-step verification screen: XenForo's Trust this device"},
-  "trustThisDeviceHint": "Don't ask for a code the next time you sign in on this device",
+  "trustThisDeviceHint": "Don't ask for a code the next time you log in on this device",
   "passkeyNotOnThisDevice": "There's no passkey for this forum on this device. Choose another method, or add a passkey on the forum's website first.",
   "@passkeyNotOnThisDevice": {"description": "Two-step verification with a passkey, when the device has none for the forum"},
   "passkeyStepNotSetUp": "This forum is not yet set up for passkeys in this app. Choose another method.",
-  "@passkeyStepNotSetUp": {"description": "Two-step verification with a passkey, when the forum's domain does not list the app"}
+  "@passkeyStepNotSetUp": {"description": "Two-step verification with a passkey, when the forum's domain does not list the app"},
+  "ignoreMember": "Ignore member",
+  "stopIgnoringMember": "Stop ignoring",
+  "memberIgnored": "You are now ignoring {name}.",
+  "@memberIgnored": {"placeholders": {"name": {"type": "String"}}},
+  "memberNoLongerIgnored": "You are no longer ignoring {name}.",
+  "@memberNoLongerIgnored": {"placeholders": {"name": {"type": "String"}}},
+  "ignoredMembers": "Ignored members",
+  "ignoredMembersExplanation": "Content by members you ignore is hidden, and they can't start conversations with you.",
+  "noIgnoredMembers": "You aren't ignoring anyone.",
+  "youAreIgnoringMember": "You are ignoring {name}.",
+  "@youAreIgnoringMember": {"placeholders": {"name": {"type": "String"}}},
+  "showIgnoredContent": "Show",
+  "markAllAlertsRead": "Mark all read",
+  "topicSolved": "Solved",
+  "topicQuestion": "Question",
+  "solutionBadge": "SOLUTION",
+  "forumClosedTitle": "The forum is closed",
+  "updatedTermsTitle": "Updated terms",
+  "updatedTermsMessage": "The forum has updated its terms or privacy policy. Please review and accept them on the website.",
+  "reviewTerms": "Review",
+  "forumTerms": "Terms and rules",
+  "contactForum": "Contact us",
+  "notifyMeOf": "Notify me of",
+  "watchNewThreads": "New threads",
+  "watchNewMessages": "New messages",
+  "watchSendAlerts": "Alerts",
+  "watchSendEmails": "Emails",
+  "logInToWatchThread": "Please log in to watch this thread",
+  "failedToWatchThread": "Couldn't watch the thread",
+  "failedToUnwatchThread": "Couldn't unwatch the thread",
+  "watchThreadAlertsNote": "You'll get an alert when someone replies.",
+  "threadFilters": "Filters",
+  "anyPrefix": "(Any)",
+  "startedBy": "Started by",
+  "lastUpdated": "Last updated",
+  "anyTime": "Any time",
+  "periodDays": "{count, plural, =1{1 day} other{{count} days}}",
+  "@periodDays": {"placeholders": {"count": {"type": "int"}}},
+  "periodMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@periodMonths": {"placeholders": {"count": {"type": "int"}}},
+  "periodYears": "{count, plural, =1{1 year} other{{count} years}}",
+  "@periodYears": {"placeholders": {"count": {"type": "int"}}},
+  "sortBy": "Sort by",
+  "sortAscending": "Ascending",
+  "sortDescending": "Descending",
+  "clearFilters": "Clear filters",
+  "applyFilters": "Filter",
+  "noThreadsMatchFilters": "No threads match these filters.",
+  "threadTypeLabel": "Thread type",
+  "pollQuestion": "Poll question",
+  "pollResponses": "Possible responses",
+  "pollResponseNumber": "Response {number}",
+  "@pollResponseNumber": {"placeholders": {"number": {"type": "int"}}},
+  "addPollResponse": "Add response",
+  "removePollResponse": "Remove response",
+  "pollMultipleChoice": "Voters may choose more than one response",
+  "pollChangeVote": "Allow voters to change their votes",
+  "pollPublicVotes": "Display votes publicly",
+  "pollViewResultsUnvoted": "Allow the results to be viewed without voting",
+  "pollCloseAfter": "Close this poll after",
+  "pollNeverCloses": "Never",
+  "noneOption": "(None)",
+  "tagsLabel": "Tags",
+  "tagsHint": "Separate tags with commas",
+  "addAtLeastTags": "{count, plural, =1{Add at least 1 tag} other{Add at least {count} tags}}",
+  "@addAtLeastTags": {"placeholders": {"count": {"type": "int"}}},
+  "threadFieldRequired": "Please fill in {field}.",
+  "@threadFieldRequired": {"placeholders": {"field": {"type": "String"}}},
+  "pollNeedsQuestionAndResponses": "Enter a poll question and at least two responses.",
+  "awaitingApprovalBadge": "AWAITING APPROVAL",
+  "approve": "Approve",
+  "postApproved": "Post approved",
+  "postUndeleted": "Post undeleted",
+  "quoteSaid": "{name} said:",
+  "@quoteSaid": {"description": "Header of a quote in a post, as XenForo words it: the quoted member's name", "placeholders": {"name": {"type": "String"}}},
+  "timeGapDaysLater": "{count, plural, =1{1 day later} other{{count} days later}}",
+  "@timeGapDaysLater": {"description": "Divider between posts far apart in time (from the Discourse app)", "placeholders": {"count": {"type": "int"}}},
+  "timeGapMonthsLater": "{count, plural, =1{1 month later} other{{count} months later}}",
+  "@timeGapMonthsLater": {"description": "Divider between posts far apart in time (from the Discourse app)", "placeholders": {"count": {"type": "int"}}},
+  "timeGapYearsLater": "{count, plural, =1{1 year later} other{{count} years later}}",
+  "@timeGapYearsLater": {"description": "Divider between posts far apart in time (from the Discourse app)", "placeholders": {"count": {"type": "int"}}},
+  "topicMapViews": "{count, plural, =1{view} other{views}}",
+  "@topicMapViews": {"description": "Label under the view count in the summary under a thread's first post; the number is shown above it", "placeholders": {"count": {"type": "int"}}},
+  "topicMapReplies": "{count, plural, =1{reply} other{replies}}",
+  "@topicMapReplies": {"description": "Label under the reply count in the summary under a thread's first post; the number is shown above it", "placeholders": {"count": {"type": "int"}}},
+  "thisForum": "This forum"
 }

@@ -37,6 +37,10 @@ class MessageComposePage extends StatefulWidget {
   final bool showAppBar;
   final bool autoFocusContent;
   final String? forumName;
+
+  /// Under the forum: the thread type, poll, fields and tags the forum
+  /// takes (NewTopicPage, add-on 1.11.0+).
+  final Widget? optionsSection;
   final String? topicTitle;
   final void Function(Exception error)? onError;
   final TextEditingController? titleController;
@@ -100,6 +104,7 @@ class MessageComposePage extends StatefulWidget {
     this.showAppBar = true,
     this.autoFocusContent = true,
     this.forumName,
+    this.optionsSection,
     this.topicTitle,
     this.onError,
     this.titleController,
@@ -1777,6 +1782,10 @@ class _MessageComposePageState extends State<MessageComposePage> {
                                   ),
                                 ],
                               ),
+                              SizedBox(height: DesignTokens.spacingL),
+                            ],
+                            if (widget.optionsSection != null) ...[
+                              widget.optionsSection!,
                               SizedBox(height: DesignTokens.spacingL),
                             ],
                             // Add prefix selector here

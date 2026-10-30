@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
@@ -6,9 +7,16 @@ import '../../l10n/generated/app_localizations.dart';
 class NotificationsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
   final SiteContext siteContext;
+
+  /// "Mark all read" shows while this is true (XenForo add-on 1.11.0+).
+  final ValueListenable<bool>? hasUnreadAlerts;
+  final VoidCallback? onMarkAllRead;
+
   const NotificationsTabAppBar({
     required this.siteContext,
     this.isLoggedIn = false,
+    this.hasUnreadAlerts,
+    this.onMarkAllRead,
     super.key,
   });
 
@@ -33,6 +41,19 @@ class NotificationsTabAppBar extends StatelessWidget implements PreferredSizeWid
         ),
       ),
       centerTitle: false,
+      actions: [
+        if (isLoggedIn && hasUnreadAlerts != null && onMarkAllRead != null)
+          ValueListenableBuilder<bool>(
+            valueListenable: hasUnreadAlerts!,
+            builder: (context, unread, _) => unread
+                ? IconButton(
+                    icon: const Icon(Icons.done_all_rounded),
+                    tooltip: AppLocalizations.of(context).markAllAlertsRead,
+                    onPressed: onMarkAllRead,
+                  )
+                : const SizedBox.shrink(),
+          ),
+      ],
     );
   }
 

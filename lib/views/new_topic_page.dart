@@ -3,21 +3,28 @@ import '../l10n/generated/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_thread_posting.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
 import 'package:forumcopilot_flutter/views/widgets/message_compose_page.dart';
 import '../utils/snackbar_helper.dart';
 import '../services/attachment_uploader.dart';
+import 'widgets/thread_options_section.dart';
 
 class NewTopicPage extends StatefulWidget {
   final SiteContext siteContext;
   final String forumId;
   final String forumName;
 
+  /// The thread type, poll, custom fields and tags the forum takes
+  /// (add-on 1.11.0+; null before, and for forums that take none).
+  final FCThreadPostingOptions? postingOptions;
+
   const NewTopicPage({
     super.key,
     required this.siteContext,
     required this.forumId,
     required this.forumName,
+    this.postingOptions,
   });
 
   @override
@@ -41,6 +48,9 @@ class _NewTopicPageState extends State<NewTopicPage> {
   bool _isLoadingPrefixes = true;
   String? _prefixError;
 
+  late final ThreadOptionsController? _threadOptions =
+      widget.postingOptions == null ? null : ThreadOptionsController(widget.postingOptions!);
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +61,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
   void dispose() {
     // Closed without posting: the uploads are removed from the forum.
     _uploader.close(sent: _sent);
+    _threadOptions?.dispose();
     super.dispose();
   }
 
@@ -104,6 +115,15 @@ class _NewTopicPageState extends State<NewTopicPage> {
       return false;
     }
 
+    // The thread type, poll, fields and tags the forum takes (the forum
+    // checks them again)
+    final threadOptions = _threadOptions;
+    final missing = threadOptions?.validate(AppLocalizations.of(context));
+    if (missing != null) {
+      SnackbarHelper.showError(context, missing);
+      return false;
+    }
+
     try {
       final topicProxy = SiteProxyFactory.getTopicProxy();
       final result = await topicProxy.newTopic(
@@ -113,6 +133,10 @@ class _NewTopicPageState extends State<NewTopicPage> {
         prefixId: _selectedPrefixId, // Pass the selected prefix
         attachmentIds: _uploader.attachmentIds.isNotEmpty ? _uploader.attachmentIds : null,
         groupId: _uploader.groupId,
+        tags: threadOptions?.tags,
+        customFields: threadOptions?.customFields,
+        threadType: threadOptions?.threadTypeToSend,
+        poll: threadOptions?.poll,
       );
 
       debugPrint('🔍 [NEW_TOPIC] Submit result:');
@@ -172,6 +196,7 @@ class _NewTopicPageState extends State<NewTopicPage> {
       onSubmit: _handleSubmit,
       onFileUpload: (widget.siteContext.loginDataOutput?.canUploadAttachment ?? false) ? _handleFileUpload : null,
       forumName: widget.forumName,
+      optionsSection: _threadOptions == null ? null : ThreadOptionsSection(controller: _threadOptions),
       prefixes: _availablePrefixes,
       requirePrefix: _requirePrefix,
       selectedPrefixId: _selectedPrefixId,

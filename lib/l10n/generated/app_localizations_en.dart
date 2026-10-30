@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Forum App';
 
   @override
-  String get loginTitle => 'Login';
+  String get loginTitle => 'Log in';
 
   @override
   String get usernameLabel => 'Username';
@@ -21,10 +21,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordLabel => 'Password';
 
   @override
-  String get loginButton => 'Login';
+  String get loginButton => 'Log in';
 
   @override
-  String get signInWithPasskey => 'Sign in with Passkey';
+  String get signInWithPasskey => 'Log in with a passkey';
 
   @override
   String get usePasskey => 'Use Passkey';
@@ -53,7 +53,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alreadyHaveAccount => 'Already have an account? ';
 
   @override
-  String get logIn => 'Log In';
+  String get logIn => 'Log in';
 
   @override
   String get continueButton => 'Continue';
@@ -265,35 +265,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resend => 'Resend';
 
   @override
-  String get noLatestTopics => 'No Latest Topics';
+  String get noLatestTopics => 'No latest threads';
 
   @override
   String get noRecentTopicsToDisplay =>
-      'There are no recent topics to display. Check back later for new discussions.';
+      'There are no recent threads to show. Check back later for new discussions.';
 
   @override
-  String get noUnreadTopics => 'No Unread Topics';
+  String get noUnreadTopics => 'No unread threads';
 
   @override
   String get thereAreNoUnreadTopics =>
-      'There are no unread topics. Check back later for new discussions.';
+      'There are no unread threads. Check back later for new discussions.';
 
   @override
   String get youAreAllCaughtUp => 'You\'re all caught up!';
 
   @override
-  String get noSubscribedTopics => 'No Subscribed Topics';
+  String get noSubscribedTopics => 'No watched threads';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'You aren\'t subscribed to any topics yet. Open a topic and choose Subscribe in its ⋮ menu to be notified of new replies.';
+      'You aren\'t watching any threads yet. Open a thread and choose Watch in its ⋮ menu to be alerted to new replies.';
 
   @override
-  String get noParticipatedTopics => 'No Participated Topics';
+  String get noParticipatedTopics => 'No threads you\'ve posted in';
 
   @override
   String get topicsYouParticipatedIn =>
-      'Topics that you have participated in will be shown here.';
+      'Threads you have posted in will be shown here.';
 
   @override
   String get latest => 'Latest';
@@ -302,7 +302,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unread => 'Unread';
 
   @override
-  String get subscribed => 'Subscribed';
+  String get subscribed => 'Watched';
 
   @override
   String get participated => 'Participated';
@@ -342,37 +342,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get all => 'All';
 
   @override
-  String get topicsOnly => 'Topics Only';
+  String get topicsOnly => 'Threads only';
 
   @override
   String get titlesOnly => 'Titles Only';
 
   @override
   String failedToShareTopic(String error) {
-    return 'Failed to share topic: $error';
+    return 'Couldn\'t share the thread: $error';
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'Please login to $action this thread';
-  }
+  String get subscribe => 'Watch';
 
   @override
-  String get subscribeTo => 'subscribe to';
-
-  @override
-  String get unsubscribeFrom => 'unsubscribe from';
-
-  @override
-  String get subscribe => 'Subscribe';
-
-  @override
-  String get unsubscribe => 'Unsubscribe';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'Failed to $action thread';
-  }
+  String get unsubscribe => 'Unwatch';
 
   @override
   String get youCannotReplyToThisThread => 'You cannot reply to this thread';
@@ -427,7 +411,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get newTopic => 'New Topic';
+  String get newTopic => 'Post thread';
 
   @override
   String get markRead => 'Mark Read';
@@ -500,16 +484,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportConversation => 'Report conversation';
 
   @override
-  String get topicClosed => 'Topic closed';
+  String get topicClosed => 'Thread locked';
 
   @override
-  String get topicOpened => 'Topic opened';
+  String get topicOpened => 'Thread unlocked';
 
   @override
-  String get topicStickied => 'Topic stickied';
+  String get topicStickied => 'Thread made sticky';
 
   @override
-  String get topicUnstickied => 'Topic unstickied';
+  String get topicUnstickied => 'Thread no longer sticky';
 
   @override
   String cannotEditMessage(String error) {
@@ -553,7 +537,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletePost => 'Delete Post';
 
   @override
-  String get loginRequired => 'Login Required';
+  String get loginRequired => 'Login required';
 
   @override
   String get tryAgain => 'Try Again';
@@ -651,16 +635,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moreOptions => 'More options';
 
   @override
-  String get logout => 'Logout';
+  String get logout => 'Log out';
 
   @override
-  String get areYouSureYouWantToLogout => 'Are you sure you want to logout?';
+  String get areYouSureYouWantToLogout => 'Are you sure you want to log out?';
 
   @override
   String get register => 'Register';
 
   @override
-  String get signIn => 'Sign In';
+  String get signIn => 'Log in';
 
   @override
   String get markForumRead => 'Mark Forum Read';
@@ -716,7 +700,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get youNeedToBeSignedInToViewConversations =>
-      'You need to be signed in to view your conversations.';
+      'You need to be logged in to see your conversations.';
 
   @override
   String errorLoadingConversations(String error) {
@@ -913,7 +897,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterKeywordsToSearchTopics =>
-      'Enter keywords to search topics...';
+      'Enter keywords to search threads...';
 
   @override
   String get pleaseFillInAllRequiredFields =>
@@ -923,34 +907,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get undelete => 'Undelete';
 
   @override
-  String get signInToViewUnreadTopics => 'Sign in to view unread topics';
+  String get signInToViewUnreadTopics => 'Log in to see unread threads';
 
   @override
   String get youNeedToBeSignedInToViewUnreadTopics =>
-      'You need to be signed in to view your unread topics.';
+      'You need to be logged in to see your unread threads.';
 
   @override
   String get signInToViewSubscribedTopics =>
-      'Sign in to view subscribed topics';
+      'Log in to see your watched threads';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'You need to be signed in to view your subscribed topics.';
+      'You need to be logged in to see your watched threads.';
 
   @override
   String get signInToViewParticipatedTopics =>
-      'Sign in to view participated topics';
+      'Log in to see the threads you\'ve posted in';
 
   @override
   String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'You need to be signed in to view topics you have participated in.';
+      'You need to be logged in to see the threads you\'ve posted in.';
 
   @override
-  String get signInToViewLatestTopics => 'Sign in to view latest topics';
+  String get signInToViewLatestTopics => 'Log in to see the latest threads';
 
   @override
   String get youNeedToBeSignedInToViewLatestTopics =>
-      'You need to be signed in to view latest topics.';
+      'You need to be logged in to see the latest threads.';
 
   @override
   String get markAsUnread => 'Mark as unread';
@@ -963,7 +947,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToAccessYourProfile =>
-      'Sign in to access your profile and manage your account';
+      'Log in to see your profile and manage your account';
 
   @override
   String get enterYourUsername => 'Enter your username';
@@ -1083,7 +1067,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterKeywordsToFindTopicsAndPosts =>
-      'Enter keywords to find topics and posts';
+      'Enter keywords to find threads and posts';
 
   @override
   String get enterKeywordsOrDomainToFindForums =>
@@ -1163,27 +1147,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchForums => 'Search Forums';
 
   @override
-  String get deleteTopic => 'Delete Topic';
+  String get deleteTopic => 'Delete thread';
 
   @override
   String get softDelete => 'Soft Delete';
 
   @override
-  String get topicCanBeRestoredLater => 'Topic can be restored later';
+  String get topicCanBeRestoredLater => 'The thread can be restored later';
 
   @override
   String get hardDelete => 'Hard Delete';
 
   @override
   String get topicWillBePermanentlyDeleted =>
-      'Topic will be permanently deleted';
+      'The thread will be permanently deleted';
 
   @override
   String get reasonForDeletion => 'Reason for deletion';
 
   @override
   String get enterReasonForDeletingTopic =>
-      'Enter the reason for deleting this topic';
+      'Enter the reason for deleting this thread';
 
   @override
   String get pleaseEnterReasonForDeletion =>
@@ -1248,7 +1232,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get notifications => 'Notifications';
+  String get notifications => 'Alerts';
 
   @override
   String get forums => 'Forums';
@@ -1258,7 +1242,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get markAllForumsAsReadMessage =>
-      'This will mark all forums and topics as read. This action cannot be undone.';
+      'This will mark all forums and threads as read. This can\'t be undone.';
 
   @override
   String get markAsRead => 'Mark as Read';
@@ -1353,7 +1337,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conversationOpened => 'Conversation opened';
 
   @override
-  String get pleaseLoginToLikeMessages => 'Please login to like messages';
+  String get pleaseLoginToLikeMessages => 'Please log in to react to messages';
 
   @override
   String get loadEarlierMessages => 'Load Earlier Messages';
@@ -1428,7 +1412,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseLoginToAccessContent =>
-      'Please login to access this content and interact with posts.';
+      'Please log in to see this content and join in.';
 
   @override
   String get searchUsers => 'Search users...';
@@ -1482,10 +1466,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goBack => 'Go Back';
 
   @override
-  String get signInToViewMessages => 'Sign in to view messages';
+  String get signInToViewMessages => 'Log in to see your conversations';
 
   @override
-  String get privateMessagesNotAvailable => 'Private messages not available';
+  String get privateMessagesNotAvailable => 'Conversations aren\'t available';
 
   @override
   String failedToLoadPost(String error) {
@@ -1713,7 +1697,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get signOut => 'Sign out';
+  String get signOut => 'Log out';
 
   @override
   String get changeEmail => 'Change email';
@@ -1843,7 +1827,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginInfo => 'Login Info';
 
   @override
-  String get loginFailed => 'Login Failed';
+  String get loginFailed => 'Login failed';
 
   @override
   String get topicAnnouncement => 'Announcement';
@@ -1864,39 +1848,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get protectedBadge => 'Protected';
 
   @override
-  String get lockTopic => 'Lock Topic';
+  String get lockTopic => 'Lock thread';
 
   @override
-  String get unlockTopic => 'Unlock Topic';
+  String get unlockTopic => 'Unlock thread';
 
   @override
   String get lockTopicConfirm =>
-      'Are you sure you want to lock this topic? Other users will not be able to reply or interact with it.';
+      'Are you sure you want to lock this thread? Other members won\'t be able to reply to it.';
 
   @override
   String get unlockTopicConfirm =>
-      'Are you sure you want to unlock this topic? Other users will be able to reply and interact with it again.';
+      'Are you sure you want to unlock this thread? Other members will be able to reply to it again.';
 
   @override
-  String get stickTopic => 'Stick Topic';
+  String get stickTopic => 'Stick thread';
 
   @override
-  String get unstickTopic => 'Unstick Topic';
+  String get unstickTopic => 'Unstick thread';
 
   @override
   String get stickTopicConfirm =>
-      'Are you sure you want to stick this topic? It will appear at the top of the forum for all users.';
+      'Are you sure you want to stick this thread? It will stay at the top of the forum for everyone.';
 
   @override
   String get unstickTopicConfirm =>
-      'Are you sure you want to unstick this topic? It will no longer appear at the top of the forum.';
+      'Are you sure you want to unstick this thread? It will no longer stay at the top of the forum.';
 
   @override
-  String get undeleteTopic => 'Undelete Topic';
+  String get undeleteTopic => 'Undelete thread';
 
   @override
   String get undeleteTopicConfirm =>
-      'Are you sure you want to undelete this topic? It will be visible to other users again.';
+      'Are you sure you want to undelete this thread? Other members will see it again.';
 
   @override
   String get additionalInformation => 'Additional Information';
@@ -1981,15 +1965,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToCreateTopic => 'Please log in to create a new topic';
+  String get pleaseLoginToCreateTopic => 'Please log in to post a thread';
 
   @override
-  String get pleaseLoginToSubscribeForums =>
-      'Please log in to subscribe to forums';
+  String get pleaseLoginToSubscribeForums => 'Please log in to watch forums';
 
   @override
   String get pleaseLoginToUnsubscribeForums =>
-      'Please log in to unsubscribe from forums';
+      'Please log in to unwatch forums';
 
   @override
   String errorLoadingContent(String error) {
@@ -1998,7 +1981,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPermissionToViewSubforumTopics =>
-      'You do not have permission to view topics in this subforum.';
+      'You don\'t have permission to view threads in this sub-forum.';
 
   @override
   String get noDiscussionsYet => 'No discussions yet.';
@@ -2014,11 +1997,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'There are no forums to display. This might be due to permissions or the forum structure.';
 
   @override
-  String get subscribedForums => 'Subscribed Forums';
+  String get subscribedForums => 'Watched forums';
 
   @override
   String get allForumTopicsMarkedRead =>
-      'All forum topics have been marked as read';
+      'All the forum\'s threads have been marked read';
 
   @override
   String postsCountFormatted(String count) {
@@ -2041,14 +2024,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get topicDeletedHidden =>
-      'This topic is deleted and hidden from other users';
+      'This thread is deleted and hidden from other members';
 
   @override
   String get topicClosedNoReplies =>
-      'This topic is closed and no longer accepting replies';
+      'This thread is locked: it\'s not open for further replies';
 
   @override
-  String get youAreSubscribedToTopic => 'You are subscribed to this topic';
+  String get youAreSubscribedToTopic => 'You are watching this thread';
 
   @override
   String get refreshing => 'Refreshing...';
@@ -2216,10 +2199,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unknownDate => 'Unknown date';
 
   @override
-  String get searchForTopics => 'Search for topics';
+  String get searchForTopics => 'Search threads';
 
   @override
-  String get noTopicsFound => 'No topics found';
+  String get noTopicsFound => 'No threads found';
 
   @override
   String get noPostsFound => 'No posts found';
@@ -2430,7 +2413,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get avatarUploadedSuccessfully => 'Avatar uploaded successfully';
 
   @override
-  String get unknownTopic => 'Unknown Topic';
+  String get unknownTopic => 'Unknown thread';
 
   @override
   String get connectionTimeoutTitle => 'Connection Timeout';
@@ -2499,11 +2482,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passkeyNotSetUp =>
-      'This forum is not yet set up for passkey access on this app. Please sign in with your username and password.';
+      'This forum is not yet set up for passkey access on this app. Please log in with your user name and password.';
 
   @override
   String get noPasskeyForForum =>
-      'No passkey found for this forum. Sign in with your password, or create a passkey on the forum website first.';
+      'No passkey found for this forum. Log in with your password, or create a passkey on the forum website first.';
 
   @override
   String get pushNotificationsNotReady =>
@@ -2626,7 +2609,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thisTopicIsPinnedToTopOfForum =>
-      'This topic is pinned to the top of the forum';
+      'This thread is sticky: it stays at the top of the forum';
 
   @override
   String get editConversation => 'Edit conversation';
@@ -2683,31 +2666,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'No action URL available for this notification type.';
+      'This alert has no link to open.';
 
   @override
-  String get signInToViewNotifications => 'Sign in to view notifications';
+  String get signInToViewNotifications => 'Log in to see your alerts';
 
   @override
   String get youNeedToBeSignedInToViewYourNotifications =>
-      'You need to be signed in to view your notifications.';
+      'You need to be logged in to see your alerts.';
 
   @override
-  String get errorLoadingNotifications => 'Error loading notifications';
+  String get errorLoadingNotifications => 'Error loading alerts';
 
   @override
   String get pullDownToRefresh => 'Pull down to refresh';
 
   @override
   String get youHaveNoNewNotificationsCheckBackLater =>
-      'You have no new notifications. Check back later for updates on topics you\'re following.';
+      'You have no new alerts. Check back later for updates on threads you\'re watching.';
 
   @override
-  String get signInToViewProfile => 'Sign in to view profile';
+  String get signInToViewProfile => 'Log in to see your profile';
 
   @override
   String get youNeedToBeSignedInToViewYourProfile =>
-      'You need to be signed in to view your profile.';
+      'You need to be logged in to see your profile.';
 
   @override
   String get emailLabel => 'Email';
@@ -2751,7 +2734,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get topicIdIsMissingCannotNavigateToThePost =>
-      'Topic ID is missing. Cannot navigate to the post.';
+      'The thread\'s ID is missing, so the post can\'t be opened.';
 
   @override
   String get conversationIsOpenForReplies => 'Conversation is open for replies';
@@ -2791,7 +2774,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToDisablePush => 'Failed to disable push notifications';
 
   @override
-  String get thisForum => 'this forum';
+  String get thisForumInSentence => 'this forum';
 
   @override
   String get openFullEditor => 'Full editor';
@@ -2822,8 +2805,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString topics',
-      one: '$countString topic',
+      other: '$countString threads',
+      one: '$countString thread',
     );
     return '$_temp0';
   }
@@ -2838,8 +2821,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString posts',
-      one: '$countString post',
+      other: '$countString messages',
+      one: '$countString message',
     );
     return '$_temp0';
   }
@@ -2924,15 +2907,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountDeleted => 'Your account has been deleted.';
 
   @override
-  String get signInOnWebsite => 'Sign in on the forum\'s website';
+  String get signInOnWebsite => 'Log in on the forum\'s website';
 
   @override
   String get signInOnWebsiteHint =>
-      'For Google, Facebook and the other ways you sign in there';
+      'For Google, Facebook and the other ways you log in there';
 
   @override
   String get browserLoginFailed =>
-      'Signing in on the website didn\'t work. Please try again.';
+      'Logging in on the website didn\'t work. Please try again.';
 
   @override
   String get subForums => 'Sub-forums';
@@ -2995,7 +2978,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trustThisDeviceHint =>
-      'Don\'t ask for a code the next time you sign in on this device';
+      'Don\'t ask for a code the next time you log in on this device';
 
   @override
   String get passkeyNotOnThisDevice =>
@@ -3004,4 +2987,306 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'This forum is not yet set up for passkeys in this app. Choose another method.';
+
+  @override
+  String get ignoreMember => 'Ignore member';
+
+  @override
+  String get stopIgnoringMember => 'Stop ignoring';
+
+  @override
+  String memberIgnored(String name) {
+    return 'You are now ignoring $name.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return 'You are no longer ignoring $name.';
+  }
+
+  @override
+  String get ignoredMembers => 'Ignored members';
+
+  @override
+  String get ignoredMembersExplanation =>
+      'Content by members you ignore is hidden, and they can\'t start conversations with you.';
+
+  @override
+  String get noIgnoredMembers => 'You aren\'t ignoring anyone.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return 'You are ignoring $name.';
+  }
+
+  @override
+  String get showIgnoredContent => 'Show';
+
+  @override
+  String get markAllAlertsRead => 'Mark all read';
+
+  @override
+  String get topicSolved => 'Solved';
+
+  @override
+  String get topicQuestion => 'Question';
+
+  @override
+  String get solutionBadge => 'SOLUTION';
+
+  @override
+  String get forumClosedTitle => 'The forum is closed';
+
+  @override
+  String get updatedTermsTitle => 'Updated terms';
+
+  @override
+  String get updatedTermsMessage =>
+      'The forum has updated its terms or privacy policy. Please review and accept them on the website.';
+
+  @override
+  String get reviewTerms => 'Review';
+
+  @override
+  String get forumTerms => 'Terms and rules';
+
+  @override
+  String get contactForum => 'Contact us';
+
+  @override
+  String get notifyMeOf => 'Notify me of';
+
+  @override
+  String get watchNewThreads => 'New threads';
+
+  @override
+  String get watchNewMessages => 'New messages';
+
+  @override
+  String get watchSendAlerts => 'Alerts';
+
+  @override
+  String get watchSendEmails => 'Emails';
+
+  @override
+  String get logInToWatchThread => 'Please log in to watch this thread';
+
+  @override
+  String get failedToWatchThread => 'Couldn\'t watch the thread';
+
+  @override
+  String get failedToUnwatchThread => 'Couldn\'t unwatch the thread';
+
+  @override
+  String get watchThreadAlertsNote =>
+      'You\'ll get an alert when someone replies.';
+
+  @override
+  String get threadFilters => 'Filters';
+
+  @override
+  String get anyPrefix => '(Any)';
+
+  @override
+  String get startedBy => 'Started by';
+
+  @override
+  String get lastUpdated => 'Last updated';
+
+  @override
+  String get anyTime => 'Any time';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortAscending => 'Ascending';
+
+  @override
+  String get sortDescending => 'Descending';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get applyFilters => 'Filter';
+
+  @override
+  String get noThreadsMatchFilters => 'No threads match these filters.';
+
+  @override
+  String get threadTypeLabel => 'Thread type';
+
+  @override
+  String get pollQuestion => 'Poll question';
+
+  @override
+  String get pollResponses => 'Possible responses';
+
+  @override
+  String pollResponseNumber(int number) {
+    return 'Response $number';
+  }
+
+  @override
+  String get addPollResponse => 'Add response';
+
+  @override
+  String get removePollResponse => 'Remove response';
+
+  @override
+  String get pollMultipleChoice => 'Voters may choose more than one response';
+
+  @override
+  String get pollChangeVote => 'Allow voters to change their votes';
+
+  @override
+  String get pollPublicVotes => 'Display votes publicly';
+
+  @override
+  String get pollViewResultsUnvoted =>
+      'Allow the results to be viewed without voting';
+
+  @override
+  String get pollCloseAfter => 'Close this poll after';
+
+  @override
+  String get pollNeverCloses => 'Never';
+
+  @override
+  String get noneOption => '(None)';
+
+  @override
+  String get tagsLabel => 'Tags';
+
+  @override
+  String get tagsHint => 'Separate tags with commas';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add at least $count tags',
+      one: 'Add at least 1 tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return 'Please fill in $field.';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses =>
+      'Enter a poll question and at least two responses.';
+
+  @override
+  String get awaitingApprovalBadge => 'AWAITING APPROVAL';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get postApproved => 'Post approved';
+
+  @override
+  String get postUndeleted => 'Post undeleted';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name said:';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days later',
+      one: '1 day later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months later',
+      one: '1 month later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years later',
+      one: '1 year later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'views',
+      one: 'view',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'replies',
+      one: 'reply',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'This forum';
 }

@@ -45,7 +45,14 @@ class ThreadViewData {
 
   /// Returns the range of loaded posts (inclusive-exclusive)
   int get loadedStart => currentStartNum;
-  int get loadedEnd => currentStartNum + loadedCount;
+  /// The 0-based end of the loaded posts: after the last one's position.
+  /// Positions, not the count: posts the viewer may see but others can't
+  /// (moderated or deleted; XenForo add-on 1.11.0's includeHidden) share
+  /// the number of the visible post before them.
+  int get loadedEnd {
+    final last = posts.isEmpty ? null : posts.last.postNumber;
+    return (last != null && last > currentStartNum) ? last : currentStartNum + loadedCount;
+  }
 
   /// Returns the range for loading earlier posts
   Map<String, int> earlierRange(int pageSize) => {

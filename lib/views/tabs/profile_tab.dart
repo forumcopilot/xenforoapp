@@ -23,6 +23,7 @@ import '../account/change_email_page.dart';
 import '../account/change_password_page.dart';
 import '../app_settings_page.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../widgets/forum_pages_section.dart';
 
 class ProfileTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -316,6 +317,8 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
                   SizedBox(height: DesignTokens.spacingL),
                   _AccountSection(siteContext: widget.siteContext),
                   SizedBox(height: DesignTokens.spacingL),
+                  // The forum's terms, privacy policy and help (add-on 1.11.0+)
+                  ForumPagesSection(siteContext: widget.siteContext),
 
                   // Recent Posts Section
                   RecentPostsSection(
@@ -356,11 +359,20 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
         if (!isLoggedIn) {
           AppLogger.debug('👤 [PROFILE_TAB] Showing NotSignedInView - user not logged in');
           // Show only Not Signed In view when user is not logged in (no forum header)
-          return NotSignedInView(
-            siteContext: widget.siteContext,
-            title: AppLocalizations.of(context).signInToViewProfile,
-            message: AppLocalizations.of(context).youNeedToBeSignedInToViewYourProfile,
-            icon: Icons.person_outline_rounded,
+          return Column(
+            children: [
+              Expanded(
+                child: NotSignedInView(
+                  siteContext: widget.siteContext,
+                  title: AppLocalizations.of(context).signInToViewProfile,
+                  message: AppLocalizations.of(context)
+                          .youNeedToBeSignedInToViewYourProfile,
+                  icon: Icons.person_outline_rounded,
+                ),
+              ),
+              // The forum's terms, privacy policy and help, for guests too
+              ForumPagesSection(siteContext: widget.siteContext, compact: true),
+            ],
           );
         }
 

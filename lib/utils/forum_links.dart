@@ -145,6 +145,13 @@ class ForumLinks {
     return '${root.scheme}://${root.authority}${root.path}index.php?posts/$postId/';
   }
 
+  /// A link to forum [forumId] of [site], with or without friendly URLs.
+  static String? forumUrl(Site site, String forumId) {
+    final root = rootOf(site);
+    if (root == null) return null;
+    return '${root.scheme}://${root.authority}${root.path}index.php?forums/$forumId/';
+  }
+
   static String _host(String host) {
     final h = host.toLowerCase();
     return h.startsWith('www.') ? h.substring(4) : h;

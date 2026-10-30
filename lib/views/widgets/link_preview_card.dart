@@ -11,10 +11,19 @@ class LinkPreviewCard extends StatefulWidget {
   final String url;
   final SiteContext siteContext;
 
+  /// Shown when the page offers no preview; by default the card disappears.
+  final Widget? fallback;
+
+  /// Drawn above the card while the card shows (a divider under the post),
+  /// and gone with it when the page offers no preview.
+  final Widget? header;
+
   const LinkPreviewCard({
     super.key,
     required this.siteContext,
     required this.url,
+    this.fallback,
+    this.header,
   });
 
   @override
@@ -103,9 +112,19 @@ class _LinkPreviewCardState extends State<LinkPreviewCard> with AutomaticKeepAli
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     if (!_shouldShow || _imageLoadFailed) {
-      return const SizedBox.shrink();
+      return widget.fallback ?? const SizedBox.shrink();
     }
+    final card = _buildCard(context);
+    final header = widget.header;
+    if (header == null) return card;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [header, card],
+    );
+  }
 
+  Widget _buildCard(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 

@@ -13,6 +13,7 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../widgets/filter_chip_bar.dart';
+import '../widgets/forum_notices.dart';
 import '../widgets/not_signed_in_view.dart';
 
 /// Reactive widget that observes controller changes and rebuilds topic items
@@ -439,6 +440,7 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
           CustomScrollView(
             slivers: [
               _buildMasthead(),
+              SliverToBoxAdapter(child: ForumNotices(siteContext: widget.siteContext)),
               SliverToBoxAdapter(child: _buildFilterChips()),
               SliverFillRemaining(child: errorWidget),
             ],
@@ -460,6 +462,8 @@ class TopicListTabState extends FCStatefulWidget<TopicListTab> with FCTabStatefu
             controller: _scrollController,
             slivers: [
               _buildMasthead(),
+              // The forum's notices (add-on 1.11.0+)
+              SliverToBoxAdapter(child: ForumNotices(siteContext: widget.siteContext)),
               // Filter Chips
               SliverToBoxAdapter(child: _buildFilterChips()),
               // Empty state or topic items, as a sliver

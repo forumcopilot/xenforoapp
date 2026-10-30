@@ -269,35 +269,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resend => 'Renvoyer';
 
   @override
-  String get noLatestTopics => 'Aucun sujet récent';
+  String get noLatestTopics => 'Aucune discussion récente';
 
   @override
   String get noRecentTopicsToDisplay =>
-      'Il n\'y a pas de sujets récents à afficher. Revenez plus tard pour de nouvelles discussions.';
+      'Il n\'y a pas de discussions récentes à afficher. Revenez plus tard pour de nouvelles discussions.';
 
   @override
-  String get noUnreadTopics => 'Aucun sujet non lu';
+  String get noUnreadTopics => 'Aucune discussion non lue';
 
   @override
   String get thereAreNoUnreadTopics =>
-      'Il n\'y a pas de sujets non lus. Revenez plus tard pour de nouvelles discussions.';
+      'Il n\'y a pas de discussions non lues. Revenez plus tard pour de nouvelles discussions.';
 
   @override
   String get youAreAllCaughtUp => 'Vous êtes à jour !';
 
   @override
-  String get noSubscribedTopics => 'Aucun sujet abonné';
+  String get noSubscribedTopics => 'Aucune discussion suivie';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Vous n\'êtes abonné à aucun sujet pour l\'instant. Ouvrez un sujet et choisissez S\'abonner dans son menu ⋮ pour être averti des nouvelles réponses.';
+      'Vous ne suivez encore aucune discussion. Ouvrez une discussion et choisissez Suivre dans son menu ⋮ pour être alerté des nouvelles réponses.';
 
   @override
-  String get noParticipatedTopics => 'Aucun sujet participé';
+  String get noParticipatedTopics =>
+      'Aucune discussion à laquelle vous avez participé';
 
   @override
   String get topicsYouParticipatedIn =>
-      'Les sujets auxquels vous avez participé seront affichés ici.';
+      'Les discussions auxquelles vous avez participé seront affichées ici.';
 
   @override
   String get latest => 'Récent';
@@ -306,7 +307,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unread => 'Non lu';
 
   @override
-  String get subscribed => 'Abonné';
+  String get subscribed => 'Suivies';
 
   @override
   String get participated => 'Participé';
@@ -346,37 +347,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get all => 'Tout';
 
   @override
-  String get topicsOnly => 'Sujets uniquement';
+  String get topicsOnly => 'Discussions uniquement';
 
   @override
   String get titlesOnly => 'Titres uniquement';
 
   @override
   String failedToShareTopic(String error) {
-    return 'Échec du partage du sujet : $error';
+    return 'Échec du partage de la discussion : $error';
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'Veuillez vous connecter pour $action ce fil';
-  }
+  String get subscribe => 'Suivre';
 
   @override
-  String get subscribeTo => 's\'abonner à';
-
-  @override
-  String get unsubscribeFrom => 'se désabonner de';
-
-  @override
-  String get subscribe => 'S\'abonner';
-
-  @override
-  String get unsubscribe => 'Se désabonner';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'Échec de $action du fil';
-  }
+  String get unsubscribe => 'Ne plus suivre';
 
   @override
   String get youCannotReplyToThisThread =>
@@ -436,7 +421,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get newTopic => 'Nouveau sujet';
+  String get newTopic => 'Nouvelle discussion';
 
   @override
   String get markRead => 'Marquer comme lu';
@@ -512,16 +497,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reportConversation => 'Signaler la conversation';
 
   @override
-  String get topicClosed => 'Sujet fermé';
+  String get topicClosed => 'Discussion verrouillée';
 
   @override
-  String get topicOpened => 'Sujet ouvert';
+  String get topicOpened => 'Discussion déverrouillée';
 
   @override
-  String get topicStickied => 'Sujet épinglé';
+  String get topicStickied => 'Discussion épinglée';
 
   @override
-  String get topicUnstickied => 'Sujet désépinglé';
+  String get topicUnstickied => 'Discussion désépinglée';
 
   @override
   String cannotEditMessage(String error) {
@@ -929,7 +914,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get enterKeywordsToSearchTopics =>
-      'Entrez des mots-clés pour rechercher des sujets...';
+      'Entrez des mots-clés pour rechercher des discussions...';
 
   @override
   String get pleaseFillInAllRequiredFields =>
@@ -940,35 +925,35 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get signInToViewUnreadTopics =>
-      'Connectez-vous pour voir les sujets non lus';
+      'Connectez-vous pour voir les discussions non lues';
 
   @override
   String get youNeedToBeSignedInToViewUnreadTopics =>
-      'Vous devez être connecté pour voir vos sujets non lus';
+      'Vous devez être connecté pour voir vos discussions non lues';
 
   @override
   String get signInToViewSubscribedTopics =>
-      'Connectez-vous pour voir les sujets abonnés';
+      'Connectez-vous pour voir les discussions suivies';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Vous devez être connecté pour voir vos sujets abonnés';
+      'Vous devez être connecté pour voir vos discussions suivies';
 
   @override
   String get signInToViewParticipatedTopics =>
-      'Connectez-vous pour voir les sujets participés';
+      'Connectez-vous pour voir les discussions auxquelles vous avez participé';
 
   @override
   String get youNeedToBeSignedInToViewParticipatedTopics =>
-      'Vous devez être connecté pour voir les sujets auxquels vous avez participé';
+      'Vous devez être connecté pour voir les discussions auxquelles vous avez participé';
 
   @override
   String get signInToViewLatestTopics =>
-      'Connectez-vous pour voir les sujets récents';
+      'Connectez-vous pour voir les discussions récentes';
 
   @override
   String get youNeedToBeSignedInToViewLatestTopics =>
-      'Vous devez être connecté pour voir les sujets récents';
+      'Vous devez être connecté pour voir les discussions récentes';
 
   @override
   String get markAsUnread => 'Marquer comme non lu';
@@ -1101,7 +1086,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get enterKeywordsToFindTopicsAndPosts =>
-      'Entrez des mots-clés pour trouver des sujets et des messages';
+      'Entrez des mots-clés pour trouver des discussions et des messages';
 
   @override
   String get enterKeywordsOrDomainToFindForums =>
@@ -1181,27 +1166,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchForums => 'Rechercher des Forums';
 
   @override
-  String get deleteTopic => 'Supprimer le sujet';
+  String get deleteTopic => 'Supprimer la discussion';
 
   @override
   String get softDelete => 'Suppression douce';
 
   @override
-  String get topicCanBeRestoredLater => 'Le sujet peut être restauré plus tard';
+  String get topicCanBeRestoredLater =>
+      'La discussion pourra être restaurée plus tard';
 
   @override
   String get hardDelete => 'Suppression définitive';
 
   @override
   String get topicWillBePermanentlyDeleted =>
-      'Le sujet sera supprimé définitivement';
+      'La discussion sera supprimée définitivement';
 
   @override
   String get reasonForDeletion => 'Raison de la suppression';
 
   @override
   String get enterReasonForDeletingTopic =>
-      'Entrez la raison de la suppression de ce sujet';
+      'Entrez la raison de la suppression de cette discussion';
 
   @override
   String get pleaseEnterReasonForDeletion =>
@@ -1267,7 +1253,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get home => 'Accueil';
 
   @override
-  String get notifications => 'Notifications';
+  String get notifications => 'Alertes';
 
   @override
   String get forums => 'Forums';
@@ -1277,7 +1263,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get markAllForumsAsReadMessage =>
-      'Cela marquera tous les forums et sujets comme lus. Cette action ne peut pas être annulée.';
+      'Cela marquera tous les forums et toutes les discussions comme lus. Cette action ne peut pas être annulée.';
 
   @override
   String get markAsRead => 'Marquer comme lu';
@@ -1502,10 +1488,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get goBack => 'Retour';
 
   @override
-  String get signInToViewMessages => 'Connectez-vous pour voir les messages';
+  String get signInToViewMessages =>
+      'Connectez-vous pour voir vos conversations';
 
   @override
-  String get privateMessagesNotAvailable => 'Messages privés non disponibles';
+  String get privateMessagesNotAvailable =>
+      'Les conversations ne sont pas disponibles';
 
   @override
   String failedToLoadPost(String error) {
@@ -1895,39 +1883,39 @@ class AppLocalizationsFr extends AppLocalizations {
   String get protectedBadge => 'Protégé';
 
   @override
-  String get lockTopic => 'Verrouiller le sujet';
+  String get lockTopic => 'Verrouiller la discussion';
 
   @override
-  String get unlockTopic => 'Déverrouiller le sujet';
+  String get unlockTopic => 'Déverrouiller la discussion';
 
   @override
   String get lockTopicConfirm =>
-      'Voulez-vous vraiment verrouiller ce sujet ? Les autres utilisateurs ne pourront plus y répondre ni interagir avec.';
+      'Voulez-vous vraiment verrouiller cette discussion ? Les autres utilisateurs ne pourront plus y répondre.';
 
   @override
   String get unlockTopicConfirm =>
-      'Voulez-vous vraiment déverrouiller ce sujet ? Les autres utilisateurs pourront à nouveau y répondre et interagir avec.';
+      'Voulez-vous vraiment déverrouiller cette discussion ? Les autres utilisateurs pourront à nouveau y répondre.';
 
   @override
-  String get stickTopic => 'Épingler le sujet';
+  String get stickTopic => 'Épingler la discussion';
 
   @override
-  String get unstickTopic => 'Désépingler le sujet';
+  String get unstickTopic => 'Désépingler la discussion';
 
   @override
   String get stickTopicConfirm =>
-      'Voulez-vous vraiment épingler ce sujet ? Il apparaîtra en haut du forum pour tous les utilisateurs.';
+      'Voulez-vous vraiment épingler cette discussion ? Elle apparaîtra en haut du forum pour tous les utilisateurs.';
 
   @override
   String get unstickTopicConfirm =>
-      'Voulez-vous vraiment désépingler ce sujet ? Il n\'apparaîtra plus en haut du forum.';
+      'Voulez-vous vraiment désépingler cette discussion ? Elle n\'apparaîtra plus en haut du forum.';
 
   @override
-  String get undeleteTopic => 'Restaurer le sujet';
+  String get undeleteTopic => 'Restaurer la discussion';
 
   @override
   String get undeleteTopicConfirm =>
-      'Voulez-vous vraiment restaurer ce sujet ? Il sera de nouveau visible par les autres utilisateurs.';
+      'Voulez-vous vraiment restaurer cette discussion ? Elle sera de nouveau visible par les autres utilisateurs.';
 
   @override
   String get additionalInformation => 'Informations complémentaires';
@@ -2013,15 +2001,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pleaseLoginToCreateTopic =>
-      'Veuillez vous connecter pour créer un nouveau sujet';
+      'Veuillez vous connecter pour créer une discussion';
 
   @override
   String get pleaseLoginToSubscribeForums =>
-      'Veuillez vous connecter pour vous abonner aux forums';
+      'Veuillez vous connecter pour suivre des forums';
 
   @override
   String get pleaseLoginToUnsubscribeForums =>
-      'Veuillez vous connecter pour vous désabonner des forums';
+      'Veuillez vous connecter pour ne plus suivre des forums';
 
   @override
   String errorLoadingContent(String error) {
@@ -2030,7 +2018,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noPermissionToViewSubforumTopics =>
-      'Vous n\'avez pas l\'autorisation de voir les sujets de ce sous-forum.';
+      'Vous n\'avez pas l\'autorisation de voir les discussions de ce sous-forum.';
 
   @override
   String get noDiscussionsYet => 'Aucune discussion pour le moment.';
@@ -2050,7 +2038,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allForumTopicsMarkedRead =>
-      'Tous les sujets du forum ont été marqués comme lus';
+      'Toutes les discussions du forum ont été marquées comme lues';
 
   @override
   String postsCountFormatted(String count) {
@@ -2073,14 +2061,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get topicDeletedHidden =>
-      'Ce sujet est supprimé et masqué aux autres utilisateurs';
+      'Cette discussion est supprimée et masquée aux autres utilisateurs';
 
   @override
   String get topicClosedNoReplies =>
-      'Ce sujet est fermé et n\'accepte plus de réponses';
+      'Cette discussion est verrouillée et n\'accepte plus de réponses';
 
   @override
-  String get youAreSubscribedToTopic => 'Vous suivez ce sujet';
+  String get youAreSubscribedToTopic => 'Vous suivez cette discussion';
 
   @override
   String get refreshing => 'Actualisation...';
@@ -2252,10 +2240,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unknownDate => 'Date inconnue';
 
   @override
-  String get searchForTopics => 'Rechercher des sujets';
+  String get searchForTopics => 'Rechercher des discussions';
 
   @override
-  String get noTopicsFound => 'Aucun sujet trouvé';
+  String get noTopicsFound => 'Aucune discussion trouvée';
 
   @override
   String get noPostsFound => 'Aucun message trouvé';
@@ -2472,7 +2460,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get avatarUploadedSuccessfully => 'Avatar envoyé';
 
   @override
-  String get unknownTopic => 'Sujet inconnu';
+  String get unknownTopic => 'Discussion inconnue';
 
   @override
   String get connectionTimeoutTitle => 'Délai de connexion dépassé';
@@ -2671,7 +2659,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get thisTopicIsPinnedToTopOfForum =>
-      'Ce sujet est epingle en haut du forum';
+      'Cette discussion est épinglée en haut du forum';
 
   @override
   String get editConversation => 'Modifier la conversation';
@@ -2730,26 +2718,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'Aucune URL d\'action disponible pour ce type de notification.';
+      'Cette alerte n\'a aucun lien à ouvrir.';
 
   @override
   String get signInToViewNotifications =>
-      'Connectez-vous pour voir les notifications';
+      'Connectez-vous pour voir vos alertes';
 
   @override
   String get youNeedToBeSignedInToViewYourNotifications =>
-      'Vous devez être connecté pour voir vos notifications.';
+      'Vous devez être connecté pour voir vos alertes.';
 
   @override
   String get errorLoadingNotifications =>
-      'Erreur lors du chargement des notifications';
+      'Erreur lors du chargement des alertes';
 
   @override
   String get pullDownToRefresh => 'Tirez vers le bas pour actualiser';
 
   @override
   String get youHaveNoNewNotificationsCheckBackLater =>
-      'Vous n\'avez aucune nouvelle notification. Revenez plus tard.';
+      'Vous n\'avez aucune nouvelle alerte. Revenez plus tard.';
 
   @override
   String get signInToViewProfile => 'Connectez-vous pour voir le profil';
@@ -2801,7 +2789,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get topicIdIsMissingCannotNavigateToThePost =>
-      'L\'ID du sujet est manquant. Navigation impossible vers le message.';
+      'L\'ID de la discussion est manquant. Impossible d\'ouvrir le message.';
 
   @override
   String get conversationIsOpenForReplies =>
@@ -2843,7 +2831,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de désactiver les notifications push';
 
   @override
-  String get thisForum => 'ce forum';
+  String get thisForumInSentence => 'ce forum';
 
   @override
   String get openFullEditor => 'Éditeur complet';
@@ -2874,8 +2862,8 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$countString sujets',
-      one: '$countString sujet',
+      other: '$countString discussions',
+      one: '$countString discussion',
     );
     return '$_temp0';
   }
@@ -3056,4 +3044,309 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'Ce forum n\'est pas encore configuré pour les clés d\'accès dans cette app. Choisissez une autre méthode.';
+
+  @override
+  String get ignoreMember => 'Ignorer le membre';
+
+  @override
+  String get stopIgnoringMember => 'Ne plus ignorer';
+
+  @override
+  String memberIgnored(String name) {
+    return 'Vous ignorez maintenant $name.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return 'Vous n\'ignorez plus $name.';
+  }
+
+  @override
+  String get ignoredMembers => 'Membres ignorés';
+
+  @override
+  String get ignoredMembersExplanation =>
+      'Le contenu des membres que vous ignorez est masqué, et ils ne peuvent pas démarrer de conversation avec vous.';
+
+  @override
+  String get noIgnoredMembers => 'Vous n\'ignorez personne.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return 'Vous ignorez $name.';
+  }
+
+  @override
+  String get showIgnoredContent => 'Afficher';
+
+  @override
+  String get markAllAlertsRead => 'Tout marquer comme lu';
+
+  @override
+  String get topicSolved => 'Résolu';
+
+  @override
+  String get topicQuestion => 'Question';
+
+  @override
+  String get solutionBadge => 'SOLUTION';
+
+  @override
+  String get forumClosedTitle => 'Le forum est fermé';
+
+  @override
+  String get updatedTermsTitle => 'Conditions mises à jour';
+
+  @override
+  String get updatedTermsMessage =>
+      'Le forum a mis à jour ses conditions ou sa politique de confidentialité. Consultez-les et acceptez-les sur le site web.';
+
+  @override
+  String get reviewTerms => 'Consulter';
+
+  @override
+  String get forumTerms => 'Conditions et règles';
+
+  @override
+  String get contactForum => 'Nous contacter';
+
+  @override
+  String get notifyMeOf => 'Me notifier pour';
+
+  @override
+  String get watchNewThreads => 'Nouvelles discussions';
+
+  @override
+  String get watchNewMessages => 'Nouveaux messages';
+
+  @override
+  String get watchSendAlerts => 'Alertes';
+
+  @override
+  String get watchSendEmails => 'E-mails';
+
+  @override
+  String get logInToWatchThread =>
+      'Veuillez vous connecter pour suivre cette discussion';
+
+  @override
+  String get failedToWatchThread => 'Impossible de suivre la discussion';
+
+  @override
+  String get failedToUnwatchThread =>
+      'Impossible de ne plus suivre la discussion';
+
+  @override
+  String get watchThreadAlertsNote =>
+      'Vous recevrez une alerte quand quelqu\'un répondra.';
+
+  @override
+  String get threadFilters => 'Filtres';
+
+  @override
+  String get anyPrefix => '(Tous)';
+
+  @override
+  String get startedBy => 'Commencé par';
+
+  @override
+  String get lastUpdated => 'Dernière mise à jour';
+
+  @override
+  String get anyTime => 'N\'importe quand';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '$count jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mois',
+      one: '$count mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ans',
+      one: '$count an',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => 'Trier par';
+
+  @override
+  String get sortAscending => 'Croissant';
+
+  @override
+  String get sortDescending => 'Décroissant';
+
+  @override
+  String get clearFilters => 'Effacer les filtres';
+
+  @override
+  String get applyFilters => 'Filtrer';
+
+  @override
+  String get noThreadsMatchFilters =>
+      'Aucune discussion ne correspond à ces filtres.';
+
+  @override
+  String get threadTypeLabel => 'Type de discussion';
+
+  @override
+  String get pollQuestion => 'Question du sondage';
+
+  @override
+  String get pollResponses => 'Réponses possibles';
+
+  @override
+  String pollResponseNumber(int number) {
+    return 'Réponse $number';
+  }
+
+  @override
+  String get addPollResponse => 'Ajouter une réponse';
+
+  @override
+  String get removePollResponse => 'Retirer la réponse';
+
+  @override
+  String get pollMultipleChoice => 'Autoriser plusieurs réponses';
+
+  @override
+  String get pollChangeVote => 'Autoriser les votants à changer leur vote';
+
+  @override
+  String get pollPublicVotes => 'Afficher les votes publiquement';
+
+  @override
+  String get pollViewResultsUnvoted =>
+      'Permettre de voir les résultats sans voter';
+
+  @override
+  String get pollCloseAfter => 'Fermer ce sondage après';
+
+  @override
+  String get pollNeverCloses => 'Jamais';
+
+  @override
+  String get noneOption => '(Aucun)';
+
+  @override
+  String get tagsLabel => 'Tags';
+
+  @override
+  String get tagsHint => 'Séparez les tags par des virgules';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ajoutez au moins $count tags',
+      one: 'Ajoutez au moins $count tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return 'Veuillez remplir $field.';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses =>
+      'Saisissez une question et au moins deux réponses.';
+
+  @override
+  String get awaitingApprovalBadge => 'EN ATTENTE D’APPROBATION';
+
+  @override
+  String get approve => 'Approuver';
+
+  @override
+  String get postApproved => 'Message approuvé';
+
+  @override
+  String get postUndeleted => 'Message restauré';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name a dit :';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours plus tard',
+      one: '1 jour plus tard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mois plus tard',
+      one: '1 mois plus tard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ans plus tard',
+      one: '1 an plus tard',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'vues',
+      one: 'vue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'réponses',
+      one: 'réponse',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'Ce forum';
 }

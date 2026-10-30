@@ -253,33 +253,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get resend => '再送信';
 
   @override
-  String get noLatestTopics => '最新トピックなし';
+  String get noLatestTopics => '最新スレッドなし';
 
   @override
   String get noRecentTopicsToDisplay =>
-      '表示する最新トピックがありません。後で新しいディスカッションを確認してください。';
+      '表示する最新スレッドがありません。後で新しいディスカッションを確認してください。';
 
   @override
-  String get noUnreadTopics => '未読トピックなし';
+  String get noUnreadTopics => '未読スレッドなし';
 
   @override
-  String get thereAreNoUnreadTopics => '未読トピックがありません。後で新しいディスカッションを確認してください。';
+  String get thereAreNoUnreadTopics => '未読スレッドがありません。後で新しいディスカッションを確認してください。';
 
   @override
   String get youAreAllCaughtUp => 'すべて確認済みです！';
 
   @override
-  String get noSubscribedTopics => '購読トピックなし';
+  String get noSubscribedTopics => 'ウォッチ中のスレッドはありません';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'まだトピックを購読していません。トピックを開き、⋮ メニューの「購読」を選ぶと、新しい返信の通知を受け取れます。';
+      'まだウォッチ中のスレッドはありません。スレッドを開き、⋮ メニューの「ウォッチ」を選ぶと、新しい返信の通知を受け取れます。';
 
   @override
-  String get noParticipatedTopics => '参加トピックなし';
+  String get noParticipatedTopics => '参加したスレッドなし';
 
   @override
-  String get topicsYouParticipatedIn => '参加したトピックがここに表示されます。';
+  String get topicsYouParticipatedIn => '参加したスレッドがここに表示されます。';
 
   @override
   String get latest => '最新';
@@ -288,7 +288,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unread => '未読';
 
   @override
-  String get subscribed => '購読';
+  String get subscribed => 'ウォッチ中';
 
   @override
   String get participated => '参加';
@@ -328,37 +328,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get all => 'すべて';
 
   @override
-  String get topicsOnly => 'トピックのみ';
+  String get topicsOnly => 'スレッドのみ';
 
   @override
   String get titlesOnly => 'タイトルのみ';
 
   @override
   String failedToShareTopic(String error) {
-    return 'トピックの共有に失敗しました: $error';
+    return 'スレッドの共有に失敗しました: $error';
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'このスレッドを $action するにはログインしてください';
-  }
+  String get subscribe => 'ウォッチ';
 
   @override
-  String get subscribeTo => '購読する';
-
-  @override
-  String get unsubscribeFrom => '購読を解除する';
-
-  @override
-  String get subscribe => '購読';
-
-  @override
-  String get unsubscribe => '購読解除';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'スレッドの $action に失敗しました';
-  }
+  String get unsubscribe => 'ウォッチ解除';
 
   @override
   String get youCannotReplyToThisThread => 'このスレッドに返信できません';
@@ -410,7 +394,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get newTopic => '新しいトピック';
+  String get newTopic => '新しいスレッド';
 
   @override
   String get markRead => '既読にする';
@@ -478,16 +462,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportConversation => '会話を報告';
 
   @override
-  String get topicClosed => 'トピックが閉じられました';
+  String get topicClosed => 'スレッドをロックしました';
 
   @override
-  String get topicOpened => 'トピックが開かれました';
+  String get topicOpened => 'スレッドのロックを解除しました';
 
   @override
-  String get topicStickied => 'トピックが固定されました';
+  String get topicStickied => 'スレッドを固定しました';
 
   @override
-  String get topicUnstickied => 'トピックの固定が解除されました';
+  String get topicUnstickied => 'スレッドの固定を解除しました';
 
   @override
   String cannotEditMessage(String error) {
@@ -884,7 +868,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get enterKeywordsToSearchTopics => 'トピックを検索するキーワードを入力...';
+  String get enterKeywordsToSearchTopics => 'スレッドを検索するキーワードを入力...';
 
   @override
   String get pleaseFillInAllRequiredFields => 'すべての必須フィールドに入力してください';
@@ -893,32 +877,32 @@ class AppLocalizationsJa extends AppLocalizations {
   String get undelete => '復元';
 
   @override
-  String get signInToViewUnreadTopics => '未読トピックを表示するにはログインしてください';
+  String get signInToViewUnreadTopics => '未読スレッドを表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewUnreadTopics =>
-      '未読トピックを表示するにはログインする必要があります';
+      '未読スレッドを表示するにはログインする必要があります';
 
   @override
-  String get signInToViewSubscribedTopics => '購読トピックを表示するにはログインしてください';
+  String get signInToViewSubscribedTopics => 'ウォッチ中のスレッドを表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      '購読トピックを表示するにはログインする必要があります';
+      'ウォッチ中のスレッドを表示するにはログインする必要があります';
 
   @override
-  String get signInToViewParticipatedTopics => '参加トピックを表示するにはログインしてください';
+  String get signInToViewParticipatedTopics => '参加したスレッドを表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewParticipatedTopics =>
-      '参加したトピックを表示するにはログインする必要があります';
+      '参加したスレッドを表示するにはログインする必要があります';
 
   @override
-  String get signInToViewLatestTopics => '最新トピックを表示するにはログインしてください';
+  String get signInToViewLatestTopics => '最新スレッドを表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewLatestTopics =>
-      '最新トピックを表示するにはログインする必要があります';
+      '最新スレッドを表示するにはログインする必要があります';
 
   @override
   String get markAsUnread => '未読としてマーク';
@@ -1046,7 +1030,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get enterKeywordsToFindTopicsAndPosts => 'キーワードを入力してトピックと投稿を検索';
+  String get enterKeywordsToFindTopicsAndPosts => 'キーワードを入力してスレッドと投稿を検索';
 
   @override
   String get enterKeywordsOrDomainToFindForums => 'キーワードまたはドメインを入力してフォーラムを検索';
@@ -1124,25 +1108,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get searchForums => 'フォーラムを検索';
 
   @override
-  String get deleteTopic => 'トピックを削除';
+  String get deleteTopic => 'スレッドを削除';
 
   @override
   String get softDelete => 'ソフト削除';
 
   @override
-  String get topicCanBeRestoredLater => 'トピックは後で復元できます';
+  String get topicCanBeRestoredLater => 'スレッドは後で復元できます';
 
   @override
   String get hardDelete => '完全削除';
 
   @override
-  String get topicWillBePermanentlyDeleted => 'トピックは完全に削除されます';
+  String get topicWillBePermanentlyDeleted => 'スレッドは完全に削除されます';
 
   @override
   String get reasonForDeletion => '削除理由';
 
   @override
-  String get enterReasonForDeletingTopic => 'このトピックを削除する理由を入力してください';
+  String get enterReasonForDeletingTopic => 'このスレッドを削除する理由を入力してください';
 
   @override
   String get pleaseEnterReasonForDeletion => '削除理由を入力してください';
@@ -1216,7 +1200,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get markAllForumsAsReadMessage =>
-      'これにより、すべてのフォーラムとトピックが既読としてマークされます。この操作は元に戻せません。';
+      'これにより、すべてのフォーラムとスレッドが既読としてマークされます。この操作は元に戻せません。';
 
   @override
   String get markAsRead => '既読にする';
@@ -1437,10 +1421,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get goBack => '戻る';
 
   @override
-  String get signInToViewMessages => 'メッセージを表示するにはログインしてください';
+  String get signInToViewMessages => '会話を表示するにはログインしてください';
 
   @override
-  String get privateMessagesNotAvailable => 'プライベートメッセージは利用できません';
+  String get privateMessagesNotAvailable => '会話は利用できません';
 
   @override
   String failedToLoadPost(String error) {
@@ -1805,37 +1789,37 @@ class AppLocalizationsJa extends AppLocalizations {
   String get protectedBadge => '保護';
 
   @override
-  String get lockTopic => 'トピックをロック';
+  String get lockTopic => 'スレッドをロック';
 
   @override
-  String get unlockTopic => 'トピックのロックを解除';
+  String get unlockTopic => 'スレッドのロックを解除';
 
   @override
-  String get lockTopicConfirm => 'このトピックをロックしてもよろしいですか？他のユーザーは返信や操作ができなくなります。';
+  String get lockTopicConfirm => 'このスレッドをロックしてもよろしいですか？他のユーザーは返信や操作ができなくなります。';
 
   @override
   String get unlockTopicConfirm =>
-      'このトピックのロックを解除してもよろしいですか？他のユーザーが再び返信や操作をできるようになります。';
+      'このスレッドのロックを解除してもよろしいですか？他のユーザーが再び返信や操作をできるようになります。';
 
   @override
-  String get stickTopic => 'トピックを固定';
+  String get stickTopic => 'スレッドを固定';
 
   @override
-  String get unstickTopic => 'トピックの固定を解除';
+  String get unstickTopic => 'スレッドの固定を解除';
 
   @override
   String get stickTopicConfirm =>
-      'このトピックを固定してもよろしいですか？すべてのユーザーのフォーラム上部に表示されます。';
+      'このスレッドを固定してもよろしいですか？すべてのユーザーのフォーラム上部に表示されます。';
 
   @override
   String get unstickTopicConfirm =>
-      'このトピックの固定を解除してもよろしいですか？フォーラムの上部に表示されなくなります。';
+      'このスレッドの固定を解除してもよろしいですか？フォーラムの上部に表示されなくなります。';
 
   @override
-  String get undeleteTopic => 'トピックを復元';
+  String get undeleteTopic => 'スレッドを復元';
 
   @override
-  String get undeleteTopicConfirm => 'このトピックを復元してもよろしいですか？他のユーザーに再び表示されます。';
+  String get undeleteTopicConfirm => 'このスレッドを復元してもよろしいですか？他のユーザーに再び表示されます。';
 
   @override
   String get additionalInformation => '追加情報';
@@ -1917,13 +1901,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToCreateTopic => '新しいトピックを作成するにはログインしてください';
+  String get pleaseLoginToCreateTopic => 'スレッドを作成するにはログインしてください';
 
   @override
-  String get pleaseLoginToSubscribeForums => 'フォーラムを購読するにはログインしてください';
+  String get pleaseLoginToSubscribeForums => 'フォーラムをウォッチするにはログインしてください';
 
   @override
-  String get pleaseLoginToUnsubscribeForums => 'フォーラムの購読を解除するにはログインしてください';
+  String get pleaseLoginToUnsubscribeForums => 'フォーラムのウォッチを解除するにはログインしてください';
 
   @override
   String errorLoadingContent(String error) {
@@ -1931,7 +1915,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get noPermissionToViewSubforumTopics => 'このサブフォーラムのトピックを閲覧する権限がありません。';
+  String get noPermissionToViewSubforumTopics => 'このサブフォーラムのスレッドを閲覧する権限がありません。';
 
   @override
   String get noDiscussionsYet => 'まだディスカッションはありません。';
@@ -1946,10 +1930,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noForumsToDisplay => '表示するフォーラムがありません。権限またはフォーラムの構成が原因の可能性があります。';
 
   @override
-  String get subscribedForums => '購読中のフォーラム';
+  String get subscribedForums => 'ウォッチ中のフォーラム';
 
   @override
-  String get allForumTopicsMarkedRead => 'フォーラムのすべてのトピックを既読にしました';
+  String get allForumTopicsMarkedRead => 'フォーラムのすべてのスレッドを既読にしました';
 
   @override
   String postsCountFormatted(String count) {
@@ -1971,13 +1955,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get topicDeletedHidden => 'このトピックは削除されており、他のユーザーには表示されません';
+  String get topicDeletedHidden => 'このスレッドは削除されており、他のユーザーには表示されません';
 
   @override
-  String get topicClosedNoReplies => 'このトピックはロックされており、返信できません';
+  String get topicClosedNoReplies => 'このスレッドはロックされており、返信できません';
 
   @override
-  String get youAreSubscribedToTopic => 'このトピックを購読しています';
+  String get youAreSubscribedToTopic => 'このスレッドをウォッチしています';
 
   @override
   String get refreshing => '更新中...';
@@ -2138,10 +2122,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unknownDate => '日付不明';
 
   @override
-  String get searchForTopics => 'トピックを検索';
+  String get searchForTopics => 'スレッドを検索';
 
   @override
-  String get noTopicsFound => 'トピックが見つかりません';
+  String get noTopicsFound => 'スレッドが見つかりません';
 
   @override
   String get noPostsFound => '投稿が見つかりません';
@@ -2343,7 +2327,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get avatarUploadedSuccessfully => 'アバターをアップロードしました';
 
   @override
-  String get unknownTopic => '不明なトピック';
+  String get unknownTopic => '不明なスレッド';
 
   @override
   String get connectionTimeoutTitle => '接続タイムアウト';
@@ -2527,7 +2511,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editPost => '投稿を編集';
 
   @override
-  String get thisTopicIsPinnedToTopOfForum => 'このトピックはフォーラムの上部に固定されています';
+  String get thisTopicIsPinnedToTopOfForum => 'このスレッドはフォーラムの上部に固定されています';
 
   @override
   String get editConversation => '会話を編集';
@@ -2582,14 +2566,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'この通知タイプには利用可能なアクション URL がありません。';
+      'この通知には開くリンクがありません。';
 
   @override
-  String get signInToViewNotifications => '通知を表示するにはサインインしてください';
+  String get signInToViewNotifications => '通知を表示するにはログインしてください';
 
   @override
   String get youNeedToBeSignedInToViewYourNotifications =>
-      '通知を表示するにはサインインが必要です。';
+      '通知を表示するにはログインが必要です。';
 
   @override
   String get errorLoadingNotifications => '通知の読み込みエラー';
@@ -2649,7 +2633,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get topicIdIsMissingCannotNavigateToThePost =>
-      'トピック ID がありません。投稿に移動できません。';
+      'スレッド ID がありません。投稿に移動できません。';
 
   @override
   String get conversationIsOpenForReplies => 'この会話は返信可能です';
@@ -2688,7 +2672,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get failedToDisablePush => 'プッシュ通知をオフにできませんでした';
 
   @override
-  String get thisForum => 'このフォーラム';
+  String get thisForumInSentence => 'このフォーラム';
 
   @override
   String get openFullEditor => 'フルエディター';
@@ -2718,7 +2702,7 @@ class AppLocalizationsJa extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'トピック $countString 件',
+      other: 'スレッド $countString 件',
     );
     return '$_temp0';
   }
@@ -2886,4 +2870,294 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'このフォーラムはまだこのアプリでのパスキーに対応していません。別の方法を選んでください。';
+
+  @override
+  String get ignoreMember => 'メンバーを無視';
+
+  @override
+  String get stopIgnoringMember => '無視をやめる';
+
+  @override
+  String memberIgnored(String name) {
+    return '$name さんを無視しています。';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return '$name さんの無視をやめました。';
+  }
+
+  @override
+  String get ignoredMembers => '無視しているメンバー';
+
+  @override
+  String get ignoredMembersExplanation =>
+      '無視しているメンバーの投稿は非表示になり、そのメンバーはあなたと会話を始められません。';
+
+  @override
+  String get noIgnoredMembers => '無視しているメンバーはいません。';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return '$name さんを無視しています。';
+  }
+
+  @override
+  String get showIgnoredContent => '表示';
+
+  @override
+  String get markAllAlertsRead => 'すべて既読にする';
+
+  @override
+  String get topicSolved => '解決済み';
+
+  @override
+  String get topicQuestion => '質問';
+
+  @override
+  String get solutionBadge => '解決策';
+
+  @override
+  String get forumClosedTitle => 'フォーラムは閉鎖中です';
+
+  @override
+  String get updatedTermsTitle => '規約の更新';
+
+  @override
+  String get updatedTermsMessage =>
+      'フォーラムの利用規約またはプライバシーポリシーが更新されました。ウェブサイトで確認して同意してください。';
+
+  @override
+  String get reviewTerms => '確認する';
+
+  @override
+  String get forumTerms => '利用規約とルール';
+
+  @override
+  String get contactForum => 'お問い合わせ';
+
+  @override
+  String get notifyMeOf => '通知する内容';
+
+  @override
+  String get watchNewThreads => '新しいスレッド';
+
+  @override
+  String get watchNewMessages => '新しい投稿';
+
+  @override
+  String get watchSendAlerts => '通知';
+
+  @override
+  String get watchSendEmails => 'メール';
+
+  @override
+  String get logInToWatchThread => 'このスレッドをウォッチするにはログインしてください';
+
+  @override
+  String get failedToWatchThread => 'スレッドをウォッチできませんでした';
+
+  @override
+  String get failedToUnwatchThread => 'スレッドのウォッチを解除できませんでした';
+
+  @override
+  String get watchThreadAlertsNote => '誰かが返信すると通知が届きます。';
+
+  @override
+  String get threadFilters => 'フィルター';
+
+  @override
+  String get anyPrefix => '(すべて)';
+
+  @override
+  String get startedBy => '作成者';
+
+  @override
+  String get lastUpdated => '最終更新';
+
+  @override
+  String get anyTime => 'すべての期間';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 日',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count か月',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 年',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => '並べ替え';
+
+  @override
+  String get sortAscending => '昇順';
+
+  @override
+  String get sortDescending => '降順';
+
+  @override
+  String get clearFilters => 'フィルターを解除';
+
+  @override
+  String get applyFilters => '絞り込む';
+
+  @override
+  String get noThreadsMatchFilters => 'このフィルターに一致するスレッドはありません。';
+
+  @override
+  String get threadTypeLabel => 'スレッドの種類';
+
+  @override
+  String get pollQuestion => '投票の質問';
+
+  @override
+  String get pollResponses => '選択肢';
+
+  @override
+  String pollResponseNumber(int number) {
+    return '選択肢 $number';
+  }
+
+  @override
+  String get addPollResponse => '選択肢を追加';
+
+  @override
+  String get removePollResponse => '選択肢を削除';
+
+  @override
+  String get pollMultipleChoice => '複数の選択肢を選べる';
+
+  @override
+  String get pollChangeVote => '投票の変更を許可';
+
+  @override
+  String get pollPublicVotes => '投票を公開する';
+
+  @override
+  String get pollViewResultsUnvoted => '投票せずに結果を見られる';
+
+  @override
+  String get pollCloseAfter => '投票の締め切り';
+
+  @override
+  String get pollNeverCloses => '締め切らない';
+
+  @override
+  String get noneOption => '(なし)';
+
+  @override
+  String get tagsLabel => 'タグ';
+
+  @override
+  String get tagsHint => 'タグはカンマで区切ります';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'タグを $count 個以上追加してください',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return '$field を入力してください。';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses => '投票の質問と2つ以上の選択肢を入力してください。';
+
+  @override
+  String get awaitingApprovalBadge => '承認待ち';
+
+  @override
+  String get approve => '承認';
+
+  @override
+  String get postApproved => '投稿を承認しました';
+
+  @override
+  String get postUndeleted => '投稿を復元しました';
+
+  @override
+  String quoteSaid(String name) {
+    return '$nameさんの発言:';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 日後',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count か月後',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 年後',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '閲覧',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '返信',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'このフォーラム';
 }

@@ -49,6 +49,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   final GlobalKey _userRepliedPostsKey = GlobalKey();
   bool _didAttemptAutoLogin = false;
   bool _followBusy = false;
+  bool _ignoreBusy = false;
 
   @override
   void initState() {
@@ -143,6 +144,55 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
+  /// Ignores or stops ignoring this member (add-on 1.11.0+, gated by the
+  /// forum's `ignoreUser` flag): their posts and messages then show collapsed,
+  /// and XenForo stops their direct messages and alerts.
+  Future<void> _toggleIgnore() async {
+    final info = _userInfo;
+    if (info == null || _ignoreBusy) return;
+    setState(() => _ignoreBusy = true);
+    final wasIgnoring = info.isIgnored;
+    String? failure;
+    try {
+      final response = await SiteProxyService.getUserProxy().ignoreUserAsync(info.id, wasIgnoring ? 0 : 1);
+      if (response.result) {
+        info.isIgnored = !wasIgnoring;
+      } else {
+        failure = response.resultText ?? '';
+      }
+    } catch (e) {
+      AppLogger.debug('Ignore toggle failed: $e');
+      failure = '';
+    }
+    if (!mounted) return;
+    setState(() => _ignoreBusy = false);
+    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(
+          failure != null
+              ? (failure.isNotEmpty ? failure : l10n.somethingWentWrong)
+              : (wasIgnoring ? l10n.memberNoLongerIgnored(info.username) : l10n.memberIgnored(info.username)),
+          style: failure != null ? TextStyle(color: colorScheme.onErrorContainer) : null,
+        ),
+        backgroundColor: failure != null ? colorScheme.errorContainer : null,
+        behavior: SnackBarBehavior.floating,
+        showCloseIcon: true,
+        closeIconColor: failure != null ? colorScheme.onErrorContainer : null,
+      ));
+  }
+
+  /// The forum lets members ignore each other through the app (add-on
+  /// 1.11.0+), and this member can be ignored or is already ignored.
+  bool get _canToggleIgnore {
+    final info = _userInfo;
+    if (info == null) return false;
+    if (!(widget.siteContext.configDataOutput?.ignoreUser ?? false)) return false;
+    return info.isIgnored || info.canIgnore;
+  }
+
   Future<void> _fetchUserInfo() async {
     setState(() {
       _isLoading = true;
@@ -232,9 +282,35 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   case 'spamCleaner':
                     _handleSpamCleanUser(context);
                     break;
+                  case 'ignore':
+                    _toggleIgnore();
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) => [
+                // Ignore / stop ignoring (add-on 1.11.0+)
+                if (_canToggleIgnore)
+                  PopupMenuItem<String>(
+                    value: 'ignore',
+                    enabled: !_ignoreBusy,
+                    child: Row(
+                      children: [
+                        Icon(
+                          _userInfo!.isIgnored ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: DesignTokens.spacingM),
+                        Text(
+                          _userInfo!.isIgnored
+                              ? AppLocalizations.of(context).stopIgnoringMember
+                              : AppLocalizations.of(context).ignoreMember,
+                          style: textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 // Report User - only show if user can be reported
                 if (_userInfo!.canBeReported == true)
                   PopupMenuItem<String>(

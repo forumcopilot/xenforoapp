@@ -7,10 +7,12 @@ import 'package:url_launcher/url_launcher.dart';
 class SignatureProcessor {
   /// Processes signature text and returns TextSpans for RichText display
   /// Removes all BBCode tags except [url] and [url=...] tags
-  /// Converts URL tags to clickable links
-  static List<TextSpan> processSignature(String text, BuildContext context) {
+  /// Converts URL tags to clickable links. [style] is the text's style
+  /// (default: body text); links take it in the primary colour.
+  static List<TextSpan> processSignature(String text, BuildContext context, {TextStyle? style}) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final base = style ?? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface);
     final List<TextSpan> spans = [];
 
     if (text.isEmpty) {
@@ -66,7 +68,7 @@ class SignatureProcessor {
         if (beforeText.isNotEmpty) {
           spans.add(TextSpan(
             text: beforeText,
-            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+            style: base,
           ));
         }
       }
@@ -77,7 +79,7 @@ class SignatureProcessor {
 
       spans.add(TextSpan(
         text: linkText,
-        style: textTheme.bodyMedium?.copyWith(
+        style: base?.copyWith(
           color: colorScheme.primary,
           decoration: TextDecoration.underline,
         ),
@@ -99,7 +101,7 @@ class SignatureProcessor {
       if (remainingText.isNotEmpty) {
         spans.add(TextSpan(
           text: remainingText,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+          style: base,
         ));
       }
     }
@@ -110,7 +112,7 @@ class SignatureProcessor {
       if (strippedText.isNotEmpty) {
         spans.add(TextSpan(
           text: strippedText,
-          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+          style: base,
         ));
       }
     }

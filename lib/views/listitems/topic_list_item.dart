@@ -186,6 +186,8 @@ class TopicListItem extends StatelessWidget {
                   if (topic.isSubscribed) 1,
                   if (topic.isClosed) 1,
                   if (topic.hasPoll) 1,
+                  if (topic.isSolved || topic.threadType == 'question') 1,
+                  if (topic.threadType == 'suggestion' && topic.voteScore != null) 1,
                 ].length;
                 final showLabels = statusIconCount == 1;
                 final metaColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.72);
@@ -365,6 +367,50 @@ class TopicListItem extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ],
+                        ),
+                      // XenForo questions (add-on 1.11.0+): solved, or still open
+                      if (topic.isSolved || topic.threadType == 'question')
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              topic.isSolved ? Icons.check_circle_outline : Icons.help_outline,
+                              size: textTheme.bodySmall?.fontSize ?? 12,
+                              color: topic.isSolved ? colorScheme.primary : metaColor,
+                            ),
+                            if (showLabels || topic.isSolved) ...[
+                              SizedBox(width: DesignTokens.spacingXS),
+                              Text(
+                                topic.isSolved
+                                    ? AppLocalizations.of(context).topicSolved
+                                    : AppLocalizations.of(context).topicQuestion,
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: topic.isSolved ? colorScheme.primary : metaColor,
+                                  letterSpacing: DesignTokens.letterSpacingWide,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      // XenForo suggestions (add-on 1.11.0+): the vote score
+                      if (topic.threadType == 'suggestion' && topic.voteScore != null)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.thumbs_up_down_outlined,
+                              size: textTheme.bodySmall?.fontSize ?? 12,
+                              color: metaColor,
+                            ),
+                            SizedBox(width: DesignTokens.spacingXS),
+                            Text(
+                              '${topic.voteScore}',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: metaColor,
+                                letterSpacing: DesignTokens.letterSpacingWide,
+                              ),
+                            ),
                           ],
                         ),
                     ],

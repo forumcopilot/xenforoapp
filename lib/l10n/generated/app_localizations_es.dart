@@ -285,11 +285,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get youAreAllCaughtUp => '¡Estás al día!';
 
   @override
-  String get noSubscribedTopics => 'No hay temas suscritos';
+  String get noSubscribedTopics => 'No hay temas seguidos';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Aún no estás suscrito a ningún tema. Abre un tema y elige Suscribirse en su menú ⋮ para recibir avisos de nuevas respuestas.';
+      'Aún no sigues ningún tema. Abre un tema y elige Seguir en su menú ⋮ para recibir avisos de nuevas respuestas.';
 
   @override
   String get noParticipatedTopics => 'No hay temas participados';
@@ -305,7 +305,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unread => 'Sin leer';
 
   @override
-  String get subscribed => 'Suscritos';
+  String get subscribed => 'Seguidos';
 
   @override
   String get participated => 'Participados';
@@ -356,26 +356,10 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'Por favor inicia sesión para $action este hilo';
-  }
+  String get subscribe => 'Seguir';
 
   @override
-  String get subscribeTo => 'suscribirte a';
-
-  @override
-  String get unsubscribeFrom => 'desuscribirte de';
-
-  @override
-  String get subscribe => 'Suscribirse';
-
-  @override
-  String get unsubscribe => 'Cancelar suscripción';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'Error al $action hilo';
-  }
+  String get unsubscribe => 'Dejar de seguir';
 
   @override
   String get youCannotReplyToThisThread => 'No puedes responder a este hilo';
@@ -942,11 +926,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get signInToViewSubscribedTopics =>
-      'Inicia sesión para ver temas suscritos';
+      'Inicia sesión para ver los temas seguidos';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Necesitas iniciar sesión para ver tus temas suscritos';
+      'Necesitas iniciar sesión para ver tus temas seguidos';
 
   @override
   String get signInToViewParticipatedTopics =>
@@ -1261,7 +1245,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get home => 'Inicio';
 
   @override
-  String get notifications => 'Notificaciones';
+  String get notifications => 'Avisos';
 
   @override
   String get forums => 'Foros';
@@ -1496,11 +1480,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get goBack => 'Volver';
 
   @override
-  String get signInToViewMessages => 'Inicia sesión para ver mensajes';
+  String get signInToViewMessages =>
+      'Inicia sesión para ver tus conversaciones';
 
   @override
   String get privateMessagesNotAvailable =>
-      'Los mensajes privados no están disponibles';
+      'Las conversaciones no están disponibles';
 
   @override
   String failedToLoadPost(String error) {
@@ -2007,12 +1992,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Inicia sesión para crear un tema nuevo';
 
   @override
-  String get pleaseLoginToSubscribeForums =>
-      'Inicia sesión para suscribirte a foros';
+  String get pleaseLoginToSubscribeForums => 'Inicia sesión para seguir foros';
 
   @override
   String get pleaseLoginToUnsubscribeForums =>
-      'Inicia sesión para cancelar la suscripción a foros';
+      'Inicia sesión para dejar de seguir foros';
 
   @override
   String errorLoadingContent(String error) {
@@ -2037,7 +2021,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No hay foros para mostrar. Puede deberse a los permisos o a la estructura del foro.';
 
   @override
-  String get subscribedForums => 'Foros suscritos';
+  String get subscribedForums => 'Foros seguidos';
 
   @override
   String get allForumTopicsMarkedRead =>
@@ -2071,7 +2055,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Este tema está cerrado y ya no admite respuestas';
 
   @override
-  String get youAreSubscribedToTopic => 'Estás suscrito a este tema';
+  String get youAreSubscribedToTopic => 'Sigues este tema';
 
   @override
   String get refreshing => 'Actualizando...';
@@ -2716,25 +2700,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'No hay URL de acción disponible para este tipo de notificación.';
+      'Este aviso no tiene ningún enlace que abrir.';
 
   @override
-  String get signInToViewNotifications =>
-      'Inicia sesión para ver notificaciones';
+  String get signInToViewNotifications => 'Inicia sesión para ver tus avisos';
 
   @override
   String get youNeedToBeSignedInToViewYourNotifications =>
-      'Debes iniciar sesión para ver tus notificaciones.';
+      'Debes iniciar sesión para ver tus avisos.';
 
   @override
-  String get errorLoadingNotifications => 'Error al cargar notificaciones';
+  String get errorLoadingNotifications => 'Error al cargar los avisos';
 
   @override
   String get pullDownToRefresh => 'Desliza hacia abajo para actualizar';
 
   @override
   String get youHaveNoNewNotificationsCheckBackLater =>
-      'No tienes notificaciones nuevas. Vuelve más tarde para ver actualizaciones.';
+      'No tienes avisos nuevos. Vuelve más tarde para ver actualizaciones.';
 
   @override
   String get signInToViewProfile => 'Inicia sesion para ver el perfil';
@@ -2827,7 +2810,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudieron desactivar las notificaciones push';
 
   @override
-  String get thisForum => 'este foro';
+  String get thisForumInSentence => 'este foro';
 
   @override
   String get openFullEditor => 'Editor completo';
@@ -3040,4 +3023,305 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'Este foro aún no está configurado para claves de acceso en esta app. Elige otro método.';
+
+  @override
+  String get ignoreMember => 'Ignorar miembro';
+
+  @override
+  String get stopIgnoringMember => 'Dejar de ignorar';
+
+  @override
+  String memberIgnored(String name) {
+    return 'Ahora ignoras a $name.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return 'Ya no ignoras a $name.';
+  }
+
+  @override
+  String get ignoredMembers => 'Miembros ignorados';
+
+  @override
+  String get ignoredMembersExplanation =>
+      'El contenido de los miembros que ignoras se oculta y no pueden iniciar conversaciones contigo.';
+
+  @override
+  String get noIgnoredMembers => 'No ignoras a nadie.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return 'Estás ignorando a $name.';
+  }
+
+  @override
+  String get showIgnoredContent => 'Mostrar';
+
+  @override
+  String get markAllAlertsRead => 'Marcar todo como leído';
+
+  @override
+  String get topicSolved => 'Resuelto';
+
+  @override
+  String get topicQuestion => 'Pregunta';
+
+  @override
+  String get solutionBadge => 'SOLUCIÓN';
+
+  @override
+  String get forumClosedTitle => 'El foro está cerrado';
+
+  @override
+  String get updatedTermsTitle => 'Condiciones actualizadas';
+
+  @override
+  String get updatedTermsMessage =>
+      'El foro ha actualizado sus condiciones o su política de privacidad. Revísalas y acéptalas en el sitio web.';
+
+  @override
+  String get reviewTerms => 'Revisar';
+
+  @override
+  String get forumTerms => 'Términos y normas';
+
+  @override
+  String get contactForum => 'Contacto';
+
+  @override
+  String get notifyMeOf => 'Avisarme de';
+
+  @override
+  String get watchNewThreads => 'Temas nuevos';
+
+  @override
+  String get watchNewMessages => 'Mensajes nuevos';
+
+  @override
+  String get watchSendAlerts => 'Avisos';
+
+  @override
+  String get watchSendEmails => 'Correos electrónicos';
+
+  @override
+  String get logInToWatchThread => 'Inicia sesión para seguir este tema';
+
+  @override
+  String get failedToWatchThread => 'No se pudo seguir el tema';
+
+  @override
+  String get failedToUnwatchThread => 'No se pudo dejar de seguir el tema';
+
+  @override
+  String get watchThreadAlertsNote =>
+      'Recibirás un aviso cuando alguien responda.';
+
+  @override
+  String get threadFilters => 'Filtros';
+
+  @override
+  String get anyPrefix => '(Cualquiera)';
+
+  @override
+  String get startedBy => 'Iniciado por';
+
+  @override
+  String get lastUpdated => 'Última actualización';
+
+  @override
+  String get anyTime => 'Cualquier momento';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count meses',
+      one: '1 mes',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count años',
+      one: '1 año',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => 'Ordenar por';
+
+  @override
+  String get sortAscending => 'Ascendente';
+
+  @override
+  String get sortDescending => 'Descendente';
+
+  @override
+  String get clearFilters => 'Borrar filtros';
+
+  @override
+  String get applyFilters => 'Filtrar';
+
+  @override
+  String get noThreadsMatchFilters => 'Ningún tema coincide con estos filtros.';
+
+  @override
+  String get threadTypeLabel => 'Tipo de tema';
+
+  @override
+  String get pollQuestion => 'Pregunta de la encuesta';
+
+  @override
+  String get pollResponses => 'Respuestas posibles';
+
+  @override
+  String pollResponseNumber(int number) {
+    return 'Respuesta $number';
+  }
+
+  @override
+  String get addPollResponse => 'Añadir respuesta';
+
+  @override
+  String get removePollResponse => 'Quitar respuesta';
+
+  @override
+  String get pollMultipleChoice => 'Permitir elegir más de una respuesta';
+
+  @override
+  String get pollChangeVote => 'Permitir cambiar el voto';
+
+  @override
+  String get pollPublicVotes => 'Mostrar los votos públicamente';
+
+  @override
+  String get pollViewResultsUnvoted => 'Permitir ver los resultados sin votar';
+
+  @override
+  String get pollCloseAfter => 'Cerrar esta encuesta tras';
+
+  @override
+  String get pollNeverCloses => 'Nunca';
+
+  @override
+  String get noneOption => '(Ninguno)';
+
+  @override
+  String get tagsLabel => 'Etiquetas';
+
+  @override
+  String get tagsHint => 'Separa las etiquetas con comas';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Añade al menos $count etiquetas',
+      one: 'Añade al menos 1 etiqueta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return 'Rellena $field.';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses =>
+      'Escribe una pregunta y al menos dos respuestas.';
+
+  @override
+  String get awaitingApprovalBadge => 'PENDIENTE DE APROBACIÓN';
+
+  @override
+  String get approve => 'Aprobar';
+
+  @override
+  String get postApproved => 'Mensaje aprobado';
+
+  @override
+  String get postUndeleted => 'Mensaje restaurado';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name dijo:';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días después',
+      one: '1 día después',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count meses después',
+      one: '1 mes después',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count años después',
+      one: '1 año después',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'visitas',
+      one: 'visita',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'respuestas',
+      one: 'respuesta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'Este foro';
 }

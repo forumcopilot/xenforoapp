@@ -285,11 +285,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get youAreAllCaughtUp => 'Вы все просмотрели!';
 
   @override
-  String get noSubscribedTopics => 'Нет подписанных тем';
+  String get noSubscribedTopics => 'Нет отслеживаемых тем';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Вы пока не подписаны ни на одну тему. Откройте тему и выберите «Подписаться» в меню ⋮, чтобы получать уведомления о новых ответах.';
+      'Вы пока не отслеживаете ни одной темы. Откройте тему и выберите «Отслеживать» в меню ⋮, чтобы получать оповещения о новых ответах.';
 
   @override
   String get noParticipatedTopics => 'Нет тем с участием';
@@ -305,7 +305,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get unread => 'Непрочитанные';
 
   @override
-  String get subscribed => 'Подписанные';
+  String get subscribed => 'Отслеживаемые';
 
   @override
   String get participated => 'С участием';
@@ -356,26 +356,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'Пожалуйста, войдите, чтобы $action эту тему';
-  }
+  String get subscribe => 'Отслеживать';
 
   @override
-  String get subscribeTo => 'подписаться на';
-
-  @override
-  String get unsubscribeFrom => 'отписаться от';
-
-  @override
-  String get subscribe => 'Подписаться';
-
-  @override
-  String get unsubscribe => 'Отписаться';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'Не удалось $action тему';
-  }
+  String get unsubscribe => 'Не отслеживать';
 
   @override
   String get youCannotReplyToThisThread => 'Вы не можете ответить на эту тему';
@@ -940,11 +924,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get signInToViewSubscribedTopics =>
-      'Войдите, чтобы просмотреть подписанные темы';
+      'Войдите, чтобы просмотреть отслеживаемые темы';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'Вам нужно войти, чтобы просмотреть ваши подписанные темы';
+      'Вам нужно войти, чтобы просмотреть отслеживаемые темы';
 
   @override
   String get signInToViewParticipatedTopics =>
@@ -1263,7 +1247,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home => 'Главная';
 
   @override
-  String get notifications => 'Уведомления';
+  String get notifications => 'Оповещения';
 
   @override
   String get forums => 'Форумы';
@@ -1496,10 +1480,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get goBack => 'Назад';
 
   @override
-  String get signInToViewMessages => 'Войдите, чтобы просмотреть сообщения';
+  String get signInToViewMessages =>
+      'Войдите, чтобы просмотреть свои разговоры';
 
   @override
-  String get privateMessagesNotAvailable => 'Приватные сообщения недоступны';
+  String get privateMessagesNotAvailable => 'Разговоры недоступны';
 
   @override
   String failedToLoadPost(String error) {
@@ -2003,11 +1988,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pleaseLoginToSubscribeForums =>
-      'Войдите, чтобы подписаться на форумы';
+      'Войдите, чтобы отслеживать форумы';
 
   @override
   String get pleaseLoginToUnsubscribeForums =>
-      'Войдите, чтобы отписаться от форумов';
+      'Войдите, чтобы перестать отслеживать форумы';
 
   @override
   String errorLoadingContent(String error) {
@@ -2032,7 +2017,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Нет форумов для показа. Возможно, дело в правах доступа или структуре форума.';
 
   @override
-  String get subscribedForums => 'Подписки на форумы';
+  String get subscribedForums => 'Отслеживаемые форумы';
 
   @override
   String get allForumTopicsMarkedRead =>
@@ -2065,7 +2050,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get topicClosedNoReplies => 'Тема закрыта, ответы не принимаются';
 
   @override
-  String get youAreSubscribedToTopic => 'Вы подписаны на эту тему';
+  String get youAreSubscribedToTopic => 'Вы отслеживаете эту тему';
 
   @override
   String get refreshing => 'Обновление...';
@@ -2716,25 +2701,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'Для этого типа уведомления нет URL действия.';
+      'У этого оповещения нет ссылки для открытия.';
 
   @override
   String get signInToViewNotifications =>
-      'Войдите, чтобы просматривать уведомления';
+      'Войдите, чтобы просматривать оповещения';
 
   @override
   String get youNeedToBeSignedInToViewYourNotifications =>
-      'Чтобы просматривать уведомления, необходимо войти в систему.';
+      'Чтобы просматривать оповещения, необходимо войти в систему.';
 
   @override
-  String get errorLoadingNotifications => 'Ошибка загрузки уведомлений';
+  String get errorLoadingNotifications => 'Ошибка загрузки оповещений';
 
   @override
   String get pullDownToRefresh => 'Потяните вниз, чтобы обновить';
 
   @override
   String get youHaveNoNewNotificationsCheckBackLater =>
-      'У вас нет новых уведомлений. Проверьте позже.';
+      'У вас нет новых оповещений. Проверьте позже.';
 
   @override
   String get signInToViewProfile => 'Войдите, чтобы посмотреть профиль';
@@ -2825,7 +2810,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get failedToDisablePush => 'Не удалось выключить push-уведомления';
 
   @override
-  String get thisForum => 'этот форум';
+  String get thisForumInSentence => 'этот форум';
 
   @override
   String get openFullEditor => 'Полный редактор';
@@ -3054,4 +3039,320 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'Этот форум ещё не настроен для ключей доступа в этом приложении. Выберите другой способ.';
+
+  @override
+  String get ignoreMember => 'Игнорировать участника';
+
+  @override
+  String get stopIgnoringMember => 'Не игнорировать';
+
+  @override
+  String memberIgnored(String name) {
+    return 'Теперь вы игнорируете $name.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return 'Вы больше не игнорируете $name.';
+  }
+
+  @override
+  String get ignoredMembers => 'Игнорируемые участники';
+
+  @override
+  String get ignoredMembersExplanation =>
+      'Сообщения участников, которых вы игнорируете, скрыты, и они не могут начинать с вами переписку.';
+
+  @override
+  String get noIgnoredMembers => 'Вы никого не игнорируете.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return 'Вы игнорируете $name.';
+  }
+
+  @override
+  String get showIgnoredContent => 'Показать';
+
+  @override
+  String get markAllAlertsRead => 'Отметить все как прочитанные';
+
+  @override
+  String get topicSolved => 'Решено';
+
+  @override
+  String get topicQuestion => 'Вопрос';
+
+  @override
+  String get solutionBadge => 'РЕШЕНИЕ';
+
+  @override
+  String get forumClosedTitle => 'Форум закрыт';
+
+  @override
+  String get updatedTermsTitle => 'Обновлённые условия';
+
+  @override
+  String get updatedTermsMessage =>
+      'Форум обновил условия или политику конфиденциальности. Ознакомьтесь с ними и примите их на сайте.';
+
+  @override
+  String get reviewTerms => 'Просмотреть';
+
+  @override
+  String get forumTerms => 'Условия и правила';
+
+  @override
+  String get contactForum => 'Связаться с нами';
+
+  @override
+  String get notifyMeOf => 'Уведомлять о';
+
+  @override
+  String get watchNewThreads => 'Новых темах';
+
+  @override
+  String get watchNewMessages => 'Новых сообщениях';
+
+  @override
+  String get watchSendAlerts => 'Оповещения';
+
+  @override
+  String get watchSendEmails => 'Письма';
+
+  @override
+  String get logInToWatchThread => 'Войдите, чтобы отслеживать эту тему';
+
+  @override
+  String get failedToWatchThread => 'Не удалось отслеживать тему';
+
+  @override
+  String get failedToUnwatchThread => 'Не удалось прекратить отслеживание темы';
+
+  @override
+  String get watchThreadAlertsNote =>
+      'Вы получите оповещение, когда кто-то ответит.';
+
+  @override
+  String get threadFilters => 'Фильтры';
+
+  @override
+  String get anyPrefix => '(Любой)';
+
+  @override
+  String get startedBy => 'Автор темы';
+
+  @override
+  String get lastUpdated => 'Последнее обновление';
+
+  @override
+  String get anyTime => 'За всё время';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count месяца',
+      many: '$count месяцев',
+      few: '$count месяца',
+      one: '$count месяц',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count года',
+      many: '$count лет',
+      few: '$count года',
+      one: '$count год',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => 'Сортировать по';
+
+  @override
+  String get sortAscending => 'По возрастанию';
+
+  @override
+  String get sortDescending => 'По убыванию';
+
+  @override
+  String get clearFilters => 'Сбросить фильтры';
+
+  @override
+  String get applyFilters => 'Применить';
+
+  @override
+  String get noThreadsMatchFilters => 'Нет тем, подходящих под эти фильтры.';
+
+  @override
+  String get threadTypeLabel => 'Тип темы';
+
+  @override
+  String get pollQuestion => 'Вопрос опроса';
+
+  @override
+  String get pollResponses => 'Варианты ответа';
+
+  @override
+  String pollResponseNumber(int number) {
+    return 'Вариант $number';
+  }
+
+  @override
+  String get addPollResponse => 'Добавить вариант';
+
+  @override
+  String get removePollResponse => 'Удалить вариант';
+
+  @override
+  String get pollMultipleChoice => 'Можно выбрать несколько вариантов';
+
+  @override
+  String get pollChangeVote => 'Разрешить менять голос';
+
+  @override
+  String get pollPublicVotes => 'Показывать голоса публично';
+
+  @override
+  String get pollViewResultsUnvoted => 'Показывать результаты без голосования';
+
+  @override
+  String get pollCloseAfter => 'Закрыть опрос через';
+
+  @override
+  String get pollNeverCloses => 'Никогда';
+
+  @override
+  String get noneOption => '(Нет)';
+
+  @override
+  String get tagsLabel => 'Теги';
+
+  @override
+  String get tagsHint => 'Разделяйте теги запятыми';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Добавьте хотя бы $count тега',
+      many: 'Добавьте хотя бы $count тегов',
+      few: 'Добавьте хотя бы $count тега',
+      one: 'Добавьте хотя бы $count тег',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return 'Заполните поле «$field».';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses =>
+      'Введите вопрос и хотя бы два варианта ответа.';
+
+  @override
+  String get awaitingApprovalBadge => 'ОЖИДАЕТ ПРОВЕРКИ';
+
+  @override
+  String get approve => 'Одобрить';
+
+  @override
+  String get postApproved => 'Сообщение одобрено';
+
+  @override
+  String get postUndeleted => 'Сообщение восстановлено';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name сказал(а):';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дней спустя',
+      few: '$count дня спустя',
+      one: '1 день спустя',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count месяцев спустя',
+      few: '$count месяца спустя',
+      one: '1 месяц спустя',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count лет спустя',
+      few: '$count года спустя',
+      one: '1 год спустя',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'просмотра',
+      many: 'просмотров',
+      few: 'просмотра',
+      one: 'просмотр',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ответа',
+      many: 'ответов',
+      few: 'ответа',
+      one: 'ответ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'Этот форум';
 }

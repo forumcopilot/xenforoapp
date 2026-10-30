@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_topic_filters.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
@@ -16,6 +17,8 @@ import '../widgets/subforum_masthead.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
+import '../widgets/forum_watch_sheet.dart';
+import '../widgets/thread_filters_sheet.dart';
 import '../../utils/app_navigation.dart';
 
 class ForumTopicList extends StatefulWidget {
@@ -53,6 +56,11 @@ class _ForumTopicListState extends State<ForumTopicList> {
   bool _hasMoreTopics = true;
   bool _isLoadingMore = false;
   final ScrollController _scrollController = ScrollController();
+
+  /// Sorting and filters chosen for the threads, and what the forum offers
+  /// (add-on 1.11.0+; null before, and no Filters button).
+  FCTopicFilters _filters = const FCTopicFilters();
+  ThreadListOptions? _listOptions;
 
   @override
   void initState() {
@@ -99,6 +107,8 @@ class _ForumTopicListState extends State<ForumTopicList> {
           childForums.addAll(widget.forum.childForums);
         }
         bool hasMoreTopics = false;
+        ThreadListOptions? listOptions;
+        FCTopicFilters? appliedFilters;
 
         // Check if user can view content in this forum
         final canViewContent = widget.forum.canViewContent;
@@ -122,9 +132,14 @@ class _ForumTopicListState extends State<ForumTopicList> {
           // }
 
           // Load sticky topics
-          final topTopicData = await topicProxy.getTopTopicAsync(widget.forum.id, 0, 19);
-          if (topTopicData.topics.isNotEmpty) {
-            AppLogger.debug('[ForumTopicList] Adding ${topTopicData.topics.length} sticky topics');
+          // Sticky threads come unfiltered: left out while a filter is set,
+          // as the website's filters leave out those that don't match
+          final topTopicData = _filters.filters
+              ? null
+              : await topicProxy.getTopTopicAsync(widget.forum.id, 0, 19);
+          if (topTopicData != null && topTopicData.topics.isNotEmpty) {
+            AppLogger.debug(
+                '[ForumTopicList] Adding ${topTopicData.topics.length} sticky topics');
             // Mark as sticky and convert to FCTopic
             for (final t in topTopicData.topics) {
               t.isStickySource = true;
@@ -138,13 +153,26 @@ class _ForumTopicListState extends State<ForumTopicList> {
           }
 
           // Load regular topics
-          final forumTopicData = await topicProxy.getTopicAsync(widget.forum.id, 0, _pageSize);
+          final forumTopicData = await topicProxy.getTopicAsync(widget.forum.id, 0, _pageSize,
+              filters: _filters.isEmpty ? null : _filters);
+          listOptions = ThreadListOptions.from(forumTopicData);
+          // Show only the filters the forum applied (it ignores, say, an
+          // unknown member's name, as the website does)
+          final applied = forumTopicData.appliedFilters;
+          if (!_filters.isEmpty && applied != null) {
+            appliedFilters = FCTopicFilters.fromApplied(applied,
+                defaultOrder: forumTopicData.defaultOrder,
+                defaultDirection: forumTopicData.defaultDirection,
+                dateLimitDays: forumTopicData.dateLimitDays ?? 0);
+          }
           if (forumTopicData.topics.isNotEmpty) {
             AppLogger.debug('[ForumTopicList] Adding ${forumTopicData.topics.length} regular topics');
             var topicsList = forumTopicData.topics;
             allItems.addAll(topicsList);
             _currentTopicCount = forumTopicData.topics.length;
           }
+          // Also when a reload (new filters) finds none
+          _currentTopicCount = forumTopicData.topics.length;
           hasMoreTopics = forumTopicData.topics.length >= _pageSize;
         }
         AppLogger.debug('\n[ForumTopicList] Items loaded successfully:');
@@ -156,6 +184,8 @@ class _ForumTopicListState extends State<ForumTopicList> {
             _childForums = childForums;
             _isLoading = false;
             _hasMoreTopics = hasMoreTopics;
+            _listOptions = listOptions ?? _listOptions;
+            if (appliedFilters != null) _filters = appliedFilters;
           });
           AppLogger.debug('[ForumTopicList] State updated - Loading completed');
           AppLogger.debug('  - Total items: ${_allItems.length}');
@@ -188,6 +218,63 @@ class _ForumTopicListState extends State<ForumTopicList> {
     }
   }
 
+  void _applyFilters(FCTopicFilters filters) {
+    setState(() => _filters = filters);
+    _loadTopics();
+  }
+
+  Future<void> _openFilters(ThreadListOptions options) async {
+    final chosen = await showModalBottomSheet<FCTopicFilters>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => ThreadFiltersSheet(options: options, filters: _filters),
+    );
+    if (chosen != null && mounted) _applyFilters(chosen);
+  }
+
+  /// The Filters button, and the filters in effect, each with a ✕.
+  Widget _buildFilterBar(ThreadListOptions options) {
+    final l10n = AppLocalizations.of(context);
+    final f = _filters;
+    Widget chip(String label, FCTopicFilters without) => InputChip(
+          label: Text(label),
+          visualDensity: VisualDensity.compact,
+          onDeleted: () => _applyFilters(without),
+          deleteButtonTooltipMessage: l10n.clearFilters,
+        );
+    final chips = <Widget>[
+      if (f.prefixId != null)
+        chip('${l10n.prefix}: ${options.prefixTitle(f.prefixId!) ?? f.prefixId}',
+            FCTopicFilters(order: f.order, direction: f.direction, starterName: f.starterName, lastDays: f.lastDays)),
+      if (f.starterName != null)
+        chip('${l10n.startedBy}: ${f.starterName}',
+            FCTopicFilters(order: f.order, direction: f.direction, prefixId: f.prefixId, lastDays: f.lastDays)),
+      if (f.lastDays != null)
+        chip('${l10n.lastUpdated}: ${threadPeriodLabel(l10n, f.lastDays!)}',
+            FCTopicFilters(order: f.order, direction: f.direction, prefixId: f.prefixId, starterName: f.starterName)),
+      if (f.order != null)
+        chip('${l10n.sortBy}: ${options.sortTitle(f.order!)} ${f.direction == 'asc' ? '↑' : '↓'}',
+            FCTopicFilters(prefixId: f.prefixId, starterName: f.starterName, lastDays: f.lastDays)),
+    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(DesignTokens.spacingL, DesignTokens.spacingS, DesignTokens.spacingS, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Wrap(spacing: DesignTokens.spacingS, runSpacing: DesignTokens.spacingXS, children: chips),
+          ),
+          TextButton.icon(
+            onPressed: () => _openFilters(options),
+            icon: const Icon(Icons.tune_rounded),
+            label: Text(l10n.threadFilters),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadMoreTopics() async {
     if (_isLoadingMore || !_hasMoreTopics) return;
 
@@ -206,7 +293,9 @@ class _ForumTopicListState extends State<ForumTopicList> {
       AppLogger.debug('  - Start num: $_currentTopicCount');
       AppLogger.debug('  - Last num: ${_currentTopicCount + _pageSize}');
 
-      final moreTopics = await topicProxy.getTopicAsync(widget.forum.id, _currentTopicCount, _currentTopicCount + _pageSize);
+      final moreTopics = await topicProxy.getTopicAsync(
+          widget.forum.id, _currentTopicCount, _currentTopicCount + _pageSize,
+          filters: _filters.isEmpty ? null : _filters);
 
       if (mounted) {
         setState(() {
@@ -244,12 +333,21 @@ class _ForumTopicListState extends State<ForumTopicList> {
     }
 
     try {
-      final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
-
-      if (subscribe) {
-        await subscriptionProxy.subscribeForumAsync(forumId, 1); // mode 1 for subscribe
+      final target = _allItems.whereType<FCForum>().where((f) => f.id == forumId).firstOrNull;
+      if (target != null && ForumWatch.hasOptions(target)) {
+        // Add-on 1.11.0: the website's watch options
+        final watched = await ForumWatch.change(context, target);
+        if (watched == null || !mounted) return;
+        subscribe = watched;
       } else {
-        await subscriptionProxy.unsubscribeForumAsync(forumId);
+        final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
+
+        if (subscribe) {
+          await subscriptionProxy.subscribeForumAsync(
+              forumId, 1); // mode 1 for subscribe
+        } else {
+          await subscriptionProxy.unsubscribeForumAsync(forumId);
+        }
       }
 
       // Update the forum's subscription status in the list
@@ -366,7 +464,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
               ),
             ),
           // If there are no forums and no topics, show empty state
-          if (forums.isEmpty && topics.isEmpty && canViewContent)
+          if (forums.isEmpty && topics.isEmpty && canViewContent && !_filters.filters)
             Padding(
               padding: DesignTokens.paddingXXL,
               child: Center(
@@ -418,6 +516,26 @@ class _ForumTopicListState extends State<ForumTopicList> {
                 ),
               ),
           ],
+          // Filters for the threads, as on the website (add-on 1.11.0+)
+          if (_listOptions != null && canViewContent && !widget.forum.isSubForumContainer)
+            _buildFilterBar(_listOptions!),
+          if (topics.isEmpty && _filters.filters)
+            Padding(
+              padding: DesignTokens.paddingXXL,
+              child: Column(
+                children: [
+                  Text(
+                    AppLocalizations.of(context).noThreadsMatchFilters,
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.onSurfaceVariant),
+                    textAlign: TextAlign.center,
+                  ),
+                  TextButton(
+                    onPressed: () => _applyFilters(const FCTopicFilters()),
+                    child: Text(AppLocalizations.of(context).clearFilters),
+                  ),
+                ],
+              ),
+            ),
           if (announcements.isNotEmpty) ...[
             ...announcements.map((topic) => TopicListItem(
                   siteContext: widget.siteContext,

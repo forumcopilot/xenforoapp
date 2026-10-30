@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
@@ -21,7 +23,12 @@ import '../../utils/forum_links.dart';
 class NotificationListTab extends StatefulWidget {
   final SiteContext siteContext;
   final bool isActive;
-  const NotificationListTab({super.key, required this.isActive, required this.siteContext});
+
+  /// Set while a loaded alert is unread and can be marked read (XenForo
+  /// add-on 1.11.0+): the Alerts bar shows "Mark all read" then.
+  final ValueNotifier<bool>? hasUnreadAlerts;
+
+  const NotificationListTab({super.key, required this.isActive, required this.siteContext, this.hasUnreadAlerts});
 
   @override
   NotificationListTabState createState() => NotificationListTabState();
@@ -78,6 +85,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
         _hasLoaded = false;
         _wasLoggedIn = false;
         _lastLoadedUsername = null;
+        widget.hasUnreadAlerts?.value = false;
         if (mounted) {
           setState(() {
             _topics = [];
@@ -137,11 +145,30 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     }
   }
 
-  Future<void> _fetchTopics({bool reset = false}) async {
+  /// Marks every alert read, then lists them again (add-on 1.11.0+).
+  Future<void> markAllRead() => _fetchTopics(reset: true, markAllRead: true);
+
+  /// Whether the Alerts bar offers "Mark all read".
+  void _publishUnread() {
+    widget.hasUnreadAlerts?.value = _alerts.any((a) => a.isUnread == true && a.alertId != null);
+  }
+
+  /// Opening an alert reads it, as on the website (add-on 1.11.0+; older
+  /// add-ons send no read state, and the row stays as it was).
+  void _markRead(FCAlert alert) {
+    final id = alert.alertId;
+    if (alert.isUnread != true || id == null) return;
+    setState(() => alert.isUnread = false);
+    _publishUnread();
+    unawaited(SiteProxyFactory.getSocialProxy().getAlertAsync(1, 1, false, markReadIds: [id], skipMarkRead: true));
+  }
+
+  Future<void> _fetchTopics({bool reset = false, bool markAllRead = false}) async {
     final currentUsername = widget.siteContext.loginDataOutput?.user?.username;
 
     // Check authentication state first
     if (!widget.siteContext.isLoggedIn) {
+      widget.hasUnreadAlerts?.value = false;
       setState(() {
         _topics = [];
         _alerts = [];
@@ -174,7 +201,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     }
     try {
       final socialProxy = SiteProxyFactory.getSocialProxy();
-      final alertData = await socialProxy.getAlertAsync(_page, _perPage, reset);
+      final alertData = await socialProxy.getAlertAsync(_page, _perPage, reset, markAllRead: markAllRead);
       final alerts = alertData.items.where((alert) => alert.message.trim().isNotEmpty).toList();
       final topics = alerts
           .map((alert) => FCTopic(
@@ -234,6 +261,7 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
           _hasMore = alertData.hasMore ?? alertData.items.length >= _perPage;
           if (_hasMore) _page += 1;
         });
+        _publishUnread();
         _hasLoaded = true; // Mark as loaded after successful load
       }
     } catch (e) {
@@ -275,6 +303,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
     AppLogger.debug('Icon URL: ${alert.icon_url}');
     AppLogger.debug('Timestamp: ${alert.timestamp}');
     AppLogger.debug('==================');
+
+    _markRead(alert);
 
     // The same mapping pushes use (NotificationRouter).
     final destination = NotificationRouter.destinationFor(
@@ -532,7 +562,8 @@ class NotificationListTabState extends FCStatefulWidget<NotificationListTab> wit
               topic: topic,
               onTap: () => _onAlertTap(topic, originalAlert),
               contentType: originalAlert.content_type,
-              isUnread: !originalAlert.isRead,
+              // XenForo's read state from add-on 1.11.0; before, "not seen"
+              isUnread: originalAlert.isUnread ?? !originalAlert.isRead,
             );
           } else {
             // Loading indicator for load more

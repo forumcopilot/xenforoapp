@@ -98,7 +98,7 @@ void main() {
       expect(search.calls, ['posts'], reason: 'one search, the one shown (Posts)');
       expect(find.text('Posts'), findsOneWidget);
 
-      await tester.tap(find.text('Topics Only'));
+      await tester.tap(find.text('Threads only'));
       await tester.pumpAndSettle();
       expect(search.calls, ['posts', 'topics']);
       // Back to Posts: already run for this query.

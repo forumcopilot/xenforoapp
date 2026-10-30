@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import 'package:forumcopilot_flutter/views/widgets/ignored_content_gate.dart';
+import 'package:forumcopilot_flutter/views/widgets/xenforo_content.dart';
 import 'package:forumcopilot_flutter/views/widgets/react_button.dart';
 import 'package:forumcopilot_flutter/views/widgets/reaction_picker.dart'
     show reactionIconSize;
@@ -315,6 +317,11 @@ class ConversationHeaderItem extends StatelessWidget {
                 children: [
                   Builder(
                     builder: (context) {
+                      // As the forum renders it (add-on 1.11.0)
+                      final html = message.contentHtml;
+                      if (html != null && html.trim().isNotEmpty) {
+                        return XenForoContent(html: html, siteContext: siteContext, stylesheet: stylesheet);
+                      }
                       final processor = BBCodeProcessor();
                       String textToRender = processor.getValidBBCodeText(processedText);
                       if (textToRender == processedText && !processor.isBBCodeStructurallyValid(textToRender)) {
@@ -578,8 +585,12 @@ class ConversationItem extends StatelessWidget {
       contentId: message.messageId,
     );
 
-    return Material(
-      color: isHighlighted ? colorScheme.primaryContainer.withValues(alpha: 0.3) : (message.isUnread == true ? colorScheme.primaryContainer.withValues(alpha: 0.1) : colorScheme.surface),
+    final bubble = Material(
+      color: isHighlighted
+          ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+          : (message.isUnread == true
+              ? colorScheme.primaryContainer.withValues(alpha: 0.1)
+              : colorScheme.surface),
       child: InkWell(
         onTap: () {},
         child: Column(
@@ -691,6 +702,11 @@ class ConversationItem extends StatelessWidget {
                 children: [
                   Builder(
                     builder: (context) {
+                      // As the forum renders it (add-on 1.11.0)
+                      final html = message.contentHtml;
+                      if (html != null && html.trim().isNotEmpty) {
+                        return XenForoContent(html: html, siteContext: siteContext, stylesheet: stylesheet);
+                      }
                       final processor = BBCodeProcessor();
                       String textToRender = processor.getValidBBCodeText(processedText);
                       if (textToRender == processedText && !processor.isBBCodeStructurallyValid(textToRender)) {
@@ -744,6 +760,13 @@ class ConversationItem extends StatelessWidget {
           ],
         ),
       ),
+    );
+
+    // A message by a member the viewer ignores shows collapsed until "Show"
+    return IgnoredContentGate(
+      isIgnored: message.isIgnored == true,
+      authorName: message.username,
+      child: bubble,
     );
   }
 

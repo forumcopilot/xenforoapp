@@ -10,6 +10,7 @@ import '../listitems/forum_list_item.dart';
 
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
+import '../widgets/forum_watch_sheet.dart';
 
 class ForumListTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -215,6 +216,21 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
     }
   }
 
+  /// [id] in the forum list, sub-forums included: the rows from getForum,
+  /// which carry the watch options (the subscribed list's rows don't).
+  FCForum? _findForum(String id) {
+    FCForum? search(Iterable<FCForum> forums) {
+      for (final forum in forums) {
+        if (forum.id == id) return forum;
+        final child = search(forum.childForums);
+        if (child != null) return child;
+      }
+      return null;
+    }
+
+    return search(_allForums ?? const []);
+  }
+
   Future<void> _handleSubscription(String forumId, bool subscribe) async {
     // Check if user is logged in before proceeding with subscription
     if (!widget.siteContext.isLoggedIn) {
@@ -223,12 +239,20 @@ class ForumListTabState extends FCStatefulWidget<ForumListTab> with FCTabStatefu
     }
 
     try {
-      final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
-
-      if (subscribe) {
-        await subscriptionProxy.subscribeForumAsync(forumId, 1); // mode 1 for subscribe
+      final target = _findForum(forumId);
+      if (target != null && ForumWatch.hasOptions(target)) {
+        // Add-on 1.11.0: the website's watch options
+        final watched = await ForumWatch.change(context, target);
+        if (watched == null || !mounted) return;
+        subscribe = watched;
       } else {
-        await subscriptionProxy.unsubscribeForumAsync(forumId);
+        final subscriptionProxy = SiteProxyFactory.getSubscriptionProxy();
+
+        if (subscribe) {
+          await subscriptionProxy.subscribeForumAsync(forumId, 1); // mode 1 for subscribe
+        } else {
+          await subscriptionProxy.unsubscribeForumAsync(forumId);
+        }
       }
 
       // Update the forum's subscription status in both lists

@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 import 'dialogs/delete_account_dialog.dart';
 import 'site_home_page.dart';
+import 'ignored_members_page.dart';
 
 class ForumSettingsPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -165,21 +166,69 @@ class _ForumSettingsPageState extends State<ForumSettingsPage> {
               ],
             ),
           ),
+          if (_showIgnoredMembers) _buildIgnoredMembersCard(colorScheme, textTheme),
           _buildDeleteAccountSection(colorScheme, textTheme),
         ],
       );
     }
 
+    final extra = _showIgnoredMembers ? 1 : 0;
     return ListView.builder(
       padding: DesignTokens.paddingScreen,
-      itemCount: _categories.length + 1,
+      itemCount: _categories.length + extra + 1,
       itemBuilder: (context, index) {
         if (index < _categories.length) {
           final category = _categories[index];
           return _buildCategoryCard(category, colorScheme, textTheme);
         }
+        if (extra == 1 && index == _categories.length) {
+          return _buildIgnoredMembersCard(colorScheme, textTheme);
+        }
         return _buildDeleteAccountSection(colorScheme, textTheme);
       },
+    );
+  }
+
+  /// "Ignored members": the forum lets members ignore each other through the
+  /// app (add-on 1.11.0+).
+  bool get _showIgnoredMembers =>
+      widget.siteContext.isLoggedIn && (widget.siteContext.configDataOutput?.ignoreUser ?? false);
+
+  Widget _buildIgnoredMembersCard(ColorScheme colorScheme, TextTheme textTheme) {
+    return Card(
+      margin: EdgeInsets.only(bottom: DesignTokens.spacingM),
+      elevation: 0,
+      color: colorScheme.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: DesignTokens.opacityLow),
+          width: DesignTokens.borderWidthThin,
+        ),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: DesignTokens.spacingL,
+          vertical: DesignTokens.spacingM,
+        ),
+        leading: Icon(Icons.visibility_off_outlined, color: colorScheme.primary, size: DesignTokens.iconSizeL),
+        title: Text(
+          AppLocalizations.of(context).ignoredMembers,
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: DesignTokens.fontWeightMedium,
+          ),
+        ),
+        subtitle: Padding(
+          padding: EdgeInsets.only(top: DesignTokens.spacingXS),
+          child: Text(
+            AppLocalizations.of(context).ignoredMembersExplanation,
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+        onTap: () => AppNavigation.push(context, IgnoredMembersPage(siteContext: widget.siteContext)),
+      ),
     );
   }
 

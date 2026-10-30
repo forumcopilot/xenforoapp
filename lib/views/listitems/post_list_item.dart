@@ -3,7 +3,9 @@ import 'package:flutter_bbcode/flutter_bbcode.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_attachment.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
+import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../widgets/custom_bb_stylesheet.dart';
+import '../widgets/xenforo_content.dart';
 import '../widgets/link_preview_card.dart';
 import '../widgets/video_card.dart';
 import '../widgets/full_screen_video_viewer.dart';
@@ -33,6 +35,7 @@ import 'package:forumcopilot_flutter/core/cache/lru_cache.dart';
 import 'package:forumcopilot_flutter/utils/preview_selection.dart';
 import '../../utils/app_navigation.dart';
 import '../../utils/forum_links.dart';
+import '../../utils/signature_processor.dart';
 import '../../utils/snackbar_helper.dart';
 
 /// Everything a post's body needs that is derived from its text and its
@@ -190,6 +193,18 @@ class PostListItem extends StatefulWidget {
 
   /// Whether translation is currently in progress for this thread.
   final bool isTranslating;
+
+  /// The thread's state and forum, shown with its title on the first post:
+  /// a lock when closed and a pin when sticky before the title, and the
+  /// forum as a chip under it (adapted from discourse_ui's topic_status.dart
+  /// and TopicTaxonomyChips).
+  final bool topicClosed;
+  final bool topicPinned;
+  final String topicForumName;
+
+  /// The rule under the post. Off where the thread summary, or a "3 months
+  /// later" divider, already separates it from the next post.
+  final bool showBottomDivider;
   // Note: postDateString is not currently used, but if needed, use formatTimeAgo with context
   // String postDateString(BuildContext context) => post.timestamp != null ? formatTimeAgo(post.timestamp!, context) : "";
 
@@ -209,6 +224,10 @@ class PostListItem extends StatefulWidget {
     this.onVoteSuccess,
     this.translatedContent,
     this.isTranslating = false,
+    this.topicClosed = false,
+    this.topicPinned = false,
+    this.topicForumName = '',
+    this.showBottomDivider = true,
   });
 
   @override
@@ -216,6 +235,9 @@ class PostListItem extends StatefulWidget {
 }
 
 class _PostListItemState extends State<PostListItem> {
+  /// A post by a member the viewer ignores shows collapsed until "Show"
+  bool _showIgnored = false;
+
   // Local state for likes
   late bool _isLiked;
   late final PostController _postsController;
@@ -296,6 +318,14 @@ class _PostListItemState extends State<PostListItem> {
     super.dispose();
   }
 
+  /// The post as the forum renders it (XenForo add-on 1.11.0), unless a
+  /// translation, made from the BBCode, is showing; null: draw the BBCode.
+  String? get _htmlBody {
+    if (widget.translatedContent != null) return null;
+    final html = widget.post.contentHtml;
+    return html != null && html.trim().isNotEmpty ? html : null;
+  }
+
   /// Builds the stylesheet for this State and parses the body once.
   void _prepareSpans() {
     _disposeRecognizers(_spans);
@@ -303,7 +333,7 @@ class _PostListItemState extends State<PostListItem> {
     _spansTextScaler = MediaQuery.textScalerOf(context);
     _stylesheet = _buildStylesheet(context);
     _spansFailed = false;
-    if (_contentData.renderAsPlainText) {
+    if (_contentData.renderAsPlainText || _htmlBody != null) {
       _spans = const <InlineSpan>[];
       return;
     }
@@ -638,15 +668,27 @@ class _PostListItemState extends State<PostListItem> {
         children: [
           // Show topic title for the first post (topic starter)
           if (widget.post.postNumber == 1 && widget.topicTitle.isNotEmpty) ...[
-            Text(
-              widget.topicTitle,
-              style: StyleBuilders.titleTextStyle(
-                colorScheme: colorScheme,
-                textTheme: textTheme,
-                fontSize: DesignTokens.fontSizeTopicTitle,
-                fontWeight: DesignTokens.fontWeightBold,
+            // Plain text unless a lock or pin leads it.
+            if (widget.topicClosed || widget.topicPinned)
+              Text.rich(
+                TextSpan(children: [
+                  ..._statusSpans(context, size: DesignTokens.fontSizeTopicTitle),
+                  TextSpan(text: widget.topicTitle),
+                ]),
+                style: _titleStyle(colorScheme, textTheme),
+              )
+            else
+              Text(widget.topicTitle, style: _titleStyle(colorScheme, textTheme)),
+            if (widget.topicForumName.isNotEmpty && widget.forumId != null) ...[
+              const SizedBox(height: DesignTokens.spacingXS),
+              _ForumChip(
+                name: widget.topicForumName,
+                onTap: () {
+                  final url = ForumLinks.forumUrl(widget.siteContext.site, widget.forumId!);
+                  if (url != null) ForumLinks.open(context, url, widget.siteContext);
+                },
               ),
-            ),
+            ],
             // Show prefix badge below the topic title if available
             if (widget.topicPrefix != null &&
                 widget.topicPrefix!.isNotEmpty) ...[
@@ -738,9 +780,16 @@ class _PostListItemState extends State<PostListItem> {
               ),
             ),
           ],
-          // The body: spans parsed once in _prepareSpans, rendered the way
-          // BBCodeText.build renders them, minus the parse.
-          if (data.renderAsPlainText || _spansFailed || _spans == null)
+          // The body: as the forum renders it where it sends HTML (add-on
+          // 1.11.0), otherwise spans parsed once in _prepareSpans, rendered the
+          // way BBCodeText.build renders them, minus the parse.
+          if (_htmlBody != null && _stylesheet is CustomBBStylesheet)
+            XenForoContent(
+              html: _htmlBody!,
+              siteContext: widget.siteContext,
+              stylesheet: _stylesheet as CustomBBStylesheet,
+            )
+          else if (data.renderAsPlainText || _spansFailed || _spans == null)
             Text(
               data.processedText,
               style: textTheme.bodyMedium?.copyWith(
@@ -768,19 +817,26 @@ class _PostListItemState extends State<PostListItem> {
             const SizedBox(height: DesignTokens.spacingS),
             ...data.limitedTwitterUrls.map((url) => TwitterCard(url: url)),
           ],
-          if (data.limitedUrls.isNotEmpty) ...[
-            const SizedBox(height: DesignTokens.spacingM),
-            StyleBuilders.divider(colorScheme: colorScheme),
-            const SizedBox(height: DesignTokens.spacingS),
-            ...data.limitedUrls
-                .where((url) =>
-                    !BBCodeProcessor.isEmail(url) &&
-                    !BBCodeProcessor.isYoutubeUrl(url) &&
-                    !BBCodeProcessor.isTwitterUrl(url) &&
-                    !UrlUtils.isSameDomain(widget.siteContext, url))
-                .map((url) =>
-                    LinkPreviewCard(url: url, siteContext: widget.siteContext)),
-          ],
+          // The divider comes with the card: a page that gives no preview (a
+          // picture's address, a site that refuses) left it on its own.
+          ...data.limitedUrls
+              .where((url) =>
+                  !BBCodeProcessor.isEmail(url) &&
+                  !BBCodeProcessor.isYoutubeUrl(url) &&
+                  !BBCodeProcessor.isTwitterUrl(url) &&
+                  !UrlUtils.isSameDomain(widget.siteContext, url))
+              .map((url) => LinkPreviewCard(
+                    url: url,
+                    siteContext: widget.siteContext,
+                    header: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: DesignTokens.spacingM),
+                        StyleBuilders.divider(colorScheme: colorScheme),
+                        const SizedBox(height: DesignTokens.spacingS),
+                      ],
+                    ),
+                  )),
           if (data.attachments.isNotEmpty) ...[
             const SizedBox(height: DesignTokens.spacingS),
             PostListItemAttachment(
@@ -798,6 +854,12 @@ class _PostListItemState extends State<PostListItem> {
               actions: widget.actions,
               context: context,
             ),
+          ],
+          // The author's signature, as under the post on the website (XenForo
+          // add-on 1.11.0+, which sends none when the member hides them)
+          if (widget.post.signature?.trim().isNotEmpty ?? false) ...[
+            const SizedBox(height: DesignTokens.spacingM),
+            _PostSignature(signature: widget.post.signature!.trim()),
           ],
           PostListItemSocial(
             post: widget.post,
@@ -821,7 +883,39 @@ class _PostListItemState extends State<PostListItem> {
     );
   }
 
+  TextStyle _titleStyle(ColorScheme colorScheme, TextTheme textTheme) => StyleBuilders.titleTextStyle(
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+        fontSize: DesignTokens.fontSizeTopicTitle,
+        fontWeight: DesignTokens.fontWeightBold,
+      );
+
+  /// A lock when the thread is closed, a pin when it is sticky, leading its
+  /// title as the website's thread page does; a tap says what each means.
+  List<InlineSpan> _statusSpans(BuildContext context, {required double size}) {
+    final l10n = AppLocalizations.of(context);
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return [
+      for (final (icon, label) in [
+        if (widget.topicClosed) (Icons.lock, l10n.topicLocked),
+        if (widget.topicPinned) (Icons.push_pin, l10n.topicPinned),
+      ])
+        WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(end: DesignTokens.spacingXS),
+            child: Tooltip(
+              message: label,
+              triggerMode: TooltipTriggerMode.tap,
+              child: Semantics(label: label, child: Icon(icon, size: size, color: color)),
+            ),
+          ),
+        ),
+    ];
+  }
+
   Widget _buildBottomDivider(ColorScheme colorScheme) {
+    if (!widget.showBottomDivider) return const SizedBox.shrink();
     return StyleBuilders.divider(
       colorScheme: colorScheme,
       opacity: DesignTokens.opacityLow,
@@ -842,15 +936,21 @@ class _PostListItemState extends State<PostListItem> {
         ? colorScheme.primaryContainer.withValues(alpha: 0.4)
         : colorScheme.surface;
 
+    final collapsed = widget.post.isIgnored && !_showIgnored;
     final body = Material(
       color: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildPostHeader(context),
-          _buildPostContent(context, data, colorScheme, textTheme),
-          _buildBottomDivider(colorScheme),
-        ],
+        children: collapsed
+            ? [
+                _buildIgnoredPlaceholder(context, colorScheme, textTheme),
+                _buildBottomDivider(colorScheme),
+              ]
+            : [
+                _buildPostHeader(context),
+                _buildPostContent(context, data, colorScheme, textTheme),
+                _buildBottomDivider(colorScheme),
+              ],
       ),
     );
     // The highlight is a flash one post shows for a few seconds. Only that
@@ -869,6 +969,30 @@ class _PostListItemState extends State<PostListItem> {
         }
       },
       child: body,
+    );
+  }
+
+  /// One line in place of a post by a member the viewer ignores, as
+  /// XenForo's thread page collapses it.
+  Widget _buildIgnoredPlaceholder(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: DesignTokens.spacingL, vertical: DesignTokens.spacingS),
+      child: Row(
+        children: [
+          Icon(Icons.visibility_off_outlined, size: DesignTokens.iconSizeM, color: colorScheme.onSurfaceVariant),
+          const SizedBox(width: DesignTokens.spacingM),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).youAreIgnoringMember(widget.post.authorName),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _showIgnored = true),
+            child: Text(AppLocalizations.of(context).showIgnoredContent),
+          ),
+        ],
+      ),
     );
   }
 
@@ -909,6 +1033,12 @@ class _PostListItemState extends State<PostListItem> {
         break;
       case 'share':
         _handleShare();
+        break;
+      case 'approve':
+        _handleModeration(approve: true);
+        break;
+      case 'undelete':
+        _handleModeration(approve: false);
         break;
       default:
         break;
@@ -970,6 +1100,25 @@ class _PostListItemState extends State<PostListItem> {
         ),
       );
     }
+    // A hidden post's moderation (add-on 1.11.0 lists them for moderators)
+    for (final (show, value, icon, label) in [
+      (widget.siteContext.isLoggedIn && !widget.post.isApproved && widget.post.canApprove, 'approve', Icons.check_circle_outline, l10n.approve),
+      (widget.siteContext.isLoggedIn && widget.post.isDeleted && widget.post.canUndelete, 'undelete', Icons.restore_from_trash_outlined, l10n.undelete),
+    ]) {
+      if (!show) continue;
+      items.add(
+        PopupMenuItem<String>(
+          value: value,
+          child: Row(
+            children: [
+              Icon(icon, size: DesignTokens.iconSizeM, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: DesignTokens.spacingM),
+              Text(label),
+            ],
+          ),
+        ),
+      );
+    }
     if (widget.post.canReport) {
       items.add(
         PopupMenuItem<String>(
@@ -987,6 +1136,23 @@ class _PostListItemState extends State<PostListItem> {
       );
     }
     return items;
+  }
+
+  /// Approves a post awaiting approval, or undeletes a deleted one, then
+  /// shows the thread again.
+  Future<void> _handleModeration({required bool approve}) async {
+    final l10n = AppLocalizations.of(context);
+    final mod = SiteProxyFactory.getModerationProxy();
+    final (ok, reason) = approve
+        ? await mod.approvePostAsync(widget.post.id).then((r) => (r.result, r.resultText))
+        : await mod.undeletePostAsync(widget.post.id, '').then((r) => (r.result, r.resultText));
+    if (!mounted) return;
+    if (ok) {
+      SnackbarHelper.showSuccess(context, approve ? l10n.postApproved : l10n.postUndeleted);
+      widget.actions?.onRefresh?.call();
+    } else {
+      SnackbarHelper.showError(context, reason?.trim().isNotEmpty == true ? reason!.trim() : l10n.somethingWentWrong);
+    }
   }
 
   /// Copies a link to this post (it opens the thread at the post).
@@ -1117,6 +1283,88 @@ class _PostListItemState extends State<PostListItem> {
       setIsLiked: (val) => setState(() => _isLiked = val),
       setLikeCount: (val) => setState(() => _likeCount = val),
       isLiked: _isLiked,
+    );
+  }
+}
+
+/// A post's signature: links work, other BBCode is dropped, and it is kept
+/// to a few lines in small muted text, under a short rule.
+class _PostSignature extends StatelessWidget {
+  const _PostSignature({required this.signature});
+
+  final String signature;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final spans = SignatureProcessor.processSignature(
+      signature,
+      context,
+      style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+    );
+    if (spans.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(width: 48, child: Divider(height: 1, color: colorScheme.outlineVariant)),
+        const SizedBox(height: DesignTokens.spacingS),
+        Text.rich(
+          TextSpan(children: spans),
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+/// The thread's forum as a chip under its title, opening the forum. From
+/// discourse_ui's TopicTaxonomyChips (TagChip's look: XenForo forums have
+/// no colour of their own).
+class _ForumChip extends StatelessWidget {
+  const _ForumChip({required this.name, required this.onTap});
+
+  final String name;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final radius = BorderRadius.circular(DesignTokens.radiusS);
+    // A compact chip in a 32dp tap area.
+    return InkWell(
+      borderRadius: radius,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest,
+            borderRadius: radius,
+            border: Border.all(color: colorScheme.outlineVariant, width: 0.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.forum_outlined, size: 14, color: colorScheme.onSurfaceVariant),
+                const SizedBox(width: DesignTokens.spacingXS),
+                Flexible(
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

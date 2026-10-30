@@ -253,32 +253,32 @@ class AppLocalizationsKo extends AppLocalizations {
   String get resend => '다시 보내기';
 
   @override
-  String get noLatestTopics => '최신 주제 없음';
+  String get noLatestTopics => '최신 스레드 없음';
 
   @override
-  String get noRecentTopicsToDisplay => '표시할 최신 주제가 없습니다. 나중에 새로운 토론을 확인하세요.';
+  String get noRecentTopicsToDisplay => '표시할 최신 스레드가 없습니다. 나중에 새로운 토론을 확인하세요.';
 
   @override
-  String get noUnreadTopics => '읽지 않은 주제 없음';
+  String get noUnreadTopics => '읽지 않은 스레드 없음';
 
   @override
-  String get thereAreNoUnreadTopics => '읽지 않은 주제가 없습니다. 나중에 새로운 토론을 확인하세요.';
+  String get thereAreNoUnreadTopics => '읽지 않은 스레드가 없습니다. 나중에 새로운 토론을 확인하세요.';
 
   @override
   String get youAreAllCaughtUp => '모두 확인하셨습니다!';
 
   @override
-  String get noSubscribedTopics => '구독한 주제 없음';
+  String get noSubscribedTopics => '지켜보는 스레드 없음';
 
   @override
   String get noSubscribedTopicsMessage =>
-      '아직 구독한 주제가 없습니다. 주제를 열고 ⋮ 메뉴에서 구독을 선택하면 새 답글 알림을 받을 수 있습니다.';
+      '아직 지켜보는 스레드가 없습니다. 스레드를 열고 ⋮ 메뉴에서 지켜보기를 선택하면 새 답글 알림을 받을 수 있습니다.';
 
   @override
-  String get noParticipatedTopics => '참여한 주제 없음';
+  String get noParticipatedTopics => '참여한 스레드 없음';
 
   @override
-  String get topicsYouParticipatedIn => '참여한 주제가 여기에 표시됩니다.';
+  String get topicsYouParticipatedIn => '참여한 스레드가 여기에 표시됩니다.';
 
   @override
   String get latest => '최신';
@@ -287,7 +287,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unread => '읽지 않음';
 
   @override
-  String get subscribed => '구독';
+  String get subscribed => '지켜보는 중';
 
   @override
   String get participated => '참여';
@@ -326,37 +326,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get all => '전체';
 
   @override
-  String get topicsOnly => '주제만';
+  String get topicsOnly => '스레드만';
 
   @override
   String get titlesOnly => '제목만';
 
   @override
   String failedToShareTopic(String error) {
-    return '주제 공유 실패: $error';
+    return '스레드 공유 실패: $error';
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return '이 스레드를 $action하려면 로그인하세요';
-  }
+  String get subscribe => '지켜보기';
 
   @override
-  String get subscribeTo => '구독';
-
-  @override
-  String get unsubscribeFrom => '구독 취소';
-
-  @override
-  String get subscribe => '구독';
-
-  @override
-  String get unsubscribe => '구독 취소';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return '스레드 $action 실패';
-  }
+  String get unsubscribe => '지켜보기 해제';
 
   @override
   String get youCannotReplyToThisThread => '이 스레드에 답변할 수 없습니다';
@@ -408,7 +392,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get newTopic => '새 주제';
+  String get newTopic => '새 스레드';
 
   @override
   String get markRead => '읽음으로 표시';
@@ -476,16 +460,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportConversation => '대화 신고';
 
   @override
-  String get topicClosed => '주제 닫힘';
+  String get topicClosed => '스레드 잠김';
 
   @override
-  String get topicOpened => '주제 열림';
+  String get topicOpened => '스레드 잠금 해제됨';
 
   @override
-  String get topicStickied => '주제 고정됨';
+  String get topicStickied => '스레드 고정됨';
 
   @override
-  String get topicUnstickied => '주제 고정 해제됨';
+  String get topicUnstickied => '스레드 고정 해제됨';
 
   @override
   String cannotEditMessage(String error) {
@@ -880,7 +864,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get enterKeywordsToSearchTopics => '주제를 검색할 키워드 입력...';
+  String get enterKeywordsToSearchTopics => '스레드를 검색할 키워드 입력...';
 
   @override
   String get pleaseFillInAllRequiredFields => '모든 필수 필드를 입력하세요';
@@ -889,30 +873,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get undelete => '복원';
 
   @override
-  String get signInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인하세요';
+  String get signInToViewUnreadTopics => '읽지 않은 스레드를 보려면 로그인하세요';
 
   @override
-  String get youNeedToBeSignedInToViewUnreadTopics => '읽지 않은 주제를 보려면 로그인해야 합니다';
+  String get youNeedToBeSignedInToViewUnreadTopics =>
+      '읽지 않은 스레드를 보려면 로그인해야 합니다';
 
   @override
-  String get signInToViewSubscribedTopics => '구독한 주제를 보려면 로그인하세요';
+  String get signInToViewSubscribedTopics => '지켜보는 스레드를 보려면 로그인하세요';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      '구독한 주제를 보려면 로그인해야 합니다';
+      '지켜보는 스레드를 보려면 로그인해야 합니다';
 
   @override
-  String get signInToViewParticipatedTopics => '참여한 주제를 보려면 로그인하세요';
+  String get signInToViewParticipatedTopics => '참여한 스레드를 보려면 로그인하세요';
 
   @override
   String get youNeedToBeSignedInToViewParticipatedTopics =>
-      '참여한 주제를 보려면 로그인해야 합니다';
+      '참여한 스레드를 보려면 로그인해야 합니다';
 
   @override
-  String get signInToViewLatestTopics => '최신 주제를 보려면 로그인하세요';
+  String get signInToViewLatestTopics => '최신 스레드를 보려면 로그인하세요';
 
   @override
-  String get youNeedToBeSignedInToViewLatestTopics => '최신 주제를 보려면 로그인해야 합니다';
+  String get youNeedToBeSignedInToViewLatestTopics => '최신 스레드를 보려면 로그인해야 합니다';
 
   @override
   String get markAsUnread => '읽지 않음으로 표시';
@@ -1040,7 +1025,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get enterKeywordsToFindTopicsAndPosts => '키워드를 입력하여 주제와 게시물 찾기';
+  String get enterKeywordsToFindTopicsAndPosts => '키워드를 입력하여 스레드와 게시물 찾기';
 
   @override
   String get enterKeywordsOrDomainToFindForums => '키워드 또는 도메인을 입력하여 포럼 찾기';
@@ -1118,25 +1103,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchForums => '포럼 검색';
 
   @override
-  String get deleteTopic => '주제 삭제';
+  String get deleteTopic => '스레드 삭제';
 
   @override
   String get softDelete => '소프트 삭제';
 
   @override
-  String get topicCanBeRestoredLater => '주제는 나중에 복원할 수 있습니다';
+  String get topicCanBeRestoredLater => '스레드는 나중에 복원할 수 있습니다';
 
   @override
   String get hardDelete => '완전 삭제';
 
   @override
-  String get topicWillBePermanentlyDeleted => '주제가 영구적으로 삭제됩니다';
+  String get topicWillBePermanentlyDeleted => '스레드가 영구적으로 삭제됩니다';
 
   @override
   String get reasonForDeletion => '삭제 이유';
 
   @override
-  String get enterReasonForDeletingTopic => '이 주제를 삭제하는 이유를 입력하세요';
+  String get enterReasonForDeletingTopic => '이 스레드를 삭제하는 이유를 입력하세요';
 
   @override
   String get pleaseEnterReasonForDeletion => '삭제 이유를 입력하세요';
@@ -1210,7 +1195,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get markAllForumsAsReadMessage =>
-      '모든 포럼과 주제가 읽음으로 표시됩니다. 이 작업은 취소할 수 없습니다.';
+      '모든 포럼과 스레드가 읽음으로 표시됩니다. 이 작업은 취소할 수 없습니다.';
 
   @override
   String get markAsRead => '읽음으로 표시';
@@ -1430,10 +1415,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get goBack => '돌아가기';
 
   @override
-  String get signInToViewMessages => '메시지를 보려면 로그인하세요';
+  String get signInToViewMessages => '대화를 보려면 로그인하세요';
 
   @override
-  String get privateMessagesNotAvailable => '비공개 메시지를 사용할 수 없습니다';
+  String get privateMessagesNotAvailable => '대화를 사용할 수 없습니다';
 
   @override
   String failedToLoadPost(String error) {
@@ -1799,37 +1784,37 @@ class AppLocalizationsKo extends AppLocalizations {
   String get protectedBadge => '보호됨';
 
   @override
-  String get lockTopic => '주제 잠그기';
+  String get lockTopic => '스레드 잠그기';
 
   @override
-  String get unlockTopic => '주제 잠금 해제';
+  String get unlockTopic => '스레드 잠금 해제';
 
   @override
   String get lockTopicConfirm =>
-      '이 주제를 잠그시겠습니까? 다른 사용자가 답글을 달거나 상호작용할 수 없게 됩니다.';
+      '이 스레드를 잠그시겠습니까? 다른 사용자가 답글을 달거나 상호작용할 수 없게 됩니다.';
 
   @override
   String get unlockTopicConfirm =>
-      '이 주제의 잠금을 해제하시겠습니까? 다른 사용자가 다시 답글을 달고 상호작용할 수 있습니다.';
+      '이 스레드의 잠금을 해제하시겠습니까? 다른 사용자가 다시 답글을 달고 상호작용할 수 있습니다.';
 
   @override
-  String get stickTopic => '주제 고정';
+  String get stickTopic => '스레드 고정';
 
   @override
-  String get unstickTopic => '주제 고정 해제';
+  String get unstickTopic => '스레드 고정 해제';
 
   @override
-  String get stickTopicConfirm => '이 주제를 고정하시겠습니까? 모든 사용자에게 포럼 상단에 표시됩니다.';
+  String get stickTopicConfirm => '이 스레드를 고정하시겠습니까? 모든 사용자에게 포럼 상단에 표시됩니다.';
 
   @override
   String get unstickTopicConfirm =>
-      '이 주제의 고정을 해제하시겠습니까? 더 이상 포럼 상단에 표시되지 않습니다.';
+      '이 스레드의 고정을 해제하시겠습니까? 더 이상 포럼 상단에 표시되지 않습니다.';
 
   @override
-  String get undeleteTopic => '주제 복원';
+  String get undeleteTopic => '스레드 복원';
 
   @override
-  String get undeleteTopicConfirm => '이 주제를 복원하시겠습니까? 다른 사용자에게 다시 표시됩니다.';
+  String get undeleteTopicConfirm => '이 스레드를 복원하시겠습니까? 다른 사용자에게 다시 표시됩니다.';
 
   @override
   String get additionalInformation => '추가 정보';
@@ -1911,13 +1896,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToCreateTopic => '새 주제를 만들려면 로그인하세요';
+  String get pleaseLoginToCreateTopic => '새 스레드를 만들려면 로그인하세요';
 
   @override
-  String get pleaseLoginToSubscribeForums => '포럼을 구독하려면 로그인하세요';
+  String get pleaseLoginToSubscribeForums => '포럼을 지켜보려면 로그인하세요';
 
   @override
-  String get pleaseLoginToUnsubscribeForums => '포럼 구독을 취소하려면 로그인하세요';
+  String get pleaseLoginToUnsubscribeForums => '포럼 지켜보기를 해제하려면 로그인하세요';
 
   @override
   String errorLoadingContent(String error) {
@@ -1925,7 +1910,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get noPermissionToViewSubforumTopics => '이 하위 포럼의 주제를 볼 권한이 없습니다.';
+  String get noPermissionToViewSubforumTopics => '이 하위 포럼의 스레드를 볼 권한이 없습니다.';
 
   @override
   String get noDiscussionsYet => '아직 토론이 없습니다.';
@@ -1940,10 +1925,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noForumsToDisplay => '표시할 포럼이 없습니다. 권한 또는 포럼 구조 때문일 수 있습니다.';
 
   @override
-  String get subscribedForums => '구독한 포럼';
+  String get subscribedForums => '지켜보는 포럼';
 
   @override
-  String get allForumTopicsMarkedRead => '포럼의 모든 주제를 읽음으로 표시했습니다';
+  String get allForumTopicsMarkedRead => '포럼의 모든 스레드를 읽음으로 표시했습니다';
 
   @override
   String postsCountFormatted(String count) {
@@ -1965,13 +1950,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get topicDeletedHidden => '이 주제는 삭제되어 다른 사용자에게 보이지 않습니다';
+  String get topicDeletedHidden => '이 스레드는 삭제되어 다른 사용자에게 보이지 않습니다';
 
   @override
-  String get topicClosedNoReplies => '이 주제는 닫혀 있어 더 이상 답글을 받지 않습니다';
+  String get topicClosedNoReplies => '이 스레드는 잠겨 있어 더 이상 답글을 받지 않습니다';
 
   @override
-  String get youAreSubscribedToTopic => '이 주제를 구독 중입니다';
+  String get youAreSubscribedToTopic => '이 스레드를 지켜보는 중입니다';
 
   @override
   String get refreshing => '새로 고치는 중...';
@@ -2131,10 +2116,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unknownDate => '날짜 알 수 없음';
 
   @override
-  String get searchForTopics => '주제 검색';
+  String get searchForTopics => '스레드 검색';
 
   @override
-  String get noTopicsFound => '주제를 찾을 수 없습니다';
+  String get noTopicsFound => '스레드를 찾을 수 없습니다';
 
   @override
   String get noPostsFound => '게시물을 찾을 수 없습니다';
@@ -2335,7 +2320,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get avatarUploadedSuccessfully => '아바타를 업로드했습니다';
 
   @override
-  String get unknownTopic => '알 수 없는 주제';
+  String get unknownTopic => '알 수 없는 스레드';
 
   @override
   String get connectionTimeoutTitle => '연결 시간 초과';
@@ -2520,7 +2505,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get editPost => '게시물 수정';
 
   @override
-  String get thisTopicIsPinnedToTopOfForum => '이 토픽은 포럼 상단에 고정되어 있습니다';
+  String get thisTopicIsPinnedToTopOfForum => '이 스레드는 포럼 상단에 고정되어 있습니다';
 
   @override
   String get editConversation => '대화 편집';
@@ -2575,7 +2560,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      '이 알림 유형에는 사용할 작업 URL이 없습니다.';
+      '이 알림에는 열 수 있는 링크가 없습니다.';
 
   @override
   String get signInToViewNotifications => '알림을 보려면 로그인하세요';
@@ -2641,7 +2626,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get topicIdIsMissingCannotNavigateToThePost =>
-      '토픽 ID가 없어 게시글로 이동할 수 없습니다.';
+      '스레드 ID가 없어 게시글로 이동할 수 없습니다.';
 
   @override
   String get conversationIsOpenForReplies => '이 대화는 답장을 허용합니다';
@@ -2680,7 +2665,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get failedToDisablePush => '푸시 알림을 끄지 못했습니다';
 
   @override
-  String get thisForum => '이 포럼';
+  String get thisForumInSentence => '이 포럼';
 
   @override
   String get openFullEditor => '전체 편집기';
@@ -2710,7 +2695,7 @@ class AppLocalizationsKo extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '주제 $countString개',
+      other: '스레드 $countString개',
     );
     return '$_temp0';
   }
@@ -2878,4 +2863,294 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       '이 포럼은 아직 이 앱에서 패스키를 사용할 수 있도록 설정되지 않았습니다. 다른 방법을 선택하세요.';
+
+  @override
+  String get ignoreMember => '회원 무시';
+
+  @override
+  String get stopIgnoringMember => '무시 해제';
+
+  @override
+  String memberIgnored(String name) {
+    return '이제 $name님을 무시합니다.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return '더 이상 $name님을 무시하지 않습니다.';
+  }
+
+  @override
+  String get ignoredMembers => '무시한 회원';
+
+  @override
+  String get ignoredMembersExplanation =>
+      '무시한 회원의 콘텐츠는 숨겨지며, 그 회원은 회원님과 대화를 시작할 수 없습니다.';
+
+  @override
+  String get noIgnoredMembers => '무시하는 회원이 없습니다.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return '$name님을 무시하고 있습니다.';
+  }
+
+  @override
+  String get showIgnoredContent => '보기';
+
+  @override
+  String get markAllAlertsRead => '모두 읽음으로 표시';
+
+  @override
+  String get topicSolved => '해결됨';
+
+  @override
+  String get topicQuestion => '질문';
+
+  @override
+  String get solutionBadge => '해결책';
+
+  @override
+  String get forumClosedTitle => '포럼이 닫혀 있습니다';
+
+  @override
+  String get updatedTermsTitle => '약관 업데이트';
+
+  @override
+  String get updatedTermsMessage =>
+      '포럼의 약관 또는 개인정보 처리방침이 업데이트되었습니다. 웹사이트에서 확인하고 동의해 주세요.';
+
+  @override
+  String get reviewTerms => '확인하기';
+
+  @override
+  String get forumTerms => '이용약관 및 규칙';
+
+  @override
+  String get contactForum => '문의하기';
+
+  @override
+  String get notifyMeOf => '알림 받을 항목';
+
+  @override
+  String get watchNewThreads => '새 스레드';
+
+  @override
+  String get watchNewMessages => '새 메시지';
+
+  @override
+  String get watchSendAlerts => '알림';
+
+  @override
+  String get watchSendEmails => '이메일';
+
+  @override
+  String get logInToWatchThread => '이 스레드를 지켜보려면 로그인하세요';
+
+  @override
+  String get failedToWatchThread => '스레드를 지켜볼 수 없습니다';
+
+  @override
+  String get failedToUnwatchThread => '스레드 지켜보기를 해제할 수 없습니다';
+
+  @override
+  String get watchThreadAlertsNote => '누군가 답글을 달면 알림을 받습니다.';
+
+  @override
+  String get threadFilters => '필터';
+
+  @override
+  String get anyPrefix => '(전체)';
+
+  @override
+  String get startedBy => '작성자';
+
+  @override
+  String get lastUpdated => '마지막 업데이트';
+
+  @override
+  String get anyTime => '전체 기간';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count일',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개월',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count년',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => '정렬 기준';
+
+  @override
+  String get sortAscending => '오름차순';
+
+  @override
+  String get sortDescending => '내림차순';
+
+  @override
+  String get clearFilters => '필터 지우기';
+
+  @override
+  String get applyFilters => '필터 적용';
+
+  @override
+  String get noThreadsMatchFilters => '이 필터와 일치하는 스레드가 없습니다.';
+
+  @override
+  String get threadTypeLabel => '스레드 유형';
+
+  @override
+  String get pollQuestion => '투표 질문';
+
+  @override
+  String get pollResponses => '선택지';
+
+  @override
+  String pollResponseNumber(int number) {
+    return '선택지 $number';
+  }
+
+  @override
+  String get addPollResponse => '선택지 추가';
+
+  @override
+  String get removePollResponse => '선택지 삭제';
+
+  @override
+  String get pollMultipleChoice => '여러 선택지 선택 허용';
+
+  @override
+  String get pollChangeVote => '투표 변경 허용';
+
+  @override
+  String get pollPublicVotes => '투표 공개';
+
+  @override
+  String get pollViewResultsUnvoted => '투표하지 않고 결과 보기 허용';
+
+  @override
+  String get pollCloseAfter => '투표 마감';
+
+  @override
+  String get pollNeverCloses => '마감 없음';
+
+  @override
+  String get noneOption => '(없음)';
+
+  @override
+  String get tagsLabel => '태그';
+
+  @override
+  String get tagsHint => '태그는 쉼표로 구분하세요';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '태그를 $count개 이상 추가하세요',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return '$field을(를) 입력하세요.';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses => '투표 질문과 선택지를 2개 이상 입력하세요.';
+
+  @override
+  String get awaitingApprovalBadge => '승인 대기 중';
+
+  @override
+  String get approve => '승인';
+
+  @override
+  String get postApproved => '게시물이 승인되었습니다';
+
+  @override
+  String get postUndeleted => '게시물이 복원되었습니다';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name님이 말했습니다:';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count일 후',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count개월 후',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count년 후',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '조회',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '답글',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => '이 포럼';
 }

@@ -39,3 +39,9 @@ jobs:
 
       - name: Test
         run: flutter test
+
+      - name: Test the packages (offline suites only)
+        # The other package tests talk to a live forum (test/config.json).
+        run: |
+          (cd packages/forumcopilot_sdk && flutter pub get && flutter test test/reaction_registry_test.dart)
+          (cd packages/xenforo_core && flutter pub get && flutter test test/reaction_parsing_test.dart test/base_proxy_session_test.dart test/offline_flows_test.dart)

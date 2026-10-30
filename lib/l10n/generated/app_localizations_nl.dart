@@ -279,11 +279,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get youAreAllCaughtUp => 'U bent helemaal bij!';
 
   @override
-  String get noSubscribedTopics => 'Geen geabonneerde onderwerpen';
+  String get noSubscribedTopics => 'Geen gevolgde onderwerpen';
 
   @override
   String get noSubscribedTopicsMessage =>
-      'Je bent nog op geen onderwerpen geabonneerd. Open een onderwerp en kies Abonneren in het ⋮-menu om meldingen van nieuwe reacties te krijgen.';
+      'Je volgt nog geen onderwerpen. Open een onderwerp en kies Volgen in het ⋮-menu om meldingen van nieuwe reacties te krijgen.';
 
   @override
   String get noParticipatedTopics =>
@@ -300,7 +300,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get unread => 'Ongelezen';
 
   @override
-  String get subscribed => 'Geabonneerd';
+  String get subscribed => 'Gevolgd';
 
   @override
   String get participated => 'Deelgenomen';
@@ -351,26 +351,10 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String pleaseLoginToSubscribe(String action) {
-    return 'Log in om $action dit onderwerp';
-  }
+  String get subscribe => 'Volgen';
 
   @override
-  String get subscribeTo => 'abonneren op';
-
-  @override
-  String get unsubscribeFrom => 'abonnement opzeggen van';
-
-  @override
-  String get subscribe => 'Abonneren';
-
-  @override
-  String get unsubscribe => 'Afmelden';
-
-  @override
-  String failedToSubscribeToThread(String action) {
-    return 'Kon $action onderwerp niet';
-  }
+  String get unsubscribe => 'Niet meer volgen';
 
   @override
   String get youCannotReplyToThisThread =>
@@ -933,11 +917,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get signInToViewSubscribedTopics =>
-      'Log in om geabonneerde onderwerpen te bekijken';
+      'Log in om gevolgde onderwerpen te bekijken';
 
   @override
   String get youNeedToBeSignedInToViewSubscribedTopics =>
-      'U moet ingelogd zijn om uw geabonneerde onderwerpen te bekijken.';
+      'U moet ingelogd zijn om uw gevolgde onderwerpen te bekijken.';
 
   @override
   String get signInToViewParticipatedTopics =>
@@ -1483,10 +1467,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get goBack => 'Terug';
 
   @override
-  String get signInToViewMessages => 'Log in om berichten te bekijken';
+  String get signInToViewMessages => 'Log in om je gesprekken te bekijken';
 
   @override
-  String get privateMessagesNotAvailable => 'Privéberichten niet beschikbaar';
+  String get privateMessagesNotAvailable => 'Gesprekken zijn niet beschikbaar';
 
   @override
   String failedToLoadPost(String error) {
@@ -1991,12 +1975,11 @@ class AppLocalizationsNl extends AppLocalizations {
       'Log in om een nieuw onderwerp te maken';
 
   @override
-  String get pleaseLoginToSubscribeForums =>
-      'Log in om u op forums te abonneren';
+  String get pleaseLoginToSubscribeForums => 'Log in om forums te volgen';
 
   @override
   String get pleaseLoginToUnsubscribeForums =>
-      'Log in om u af te melden voor forums';
+      'Log in om forums niet meer te volgen';
 
   @override
   String errorLoadingContent(String error) {
@@ -2021,7 +2004,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Er zijn geen forums om weer te geven. Dit kan aan machtigingen of de forumstructuur liggen.';
 
   @override
-  String get subscribedForums => 'Geabonneerde forums';
+  String get subscribedForums => 'Gevolgde forums';
 
   @override
   String get allForumTopicsMarkedRead =>
@@ -2055,7 +2038,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Dit onderwerp is gesloten en accepteert geen reacties meer';
 
   @override
-  String get youAreSubscribedToTopic => 'U bent geabonneerd op dit onderwerp';
+  String get youAreSubscribedToTopic => 'U volgt dit onderwerp';
 
   @override
   String get refreshing => 'Vernieuwen...';
@@ -2695,7 +2678,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noActionUrlAvailableForThisNotificationType =>
-      'Geen actie-URL beschikbaar voor dit meldingstype.';
+      'Deze melding heeft geen link om te openen.';
 
   @override
   String get signInToViewNotifications => 'Meld u aan om meldingen te bekijken';
@@ -2803,7 +2786,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get failedToDisablePush => 'Kan pushmeldingen niet uitschakelen';
 
   @override
-  String get thisForum => 'dit forum';
+  String get thisForumInSentence => 'dit forum';
 
   @override
   String get openFullEditor => 'Volledige editor';
@@ -3016,4 +2999,307 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get passkeyStepNotSetUp =>
       'Dit forum is in deze app nog niet ingesteld voor toegangssleutels. Kies een andere methode.';
+
+  @override
+  String get ignoreMember => 'Lid negeren';
+
+  @override
+  String get stopIgnoringMember => 'Niet meer negeren';
+
+  @override
+  String memberIgnored(String name) {
+    return 'Je negeert nu $name.';
+  }
+
+  @override
+  String memberNoLongerIgnored(String name) {
+    return 'Je negeert $name niet meer.';
+  }
+
+  @override
+  String get ignoredMembers => 'Genegeerde leden';
+
+  @override
+  String get ignoredMembersExplanation =>
+      'Inhoud van leden die je negeert wordt verborgen, en zij kunnen geen gesprekken met je beginnen.';
+
+  @override
+  String get noIgnoredMembers => 'Je negeert niemand.';
+
+  @override
+  String youAreIgnoringMember(String name) {
+    return 'Je negeert $name.';
+  }
+
+  @override
+  String get showIgnoredContent => 'Tonen';
+
+  @override
+  String get markAllAlertsRead => 'Alles als gelezen markeren';
+
+  @override
+  String get topicSolved => 'Opgelost';
+
+  @override
+  String get topicQuestion => 'Vraag';
+
+  @override
+  String get solutionBadge => 'OPLOSSING';
+
+  @override
+  String get forumClosedTitle => 'Het forum is gesloten';
+
+  @override
+  String get updatedTermsTitle => 'Bijgewerkte voorwaarden';
+
+  @override
+  String get updatedTermsMessage =>
+      'Het forum heeft zijn voorwaarden of privacybeleid bijgewerkt. Lees en accepteer ze op de website.';
+
+  @override
+  String get reviewTerms => 'Bekijken';
+
+  @override
+  String get forumTerms => 'Voorwaarden en regels';
+
+  @override
+  String get contactForum => 'Contact';
+
+  @override
+  String get notifyMeOf => 'Laat me weten bij';
+
+  @override
+  String get watchNewThreads => 'Nieuwe onderwerpen';
+
+  @override
+  String get watchNewMessages => 'Nieuwe berichten';
+
+  @override
+  String get watchSendAlerts => 'Meldingen';
+
+  @override
+  String get watchSendEmails => 'E-mails';
+
+  @override
+  String get logInToWatchThread => 'Log in om dit onderwerp te volgen';
+
+  @override
+  String get failedToWatchThread => 'Kon het onderwerp niet volgen';
+
+  @override
+  String get failedToUnwatchThread =>
+      'Kon het volgen van het onderwerp niet stoppen';
+
+  @override
+  String get watchThreadAlertsNote =>
+      'Je krijgt een melding als iemand reageert.';
+
+  @override
+  String get threadFilters => 'Filters';
+
+  @override
+  String get anyPrefix => '(Alle)';
+
+  @override
+  String get startedBy => 'Gestart door';
+
+  @override
+  String get lastUpdated => 'Laatst bijgewerkt';
+
+  @override
+  String get anyTime => 'Altijd';
+
+  @override
+  String periodDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dagen',
+      one: '1 dag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count maanden',
+      one: '1 maand',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String periodYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jaar',
+      one: '1 jaar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sortBy => 'Sorteren op';
+
+  @override
+  String get sortAscending => 'Oplopend';
+
+  @override
+  String get sortDescending => 'Aflopend';
+
+  @override
+  String get clearFilters => 'Filters wissen';
+
+  @override
+  String get applyFilters => 'Filteren';
+
+  @override
+  String get noThreadsMatchFilters =>
+      'Geen onderwerpen komen overeen met deze filters.';
+
+  @override
+  String get threadTypeLabel => 'Type onderwerp';
+
+  @override
+  String get pollQuestion => 'Pollvraag';
+
+  @override
+  String get pollResponses => 'Mogelijke antwoorden';
+
+  @override
+  String pollResponseNumber(int number) {
+    return 'Antwoord $number';
+  }
+
+  @override
+  String get addPollResponse => 'Antwoord toevoegen';
+
+  @override
+  String get removePollResponse => 'Antwoord verwijderen';
+
+  @override
+  String get pollMultipleChoice => 'Meer dan één antwoord toestaan';
+
+  @override
+  String get pollChangeVote => 'Toestaan dat stemmers hun stem wijzigen';
+
+  @override
+  String get pollPublicVotes => 'Stemmen openbaar tonen';
+
+  @override
+  String get pollViewResultsUnvoted => 'Resultaten zichtbaar zonder te stemmen';
+
+  @override
+  String get pollCloseAfter => 'Deze poll sluiten na';
+
+  @override
+  String get pollNeverCloses => 'Nooit';
+
+  @override
+  String get noneOption => '(Geen)';
+
+  @override
+  String get tagsLabel => 'Tags';
+
+  @override
+  String get tagsHint => 'Scheid tags met komma’s';
+
+  @override
+  String addAtLeastTags(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Voeg minstens $count tags toe',
+      one: 'Voeg minstens 1 tag toe',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String threadFieldRequired(String field) {
+    return 'Vul $field in.';
+  }
+
+  @override
+  String get pollNeedsQuestionAndResponses =>
+      'Vul een pollvraag en minstens twee antwoorden in.';
+
+  @override
+  String get awaitingApprovalBadge => 'WACHT OP GOEDKEURING';
+
+  @override
+  String get approve => 'Goedkeuren';
+
+  @override
+  String get postApproved => 'Bericht goedgekeurd';
+
+  @override
+  String get postUndeleted => 'Bericht hersteld';
+
+  @override
+  String quoteSaid(String name) {
+    return '$name zei:';
+  }
+
+  @override
+  String timeGapDaysLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dagen later',
+      one: '1 dag later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapMonthsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count maanden later',
+      one: '1 maand later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String timeGapYearsLater(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jaar later',
+      one: '1 jaar later',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapViews(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'weergaven',
+      one: 'weergave',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String topicMapReplies(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'reacties',
+      one: 'reactie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get thisForum => 'Dit forum';
 }

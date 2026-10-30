@@ -55,7 +55,7 @@ void main() {
     await pump(tester, onSearch: () => searches++);
     expect(find.text('Test Forum'), findsOneWidget);
     expect(find.text('All about tests'), findsOneWidget);
-    expect(find.text('56.8K members · 1 topic · 1.23M posts'), findsOneWidget);
+    expect(find.text('56.8K members · 1 thread · 1.23M messages'), findsOneWidget);
     expect(find.byType(ForumIconTile), findsOneWidget);
     expect(find.text('T'), findsOneWidget); // the initial, without a logo
 

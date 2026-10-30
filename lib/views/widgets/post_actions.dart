@@ -423,7 +423,7 @@ class PostActionsHandler {
 
       try {
         final moderationProxy = SiteProxyFactory.getModerationProxy();
-        await moderationProxy.deletePostAsync(
+        final response = await moderationProxy.deletePostAsync(
           postId,
           result['mode'] as int,
           result['reason'] as String,
@@ -433,8 +433,15 @@ class PostActionsHandler {
           // Hide loading snackbar
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-          // Show success message
-          SnackbarHelper.showInfo(context, AppLocalizations.of(context).postDeletedSuccessfully);
+          // "Post deleted" only when the forum deleted it; otherwise its reason
+          if (response.result) {
+            SnackbarHelper.showInfo(context, AppLocalizations.of(context).postDeletedSuccessfully);
+          } else {
+            SnackbarHelper.showError(
+              context,
+              AppLocalizations.of(context).failedToDeletePost(response.resultText ?? ''),
+            );
+          }
         }
       } catch (e) {
         AppLogger.debug('Error deleting post: $e');

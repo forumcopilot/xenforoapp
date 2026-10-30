@@ -81,6 +81,8 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
   final GlobalKey<ForumListTabState> _forumListKey = GlobalKey();
   final GlobalKey<PrivateMessageListTabState> _pmListKey = GlobalKey();
   final GlobalKey<NotificationListTabState> _notificationTabKey = GlobalKey();
+  /// The alerts tab sets it; the Alerts bar shows "Mark all read" while true.
+  final ValueNotifier<bool> _alertsHaveUnread = ValueNotifier(false);
   final GlobalKey<ProfileTabState> _profileTabKey = GlobalKey();
 
   // Add workers to listen for auth or forum changes
@@ -682,6 +684,8 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
         return NotificationsTabAppBar(
           siteContext: _siteContext!,
           isLoggedIn: isLoggedIn,
+          hasUnreadAlerts: _alertsHaveUnread,
+          onMarkAllRead: () => _notificationTabKey.currentState?.markAllRead(),
         );
       case _profileTab:
         return ProfileTabAppBar(
@@ -872,7 +876,15 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
           return NotificationListTab(
               key: _notificationTabKey,
               isActive: _isCurrentTab(_notificationsTab),
-              siteContext: _siteContext ?? SiteContext(siteType: 'none', site: Site(name: 'Loading...', url: '', description: '', siteType: 'none')));
+              hasUnreadAlerts: _alertsHaveUnread,
+              siteContext: _siteContext ??
+                  SiteContext(
+                      siteType: 'none',
+                      site: Site(
+                          name: 'Loading...',
+                          url: '',
+                          description: '',
+                          siteType: 'none')));
         case _profileTab:
           return ProfileTab(
             key: _profileTabKey,
@@ -1007,6 +1019,7 @@ class _SiteHomePageState extends State<SiteHomePage> with TickerProviderStateMix
 
   @override
   void dispose() {
+    _alertsHaveUnread.dispose();
     // Cancel login state debounce timer
     _loginStateDebounceTimer?.cancel();
     _loginStateDebounceTimer = null;

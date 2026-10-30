@@ -15,7 +15,13 @@ abstract class IFCSubscriptionProxy {
   ///
   /// [subscribeMode] Notification Type(sample for vb): 0 = no email notification(Or Through my control panel only)
   /// 2 = Daily updates by email 3 = Weekly updates by email
-  Future<FCSubscribeForumResult> subscribeForumAsync(String forumId, int subscribeMode);
+  ///
+  /// XenForo add-on 1.11.0+ takes the watch's options, as the website's
+  /// "Watch forum" form: [notifyOn] `thread` or `message`, and whether it
+  /// sends alerts and emails. A forum already watched keeps the options not
+  /// sent. Older add-ons ignore them.
+  Future<FCSubscribeForumResult> subscribeForumAsync(String forumId, int subscribeMode,
+      {String? notifyOn, bool? sendAlert, bool? sendEmail});
 
   /// Remove a forum from the user forum subscription list
   ///
@@ -41,7 +47,11 @@ abstract class IFCSubscriptionProxy {
   ///
   /// [subscribeMode] Notification Type(sample for vb): 0 = no email notification(Or Through my control panel only)
   /// 1 = Instant notification by email 2 = Daily updates by email 3 = Weekly updates by email
-  Future<FCSubscribeTopicResult> subscribeTopicAsync(String topicId, int subscribeMode);
+  ///
+  /// XenForo add-on 1.11.0+ takes [emailSubscribe], the website's "and
+  /// receive email notifications"; without it a thread already watched is
+  /// left as it is, and the reply says how it is watched.
+  Future<FCSubscribeTopicResult> subscribeTopicAsync(String topicId, int subscribeMode, {bool? emailSubscribe});
 
   /// Remove a topic from the user topic subscription list
   ///

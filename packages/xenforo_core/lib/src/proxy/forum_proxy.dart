@@ -1,4 +1,5 @@
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_thread_posting.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_forum_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_forum_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum.dart';
@@ -199,8 +200,14 @@ class XenForoForumProxy extends BaseXenForoProxy implements IFCForumProxy {
       parentId: forumData['parentId']?.toString(),
       hasNewPosts: forumData['isRead'] == false,
       isProtected: false, // Not provided in API response
-      isSubscribed: false, // Not provided in API response
-      canSubscribe: true, // Not provided in API response
+      // Sent by add-on 1.11.0+, as is the watch below; before, unknown
+      isSubscribed: forumData['isSubscribed'] == true,
+      canSubscribe: forumData['canSubscribe'] is bool ? forumData['canSubscribe'] as bool : true,
+      notifyOn: forumData['notifyOn']?.toString(),
+      sendAlert: forumData['sendAlert'] is bool ? forumData['sendAlert'] as bool : null,
+      sendEmail: forumData['sendEmail'] is bool ? forumData['sendEmail'] as bool : null,
+      allowedWatchNotifications: forumData['allowedWatchNotifications']?.toString(),
+      postingOptions: FCThreadPostingOptions.fromJson(forumData),
       canPost: forumData['canPost'] == true,
       canUpload: forumData['canUpload'] != false,
       canViewContent: forumData['canViewContent'] !=

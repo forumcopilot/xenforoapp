@@ -197,6 +197,12 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         'startNum': startNum,
         'lastNum': lastNum,
         'returnHtml': returnHtml,
+        // Add-on 1.11.0+: also the posts the viewer may see but others can't
+        // (moderated or deleted, for moderators; a member's own awaiting
+        // approval), as the website's thread page lists them
+        'includeHidden': true,
+        // Add-on 1.11.0+: each post also as the forum renders it
+        'contentHtml': true,
       }, (response) {
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();
@@ -277,6 +283,12 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         'postId': postId,
         'postsPerRequest': postsPerRequest,
         'returnHtml': returnHtml,
+        // Add-on 1.11.0+: also the posts the viewer may see but others can't
+        // (moderated or deleted, for moderators; a member's own awaiting
+        // approval), as the website's thread page lists them
+        'includeHidden': true,
+        // Add-on 1.11.0+: each post also as the forum renders it
+        'contentHtml': true,
       }, (response) {
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();
@@ -337,6 +349,12 @@ class XenForoPostProxy extends BaseXenForoProxy implements IFCPostProxy {
         'topicId': topicId,
         'postsPerRequest': postsPerRequest,
         'returnHtml': returnHtml,
+        // Add-on 1.11.0+: also the posts the viewer may see but others can't
+        // (moderated or deleted, for moderators; a member's own awaiting
+        // approval), as the website's thread page lists them
+        'includeHidden': true,
+        // Add-on 1.11.0+: each post also as the forum renders it
+        'contentHtml': true,
       }, (response) {
         // Ensure required fields are present - required by mapper
         final responseMap = response.cast<String, dynamic>();

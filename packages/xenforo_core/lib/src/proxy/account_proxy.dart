@@ -294,11 +294,13 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy, I
   }
 
   @override
-  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword) async {
+  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword, {String? deviceId}) async {
     try {
       final response = await callPluginApi('updatePassword', {
         'oldPassword': oldPassword,
         'newPassword': newPassword,
+        // Add-on 1.11.0+ keeps this device's push registration
+        if (deviceId != null && deviceId.isNotEmpty) 'deviceId': deviceId,
       });
       return FCUpdatePasswordResult(
         result: response['result'] == true,

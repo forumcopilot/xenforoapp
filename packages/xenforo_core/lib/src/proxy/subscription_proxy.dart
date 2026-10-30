@@ -54,7 +54,8 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
   }
 
   @override
-  Future<FCSubscribeForumResult> subscribeForumAsync(String forumId, int subscribeMode) async {
+  Future<FCSubscribeForumResult> subscribeForumAsync(String forumId, int subscribeMode,
+      {String? notifyOn, bool? sendAlert, bool? sendEmail}) async {
     xfDebug('✅ [XENFORO_SUBSCRIPTION] subscribeForumAsync called via plugin API');
     xfDebug('   📋 Parameters: forumId=$forumId, subscribeMode=$subscribeMode');
 
@@ -62,6 +63,10 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
       final response = await callPluginApi('subscribeForum', {
         'forumId': forumId,
         'subscribeMode': subscribeMode,
+        // Add-on 1.11.0+
+        if (notifyOn != null) 'notifyOn': notifyOn,
+        if (sendAlert != null) 'sendAlert': sendAlert,
+        if (sendEmail != null) 'sendEmail': sendEmail,
       });
 
       return FCSubscribeForumResult(
@@ -161,7 +166,7 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
   }
 
   @override
-  Future<FCSubscribeTopicResult> subscribeTopicAsync(String topicId, int subscribeMode) async {
+  Future<FCSubscribeTopicResult> subscribeTopicAsync(String topicId, int subscribeMode, {bool? emailSubscribe}) async {
     xfDebug('✅ [XENFORO_SUBSCRIPTION] subscribeTopicAsync called via plugin API');
     xfDebug('   📋 Parameters: topicId=$topicId, subscribeMode=$subscribeMode');
 
@@ -169,11 +174,15 @@ class XenForoSubscriptionProxy extends BaseXenForoProxy implements IFCSubscripti
       final response = await callPluginApi('subscribeTopic', {
         'topicId': topicId,
         'subscribeMode': subscribeMode,
+        // Add-on 1.11.0+
+        if (emailSubscribe != null) 'emailSubscribe': emailSubscribe,
       });
 
       return FCSubscribeTopicResult(
         result: response['result'] ?? false,
         resultText: response['resultText']?.toString() ?? '',
+        isSubscribed: response['isSubscribed'] is bool ? response['isSubscribed'] as bool : null,
+        emailSubscribe: response['emailSubscribe'] is bool ? response['emailSubscribe'] as bool : null,
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_SUBSCRIPTION] subscribeTopicAsync error: $e');

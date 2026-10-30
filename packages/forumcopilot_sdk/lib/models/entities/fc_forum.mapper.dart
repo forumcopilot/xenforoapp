@@ -15,6 +15,7 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
   static FCForumMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = FCForumMapper._());
+      FCThreadPostingOptionsMapper.ensureInitialized();
       FCForumMapper.ensureInitialized();
     }
     return _instance!;
@@ -78,6 +79,38 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     _$canSubscribe,
     opt: true,
     def: true,
+  );
+  static String? _$notifyOn(FCForum v) => v.notifyOn;
+  static const Field<FCForum, String> _f$notifyOn = Field(
+    'notifyOn',
+    _$notifyOn,
+    opt: true,
+  );
+  static bool? _$sendAlert(FCForum v) => v.sendAlert;
+  static const Field<FCForum, bool> _f$sendAlert = Field(
+    'sendAlert',
+    _$sendAlert,
+    opt: true,
+  );
+  static bool? _$sendEmail(FCForum v) => v.sendEmail;
+  static const Field<FCForum, bool> _f$sendEmail = Field(
+    'sendEmail',
+    _$sendEmail,
+    opt: true,
+  );
+  static String? _$allowedWatchNotifications(FCForum v) =>
+      v.allowedWatchNotifications;
+  static const Field<FCForum, String> _f$allowedWatchNotifications = Field(
+    'allowedWatchNotifications',
+    _$allowedWatchNotifications,
+    opt: true,
+  );
+  static FCThreadPostingOptions? _$postingOptions(FCForum v) =>
+      v.postingOptions;
+  static const Field<FCForum, FCThreadPostingOptions> _f$postingOptions = Field(
+    'postingOptions',
+    _$postingOptions,
+    opt: true,
   );
   static bool _$canPost(FCForum v) => v.canPost;
   static const Field<FCForum, bool> _f$canPost = Field(
@@ -172,6 +205,11 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
     #isProtected: _f$isProtected,
     #isSubscribed: _f$isSubscribed,
     #canSubscribe: _f$canSubscribe,
+    #notifyOn: _f$notifyOn,
+    #sendAlert: _f$sendAlert,
+    #sendEmail: _f$sendEmail,
+    #allowedWatchNotifications: _f$allowedWatchNotifications,
+    #postingOptions: _f$postingOptions,
     #canPost: _f$canPost,
     #canUpload: _f$canUpload,
     #canViewContent: _f$canViewContent,
@@ -198,6 +236,11 @@ class FCForumMapper extends ClassMapperBase<FCForum> {
       isProtected: data.dec(_f$isProtected),
       isSubscribed: data.dec(_f$isSubscribed),
       canSubscribe: data.dec(_f$canSubscribe),
+      notifyOn: data.dec(_f$notifyOn),
+      sendAlert: data.dec(_f$sendAlert),
+      sendEmail: data.dec(_f$sendEmail),
+      allowedWatchNotifications: data.dec(_f$allowedWatchNotifications),
+      postingOptions: data.dec(_f$postingOptions),
       canPost: data.dec(_f$canPost),
       canUpload: data.dec(_f$canUpload),
       canViewContent: data.dec(_f$canViewContent),
@@ -270,6 +313,12 @@ extension FCForumValueCopy<$R, $Out> on ObjectCopyWith<$R, FCForum, $Out> {
 
 abstract class FCForumCopyWith<$R, $In extends FCForum, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
+  FCThreadPostingOptionsCopyWith<
+    $R,
+    FCThreadPostingOptions,
+    FCThreadPostingOptions
+  >?
+  get postingOptions;
   ListCopyWith<$R, FCForum, FCForumCopyWith<$R, FCForum, FCForum>>
   get childForums;
   $R call({
@@ -283,6 +332,11 @@ abstract class FCForumCopyWith<$R, $In extends FCForum, $Out>
     bool? isProtected,
     bool? isSubscribed,
     bool? canSubscribe,
+    String? notifyOn,
+    bool? sendAlert,
+    bool? sendEmail,
+    String? allowedWatchNotifications,
+    FCThreadPostingOptions? postingOptions,
     bool? canPost,
     bool? canUpload,
     bool? canViewContent,
@@ -308,6 +362,14 @@ class _FCForumCopyWithImpl<$R, $Out>
   late final ClassMapperBase<FCForum> $mapper =
       FCForumMapper.ensureInitialized();
   @override
+  FCThreadPostingOptionsCopyWith<
+    $R,
+    FCThreadPostingOptions,
+    FCThreadPostingOptions
+  >?
+  get postingOptions =>
+      $value.postingOptions?.copyWith.$chain((v) => call(postingOptions: v));
+  @override
   ListCopyWith<$R, FCForum, FCForumCopyWith<$R, FCForum, FCForum>>
   get childForums => ListCopyWith(
     $value.childForums,
@@ -326,6 +388,11 @@ class _FCForumCopyWithImpl<$R, $Out>
     bool? isProtected,
     bool? isSubscribed,
     bool? canSubscribe,
+    Object? notifyOn = $none,
+    Object? sendAlert = $none,
+    Object? sendEmail = $none,
+    Object? allowedWatchNotifications = $none,
+    Object? postingOptions = $none,
     bool? canPost,
     bool? canUpload,
     bool? canViewContent,
@@ -350,6 +417,12 @@ class _FCForumCopyWithImpl<$R, $Out>
       if (isProtected != null) #isProtected: isProtected,
       if (isSubscribed != null) #isSubscribed: isSubscribed,
       if (canSubscribe != null) #canSubscribe: canSubscribe,
+      if (notifyOn != $none) #notifyOn: notifyOn,
+      if (sendAlert != $none) #sendAlert: sendAlert,
+      if (sendEmail != $none) #sendEmail: sendEmail,
+      if (allowedWatchNotifications != $none)
+        #allowedWatchNotifications: allowedWatchNotifications,
+      if (postingOptions != $none) #postingOptions: postingOptions,
       if (canPost != null) #canPost: canPost,
       if (canUpload != null) #canUpload: canUpload,
       if (canViewContent != null) #canViewContent: canViewContent,
@@ -377,6 +450,14 @@ class _FCForumCopyWithImpl<$R, $Out>
     isProtected: data.get(#isProtected, or: $value.isProtected),
     isSubscribed: data.get(#isSubscribed, or: $value.isSubscribed),
     canSubscribe: data.get(#canSubscribe, or: $value.canSubscribe),
+    notifyOn: data.get(#notifyOn, or: $value.notifyOn),
+    sendAlert: data.get(#sendAlert, or: $value.sendAlert),
+    sendEmail: data.get(#sendEmail, or: $value.sendEmail),
+    allowedWatchNotifications: data.get(
+      #allowedWatchNotifications,
+      or: $value.allowedWatchNotifications,
+    ),
+    postingOptions: data.get(#postingOptions, or: $value.postingOptions),
     canPost: data.get(#canPost, or: $value.canPost),
     canUpload: data.get(#canUpload, or: $value.canUpload),
     canViewContent: data.get(#canViewContent, or: $value.canViewContent),

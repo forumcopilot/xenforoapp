@@ -508,9 +508,17 @@ class FCSubscribedTopic with FCSubscribedTopicMappable {
 /// Maps from SubscribeTopicData_Output
 @MappableClass()
 class FCSubscribeTopicResult extends FCBaseResult with FCSubscribeTopicResultMappable {
+  /// The watch as saved (XenForo add-on 1.11.0+); null from older add-ons.
+  bool? isSubscribed;
+
+  /// Whether the watch sends emails too (add-on 1.11.0+).
+  bool? emailSubscribe;
+
   FCSubscribeTopicResult({
     required bool result,
     String? resultText,
+    this.isSubscribed,
+    this.emailSubscribe,
   }) : super(result: result, resultText: resultText);
 }
 

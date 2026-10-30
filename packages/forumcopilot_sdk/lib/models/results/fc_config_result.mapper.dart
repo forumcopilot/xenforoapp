@@ -16,6 +16,9 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = FCConfigResultMapper._());
       FCForumStyleMapper.ensureInitialized();
+      FCForumNoticeMapper.ensureInitialized();
+      FCForumPageMapper.ensureInitialized();
+      FCPolicyAcceptanceMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -756,6 +759,47 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
       v.browserLoginSchemes;
   static const Field<FCConfigResult, List<String>> _f$browserLoginSchemes =
       Field('browserLoginSchemes', _$browserLoginSchemes, opt: true);
+  static List<FCForumNotice>? _$notices(FCConfigResult v) => v.notices;
+  static const Field<FCConfigResult, List<FCForumNotice>> _f$notices = Field(
+    'notices',
+    _$notices,
+    opt: true,
+  );
+  static String? _$tosUrl(FCConfigResult v) => v.tosUrl;
+  static const Field<FCConfigResult, String> _f$tosUrl = Field(
+    'tosUrl',
+    _$tosUrl,
+    opt: true,
+  );
+  static String? _$privacyPolicyUrl(FCConfigResult v) => v.privacyPolicyUrl;
+  static const Field<FCConfigResult, String> _f$privacyPolicyUrl = Field(
+    'privacyPolicyUrl',
+    _$privacyPolicyUrl,
+    opt: true,
+  );
+  static String? _$contactUrl(FCConfigResult v) => v.contactUrl;
+  static const Field<FCConfigResult, String> _f$contactUrl = Field(
+    'contactUrl',
+    _$contactUrl,
+    opt: true,
+  );
+  static List<FCForumPage>? _$helpPages(FCConfigResult v) => v.helpPages;
+  static const Field<FCConfigResult, List<FCForumPage>> _f$helpPages = Field(
+    'helpPages',
+    _$helpPages,
+    opt: true,
+  );
+  static FCPolicyAcceptance? _$policyAcceptance(FCConfigResult v) =>
+      v.policyAcceptance;
+  static const Field<FCConfigResult, FCPolicyAcceptance> _f$policyAcceptance =
+      Field('policyAcceptance', _$policyAcceptance, opt: true);
+  static String? _$boardInactiveMessage(FCConfigResult v) =>
+      v.boardInactiveMessage;
+  static const Field<FCConfigResult, String> _f$boardInactiveMessage = Field(
+    'boardInactiveMessage',
+    _$boardInactiveMessage,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCConfigResult> fields = const {
@@ -866,6 +910,13 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
     #style: _f$style,
     #accountDeletion: _f$accountDeletion,
     #browserLoginSchemes: _f$browserLoginSchemes,
+    #notices: _f$notices,
+    #tosUrl: _f$tosUrl,
+    #privacyPolicyUrl: _f$privacyPolicyUrl,
+    #contactUrl: _f$contactUrl,
+    #helpPages: _f$helpPages,
+    #policyAcceptance: _f$policyAcceptance,
+    #boardInactiveMessage: _f$boardInactiveMessage,
   };
 
   static FCConfigResult _instantiate(DecodingData data) {
@@ -977,6 +1028,13 @@ class FCConfigResultMapper extends ClassMapperBase<FCConfigResult> {
       style: data.dec(_f$style),
       accountDeletion: data.dec(_f$accountDeletion),
       browserLoginSchemes: data.dec(_f$browserLoginSchemes),
+      notices: data.dec(_f$notices),
+      tosUrl: data.dec(_f$tosUrl),
+      privacyPolicyUrl: data.dec(_f$privacyPolicyUrl),
+      contactUrl: data.dec(_f$contactUrl),
+      helpPages: data.dec(_f$helpPages),
+      policyAcceptance: data.dec(_f$policyAcceptance),
+      boardInactiveMessage: data.dec(_f$boardInactiveMessage),
     );
   }
 
@@ -1045,6 +1103,20 @@ abstract class FCConfigResultCopyWith<$R, $In extends FCConfigResult, $Out>
   FCForumStyleCopyWith<$R, FCForumStyle, FCForumStyle>? get style;
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>?
   get browserLoginSchemes;
+  ListCopyWith<
+    $R,
+    FCForumNotice,
+    FCForumNoticeCopyWith<$R, FCForumNotice, FCForumNotice>
+  >?
+  get notices;
+  ListCopyWith<
+    $R,
+    FCForumPage,
+    FCForumPageCopyWith<$R, FCForumPage, FCForumPage>
+  >?
+  get helpPages;
+  FCPolicyAcceptanceCopyWith<$R, FCPolicyAcceptance, FCPolicyAcceptance>?
+  get policyAcceptance;
   $R call({
     bool? jsonSupport,
     String? systemVersion,
@@ -1153,6 +1225,13 @@ abstract class FCConfigResultCopyWith<$R, $In extends FCConfigResult, $Out>
     FCForumStyle? style,
     bool? accountDeletion,
     List<String>? browserLoginSchemes,
+    List<FCForumNotice>? notices,
+    String? tosUrl,
+    String? privacyPolicyUrl,
+    String? contactUrl,
+    List<FCForumPage>? helpPages,
+    FCPolicyAcceptance? policyAcceptance,
+    String? boardInactiveMessage,
   });
   FCConfigResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1179,6 +1258,37 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
           (v) => call(browserLoginSchemes: v),
         )
       : null;
+  @override
+  ListCopyWith<
+    $R,
+    FCForumNotice,
+    FCForumNoticeCopyWith<$R, FCForumNotice, FCForumNotice>
+  >?
+  get notices => $value.notices != null
+      ? ListCopyWith(
+          $value.notices!,
+          (v, t) => v.copyWith.$chain(t),
+          (v) => call(notices: v),
+        )
+      : null;
+  @override
+  ListCopyWith<
+    $R,
+    FCForumPage,
+    FCForumPageCopyWith<$R, FCForumPage, FCForumPage>
+  >?
+  get helpPages => $value.helpPages != null
+      ? ListCopyWith(
+          $value.helpPages!,
+          (v, t) => v.copyWith.$chain(t),
+          (v) => call(helpPages: v),
+        )
+      : null;
+  @override
+  FCPolicyAcceptanceCopyWith<$R, FCPolicyAcceptance, FCPolicyAcceptance>?
+  get policyAcceptance => $value.policyAcceptance?.copyWith.$chain(
+    (v) => call(policyAcceptance: v),
+  );
   @override
   $R call({
     bool? jsonSupport,
@@ -1288,6 +1398,13 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
     Object? style = $none,
     Object? accountDeletion = $none,
     Object? browserLoginSchemes = $none,
+    Object? notices = $none,
+    Object? tosUrl = $none,
+    Object? privacyPolicyUrl = $none,
+    Object? contactUrl = $none,
+    Object? helpPages = $none,
+    Object? policyAcceptance = $none,
+    Object? boardInactiveMessage = $none,
   }) => $apply(
     FieldCopyWithData({
       if (jsonSupport != null) #jsonSupport: jsonSupport,
@@ -1402,6 +1519,14 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
       if (accountDeletion != $none) #accountDeletion: accountDeletion,
       if (browserLoginSchemes != $none)
         #browserLoginSchemes: browserLoginSchemes,
+      if (notices != $none) #notices: notices,
+      if (tosUrl != $none) #tosUrl: tosUrl,
+      if (privacyPolicyUrl != $none) #privacyPolicyUrl: privacyPolicyUrl,
+      if (contactUrl != $none) #contactUrl: contactUrl,
+      if (helpPages != $none) #helpPages: helpPages,
+      if (policyAcceptance != $none) #policyAcceptance: policyAcceptance,
+      if (boardInactiveMessage != $none)
+        #boardInactiveMessage: boardInactiveMessage,
     }),
   );
   @override
@@ -1536,6 +1661,16 @@ class _FCConfigResultCopyWithImpl<$R, $Out>
     browserLoginSchemes: data.get(
       #browserLoginSchemes,
       or: $value.browserLoginSchemes,
+    ),
+    notices: data.get(#notices, or: $value.notices),
+    tosUrl: data.get(#tosUrl, or: $value.tosUrl),
+    privacyPolicyUrl: data.get(#privacyPolicyUrl, or: $value.privacyPolicyUrl),
+    contactUrl: data.get(#contactUrl, or: $value.contactUrl),
+    helpPages: data.get(#helpPages, or: $value.helpPages),
+    policyAcceptance: data.get(#policyAcceptance, or: $value.policyAcceptance),
+    boardInactiveMessage: data.get(
+      #boardInactiveMessage,
+      or: $value.boardInactiveMessage,
     ),
   );
 

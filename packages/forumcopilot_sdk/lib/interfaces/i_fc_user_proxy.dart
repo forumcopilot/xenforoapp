@@ -44,8 +44,11 @@ abstract class IFCUserProxy {
   /// parameter need to pass into this function.
   Future<FCInboxStatResult> getInboxStatAsync(DateTime pmLastCheckedTime, DateTime subscribedTopicLastCheckedTime);
 
-  /// Logout user, no input and output required.
-  Future<void> logoutUserAsync();
+  /// Logout user. An app that registers for push with the forum itself
+  /// (XenForo add-on 1.11.0+) passes its [deviceId] and [fcmToken], so the
+  /// forum drops this device's push registration, even when the session has
+  /// already ended.
+  Future<void> logoutUserAsync({String? deviceId, String? fcmToken});
 
   /// Returns a list of user who are currently online. You can specify forum and thread
   /// to limit the users you need.

@@ -90,6 +90,18 @@ class FCTopic with FCTopicMappable {
   /// Whether the viewer has already voted (`user_voted`).
   bool userVoted;
 
+  /// XenForo's thread type (add-on 1.11.0+): `discussion`, `question`,
+  /// `suggestion`, `article`, `poll`...; null from older add-ons.
+  String? threadType;
+
+  /// A suggestion's score, up votes less down votes (XenForo, add-on
+  /// 1.11.0+); null where the forum sends none.
+  int? voteScore;
+
+  /// Whether the member's watch on this thread also sends emails (XenForo
+  /// add-on 1.11.0+, in topic lists); null when not sent.
+  bool? emailSubscribe;
+
   /// Number of replies in the topic
   int replyCount;
 
@@ -254,5 +266,8 @@ class FCTopic with FCTopicMappable {
     this.voteCount = 0,
     this.canVote = false,
     this.userVoted = false,
+    this.threadType,
+    this.voteScore,
+    this.emailSubscribe,
   });
 }

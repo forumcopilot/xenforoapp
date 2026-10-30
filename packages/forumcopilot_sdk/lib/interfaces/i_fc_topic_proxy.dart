@@ -1,3 +1,5 @@
+import '../models/entities/fc_thread_posting.dart';
+import '../models/entities/fc_topic_filters.dart';
 import '../models/results/fc_topic_result.dart';
 
 /// Interface for topic management operations
@@ -25,7 +27,18 @@ abstract class IFCTopicProxy {
   /// [groupId] Optional group ID for attachments
   /// [tags] Tag names to attach to the new topic; forums without a
   /// tag concept ignore the field
-  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId, List<String>? tags});
+  ///
+  /// XenForo add-on 1.11.0+ also takes the thread's [tags], [customFields]
+  /// (field id to value, a list for several choices), [threadType] (one of
+  /// the forum's FCThreadPostingOptions.threadTypes) and a [poll].
+  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody,
+      {String? prefixId,
+      List<String>? attachmentIds,
+      String? groupId,
+      List<String>? tags,
+      Map<String, dynamic>? customFields,
+      String? threadType,
+      FCNewPoll? poll});
 
   /// Returns a list of topics under a specific forum. It can also return sticky topics
   /// and announcement, given the "mode" parameter is provided.
@@ -52,7 +65,11 @@ abstract class IFCTopicProxy {
   /// [startNum] Starting position for pagination
   /// [lastNum] Ending position for pagination
   /// [mode] Mode for topic retrieval (TOP, ANN, TOPIC)
-  Future<FCTopicDataResult> getTopicAsync(String forumId, int startNum, int lastNum);
+  ///
+  /// [filters]: sorting and filters, as the website's filter menu (XenForo
+  /// add-on 1.11.0+, which also sends the forum's sort options; older
+  /// add-ons ignore them).
+  Future<FCTopicDataResult> getTopicAsync(String forumId, int startNum, int lastNum, {FCTopicFilters? filters});
 
   /// Returns a list of unread topics ordered by date
   ///

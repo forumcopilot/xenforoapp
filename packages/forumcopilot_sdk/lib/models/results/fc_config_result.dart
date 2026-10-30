@@ -1,5 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
+import '../entities/fc_forum_info.dart';
 import '../entities/fc_forum_style.dart';
 
 part 'fc_config_result.mapper.dart';
@@ -112,6 +113,26 @@ class FCConfigResult with FCConfigResultMappable {
   /// App schemes the forum's website may hand a browser sign-in to (empty
   /// when it is off); null when the forum does not say (older add-ons).
   List<String>? browserLoginSchemes;
+
+  /// The notices the forum shows the visitor; null from older add-ons
+  /// (XenForo add-on 1.11.0+, as are the fields below).
+  List<FCForumNotice>? notices;
+
+  /// The forum's terms, privacy policy and contact pages; null when it has
+  /// none (or the add-on is older).
+  String? tosUrl;
+  String? privacyPolicyUrl;
+  String? contactUrl;
+
+  /// The forum's help pages.
+  List<FCForumPage>? helpPages;
+
+  /// Set when the member still has to accept updated terms or privacy
+  /// policy on the website.
+  FCPolicyAcceptance? policyAcceptance;
+
+  /// Why the board is closed; null when it is open.
+  String? boardInactiveMessage;
 
   /// Whether the plugin supports anonymous login
   bool anonymous;
@@ -443,6 +464,13 @@ class FCConfigResult with FCConfigResultMappable {
     this.style,
     this.accountDeletion,
     this.browserLoginSchemes,
+    this.notices,
+    this.tosUrl,
+    this.privacyPolicyUrl,
+    this.contactUrl,
+    this.helpPages,
+    this.policyAcceptance,
+    this.boardInactiveMessage,
   });
 
   /// Helper getters for forum type detection

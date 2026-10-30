@@ -21,8 +21,11 @@ abstract class IFCAccountProxy {
   /// Request for password reset
   Future<FCForgetPasswordResult> forgetPassword(String username, String token, String code);
 
-  /// Update current user's password
-  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword);
+  /// Update current user's password. The forum signs the member's other
+  /// devices out and drops their push registrations; an app that registers
+  /// for push with the forum itself passes its [deviceId] (XenForo add-on
+  /// 1.11.0+) so this device keeps its own.
+  Future<FCUpdatePasswordResult> updatePassword(String oldPassword, String newPassword, {String? deviceId});
 
   /// Update user profile
   Future<FCUpdateProfileResult> updateProfile(String userId, Map<String, dynamic> customFields);

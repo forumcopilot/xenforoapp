@@ -24,9 +24,33 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy, IFCBrow
   }
 
   @override
-  Future<FCIgnoredUserResult> getIgnoredUsersAsync(int page, int perpage) {
-    // TODO: implement getIgnoredUsersAsync
-    throw UnimplementedError();
+  Future<FCIgnoredUserResult> getIgnoredUsersAsync(int page, int perpage) async {
+    // getIgnoredUsers (add-on 1.11.0+): the whole list, by name
+    try {
+      final response = await callPluginApi('getIgnoredUsers', <String, dynamic>{});
+      final list = <FCIgnoredUser>[];
+      if (response['list'] is List) {
+        for (final item in response['list'] as List) {
+          if (item is Map) {
+            list.add(FCIgnoredUser(
+              id: item['id']?.toString() ?? '',
+              username: item['username']?.toString() ?? '',
+              iconUrl: (item['iconUrl']?.toString().isNotEmpty ?? false) ? item['iconUrl'].toString() : null,
+              isIgnored: true,
+            ));
+          }
+        }
+      }
+      return FCIgnoredUserResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        total: (response['total'] as num?)?.toInt() ?? list.length,
+        list: list,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_USER] getIgnoredUsersAsync error: $e');
+      return FCIgnoredUserResult(result: false, resultText: 'Error getting ignored members: $e');
+    }
   }
 
   @override
@@ -180,6 +204,8 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy, IFCBrow
         canBan: response['canBan'] ?? false,
         isBanned: response['isBanned'] ?? false,
         isIgnored: response['isIgnored'] ?? false,
+        // Add-on 1.11.0+ can ignore members; older ones send false
+        canIgnore: response['canIgnore'] ?? false,
         canSpamClean: response['canSpamClean'] ?? false,
         canBeReported: response['canBeReported'] ?? false,
         userGroups: userGroups,
@@ -276,9 +302,20 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy, IFCBrow
   }
 
   @override
-  Future<FCIgnoreUserResult> ignoreUserAsync(String userId, int mode) {
-    // TODO: implement ignoreUserAsync
-    throw UnimplementedError();
+  Future<FCIgnoreUserResult> ignoreUserAsync(String userId, int mode) async {
+    // mode 1 ignores, 0 stops ignoring (add-on 1.11.0+: ignoreUser / unignoreUser)
+    try {
+      final response = await callPluginApi(mode == 0 ? 'unignoreUser' : 'ignoreUser', <String, dynamic>{
+        'userId': userId,
+      });
+      return FCIgnoreUserResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_USER] ignoreUserAsync error: $e');
+      return FCIgnoreUserResult(result: false, resultText: 'Error ignoring member: $e');
+    }
   }
 
   @override
@@ -546,14 +583,18 @@ class XenForoUserProxy extends BaseXenForoProxy implements IFCUserProxy, IFCBrow
   }
 
   @override
-  Future<void> logoutUserAsync() async {
+  Future<void> logoutUserAsync({String? deviceId, String? fcmToken}) async {
     xfDebug('✅ [XENFORO_USER] logoutUser called - IMPLEMENTED');
-    xfDebug('   📋 Parameters: none');
+    xfDebug('   📋 Parameters: deviceId ${deviceId != null ? 'set' : 'none'}, fcmToken ${fcmToken != null ? 'set' : 'none'}');
 
     try {
       final cookieCountBefore = await FCDioClient.instance.cookieCountForUrl(Uri.parse(siteContext.site.pluginUrl));
       xfDebug('🍪 [XENFORO_USER] Cookie count before logout: $cookieCountBefore');
-      await callPluginApi('logout', {});
+      // Add-on 1.11.0+ also drops this device's push registration
+      await callPluginApi('logout', {
+        if (deviceId != null && deviceId.isNotEmpty) 'deviceId': deviceId,
+        if (fcmToken != null && fcmToken.isNotEmpty) 'fcmToken': fcmToken,
+      });
       final setCookieHeader = siteContext.lastCallResponse?.headers['set-cookie'] ?? siteContext.lastCallResponse?.headers['Set-Cookie'];
       xfDebug('🍪 [XENFORO_USER] Logout response Set-Cookie present: ${setCookieHeader != null && setCookieHeader.isNotEmpty}');
       xfDebug('✅ [XENFORO_USER] Logout successful');

@@ -44,6 +44,25 @@ class FCTopicDataResult extends FCBaseResult with FCTopicDataResultMappable {
   /// List of topics in this forum
   List<FCTopic> topics;
 
+  /// How the list can be sorted (key, and the forum's own title for it);
+  /// null from older add-ons (XenForo add-on 1.11.0+, as are the fields
+  /// below), which can't sort or filter.
+  List<FCSortOption>? sortOptions;
+
+  /// The forum's own order (a sort option key) and direction.
+  String? defaultOrder;
+  String? defaultDirection;
+
+  /// The "Last updated" choices, in days (-1: any time).
+  List<int>? dateLimitOptions;
+
+  /// The date limit in effect, in days; 0 for none.
+  int? dateLimitDays;
+
+  /// The filters the forum applied, by getTopic param name (it leaves out
+  /// those that don't apply, as the website does).
+  Map<String, dynamic>? appliedFilters;
+
   // Compatibility properties for snake_case access
   int get total_topic_num => totalTopicNum;
 
@@ -62,7 +81,25 @@ class FCTopicDataResult extends FCBaseResult with FCTopicDataResultMappable {
     this.requirePrefix = false,
     this.prefixes = const [],
     this.topics = const [],
+    this.sortOptions,
+    this.defaultOrder,
+    this.defaultDirection,
+    this.dateLimitOptions,
+    this.dateLimitDays,
+    this.appliedFilters,
   }) : super(result: result, resultText: resultText);
+}
+
+/// One way a thread list can be sorted.
+@MappableClass()
+class FCSortOption with FCSortOptionMappable {
+  /// What getTopic takes as `order`.
+  final String key;
+
+  /// The forum's own name for it.
+  final String title;
+
+  const FCSortOption({required this.key, required this.title});
 }
 
 /// Forum Copilot Prefix
@@ -75,9 +112,13 @@ class FCPrefix with FCPrefixMappable {
   /// Display name for the prefix
   String prefixDisplayName;
 
+  /// The prefix's group, as the website lists them (add-on 1.11.0+).
+  String? group;
+
   FCPrefix({
     required this.prefixId,
     required this.prefixDisplayName,
+    this.group,
   });
 }
 

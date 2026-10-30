@@ -18,6 +18,7 @@ class FCTopicDataResultMapper extends ClassMapperBase<FCTopicDataResult> {
       FCBaseResultMapper.ensureInitialized();
       FCPrefixMapper.ensureInitialized();
       FCTopicMapper.ensureInitialized();
+      FCSortOptionMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -118,6 +119,39 @@ class FCTopicDataResultMapper extends ClassMapperBase<FCTopicDataResult> {
     opt: true,
     def: const [],
   );
+  static List<FCSortOption>? _$sortOptions(FCTopicDataResult v) =>
+      v.sortOptions;
+  static const Field<FCTopicDataResult, List<FCSortOption>> _f$sortOptions =
+      Field('sortOptions', _$sortOptions, opt: true);
+  static String? _$defaultOrder(FCTopicDataResult v) => v.defaultOrder;
+  static const Field<FCTopicDataResult, String> _f$defaultOrder = Field(
+    'defaultOrder',
+    _$defaultOrder,
+    opt: true,
+  );
+  static String? _$defaultDirection(FCTopicDataResult v) => v.defaultDirection;
+  static const Field<FCTopicDataResult, String> _f$defaultDirection = Field(
+    'defaultDirection',
+    _$defaultDirection,
+    opt: true,
+  );
+  static List<int>? _$dateLimitOptions(FCTopicDataResult v) =>
+      v.dateLimitOptions;
+  static const Field<FCTopicDataResult, List<int>> _f$dateLimitOptions = Field(
+    'dateLimitOptions',
+    _$dateLimitOptions,
+    opt: true,
+  );
+  static int? _$dateLimitDays(FCTopicDataResult v) => v.dateLimitDays;
+  static const Field<FCTopicDataResult, int> _f$dateLimitDays = Field(
+    'dateLimitDays',
+    _$dateLimitDays,
+    opt: true,
+  );
+  static Map<String, dynamic>? _$appliedFilters(FCTopicDataResult v) =>
+      v.appliedFilters;
+  static const Field<FCTopicDataResult, Map<String, dynamic>>
+  _f$appliedFilters = Field('appliedFilters', _$appliedFilters, opt: true);
 
   @override
   final MappableFields<FCTopicDataResult> fields = const {
@@ -135,6 +169,12 @@ class FCTopicDataResultMapper extends ClassMapperBase<FCTopicDataResult> {
     #requirePrefix: _f$requirePrefix,
     #prefixes: _f$prefixes,
     #topics: _f$topics,
+    #sortOptions: _f$sortOptions,
+    #defaultOrder: _f$defaultOrder,
+    #defaultDirection: _f$defaultDirection,
+    #dateLimitOptions: _f$dateLimitOptions,
+    #dateLimitDays: _f$dateLimitDays,
+    #appliedFilters: _f$appliedFilters,
   };
 
   static FCTopicDataResult _instantiate(DecodingData data) {
@@ -153,6 +193,12 @@ class FCTopicDataResultMapper extends ClassMapperBase<FCTopicDataResult> {
       requirePrefix: data.dec(_f$requirePrefix),
       prefixes: data.dec(_f$prefixes),
       topics: data.dec(_f$topics),
+      sortOptions: data.dec(_f$sortOptions),
+      defaultOrder: data.dec(_f$defaultOrder),
+      defaultDirection: data.dec(_f$defaultDirection),
+      dateLimitOptions: data.dec(_f$dateLimitOptions),
+      dateLimitDays: data.dec(_f$dateLimitDays),
+      appliedFilters: data.dec(_f$appliedFilters),
     );
   }
 
@@ -230,6 +276,15 @@ abstract class FCTopicDataResultCopyWith<
   ListCopyWith<$R, FCPrefix, FCPrefixCopyWith<$R, FCPrefix, FCPrefix>>
   get prefixes;
   ListCopyWith<$R, FCTopic, FCTopicCopyWith<$R, FCTopic, FCTopic>> get topics;
+  ListCopyWith<
+    $R,
+    FCSortOption,
+    FCSortOptionCopyWith<$R, FCSortOption, FCSortOption>
+  >?
+  get sortOptions;
+  ListCopyWith<$R, int, ObjectCopyWith<$R, int, int>>? get dateLimitOptions;
+  MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>?
+  get appliedFilters;
   @override
   $R call({
     bool? result,
@@ -246,6 +301,12 @@ abstract class FCTopicDataResultCopyWith<
     bool? requirePrefix,
     List<FCPrefix>? prefixes,
     List<FCTopic>? topics,
+    List<FCSortOption>? sortOptions,
+    String? defaultOrder,
+    String? defaultDirection,
+    List<int>? dateLimitOptions,
+    int? dateLimitDays,
+    Map<String, dynamic>? appliedFilters,
   });
   FCTopicDataResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -275,6 +336,37 @@ class _FCTopicDataResultCopyWithImpl<$R, $Out>
         (v) => call(topics: v),
       );
   @override
+  ListCopyWith<
+    $R,
+    FCSortOption,
+    FCSortOptionCopyWith<$R, FCSortOption, FCSortOption>
+  >?
+  get sortOptions => $value.sortOptions != null
+      ? ListCopyWith(
+          $value.sortOptions!,
+          (v, t) => v.copyWith.$chain(t),
+          (v) => call(sortOptions: v),
+        )
+      : null;
+  @override
+  ListCopyWith<$R, int, ObjectCopyWith<$R, int, int>>? get dateLimitOptions =>
+      $value.dateLimitOptions != null
+      ? ListCopyWith(
+          $value.dateLimitOptions!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(dateLimitOptions: v),
+        )
+      : null;
+  @override
+  MapCopyWith<$R, String, dynamic, ObjectCopyWith<$R, dynamic, dynamic>>?
+  get appliedFilters => $value.appliedFilters != null
+      ? MapCopyWith(
+          $value.appliedFilters!,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(appliedFilters: v),
+        )
+      : null;
+  @override
   $R call({
     bool? result,
     String? resultText,
@@ -290,6 +382,12 @@ class _FCTopicDataResultCopyWithImpl<$R, $Out>
     bool? requirePrefix,
     List<FCPrefix>? prefixes,
     List<FCTopic>? topics,
+    Object? sortOptions = $none,
+    Object? defaultOrder = $none,
+    Object? defaultDirection = $none,
+    Object? dateLimitOptions = $none,
+    Object? dateLimitDays = $none,
+    Object? appliedFilters = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -307,6 +405,12 @@ class _FCTopicDataResultCopyWithImpl<$R, $Out>
       if (requirePrefix != null) #requirePrefix: requirePrefix,
       if (prefixes != null) #prefixes: prefixes,
       if (topics != null) #topics: topics,
+      if (sortOptions != $none) #sortOptions: sortOptions,
+      if (defaultOrder != $none) #defaultOrder: defaultOrder,
+      if (defaultDirection != $none) #defaultDirection: defaultDirection,
+      if (dateLimitOptions != $none) #dateLimitOptions: dateLimitOptions,
+      if (dateLimitDays != $none) #dateLimitDays: dateLimitDays,
+      if (appliedFilters != $none) #appliedFilters: appliedFilters,
     }),
   );
   @override
@@ -331,6 +435,12 @@ class _FCTopicDataResultCopyWithImpl<$R, $Out>
     requirePrefix: data.get(#requirePrefix, or: $value.requirePrefix),
     prefixes: data.get(#prefixes, or: $value.prefixes),
     topics: data.get(#topics, or: $value.topics),
+    sortOptions: data.get(#sortOptions, or: $value.sortOptions),
+    defaultOrder: data.get(#defaultOrder, or: $value.defaultOrder),
+    defaultDirection: data.get(#defaultDirection, or: $value.defaultDirection),
+    dateLimitOptions: data.get(#dateLimitOptions, or: $value.dateLimitOptions),
+    dateLimitDays: data.get(#dateLimitDays, or: $value.dateLimitDays),
+    appliedFilters: data.get(#appliedFilters, or: $value.appliedFilters),
   );
 
   @override
@@ -363,17 +473,25 @@ class FCPrefixMapper extends ClassMapperBase<FCPrefix> {
     'prefixDisplayName',
     _$prefixDisplayName,
   );
+  static String? _$group(FCPrefix v) => v.group;
+  static const Field<FCPrefix, String> _f$group = Field(
+    'group',
+    _$group,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCPrefix> fields = const {
     #prefixId: _f$prefixId,
     #prefixDisplayName: _f$prefixDisplayName,
+    #group: _f$group,
   };
 
   static FCPrefix _instantiate(DecodingData data) {
     return FCPrefix(
       prefixId: data.dec(_f$prefixId),
       prefixDisplayName: data.dec(_f$prefixDisplayName),
+      group: data.dec(_f$group),
     );
   }
 
@@ -434,7 +552,7 @@ extension FCPrefixValueCopy<$R, $Out> on ObjectCopyWith<$R, FCPrefix, $Out> {
 
 abstract class FCPrefixCopyWith<$R, $In extends FCPrefix, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? prefixId, String? prefixDisplayName});
+  $R call({String? prefixId, String? prefixDisplayName, String? group});
   FCPrefixCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -447,10 +565,15 @@ class _FCPrefixCopyWithImpl<$R, $Out>
   late final ClassMapperBase<FCPrefix> $mapper =
       FCPrefixMapper.ensureInitialized();
   @override
-  $R call({String? prefixId, String? prefixDisplayName}) => $apply(
+  $R call({
+    String? prefixId,
+    String? prefixDisplayName,
+    Object? group = $none,
+  }) => $apply(
     FieldCopyWithData({
       if (prefixId != null) #prefixId: prefixId,
       if (prefixDisplayName != null) #prefixDisplayName: prefixDisplayName,
+      if (group != $none) #group: group,
     }),
   );
   @override
@@ -460,12 +583,135 @@ class _FCPrefixCopyWithImpl<$R, $Out>
       #prefixDisplayName,
       or: $value.prefixDisplayName,
     ),
+    group: data.get(#group, or: $value.group),
   );
 
   @override
   FCPrefixCopyWith<$R2, FCPrefix, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   ) => _FCPrefixCopyWithImpl<$R2, $Out2>($value, $cast, t);
+}
+
+class FCSortOptionMapper extends ClassMapperBase<FCSortOption> {
+  FCSortOptionMapper._();
+
+  static FCSortOptionMapper? _instance;
+  static FCSortOptionMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = FCSortOptionMapper._());
+    }
+    return _instance!;
+  }
+
+  @override
+  final String id = 'FCSortOption';
+
+  static String _$key(FCSortOption v) => v.key;
+  static const Field<FCSortOption, String> _f$key = Field('key', _$key);
+  static String _$title(FCSortOption v) => v.title;
+  static const Field<FCSortOption, String> _f$title = Field('title', _$title);
+
+  @override
+  final MappableFields<FCSortOption> fields = const {
+    #key: _f$key,
+    #title: _f$title,
+  };
+
+  static FCSortOption _instantiate(DecodingData data) {
+    return FCSortOption(key: data.dec(_f$key), title: data.dec(_f$title));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static FCSortOption fromMap(Map<String, dynamic> map) {
+    return ensureInitialized().decodeMap<FCSortOption>(map);
+  }
+
+  static FCSortOption fromJson(String json) {
+    return ensureInitialized().decodeJson<FCSortOption>(json);
+  }
+}
+
+mixin FCSortOptionMappable {
+  String toJson() {
+    return FCSortOptionMapper.ensureInitialized().encodeJson<FCSortOption>(
+      this as FCSortOption,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return FCSortOptionMapper.ensureInitialized().encodeMap<FCSortOption>(
+      this as FCSortOption,
+    );
+  }
+
+  FCSortOptionCopyWith<FCSortOption, FCSortOption, FCSortOption> get copyWith =>
+      _FCSortOptionCopyWithImpl<FCSortOption, FCSortOption>(
+        this as FCSortOption,
+        $identity,
+        $identity,
+      );
+  @override
+  String toString() {
+    return FCSortOptionMapper.ensureInitialized().stringifyValue(
+      this as FCSortOption,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return FCSortOptionMapper.ensureInitialized().equalsValue(
+      this as FCSortOption,
+      other,
+    );
+  }
+
+  @override
+  int get hashCode {
+    return FCSortOptionMapper.ensureInitialized().hashValue(
+      this as FCSortOption,
+    );
+  }
+}
+
+extension FCSortOptionValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, FCSortOption, $Out> {
+  FCSortOptionCopyWith<$R, FCSortOption, $Out> get $asFCSortOption =>
+      $base.as((v, t, t2) => _FCSortOptionCopyWithImpl<$R, $Out>(v, t, t2));
+}
+
+abstract class FCSortOptionCopyWith<$R, $In extends FCSortOption, $Out>
+    implements ClassCopyWith<$R, $In, $Out> {
+  $R call({String? key, String? title});
+  FCSortOptionCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _FCSortOptionCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, FCSortOption, $Out>
+    implements FCSortOptionCopyWith<$R, FCSortOption, $Out> {
+  _FCSortOptionCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<FCSortOption> $mapper =
+      FCSortOptionMapper.ensureInitialized();
+  @override
+  $R call({String? key, String? title}) => $apply(
+    FieldCopyWithData({
+      if (key != null) #key: key,
+      if (title != null) #title: title,
+    }),
+  );
+  @override
+  FCSortOption $make(CopyWithData data) => FCSortOption(
+    key: data.get(#key, or: $value.key),
+    title: data.get(#title, or: $value.title),
+  );
+
+  @override
+  FCSortOptionCopyWith<$R2, FCSortOption, $Out2> $chain<$R2, $Out2>(
+    Then<$Out2, $R2> t,
+  ) => _FCSortOptionCopyWithImpl<$R2, $Out2>($value, $cast, t);
 }
 
 class FCNewTopicResultMapper extends ClassMapperBase<FCNewTopicResult> {

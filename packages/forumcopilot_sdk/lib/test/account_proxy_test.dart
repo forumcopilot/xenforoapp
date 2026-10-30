@@ -109,7 +109,12 @@ void runAccountProxyTests(IFCAccountProxy accountProxy, TestConfig config) {
       if (helper.skipIfNotAuthenticated('updateEmail')) {
         return;
       }
-      final result = await accountProxy.updateEmail(config.password, 'newemail@example.com');
+      // The member's own address again: it goes through the password check,
+      // validation and save without changing anything. A new address left a
+      // member who isn't staff waiting for email confirmation on a forum
+      // that asks for it (XenForo's "email_confirm_edit"), changing it back
+      // doesn't end that, and every later member action failed.
+      final result = await accountProxy.updateEmail(config.password, config.email);
       helper.assertResultTrue(result, 'updateEmail');
       } on UnimplementedError {
         print('⚠️  Skipping updateEmail - updateEmail is not implemented by this platform');

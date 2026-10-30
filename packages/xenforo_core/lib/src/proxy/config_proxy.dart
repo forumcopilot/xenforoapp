@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_reaction.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_forum_info.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_forum_style.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_config_proxy.dart';
+import 'package:forumcopilot_sdk/interfaces/i_fc_notice_dismissal.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
@@ -11,7 +13,7 @@ import '../network/xenforo_client.dart';
 
 /// XenForo implementation of IFCConfigProxy
 /// Handles forum configuration retrieval for XenForo forums
-class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
+class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy, IFCNoticeDismissal {
   XenForoConfigProxy(SiteContext context, {XenForoClient? client}) : super(context, client: client);
 
   @override
@@ -125,8 +127,9 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
         getActivity: response['getActivity'] ?? true,
         searchUser: response['searchUser'] ?? true,
         userRecommended: response['userRecommended'] ?? true,
-        ignoreUser: response['ignoreUser'] ?? true,
-        getIgnoredUsers: response['getIgnoredUsers'] ?? true,
+        // Every add-on sends it (false before 1.11.0); missing means no.
+        ignoreUser: response['ignoreUser'] ?? false,
+        getIgnoredUsers: response['getIgnoredUsers'] ?? false,
         unban: response['unban'] ?? true,
         banExpires: response['banExpires'] ?? true,
         advancedMerge: response['advancedMerge'] ?? true,
@@ -156,6 +159,14 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
         browserLoginSchemes: response['browserLoginSchemes'] is List
             ? [for (final s in response['browserLoginSchemes'] as List) s.toString()]
             : null,
+        // Add-on 1.11.0+
+        notices: FCForumNotice.listFromJson(response['notices']),
+        tosUrl: _nonEmpty(response['tosUrl']),
+        privacyPolicyUrl: _nonEmpty(response['privacyPolicyUrl']),
+        contactUrl: _nonEmpty(response['contactUrl']),
+        helpPages: FCForumPage.listFromJson(response['helpPages']),
+        policyAcceptance: FCPolicyAcceptance.fromJson(response['policyAcceptance']),
+        boardInactiveMessage: _nonEmpty(response['boardInactiveMessage']),
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_CONFIG] Error getting config: $e');
@@ -271,6 +282,23 @@ class XenForoConfigProxy extends BaseXenForoProxy implements IFCConfigProxy {
         mbqFrameVersion: '1.0',
         forumType: 'xenforo',
       );
+    }
+  }
+
+  static String? _nonEmpty(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty ? null : text;
+  }
+
+  @override
+  Future<bool> dismissNoticeAsync(int noticeId) async {
+    try {
+      // Add-on 1.11.0+: getConfig closes the notice for the member
+      final response = await callPluginApi('getConfig', {'dismissNoticeId': noticeId});
+      return response['result'] != false;
+    } catch (e) {
+      xfDebug('❌ [XENFORO_CONFIG] dismissNotice error: $e');
+      return false;
     }
   }
 }

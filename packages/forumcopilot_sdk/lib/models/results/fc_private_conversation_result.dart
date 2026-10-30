@@ -376,6 +376,10 @@ class FCConversationMessage with FCConversationMessageMappable {
   /// Message content
   String textBody;
 
+  /// The message as the forum renders it, HTML (XenForo add-on 1.11.0's
+  /// contentHtml); null or empty when not sent: draw [textBody].
+  String? contentHtml;
+
   /// Message time
   String messageTime;
 
@@ -438,6 +442,7 @@ class FCConversationMessage with FCConversationMessageMappable {
     this.isFirstMessage,
     this.canReport,
     this.isIgnored,
+    this.contentHtml,
     this.canEdit,
     this.messageNumber,
     this.polls = const [],

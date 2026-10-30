@@ -504,4 +504,434 @@ void main() {
       expect(client.requests.last['params'], {'code': 'c', 'verifier': 'right'});
     });
   });
+
+  group('add-on 1.11.0', () {
+    test('sign-out passes the device for push, only when the app has one', () async {
+      final client = _ScriptedClient({'logout': (_) => _ok({'result': true}, signedIn: false)});
+      final factory = XenForoProxyFactory(client: client);
+
+      await factory.createUserProxy(_context()).logoutUserAsync(deviceId: 'dev-1', fcmToken: 'tok-1');
+      await factory.createUserProxy(_context()).logoutUserAsync();
+
+      expect(client.requests[0]['params'], {'deviceId': 'dev-1', 'fcmToken': 'tok-1'});
+      expect(client.requests[1]['params'], isEmpty, reason: 'apps on hosted push send nothing');
+    });
+
+    test('a password change keeps this device registered when it says which it is', () async {
+      final client = _ScriptedClient({'updatePassword': (_) => _ok({'result': true})});
+      final proxy = XenForoProxyFactory(client: client).createAccountProxy(_context());
+
+      final changed = await proxy.updatePassword('old', 'new', deviceId: 'dev-1');
+
+      expect(changed.result, isTrue);
+      expect(client.requests.single['params'], {'oldPassword': 'old', 'newPassword': 'new', 'deviceId': 'dev-1'});
+    });
+
+    test('ignoring: the list, the calls, and posts by ignored members', () async {
+      final client = _ScriptedClient({
+        'getIgnoredUsers': (_) => _ok({
+              'result': true,
+              'total': 1,
+              'list': [
+                {'id': '6', 'username': 'dan', 'iconUrl': ''},
+              ],
+            }),
+        'ignoreUser': (_) => _ok({'result': true, 'isIgnored': true}),
+        'unignoreUser': (_) => _ok({'result': true, 'isIgnored': false}),
+        'getUserInfo': (_) => _ok({'result': true, 'id': '6', 'username': 'dan', 'canIgnore': true, 'isIgnored': true}),
+        'getThread': (_) => _ok({
+              ..._thread(),
+              'posts': [
+                for (final p in _thread()['posts'] as List) {...p as Map<String, dynamic>, 'isIgnored': p['authorId'] == '2'},
+              ],
+            }),
+      });
+      final factory = XenForoProxyFactory(client: client);
+      final users = factory.createUserProxy(_context());
+
+      final list = await users.getIgnoredUsersAsync(1, 100);
+      expect(list.list.single.username, 'dan');
+      expect(list.list.single.iconUrl, isNull, reason: 'no avatar');
+      expect((await users.ignoreUserAsync('6', 1)).result, isTrue);
+      expect((await users.ignoreUserAsync('6', 0)).result, isTrue);
+      expect(client.requests.skip(1).take(2).map((r) => r['method']), ['ignoreUser', 'unignoreUser']);
+      final info = await users.getUserInfoAsync(null, '6');
+      expect((info.canIgnore, info.isIgnored), (true, true));
+      final thread = await factory.createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(thread.posts.map((p) => p.isIgnored), [false, true]);
+    });
+
+    test('older add-ons: nobody can be ignored and no post is', () async {
+      final client = _ScriptedClient({
+        'getUserInfo': (_) => _ok({'result': true, 'id': '6', 'username': 'dan'}),
+        'getThread': (_) => _ok(_thread()),
+      });
+      final factory = XenForoProxyFactory(client: client);
+      final info = await factory.createUserProxy(_context()).getUserInfoAsync(null, '6');
+      expect((info.canIgnore, info.isIgnored), (false, false));
+      final thread = await factory.createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(thread.posts.every((p) => !p.isIgnored), isTrue);
+    });
+
+    test('moderation calls reach the add-on, and a refusal keeps its reason', () async {
+      final client = _ScriptedClient({
+        for (final m in ['stickTopic', 'unstickTopic', 'undeleteTopic', 'undeletePost', 'moveTopic', 'renameTopic', 'approveTopic', 'approvePost'])
+          m: (params) => params['topicId'] == '0'
+              ? _ok({'result': false, 'resultText': 'The requested thread could not be found.', 'errorCode': 'not_found'})
+              : _ok({'result': true}),
+      });
+      final mod = XenForoProxyFactory(client: client).createModerationProxy(_context());
+
+      expect((await mod.stickTopicAsync('7')).result, isTrue);
+      expect((await mod.unstickTopicAsync('7')).result, isTrue);
+      expect((await mod.undeleteTopicAsync('7', 'r')).result, isTrue);
+      expect((await mod.undeletePostAsync('101', 'r')).result, isTrue);
+      expect((await mod.moveTopicAsync('7', '4', true)).result, isTrue);
+      expect((await mod.renameTopicAsync('7', 'New title')).result, isTrue);
+      expect((await mod.approveTopicAsync('7')).result, isTrue);
+      expect((await mod.approvePostAsync('101')).result, isTrue);
+      final refused = await mod.renameTopicAsync('0', 'x');
+      expect((refused.result, refused.resultText), (false, 'The requested thread could not be found.'));
+
+      expect(client.requests[4]['params'], {'topicId': '7', 'forumId': '4', 'redirect': true});
+      expect(client.requests[5]['params'], {'topicId': '7', 'title': 'New title'});
+    });
+
+    test('alerts: read state comes through, and marking read is sent only when asked', () async {
+      final client = _ScriptedClient({
+        'getAlert': (_) => _ok({
+              'result': true,
+              'total': 2,
+              'items': [
+                {'id': 9, 'type': 'post', 'message': 'A reply', 'timestamp': 1760000000000, 'isRead': true, 'isUnread': true},
+                {'id': 8, 'type': 'post', 'message': 'Older', 'timestamp': 1750000000000, 'isRead': true, 'isUnread': false},
+              ],
+            }),
+      });
+      final social = XenForoProxyFactory(client: client).createSocialProxy(_context());
+
+      final alerts = await social.getAlertAsync(1, 20, true);
+      expect(alerts.items.map((a) => (a.alertId, a.isRead, a.isUnread)), [(9, true, true), (8, true, false)]);
+      await social.getAlertAsync(1, 1, false, markReadIds: [9], skipMarkRead: true);
+      await social.getAlertAsync(1, 20, true, markAllRead: true);
+
+      expect(client.requests[0]['params'], {'page': 1, 'perpage': 20, 'forceRefresh': true}, reason: 'as before');
+      expect(client.requests[1]['params'], containsPair('markReadIds', [9]));
+      expect(client.requests[1]['params'], containsPair('skipMarkRead', true));
+      expect(client.requests[2]['params'], containsPair('markAllRead', true));
+      expect(client.requests[2]['params'], isNot(contains('skipMarkRead')));
+    });
+
+    test('alerts from an older add-on have no read state', () async {
+      final client = _ScriptedClient({
+        'getAlert': (_) => _ok({
+              'result': true,
+              'total': 1,
+              'items': [
+                {'id': 9, 'type': 'post', 'message': 'A reply', 'timestamp': 1760000000000, 'isRead': false},
+              ],
+            }),
+      });
+      final alerts = await XenForoProxyFactory(client: client).createSocialProxy(_context()).getAlertAsync(1, 20, true);
+      expect((alerts.items.single.isRead, alerts.items.single.isUnread), (false, null));
+    });
+
+    test('question and suggestion threads: type, solved, score; the solution post', () async {
+      final client = _ScriptedClient({
+        'getTopic': (_) => _ok({
+              'result': true,
+              'totalTopicNum': 2,
+              'topics': [
+                {..._thread(), 'id': '7', 'posts': null, 'threadType': 'question', 'isSolved': true, 'solutionPostId': 102},
+                {..._thread(), 'id': '8', 'posts': null, 'threadType': 'suggestion', 'voteScore': 5, 'voteCount': 7, 'canVote': true},
+              ],
+            }),
+        'getThread': (_) => _ok({
+              ..._thread(),
+              'threadType': 'question',
+              'solutionPostId': 102,
+              'posts': [
+                for (final p in _thread()['posts'] as List)
+                  {...p as Map<String, dynamic>, 'isSolution': p['id'] == '102', 'signature': p['id'] == '101' ? 'Ann' : null},
+              ],
+            }),
+      });
+      final factory = XenForoProxyFactory(client: client);
+
+      final topics = await factory.createTopicProxy(_context()).getTopicAsync('3', 0, 19);
+      expect(topics.topics.map((t) => (t.threadType, t.isSolved, t.voteScore)),
+          [('question', true, null), ('suggestion', false, 5)]);
+      expect((topics.topics[1].voteCount, topics.topics[1].canVote), (7, true));
+      final thread = await factory.createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(thread.threadType, 'question');
+      expect(thread.posts.map((p) => p.isSolution), [false, true]);
+      expect(thread.posts.map((p) => p.signature), ['Ann', null], reason: 'none, or hidden by the member');
+    });
+
+    test("the forum's notices, pages and policy state; closing a notice", () async {
+      final client = _ScriptedClient({
+        'getConfig': (params) => params.containsKey('dismissNoticeId')
+            ? _ok({'result': true})
+            : _ok({
+                'result': true,
+                'ignoreUser': true,
+                'notices': [
+                  {'id': 3, 'type': 'block', 'title': 'Welcome', 'message': 'Read the rules.', 'dismissible': true},
+                  {'id': 4, 'type': 'floating', 'title': '', 'message': '   '},
+                ],
+                'tosUrl': 'https://forum.example.com/help/terms/',
+                'privacyPolicyUrl': '',
+                'contactUrl': 'https://forum.example.com/misc/contact',
+                'helpPages': [
+                  {'id': 'smilies', 'title': 'Smilies', 'url': 'https://forum.example.com/help/smilies/'},
+                ],
+                'policyAcceptance': {'required': true, 'termsRequired': true, 'privacyRequired': false, 'acceptUrl': 'https://forum.example.com/misc/accept-terms'},
+                'boardInactiveMessage': '',
+              }),
+      });
+      final proxy = XenForoProxyFactory(client: client).createConfigProxy(_context());
+
+      final config = await proxy.getConfig('https://forum.example.com');
+      expect(config.notices!.map((n) => (n.id, n.title, n.message, n.dismissible)), [(3, 'Welcome', 'Read the rules.', true)],
+          reason: 'a notice without text is left out');
+      expect((config.tosUrl, config.privacyPolicyUrl, config.contactUrl),
+          ('https://forum.example.com/help/terms/', null, 'https://forum.example.com/misc/contact'));
+      expect(config.helpPages!.single.title, 'Smilies');
+      expect((config.policyAcceptance!.termsRequired, config.policyAcceptance!.acceptUrl),
+          (true, 'https://forum.example.com/misc/accept-terms'));
+      expect(config.boardInactiveMessage, isNull, reason: 'the board is open');
+      expect(config.ignoreUser, isTrue);
+
+      expect(await (proxy as IFCNoticeDismissal).dismissNoticeAsync(3), isTrue);
+      expect(client.requests.last['params'], {'dismissNoticeId': 3});
+    });
+
+    test('an older add-on sends none of these, and no ignoring', () async {
+      final client = _ScriptedClient({'getConfig': (_) => _ok({'result': true})});
+      final config = await XenForoProxyFactory(client: client).createConfigProxy(_context()).getConfig('https://forum.example.com');
+      expect((config.notices, config.tosUrl, config.helpPages, config.policyAcceptance), (null, null, null, null));
+      expect(config.ignoreUser, isFalse);
+    });
+
+    test('forums: the watch as the forum has it, and watching with options', () async {
+      final client = _ScriptedClient({
+        'getForum': (_) => _ok({
+              'result': true,
+              'forums': [
+                {'id': 4, 'name': 'News', 'threadCount': 3, 'isSubscribed': true, 'canSubscribe': true, 'notifyOn': 'message',
+                  'sendAlert': true, 'sendEmail': false, 'allowedWatchNotifications': 'all'},
+                {'id': 5, 'name': 'Old', 'threadCount': 3},
+              ],
+            }),
+        'subscribeForum': (_) => _ok({'result': true}),
+      });
+      final factory = XenForoProxyFactory(client: client);
+
+      final forums = (await factory.createForumProxy(_context()).getForumAsync(true, '', true)).forums;
+      expect(forums.map((f) => (f.isSubscribed, f.notifyOn, f.sendAlert, f.sendEmail, f.allowedWatchNotifications)),
+          [(true, 'message', true, false, 'all'), (false, null, null, null, null)]);
+      final subscriptions = factory.createSubscriptionProxy(_context());
+      await subscriptions.subscribeForumAsync('4', 0, notifyOn: 'thread', sendAlert: true, sendEmail: false);
+      await subscriptions.subscribeForumAsync('5', 1);
+      expect(client.requests[1]['params'], {'forumId': '4', 'subscribeMode': 0, 'notifyOn': 'thread', 'sendAlert': true, 'sendEmail': false});
+      expect(client.requests[2]['params'], {'forumId': '5', 'subscribeMode': 1}, reason: 'as before');
+    });
+
+    test("threads: the watch's email option, sent only when chosen, and read back", () async {
+      final client = _ScriptedClient({
+        'subscribeTopic': (params) => _ok({'result': true, 'isSubscribed': true, 'emailSubscribe': params['emailSubscribe'] ?? true}),
+        'getTopic': (_) => _ok({
+              'result': true,
+              'totalTopicNum': 1,
+              'topics': [
+                {..._thread(), 'posts': null, 'isSubscribed': true, 'emailSubscribe': true},
+              ],
+            }),
+      });
+      final factory = XenForoProxyFactory(client: client);
+      final subscriptions = factory.createSubscriptionProxy(_context());
+
+      final current = await subscriptions.subscribeTopicAsync('7', 0);
+      final changed = await subscriptions.subscribeTopicAsync('7', 0, emailSubscribe: false);
+      expect(client.requests[0]['params'], {'topicId': '7', 'subscribeMode': 0}, reason: 'leaves a watch as it is');
+      expect(client.requests[1]['params'], {'topicId': '7', 'subscribeMode': 0, 'emailSubscribe': false});
+      expect((current.isSubscribed, current.emailSubscribe), (true, true));
+      expect(changed.emailSubscribe, isFalse);
+      final topics = await factory.createTopicProxy(_context()).getTopicAsync('3', 0, 19);
+      expect(topics.topics.single.emailSubscribe, isTrue);
+    });
+
+    test("a forum's threads sorted and filtered, with the forum's sort options", () async {
+      final client = _ScriptedClient({
+        'getTopic': (params) => _ok({
+              'result': true,
+              'totalTopicNum': 0,
+              'topics': [],
+              'prefixes': [
+                {'id': '2', 'title': 'Closed', 'group': 'Status'},
+              ],
+              'sortOptions': [
+                {'key': 'last_post_date', 'title': 'Last message'},
+                {'key': 'title', 'title': 'Title'},
+              ],
+              'defaultOrder': 'last_post_date',
+              'defaultDirection': 'desc',
+              'dateLimitDays': 0,
+              'dateLimitOptions': [-1, 7, 30],
+            }),
+      });
+      final topics = XenForoProxyFactory(client: client).createTopicProxy(_context());
+
+      final plain = await topics.getTopicAsync('9', 0, 19);
+      await topics.getTopicAsync('9', 0, 19,
+          filters: const FCTopicFilters(order: 'title', direction: 'asc', prefixId: 2, starterName: ' ann ', lastDays: 30));
+      expect(client.requests[0]['params'], {'forumId': '9', 'startNum': 0, 'lastNum': 19}, reason: 'as before');
+      expect(client.requests[1]['params'], {
+        'forumId': '9', 'startNum': 0, 'lastNum': 19,
+        'order': 'title', 'direction': 'asc', 'prefixId': 2, 'starterName': 'ann', 'lastDays': 30,
+      });
+      expect(plain.sortOptions!.map((o) => (o.key, o.title)), [('last_post_date', 'Last message'), ('title', 'Title')]);
+      expect((plain.defaultOrder, plain.defaultDirection, plain.dateLimitDays), ('last_post_date', 'desc', 0));
+      expect(plain.dateLimitOptions, [-1, 7, 30]);
+      expect(plain.prefixes.single.group, 'Status');
+    });
+
+    test('the filters the forum applied, without its own order and date limit', () async {
+      final client = _ScriptedClient({
+        'getTopic': (_) => _ok({
+              'result': true,
+              'totalTopicNum': 0,
+              'topics': [],
+              'appliedFilters': {'prefixId': 2, 'lastDays': 30, 'order': 'last_post_date', 'direction': 'desc'},
+              'defaultOrder': 'last_post_date',
+              'defaultDirection': 'desc',
+              'dateLimitDays': 0,
+            }),
+      });
+      final result = await XenForoProxyFactory(client: client)
+          .createTopicProxy(_context())
+          .getTopicAsync('9', 0, 19, filters: const FCTopicFilters(prefixId: 2, starterName: 'ghost', lastDays: 30));
+      final applied = FCTopicFilters.fromApplied(result.appliedFilters!,
+          defaultOrder: result.defaultOrder, defaultDirection: result.defaultDirection, dateLimitDays: result.dateLimitDays!);
+      expect((applied.prefixId, applied.starterName, applied.lastDays, applied.order, applied.direction), (2, null, 30, null, null),
+          reason: 'the unknown member was ignored; the forum order is no filter');
+    });
+
+    test('an older add-on: no sort options, so the app offers none', () async {
+      final client = _ScriptedClient({'getTopic': (_) => _ok({'result': true, 'totalTopicNum': 0, 'topics': []})});
+      final result = await XenForoProxyFactory(client: client).createTopicProxy(_context()).getTopicAsync('9', 0, 19);
+      expect((result.sortOptions, result.dateLimitOptions), (null, null));
+    });
+
+    test("posting a thread: the forum's options, and tags, fields, type and poll sent", () async {
+      final client = _ScriptedClient({
+        'getForum': (_) => _ok({
+              'result': true,
+              'forums': [
+                {
+                  'id': 9, 'name': 'Bugs', 'threadCount': 1, 'canPost': true,
+                  'forumType': 'discussion', 'canTag': true, 'minTags': 1, 'canCreatePoll': true,
+                  'threadTypes': [
+                    {'type': 'discussion', 'title': 'Discussion'},
+                    {'type': 'poll', 'title': 'Poll'},
+                  ],
+                  'defaultThreadType': 'discussion',
+                  'threadFields': [
+                    {'id': 'os', 'title': 'OS', 'description': 'Which system', 'type': 'select', 'required': true,
+                      'choices': [{'value': 'ios', 'title': 'iOS'}, {'value': 'android', 'title': 'Android'}], 'group': 'before', 'maxLength': 0},
+                    {'id': 'areas', 'title': 'Areas', 'type': 'checkbox', 'choices': [{'value': 'ui', 'title': 'UI'}]},
+                  ],
+                },
+                {'id': 5, 'name': 'Old', 'threadCount': 1},
+              ],
+            }),
+        'newTopic': (_) => _ok({'result': true, 'topicId': '77', 'state': 0}),
+      });
+      final factory = XenForoProxyFactory(client: client);
+
+      final forums = (await factory.createForumProxy(_context()).getForumAsync(true, '', true)).forums;
+      final options = forums.first.postingOptions!;
+      expect((options.canTag, options.minTags, options.canCreatePoll, options.defaultThreadType), (true, 1, true, 'discussion'));
+      expect(options.threadTypes.map((t) => t.title), ['Discussion', 'Poll']);
+      expect(options.threadFields.map((f) => (f.id, f.type, f.required, f.isMultiple)), [('os', 'select', true, false), ('areas', 'checkbox', false, true)]);
+      expect(options.threadFields.first.choices.map((c) => c.title), ['iOS', 'Android']);
+      expect(forums[1].postingOptions, isNull, reason: 'an older add-on');
+
+      final posted = await factory.createTopicProxy(_context()).newTopic('9', 'Crash', 'It crashes',
+          tags: ['crash', 'ios'], customFields: {'os': 'ios', 'areas': ['ui']}, threadType: 'poll',
+          poll: const FCNewPoll(question: 'Seen it?', responses: ['Yes', 'No'], maxVotes: 0, closeDays: 7));
+      expect(posted.topicId, '77');
+      final sent = client.requests.last['params'] as Map;
+      expect(sent['tags'], ['crash', 'ios']);
+      expect(sent['customFields'], {'os': 'ios', 'areas': ['ui']});
+      expect((sent['threadType'], sent['isPoll'], sent['pollQuestion'], sent['pollMaxVotes'], sent['pollCloseDays']), ('poll', true, 'Seen it?', 0, 7));
+      expect(sent['pollOptions'], ['Yes', 'No']);
+
+      await factory.createTopicProxy(_context()).newTopic('5', 'Plain', 'Text');
+      expect((client.requests.last['params'] as Map).keys, isNot(contains('tags')), reason: 'nothing new sent unless used');
+    });
+
+    test('threads list the posts the viewer may see but others cannot', () async {
+      final client = _ScriptedClient({
+        'getThread': (_) => _ok({
+              ..._thread(),
+              'posts': [
+                for (final p in _thread()['posts'] as List) p,
+                {'id': '103', 'title': '', 'content': 'Hidden', 'topicId': '7', 'authorId': '3', 'authorName': 'cy', 'position': 2,
+                  'isDeleted': true, 'canUndelete': true},
+              ],
+            }),
+      });
+      final thread = await XenForoProxyFactory(client: client).createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(client.requests.single['params'], containsPair('includeHidden', true));
+      expect(thread.posts.map((p) => (p.id, p.postNumber, p.isDeleted, p.canUndelete)),
+          [('101', 1, false, false), ('102', 2, false, false), ('103', 2, true, true)]);
+    });
+
+    test('posts and messages come with the HTML the forum renders, asked for', () async {
+      const html = '<blockquote data-quote-name="ann" data-quote-type="post" data-quote-id="14">Hi</blockquote>Yes <img class="smilie" data-smilie="1" alt=":)" src="https://x/1f642.png" />';
+      final client = _ScriptedClient({
+        'getThread': (_) => _ok({
+              ..._thread(),
+              'posts': [
+                {...(_thread()['posts'] as List).first as Map<String, dynamic>, 'contentHtml': html, 'signatureHtml': '<b>Ann</b>'},
+                (_thread()['posts'] as List).last,
+              ],
+            }),
+        'getConversation': (_) => _ok({
+              'result': true,
+              'convId': '5',
+              'convTitle': 'Hello',
+              'totalMessageNum': 1,
+              'participants': [],
+              'messages': [
+                {'messageId': '9', 'userId': '2', 'username': 'alice', 'messageContent': '[B]Hi[/B]', 'contentHtml': '<b>Hi</b>', 'timestamp': 1760000000000},
+              ],
+            }),
+      });
+      final factory = XenForoProxyFactory(client: client);
+
+      final thread = await factory.createPostProxy(_context()).getThreadAsync('7', 0, 19, false);
+      expect(client.requests.last['params'], containsPair('contentHtml', true));
+      expect((thread.posts.first.contentHtml, thread.posts.first.signatureHtml), (html, '<b>Ann</b>'));
+      expect(thread.posts.last.contentHtml, isNull, reason: 'none sent: the app draws the BBCode');
+
+      final conversation = await factory.createPrivateConversationProxy(_context()).getConversationAsync('5', 0, 19, false);
+      expect(client.requests.last['params'], containsPair('contentHtml', true));
+      expect(conversation.messages.single.contentHtml, '<b>Hi</b>');
+      expect(conversation.messages.single.textBody, '[B]Hi[/B]', reason: 'the BBCode stays for quoting and editing');
+    });
+
+    test('a ban sends its exact end as endTime, beside endDate for older add-ons', () async {
+      final client = _ScriptedClient({'banUser': (_) => _ok({'result': true})});
+      final mod = XenForoProxyFactory(client: client).createModerationProxy(_context());
+
+      expect((await mod.banUserAsync('dan', 'spam', 1793423835, 0, 0)).result, isTrue);
+      expect((await mod.banUserAsync('dan', 'spam', 0, 0, 0)).result, isTrue);
+
+      expect(client.requests[0]['params'], containsPair('endTime', '1793423835'));
+      expect(client.requests[0]['params'], contains('endDate'));
+      expect(client.requests[1]['params'], isNot(contains('endTime')), reason: 'a permanent ban has no end');
+    });
+  });
 }

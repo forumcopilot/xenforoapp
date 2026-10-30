@@ -21,20 +21,46 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCStickTopicResult> stickTopicAsync(String topicId) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] stickTopicAsync not fully implemented, returning stub result.');
-    return FCStickTopicResult(
-      result: false,
-      resultText: 'Stick topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] stickTopicAsync called');
+    try {
+      final response = await callPluginApi('stickTopic', <String, dynamic>{
+        'topicId': topicId,
+      });
+      return FCStickTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] stickTopicAsync error: $e');
+      return FCStickTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
   Future<FCStickTopicResult> unstickTopicAsync(String topicId) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] unstickTopicAsync not fully implemented, returning stub result.');
-    return FCStickTopicResult(
-      result: false,
-      resultText: 'Unstick topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] unstickTopicAsync called');
+    try {
+      final response = await callPluginApi('unstickTopic', <String, dynamic>{
+        'topicId': topicId,
+      });
+      return FCStickTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] unstickTopicAsync error: $e');
+      return FCStickTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
@@ -211,38 +237,95 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCUndeleteTopicResult> undeleteTopicAsync(String topicId, String reason) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] undeleteTopicAsync not fully implemented, returning stub result.');
-    return FCUndeleteTopicResult(
-      result: false,
-      resultText: 'Undelete topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] undeleteTopicAsync called');
+    try {
+      final response = await callPluginApi('undeleteTopic', <String, dynamic>{
+        'topicId': topicId,
+        'reason': reason,
+      });
+      return FCUndeleteTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] undeleteTopicAsync error: $e');
+      return FCUndeleteTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
   Future<FCUndeletePostResult> undeletePostAsync(String postId, String reason) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] undeletePostAsync not fully implemented, returning stub result.');
-    return FCUndeletePostResult(
-      result: false,
-      resultText: 'Undelete post not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] undeletePostAsync called');
+    try {
+      final response = await callPluginApi('undeletePost', <String, dynamic>{
+        'postId': postId,
+        'reason': reason,
+      });
+      return FCUndeletePostResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] undeletePostAsync error: $e');
+      return FCUndeletePostResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
   Future<FCMoveTopicResult> moveTopicAsync(String topicId, String forumId, bool redirect) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] moveTopicAsync not fully implemented, returning stub result.');
-    return FCMoveTopicResult(
-      result: false,
-      resultText: 'Move topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] moveTopicAsync called');
+    try {
+      final response = await callPluginApi('moveTopic', <String, dynamic>{
+        'topicId': topicId,
+        'forumId': forumId,
+        'redirect': redirect,
+      });
+      return FCMoveTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] moveTopicAsync error: $e');
+      return FCMoveTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
   Future<FCRenameTopicResult> renameTopicAsync(String topicId, String title) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] renameTopicAsync not fully implemented, returning stub result.');
-    return FCRenameTopicResult(
-      result: false,
-      resultText: 'Rename topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] renameTopicAsync called');
+    try {
+      final response = await callPluginApi('renameTopic', <String, dynamic>{
+        'topicId': topicId,
+        'title': title,
+      });
+      return FCRenameTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] renameTopicAsync error: $e');
+      return FCRenameTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
@@ -320,20 +403,46 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
 
   @override
   Future<FCApproveTopicResult> approveTopicAsync(String topicId) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] approveTopicAsync not fully implemented, returning stub result.');
-    return FCApproveTopicResult(
-      result: false,
-      resultText: 'Approve topic not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] approveTopicAsync called');
+    try {
+      final response = await callPluginApi('approveTopic', <String, dynamic>{
+        'topicId': topicId,
+      });
+      return FCApproveTopicResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] approveTopicAsync error: $e');
+      return FCApproveTopicResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
   Future<FCApprovePostResult> approvePostAsync(String postId) async {
-    xfDebug('⚠️ [XENFORO_MODERATION] approvePostAsync not fully implemented, returning stub result.');
-    return FCApprovePostResult(
-      result: false,
-      resultText: 'Approve post not implemented',
-    );
+    xfDebug('✅ [XENFORO_MODERATION] approvePostAsync called');
+    try {
+      final response = await callPluginApi('approvePost', <String, dynamic>{
+        'postId': postId,
+      });
+      return FCApprovePostResult(
+        result: response['result'] ?? false,
+        resultText: response['resultText']?.toString(),
+        isLoginMod: response['isLoginMod'] ?? true,
+      );
+    } catch (e) {
+      xfDebug('❌ [XENFORO_MODERATION] approvePostAsync error: $e');
+      return FCApprovePostResult(
+        result: false,
+        resultText: 'Error: $e',
+        isLoginMod: true,
+      );
+    }
   }
 
   @override
@@ -366,6 +475,9 @@ class XenForoModerationProxy extends BaseXenForoProxy implements IFCModerationPr
       
       if (endDate != null) {
         params['endDate'] = endDate;
+        // Add-on 1.11.0+ reads the exact end (Unix seconds); older ones read
+        // endDate, which they take in the moderator's (or the server's) time zone
+        params['endTime'] = banExpires.toString();
       }
 
       xfDebug('🔍 [XENFORO_MODERATION] Calling banUser API with params: $params');

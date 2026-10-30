@@ -60,7 +60,8 @@ class TestConfig {
   /// Forum password for password-protected forum tests
   String forumPassword;
 
-  /// Email address for account tests
+  /// Email address for account tests: the signed-in member's own (`username`),
+  /// which updateEmail sets again
   String email;
 
   /// Token for SSO/registration tests (optional)

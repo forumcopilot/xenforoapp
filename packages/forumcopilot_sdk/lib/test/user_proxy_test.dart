@@ -137,8 +137,21 @@ void runUserProxyTests(IFCUserProxy userProxy, TestConfig config) {
       if (helper.skipIfNotAuthenticated('ignoreUserAsync')) {
         return;
       }
-      final result = await userProxy.ignoreUserAsync(config.userId, 1);
+      // Another member, not staff: a forum refuses to let members ignore
+      // themselves or staff ("Staff members may not be ignored").
+      final target = helper.recipientUsername;
+      if (target == null) {
+        print('⚠️  Skipping ignoreUserAsync - secondUsername not configured (a user cannot ignore themselves)');
+        helper.tracker.recordSkipped('ignoreUserAsync returns result: true', methodName: 'ignoreUserAsync', reason: 'secondUsername not configured');
+        return;
+      }
+      final info = await userProxy.getUserInfoAsync(target, null);
+      final result = await userProxy.ignoreUserAsync(info.id, 1);
       helper.assertResultTrue(result, 'ignoreUserAsync');
+      // Stop ignoring them again, so the member's posts aren't hidden from
+      // later runs and tests.
+      final undone = await userProxy.ignoreUserAsync(info.id, 0);
+      helper.assertResultTrue(undone, 'ignoreUserAsync (stop ignoring)');
       } on UnimplementedError {
         print('⚠️  Skipping ignoreUserAsync - ignoreUserAsync is not implemented by this platform');
         helper.tracker.recordNotImplemented('ignoreUserAsync', methodName: 'ignoreUserAsync');

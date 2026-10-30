@@ -395,6 +395,24 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     opt: true,
     def: false,
   );
+  static String? _$threadType(FCTopic v) => v.threadType;
+  static const Field<FCTopic, String> _f$threadType = Field(
+    'threadType',
+    _$threadType,
+    opt: true,
+  );
+  static int? _$voteScore(FCTopic v) => v.voteScore;
+  static const Field<FCTopic, int> _f$voteScore = Field(
+    'voteScore',
+    _$voteScore,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCTopic v) => v.emailSubscribe;
+  static const Field<FCTopic, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCTopic> fields = const {
@@ -456,6 +474,9 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
     #voteCount: _f$voteCount,
     #canVote: _f$canVote,
     #userVoted: _f$userVoted,
+    #threadType: _f$threadType,
+    #voteScore: _f$voteScore,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCTopic _instantiate(DecodingData data) {
@@ -518,6 +539,9 @@ class FCTopicMapper extends ClassMapperBase<FCTopic> {
       voteCount: data.dec(_f$voteCount),
       canVote: data.dec(_f$canVote),
       userVoted: data.dec(_f$userVoted),
+      threadType: data.dec(_f$threadType),
+      voteScore: data.dec(_f$voteScore),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -643,6 +667,9 @@ abstract class FCTopicCopyWith<$R, $In extends FCTopic, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    String? threadType,
+    int? voteScore,
+    bool? emailSubscribe,
   });
   FCTopicCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -739,6 +766,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    Object? threadType = $none,
+    Object? voteScore = $none,
+    Object? emailSubscribe = $none,
   }) => $apply(
     FieldCopyWithData({
       if (id != null) #id: id,
@@ -801,6 +831,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
       if (voteCount != null) #voteCount: voteCount,
       if (canVote != null) #canVote: canVote,
       if (userVoted != null) #userVoted: userVoted,
+      if (threadType != $none) #threadType: threadType,
+      if (voteScore != $none) #voteScore: voteScore,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
@@ -872,6 +905,9 @@ class _FCTopicCopyWithImpl<$R, $Out>
     voteCount: data.get(#voteCount, or: $value.voteCount),
     canVote: data.get(#canVote, or: $value.canVote),
     userVoted: data.get(#userVoted, or: $value.userVoted),
+    threadType: data.get(#threadType, or: $value.threadType),
+    voteScore: data.get(#voteScore, or: $value.voteScore),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override

@@ -2137,6 +2137,12 @@ class FCConversationMessageMapper
     _$isIgnored,
     opt: true,
   );
+  static String? _$contentHtml(FCConversationMessage v) => v.contentHtml;
+  static const Field<FCConversationMessage, String> _f$contentHtml = Field(
+    'contentHtml',
+    _$contentHtml,
+    opt: true,
+  );
   static bool? _$canEdit(FCConversationMessage v) => v.canEdit;
   static const Field<FCConversationMessage, bool> _f$canEdit = Field(
     'canEdit',
@@ -2175,6 +2181,7 @@ class FCConversationMessageMapper
     #isFirstMessage: _f$isFirstMessage,
     #canReport: _f$canReport,
     #isIgnored: _f$isIgnored,
+    #contentHtml: _f$contentHtml,
     #canEdit: _f$canEdit,
     #messageNumber: _f$messageNumber,
     #polls: _f$polls,
@@ -2198,6 +2205,7 @@ class FCConversationMessageMapper
       isFirstMessage: data.dec(_f$isFirstMessage),
       canReport: data.dec(_f$canReport),
       isIgnored: data.dec(_f$isIgnored),
+      contentHtml: data.dec(_f$contentHtml),
       canEdit: data.dec(_f$canEdit),
       messageNumber: data.dec(_f$messageNumber),
       polls: data.dec(_f$polls),
@@ -2299,6 +2307,7 @@ abstract class FCConversationMessageCopyWith<
     bool? isFirstMessage,
     bool? canReport,
     bool? isIgnored,
+    String? contentHtml,
     bool? canEdit,
     int? messageNumber,
     List<FCPoll>? polls,
@@ -2359,6 +2368,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     Object? isFirstMessage = $none,
     Object? canReport = $none,
     Object? isIgnored = $none,
+    Object? contentHtml = $none,
     Object? canEdit = $none,
     Object? messageNumber = $none,
     List<FCPoll>? polls,
@@ -2380,6 +2390,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
       if (isFirstMessage != $none) #isFirstMessage: isFirstMessage,
       if (canReport != $none) #canReport: canReport,
       if (isIgnored != $none) #isIgnored: isIgnored,
+      if (contentHtml != $none) #contentHtml: contentHtml,
       if (canEdit != $none) #canEdit: canEdit,
       if (messageNumber != $none) #messageNumber: messageNumber,
       if (polls != null) #polls: polls,
@@ -2406,6 +2417,7 @@ class _FCConversationMessageCopyWithImpl<$R, $Out>
     isFirstMessage: data.get(#isFirstMessage, or: $value.isFirstMessage),
     canReport: data.get(#canReport, or: $value.canReport),
     isIgnored: data.get(#isIgnored, or: $value.isIgnored),
+    contentHtml: data.get(#contentHtml, or: $value.contentHtml),
     canEdit: data.get(#canEdit, or: $value.canEdit),
     messageNumber: data.get(#messageNumber, or: $value.messageNumber),
     polls: data.get(#polls, or: $value.polls),

@@ -195,6 +195,26 @@ class FCPost with FCPostMappable {
   /// as a small badge after the link.
   Map<String, int> linkClicks;
 
+  /// Whether the viewer ignores the author (XenForo add-on 1.11.0+:
+  /// `isIgnored`). The web shows such posts collapsed.
+  bool isIgnored;
+
+  /// Whether the viewer may undelete this deleted post (XenForo add-on
+  /// 1.11.0+).
+  bool canUndelete;
+
+  /// The post as the forum renders it, HTML with data attributes on the
+  /// parts an app draws itself (XenForo add-on 1.11.0's contentHtml); null
+  /// or empty when not sent or the forum couldn't render it: draw [content].
+  String? contentHtml;
+
+  /// The author's signature as HTML, likewise (add-on 1.11.0+).
+  String? signatureHtml;
+
+  /// The author's signature, BBCode (XenForo add-on 1.11.0+); null when they
+  /// have none or the viewer hides signatures on the forum.
+  String? signature;
+
   FCPost(
       {required this.id,
       required this.title,
@@ -245,6 +265,11 @@ class FCPost with FCPostMappable {
       this.isHidden = false,
       this.authorDisplayName,
       this.linkClicks = const {},
+      this.isIgnored = false,
+      this.canUndelete = false,
+      this.contentHtml,
+      this.signatureHtml,
+      this.signature,
       this.replyToPostNumber,
       this.replyToUsername,
       this.replyToIconUrl,

@@ -143,6 +143,11 @@ class FCAlert with FCAlertMappable {
   /// to true so backends that don't expose read-state render plainly.
   bool isRead;
 
+  /// XenForo's read state (add-on 1.11.0+): unread until the member opens
+  /// the alert, as the website highlights it; null from older add-ons,
+  /// where only [isRead] (seen) is known.
+  bool? isUnread;
+
   /// The platform's native notification id (Discourse: notification
   /// `id`; XenForo: alert id). Enables per-alert operations such as
   /// marking a single alert read. Null when the backend doesn't
@@ -165,6 +170,7 @@ class FCAlert with FCAlertMappable {
     this.fromUsername,
     this.action,
     this.isRead = true,
+    this.isUnread,
     this.alertId,
   });
 

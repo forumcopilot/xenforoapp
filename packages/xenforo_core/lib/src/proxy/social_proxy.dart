@@ -186,7 +186,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
   }
 
   @override
-  Future<FCAlertResult> getAlertAsync(int page, int perpage, bool forceRefresh) async {
+  Future<FCAlertResult> getAlertAsync(int page, int perpage, bool forceRefresh,
+      {List<int>? markReadIds, bool markAllRead = false, bool skipMarkRead = false}) async {
     xfDebug('✅ [XENFORO_SOCIAL] getAlertAsync called via plugin API');
     xfDebug('   📋 Parameters: page=$page, perpage=$perpage, forceRefresh=$forceRefresh');
 
@@ -195,6 +196,10 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
         'page': page,
         'perpage': perpage,
         'forceRefresh': forceRefresh,
+        // Add-on 1.11.0+
+        if (markReadIds != null && markReadIds.isNotEmpty) 'markReadIds': markReadIds,
+        if (markAllRead) 'markAllRead': true,
+        if (skipMarkRead) 'skipMarkRead': true,
       });
 
       // Parse alert list - PHP returns 'items' array with alert data
@@ -239,6 +244,8 @@ class XenForoSocialProxy extends BaseXenForoProxy implements IFCSocialProxy {
               // Sent by the add-on all along but never mapped, so every
               // alert looked read. Missing means read, as before.
               isRead: alertData['isRead'] is bool ? alertData['isRead'] as bool : true,
+              // Add-on 1.11.0+: XenForo's read state, as the website shows it
+              isUnread: alertData['isUnread'] is bool ? alertData['isUnread'] as bool : null,
               alertId: int.tryParse(alertData['id']?.toString() ?? ''),
             ));
           }

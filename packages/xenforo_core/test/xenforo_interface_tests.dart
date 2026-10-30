@@ -95,11 +95,6 @@ void main() async {
       fc_test.runSocialProxyTests(socialProxy, postProxy, topicProxy, forumProxy, testConfig);
     });
 
-    group('IFCAccountProxy', () {
-      final accountProxy = SiteProxyFactory.getAccountProxy();
-      fc_test.runAccountProxyTests(accountProxy, testConfig);
-    });
-
     group('IFCAttachmentProxy', () {
       final attachmentProxy = SiteProxyFactory.getAttachmentProxy();
       final postProxy = SiteProxyFactory.getPostProxy();
@@ -109,6 +104,19 @@ void main() async {
     });
 
     group('IFCModerationProxy', () {
+      // XenForo has no moderator sign-in of its own (doLoginModAsync): the
+      // signed-in member's permissions decide. Moderate as the moderator
+      // account, when it isn't the one signed in, then sign back in.
+      final moderatorIsOther = testConfig.hasModeratorCredentials() && testConfig.moderatorUsername != testConfig.username;
+      setUpAll(() async {
+        if (!moderatorIsOther) return;
+        final login = await userProxy.loginAsync(testConfig.moderatorUsername!, testConfig.moderatorPassword!, false, null);
+        expect(login.result, isTrue, reason: 'signing in as the moderator: ${login.resultText}');
+      });
+      tearDownAll(() async {
+        if (!moderatorIsOther) return;
+        await fc_test.authenticateForTests(userProxy, testConfig);
+      });
       final moderationProxy = SiteProxyFactory.getModerationProxy();
       final forumProxy = SiteProxyFactory.getForumProxy();
       final topicProxy = SiteProxyFactory.getTopicProxy();
@@ -121,5 +129,12 @@ void main() async {
     final conversationProxy = SiteProxyFactory.getPrivateConversationProxy();
     final messageProxy = SiteProxyFactory.getPrivateMessageProxy();
     fc_test.runPrivateMessagingTests(conversationProxy, messageProxy, testConfig);
+
+    // Last: these change the signed-in account (its password, put back
+    // straight away, and its profile).
+    group('IFCAccountProxy', () {
+      final accountProxy = SiteProxyFactory.getAccountProxy();
+      fc_test.runAccountProxyTests(accountProxy, testConfig);
+    });
   });
 }

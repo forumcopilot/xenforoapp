@@ -51,7 +51,13 @@ abstract class IFCSocialProxy {
   /// [page] - Page number for pagination
   /// [perpage] - Number of items per page
   /// [forceRefresh] - Whether to force refresh the data
-  Future<FCAlertResult> getAlertAsync(int page, int perpage, bool forceRefresh);
+  ///
+  /// XenForo add-on 1.11.0+ (older ones ignore these): [markReadIds] and
+  /// [markAllRead] mark alerts read before listing, as the website's alert
+  /// toggle and "Mark read" do; [skipMarkRead] leaves every alert as it is
+  /// (by default the list marks them seen, as the website's alert page does).
+  Future<FCAlertResult> getAlertAsync(int page, int perpage, bool forceRefresh,
+      {List<int>? markReadIds, bool markAllRead = false, bool skipMarkRead = false});
 
   /// Get user activities
   ///

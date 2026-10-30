@@ -1026,6 +1026,12 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
     opt: true,
     def: true,
   );
+  static bool? _$isUnread(FCAlert v) => v.isUnread;
+  static const Field<FCAlert, bool> _f$isUnread = Field(
+    'isUnread',
+    _$isUnread,
+    opt: true,
+  );
   static int? _$alertId(FCAlert v) => v.alertId;
   static const Field<FCAlert, int> _f$alertId = Field(
     'alertId',
@@ -1050,6 +1056,7 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
     #fromUsername: _f$fromUsername,
     #action: _f$action,
     #isRead: _f$isRead,
+    #isUnread: _f$isUnread,
     #alertId: _f$alertId,
   };
 
@@ -1070,6 +1077,7 @@ class FCAlertMapper extends ClassMapperBase<FCAlert> {
       fromUsername: data.dec(_f$fromUsername),
       action: data.dec(_f$action),
       isRead: data.dec(_f$isRead),
+      isUnread: data.dec(_f$isUnread),
       alertId: data.dec(_f$alertId),
     );
   }
@@ -1147,6 +1155,7 @@ abstract class FCAlertCopyWith<$R, $In extends FCAlert, $Out>
     String? fromUsername,
     String? action,
     bool? isRead,
+    bool? isUnread,
     int? alertId,
   });
   FCAlertCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -1177,6 +1186,7 @@ class _FCAlertCopyWithImpl<$R, $Out>
     Object? fromUsername = $none,
     Object? action = $none,
     bool? isRead,
+    Object? isUnread = $none,
     Object? alertId = $none,
   }) => $apply(
     FieldCopyWithData({
@@ -1195,6 +1205,7 @@ class _FCAlertCopyWithImpl<$R, $Out>
       if (fromUsername != $none) #fromUsername: fromUsername,
       if (action != $none) #action: action,
       if (isRead != null) #isRead: isRead,
+      if (isUnread != $none) #isUnread: isUnread,
       if (alertId != $none) #alertId: alertId,
     }),
   );
@@ -1215,6 +1226,7 @@ class _FCAlertCopyWithImpl<$R, $Out>
     fromUsername: data.get(#fromUsername, or: $value.fromUsername),
     action: data.get(#action, or: $value.action),
     isRead: data.get(#isRead, or: $value.isRead),
+    isUnread: data.get(#isUnread, or: $value.isUnread),
     alertId: data.get(#alertId, or: $value.alertId),
   );
 

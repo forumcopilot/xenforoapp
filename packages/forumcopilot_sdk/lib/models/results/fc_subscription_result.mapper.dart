@@ -2154,17 +2154,33 @@ class FCSubscribeTopicResultMapper
     _$resultText,
     opt: true,
   );
+  static bool? _$isSubscribed(FCSubscribeTopicResult v) => v.isSubscribed;
+  static const Field<FCSubscribeTopicResult, bool> _f$isSubscribed = Field(
+    'isSubscribed',
+    _$isSubscribed,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCSubscribeTopicResult v) => v.emailSubscribe;
+  static const Field<FCSubscribeTopicResult, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCSubscribeTopicResult> fields = const {
     #result: _f$result,
     #resultText: _f$resultText,
+    #isSubscribed: _f$isSubscribed,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCSubscribeTopicResult _instantiate(DecodingData data) {
     return FCSubscribeTopicResult(
       result: data.dec(_f$result),
       resultText: data.dec(_f$resultText),
+      isSubscribed: data.dec(_f$isSubscribed),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -2239,7 +2255,12 @@ abstract class FCSubscribeTopicResultCopyWith<
 >
     implements FCBaseResultCopyWith<$R, $In, $Out> {
   @override
-  $R call({bool? result, String? resultText});
+  $R call({
+    bool? result,
+    String? resultText,
+    bool? isSubscribed,
+    bool? emailSubscribe,
+  });
   FCSubscribeTopicResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   );
@@ -2255,16 +2276,25 @@ class _FCSubscribeTopicResultCopyWithImpl<$R, $Out>
   late final ClassMapperBase<FCSubscribeTopicResult> $mapper =
       FCSubscribeTopicResultMapper.ensureInitialized();
   @override
-  $R call({bool? result, Object? resultText = $none}) => $apply(
+  $R call({
+    bool? result,
+    Object? resultText = $none,
+    Object? isSubscribed = $none,
+    Object? emailSubscribe = $none,
+  }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
+      if (isSubscribed != $none) #isSubscribed: isSubscribed,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
   FCSubscribeTopicResult $make(CopyWithData data) => FCSubscribeTopicResult(
     result: data.get(#result, or: $value.result),
     resultText: data.get(#resultText, or: $value.resultText),
+    isSubscribed: data.get(#isSubscribed, or: $value.isSubscribed),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override

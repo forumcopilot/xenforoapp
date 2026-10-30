@@ -440,6 +440,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
         'startNum': startNum,
         'lastNum': lastNum,
         'returnHtml': returnHtml,
+        // Add-on 1.11.0+: each message also as the forum renders it
+        'contentHtml': true,
       });
 
       // Parse participants - PHP returns array with participant data
@@ -468,6 +470,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
               'username': msgData['authorName']?.toString() ?? '',
               'iconUrl': msgData['authorIconUrl']?.toString(),
               'textBody': msgData['messageContent']?.toString() ?? '',
+              'contentHtml': msgData['contentHtml']?.toString(),
               'messageTime': msgData['timestamp']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
               'canLike': msgData['canLike'] ?? false,
               'isLiked': msgData['isLiked'] ?? false,
@@ -528,6 +531,8 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
       final response = await callPluginApi('getConversationByMessage', {
         'messageId': messageId,
         'messagesPerRequest': messagesPerRequest,
+        // Add-on 1.11.0+: each message also as the forum renders it
+        'contentHtml': true,
       });
 
       // Parse participants - PHP returns array with participant data
@@ -556,6 +561,7 @@ class XenForoPrivateConversationProxy extends BaseXenForoProxy implements IFCPri
               'username': msgData['authorName']?.toString() ?? '',
               'iconUrl': msgData['authorIconUrl']?.toString(),
               'textBody': msgData['messageContent']?.toString() ?? '',
+              'contentHtml': msgData['contentHtml']?.toString(),
               'messageTime': msgData['timestamp']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
               'canLike': msgData['canLike'] ?? false,
               'isLiked': msgData['isLiked'] ?? false,

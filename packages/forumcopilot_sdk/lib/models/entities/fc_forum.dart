@@ -1,5 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
+import 'fc_thread_posting.dart';
+
 part 'fc_forum.mapper.dart';
 
 /// FCForum (Forum Consolidated) is a unified forum model for UI consumption
@@ -35,6 +37,24 @@ class FCForum with FCForumMappable {
 
   /// Indicates if the user can subscribe to this forum
   bool canSubscribe;
+
+  /// The member's watch (XenForo add-on 1.11.0+, as are the fields below):
+  /// `thread` (new threads), `message` (every message), `""` (none); null
+  /// when the forum isn't watched, or the add-on is older.
+  String? notifyOn;
+
+  /// Whether the watch sends alerts, and emails; null when not watched.
+  bool? sendAlert;
+  bool? sendEmail;
+
+  /// What a watch on this forum may notify of: `all` (new threads or every
+  /// message), `thread` (new threads only) or `none`. Null from older
+  /// add-ons, which offer a plain watch toggle.
+  String? allowedWatchNotifications;
+
+  /// What starting a thread here takes: tags, custom fields, thread types,
+  /// polls (XenForo add-on 1.11.0+; null from older add-ons).
+  FCThreadPostingOptions? postingOptions;
 
   /// Indicates if the user can post in this forum
   bool canPost;
@@ -85,6 +105,11 @@ class FCForum with FCForumMappable {
     this.isProtected = false,
     this.isSubscribed = false,
     this.canSubscribe = true,
+    this.notifyOn,
+    this.sendAlert,
+    this.sendEmail,
+    this.allowedWatchNotifications,
+    this.postingOptions,
     this.canPost = true,
     this.canUpload = true,
     this.canViewContent = true,

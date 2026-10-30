@@ -430,6 +430,24 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
     opt: true,
     def: false,
   );
+  static String? _$threadType(FCThreadResult v) => v.threadType;
+  static const Field<FCThreadResult, String> _f$threadType = Field(
+    'threadType',
+    _$threadType,
+    opt: true,
+  );
+  static int? _$voteScore(FCThreadResult v) => v.voteScore;
+  static const Field<FCThreadResult, int> _f$voteScore = Field(
+    'voteScore',
+    _$voteScore,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCThreadResult v) => v.emailSubscribe;
+  static const Field<FCThreadResult, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCThreadResult> fields = const {
@@ -495,6 +513,9 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
     #voteCount: _f$voteCount,
     #canVote: _f$canVote,
     #userVoted: _f$userVoted,
+    #threadType: _f$threadType,
+    #voteScore: _f$voteScore,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCThreadResult _instantiate(DecodingData data) {
@@ -561,6 +582,9 @@ class FCThreadResultMapper extends ClassMapperBase<FCThreadResult> {
       voteCount: data.dec(_f$voteCount),
       canVote: data.dec(_f$canVote),
       userVoted: data.dec(_f$userVoted),
+      threadType: data.dec(_f$threadType),
+      voteScore: data.dec(_f$voteScore),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -701,6 +725,9 @@ abstract class FCThreadResultCopyWith<$R, $In extends FCThreadResult, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    String? threadType,
+    int? voteScore,
+    bool? emailSubscribe,
   });
   FCThreadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -810,6 +837,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    Object? threadType = $none,
+    Object? voteScore = $none,
+    Object? emailSubscribe = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -876,6 +906,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
       if (voteCount != null) #voteCount: voteCount,
       if (canVote != null) #canVote: canVote,
       if (userVoted != null) #userVoted: userVoted,
+      if (threadType != $none) #threadType: threadType,
+      if (voteScore != $none) #voteScore: voteScore,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
@@ -951,6 +984,9 @@ class _FCThreadResultCopyWithImpl<$R, $Out>
     voteCount: data.get(#voteCount, or: $value.voteCount),
     canVote: data.get(#canVote, or: $value.canVote),
     userVoted: data.get(#userVoted, or: $value.userVoted),
+    threadType: data.get(#threadType, or: $value.threadType),
+    voteScore: data.get(#voteScore, or: $value.voteScore),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override
@@ -1388,6 +1424,24 @@ class FCThreadByUnreadResultMapper
     opt: true,
     def: false,
   );
+  static String? _$threadType(FCThreadByUnreadResult v) => v.threadType;
+  static const Field<FCThreadByUnreadResult, String> _f$threadType = Field(
+    'threadType',
+    _$threadType,
+    opt: true,
+  );
+  static int? _$voteScore(FCThreadByUnreadResult v) => v.voteScore;
+  static const Field<FCThreadByUnreadResult, int> _f$voteScore = Field(
+    'voteScore',
+    _$voteScore,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCThreadByUnreadResult v) => v.emailSubscribe;
+  static const Field<FCThreadByUnreadResult, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCThreadByUnreadResult> fields = const {
@@ -1454,6 +1508,9 @@ class FCThreadByUnreadResultMapper
     #voteCount: _f$voteCount,
     #canVote: _f$canVote,
     #userVoted: _f$userVoted,
+    #threadType: _f$threadType,
+    #voteScore: _f$voteScore,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCThreadByUnreadResult _instantiate(DecodingData data) {
@@ -1521,6 +1578,9 @@ class FCThreadByUnreadResultMapper
       voteCount: data.dec(_f$voteCount),
       canVote: data.dec(_f$canVote),
       userVoted: data.dec(_f$userVoted),
+      threadType: data.dec(_f$threadType),
+      voteScore: data.dec(_f$voteScore),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -1670,6 +1730,9 @@ abstract class FCThreadByUnreadResultCopyWith<
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    String? threadType,
+    int? voteScore,
+    bool? emailSubscribe,
   });
   FCThreadByUnreadResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -1781,6 +1844,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    Object? threadType = $none,
+    Object? voteScore = $none,
+    Object? emailSubscribe = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -1848,6 +1914,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
       if (voteCount != null) #voteCount: voteCount,
       if (canVote != null) #canVote: canVote,
       if (userVoted != null) #userVoted: userVoted,
+      if (threadType != $none) #threadType: threadType,
+      if (voteScore != $none) #voteScore: voteScore,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
@@ -1924,6 +1993,9 @@ class _FCThreadByUnreadResultCopyWithImpl<$R, $Out>
     voteCount: data.get(#voteCount, or: $value.voteCount),
     canVote: data.get(#canVote, or: $value.canVote),
     userVoted: data.get(#userVoted, or: $value.userVoted),
+    threadType: data.get(#threadType, or: $value.threadType),
+    voteScore: data.get(#voteScore, or: $value.voteScore),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override
@@ -2363,6 +2435,24 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
     opt: true,
     def: false,
   );
+  static String? _$threadType(FCThreadByPostResult v) => v.threadType;
+  static const Field<FCThreadByPostResult, String> _f$threadType = Field(
+    'threadType',
+    _$threadType,
+    opt: true,
+  );
+  static int? _$voteScore(FCThreadByPostResult v) => v.voteScore;
+  static const Field<FCThreadByPostResult, int> _f$voteScore = Field(
+    'voteScore',
+    _$voteScore,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCThreadByPostResult v) => v.emailSubscribe;
+  static const Field<FCThreadByPostResult, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCThreadByPostResult> fields = const {
@@ -2429,6 +2519,9 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
     #voteCount: _f$voteCount,
     #canVote: _f$canVote,
     #userVoted: _f$userVoted,
+    #threadType: _f$threadType,
+    #voteScore: _f$voteScore,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCThreadByPostResult _instantiate(DecodingData data) {
@@ -2496,6 +2589,9 @@ class FCThreadByPostResultMapper extends ClassMapperBase<FCThreadByPostResult> {
       voteCount: data.dec(_f$voteCount),
       canVote: data.dec(_f$canVote),
       userVoted: data.dec(_f$userVoted),
+      threadType: data.dec(_f$threadType),
+      voteScore: data.dec(_f$voteScore),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -2645,6 +2741,9 @@ abstract class FCThreadByPostResultCopyWith<
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    String? threadType,
+    int? voteScore,
+    bool? emailSubscribe,
   });
   FCThreadByPostResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -2755,6 +2854,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    Object? threadType = $none,
+    Object? voteScore = $none,
+    Object? emailSubscribe = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -2822,6 +2924,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
       if (voteCount != null) #voteCount: voteCount,
       if (canVote != null) #canVote: canVote,
       if (userVoted != null) #userVoted: userVoted,
+      if (threadType != $none) #threadType: threadType,
+      if (voteScore != $none) #voteScore: voteScore,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
@@ -2898,6 +3003,9 @@ class _FCThreadByPostResultCopyWithImpl<$R, $Out>
     voteCount: data.get(#voteCount, or: $value.voteCount),
     canVote: data.get(#canVote, or: $value.canVote),
     userVoted: data.get(#userVoted, or: $value.userVoted),
+    threadType: data.get(#threadType, or: $value.threadType),
+    voteScore: data.get(#voteScore, or: $value.voteScore),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override
@@ -4316,6 +4424,24 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
     opt: true,
     def: false,
   );
+  static String? _$threadType(FCAnnouncementResult v) => v.threadType;
+  static const Field<FCAnnouncementResult, String> _f$threadType = Field(
+    'threadType',
+    _$threadType,
+    opt: true,
+  );
+  static int? _$voteScore(FCAnnouncementResult v) => v.voteScore;
+  static const Field<FCAnnouncementResult, int> _f$voteScore = Field(
+    'voteScore',
+    _$voteScore,
+    opt: true,
+  );
+  static bool? _$emailSubscribe(FCAnnouncementResult v) => v.emailSubscribe;
+  static const Field<FCAnnouncementResult, bool> _f$emailSubscribe = Field(
+    'emailSubscribe',
+    _$emailSubscribe,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCAnnouncementResult> fields = const {
@@ -4383,6 +4509,9 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
     #voteCount: _f$voteCount,
     #canVote: _f$canVote,
     #userVoted: _f$userVoted,
+    #threadType: _f$threadType,
+    #voteScore: _f$voteScore,
+    #emailSubscribe: _f$emailSubscribe,
   };
 
   static FCAnnouncementResult _instantiate(DecodingData data) {
@@ -4451,6 +4580,9 @@ class FCAnnouncementResultMapper extends ClassMapperBase<FCAnnouncementResult> {
       voteCount: data.dec(_f$voteCount),
       canVote: data.dec(_f$canVote),
       userVoted: data.dec(_f$userVoted),
+      threadType: data.dec(_f$threadType),
+      voteScore: data.dec(_f$voteScore),
+      emailSubscribe: data.dec(_f$emailSubscribe),
     );
   }
 
@@ -4601,6 +4733,9 @@ abstract class FCAnnouncementResultCopyWith<
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    String? threadType,
+    int? voteScore,
+    bool? emailSubscribe,
   });
   FCAnnouncementResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
@@ -4712,6 +4847,9 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
     int? voteCount,
     bool? canVote,
     bool? userVoted,
+    Object? threadType = $none,
+    Object? voteScore = $none,
+    Object? emailSubscribe = $none,
   }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
@@ -4781,6 +4919,9 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
       if (voteCount != null) #voteCount: voteCount,
       if (canVote != null) #canVote: canVote,
       if (userVoted != null) #userVoted: userVoted,
+      if (threadType != $none) #threadType: threadType,
+      if (voteScore != $none) #voteScore: voteScore,
+      if (emailSubscribe != $none) #emailSubscribe: emailSubscribe,
     }),
   );
   @override
@@ -4864,6 +5005,9 @@ class _FCAnnouncementResultCopyWithImpl<$R, $Out>
     voteCount: data.get(#voteCount, or: $value.voteCount),
     canVote: data.get(#canVote, or: $value.canVote),
     userVoted: data.get(#userVoted, or: $value.userVoted),
+    threadType: data.get(#threadType, or: $value.threadType),
+    voteScore: data.get(#voteScore, or: $value.voteScore),
+    emailSubscribe: data.get(#emailSubscribe, or: $value.emailSubscribe),
   );
 
   @override

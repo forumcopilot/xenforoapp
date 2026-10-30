@@ -2,6 +2,8 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/interfaces/i_fc_topic_proxy.dart';
 import 'package:forumcopilot_sdk/models/results/fc_topic_result.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_topic_filters.dart';
+import 'package:forumcopilot_sdk/models/entities/fc_thread_posting.dart';
 import '../base_xenforo_proxy.dart';
 import '../xf_debug.dart';
 import '../network/xenforo_client.dart';
@@ -188,15 +190,17 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
   }
 
   @override
-  Future<FCTopicDataResult> getTopicAsync(String forumId, int startNum, int lastNum) async {
+  Future<FCTopicDataResult> getTopicAsync(String forumId, int startNum, int lastNum, {FCTopicFilters? filters}) async {
     xfDebug('✅ [XENFORO_TOPIC] getTopic called - IMPLEMENTED');
-    xfDebug('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum');
+    xfDebug('   📋 Parameters: forumId=$forumId, startNum=$startNum, lastNum=$lastNum, filters=${filters?.toParams()}');
 
     try {
       return await callPluginApiTyped<FCTopicDataResult>('getTopic', {
         'forumId': forumId,
         'startNum': startNum,
         'lastNum': lastNum,
+        // Add-on 1.11.0+
+        ...?filters?.toParams(),
       }, (response) {
         final List<FCTopic> fcTopics = ((response['topics'] as List?) ?? []).whereType<Map>().map((t) => FCTopicMapper.fromMap(t.cast<String, dynamic>())).toList();
 
@@ -222,10 +226,25 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
                 return FCPrefix(
                   prefixId: prefixId,
                   prefixDisplayName: prefixDisplayName,
+                  group: map['group']?.toString(),
                 );
               }).toList() ??
               const [],
           topics: fcTopics,
+          // Add-on 1.11.0+
+          sortOptions: response['sortOptions'] is List
+              ? [
+                  for (final o in response['sortOptions'] as List)
+                    if (o is Map && o['key'] != null) FCSortOption(key: '${o['key']}', title: '${o['title'] ?? o['key']}'),
+                ]
+              : null,
+          defaultOrder: response['defaultOrder']?.toString(),
+          defaultDirection: response['defaultDirection']?.toString(),
+          dateLimitOptions: response['dateLimitOptions'] is List
+              ? [for (final d in response['dateLimitOptions'] as List) if (int.tryParse('$d') != null) int.parse('$d')]
+              : null,
+          dateLimitDays: int.tryParse('${response['dateLimitDays'] ?? ''}'),
+          appliedFilters: response['appliedFilters'] is Map ? (response['appliedFilters'] as Map).cast<String, dynamic>() : null,
         );
       });
     } catch (e) {
@@ -328,7 +347,14 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
   }
 
   @override
-  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody, {String? prefixId, List<String>? attachmentIds, String? groupId, List<String>? tags}) async {
+  Future<FCNewTopicResult> newTopic(String forumId, String subject, String textBody,
+      {String? prefixId,
+      List<String>? attachmentIds,
+      String? groupId,
+      List<String>? tags,
+      Map<String, dynamic>? customFields,
+      String? threadType,
+      FCNewPoll? poll}) async {
     xfDebug('✅ [XENFORO_TOPIC] newTopic called - IMPLEMENTED');
     xfDebug('   📋 Parameters: forumId=$forumId, subject=$subject, textBody=${textBody.length} chars, prefixId=$prefixId, attachmentIds=$attachmentIds, groupId=$groupId');
 
@@ -340,6 +366,11 @@ class XenForoTopicProxy extends BaseXenForoProxy implements IFCTopicProxy {
         'prefixId': prefixId,
         'attachmentIds': attachmentIds,
         'groupId': groupId,
+        // Add-on 1.11.0+ (tags were taken here before but never sent)
+        if (tags != null && tags.isNotEmpty) 'tags': tags,
+        if (customFields != null && customFields.isNotEmpty) 'customFields': customFields,
+        if (threadType != null) 'threadType': threadType,
+        ...?poll?.toParams(),
       });
 
       return FCNewTopicResult(

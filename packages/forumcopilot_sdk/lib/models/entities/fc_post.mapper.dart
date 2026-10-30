@@ -311,6 +311,38 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     opt: true,
     def: const {},
   );
+  static bool _$isIgnored(FCPost v) => v.isIgnored;
+  static const Field<FCPost, bool> _f$isIgnored = Field(
+    'isIgnored',
+    _$isIgnored,
+    opt: true,
+    def: false,
+  );
+  static bool _$canUndelete(FCPost v) => v.canUndelete;
+  static const Field<FCPost, bool> _f$canUndelete = Field(
+    'canUndelete',
+    _$canUndelete,
+    opt: true,
+    def: false,
+  );
+  static String? _$contentHtml(FCPost v) => v.contentHtml;
+  static const Field<FCPost, String> _f$contentHtml = Field(
+    'contentHtml',
+    _$contentHtml,
+    opt: true,
+  );
+  static String? _$signatureHtml(FCPost v) => v.signatureHtml;
+  static const Field<FCPost, String> _f$signatureHtml = Field(
+    'signatureHtml',
+    _$signatureHtml,
+    opt: true,
+  );
+  static String? _$signature(FCPost v) => v.signature;
+  static const Field<FCPost, String> _f$signature = Field(
+    'signature',
+    _$signature,
+    opt: true,
+  );
   static int? _$replyToPostNumber(FCPost v) => v.replyToPostNumber;
   static const Field<FCPost, int> _f$replyToPostNumber = Field(
     'replyToPostNumber',
@@ -396,6 +428,11 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
     #isHidden: _f$isHidden,
     #authorDisplayName: _f$authorDisplayName,
     #linkClicks: _f$linkClicks,
+    #isIgnored: _f$isIgnored,
+    #canUndelete: _f$canUndelete,
+    #contentHtml: _f$contentHtml,
+    #signatureHtml: _f$signatureHtml,
+    #signature: _f$signature,
     #replyToPostNumber: _f$replyToPostNumber,
     #replyToUsername: _f$replyToUsername,
     #replyToIconUrl: _f$replyToIconUrl,
@@ -451,6 +488,11 @@ class FCPostMapper extends ClassMapperBase<FCPost> {
       isHidden: data.dec(_f$isHidden),
       authorDisplayName: data.dec(_f$authorDisplayName),
       linkClicks: data.dec(_f$linkClicks),
+      isIgnored: data.dec(_f$isIgnored),
+      canUndelete: data.dec(_f$canUndelete),
+      contentHtml: data.dec(_f$contentHtml),
+      signatureHtml: data.dec(_f$signatureHtml),
+      signature: data.dec(_f$signature),
       replyToPostNumber: data.dec(_f$replyToPostNumber),
       replyToUsername: data.dec(_f$replyToUsername),
       replyToIconUrl: data.dec(_f$replyToIconUrl),
@@ -576,6 +618,11 @@ abstract class FCPostCopyWith<$R, $In extends FCPost, $Out>
     bool? isHidden,
     String? authorDisplayName,
     Map<String, int>? linkClicks,
+    bool? isIgnored,
+    bool? canUndelete,
+    String? contentHtml,
+    String? signatureHtml,
+    String? signature,
     int? replyToPostNumber,
     String? replyToUsername,
     String? replyToIconUrl,
@@ -703,6 +750,11 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
     bool? isHidden,
     Object? authorDisplayName = $none,
     Map<String, int>? linkClicks,
+    bool? isIgnored,
+    bool? canUndelete,
+    Object? contentHtml = $none,
+    Object? signatureHtml = $none,
+    Object? signature = $none,
     Object? replyToPostNumber = $none,
     Object? replyToUsername = $none,
     Object? replyToIconUrl = $none,
@@ -756,6 +808,11 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       if (isHidden != null) #isHidden: isHidden,
       if (authorDisplayName != $none) #authorDisplayName: authorDisplayName,
       if (linkClicks != null) #linkClicks: linkClicks,
+      if (isIgnored != null) #isIgnored: isIgnored,
+      if (canUndelete != null) #canUndelete: canUndelete,
+      if (contentHtml != $none) #contentHtml: contentHtml,
+      if (signatureHtml != $none) #signatureHtml: signatureHtml,
+      if (signature != $none) #signature: signature,
       if (replyToPostNumber != $none) #replyToPostNumber: replyToPostNumber,
       if (replyToUsername != $none) #replyToUsername: replyToUsername,
       if (replyToIconUrl != $none) #replyToIconUrl: replyToIconUrl,
@@ -820,6 +877,11 @@ class _FCPostCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, FCPost, $Out>
       or: $value.authorDisplayName,
     ),
     linkClicks: data.get(#linkClicks, or: $value.linkClicks),
+    isIgnored: data.get(#isIgnored, or: $value.isIgnored),
+    canUndelete: data.get(#canUndelete, or: $value.canUndelete),
+    contentHtml: data.get(#contentHtml, or: $value.contentHtml),
+    signatureHtml: data.get(#signatureHtml, or: $value.signatureHtml),
+    signature: data.get(#signature, or: $value.signature),
     replyToPostNumber: data.get(
       #replyToPostNumber,
       or: $value.replyToPostNumber,

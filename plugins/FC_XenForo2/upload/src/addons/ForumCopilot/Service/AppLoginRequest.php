@@ -12,7 +12,8 @@ namespace ForumCopilot\Service;
  * the _xfRedirect gone. So the request is kept in XenForo's session while the
  * visitor signs in or signs up (AppLogin, and the Register extension), and
  * register/complete offers "Continue in the app" from it. It is good for half
- * an hour and used once.
+ * an hour and used once. While it is kept, the smart banner stays off
+ * (Listener\SmartBanner).
  */
 class AppLoginRequest
 {

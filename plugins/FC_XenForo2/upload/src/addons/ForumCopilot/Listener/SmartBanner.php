@@ -2,6 +2,7 @@
 
 namespace ForumCopilot\Listener;
 
+use ForumCopilot\Service\AppLoginRequest;
 use XF\Template\Templater;
 
 class SmartBanner
@@ -32,6 +33,16 @@ class SmartBanner
         // Skip bots — no banner needed and we keep the markup clean for SEO.
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
         if (preg_match('/bot|crawl|slurp|spider/i', $userAgent)) {
+            return;
+        }
+
+        // Not while the app is being signed in through the website: Open
+        // would leave the sign-in half done. That is the app sign-in page
+        // itself, and the forum's log-in, two-step and sign-up pages while
+        // the app's request is kept in the session (AppLoginRequest).
+        if (($params['controller'] ?? '') === 'ForumCopilot:AppLogin'
+            || AppLoginRequest::remembered($app->session())
+        ) {
             return;
         }
 

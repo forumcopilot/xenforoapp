@@ -71,8 +71,7 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: false,
       actions: [
         if (isLoggedIn) _buildSearchButton(context, colorScheme),
-        // Guests too where the forum shows them its member lists
-        if (isLoggedIn || (siteContext.configDataOutput?.guestWhosOnline ?? false)) _buildMembersButton(context, colorScheme),
+        if (ForumActions.canViewMembers(siteContext)) _buildMembersButton(context, colorScheme),
         _buildMenuButton(context, colorScheme, textTheme),
       ],
     );

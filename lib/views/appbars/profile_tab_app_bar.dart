@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import '../members_page.dart';
+import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import '../../utils/app_navigation.dart';
 
@@ -35,8 +36,7 @@ class ProfileTabAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: false,
       actions: [
-        // Guests too where the forum shows them its member lists
-        if (isLoggedIn || (siteContext.configDataOutput?.guestWhosOnline ?? false)) _buildMembersButton(context, colorScheme),
+        if (ForumActions.canViewMembers(siteContext)) _buildMembersButton(context, colorScheme),
       ],
     );
   }

@@ -18,6 +18,13 @@ class ForumActions {
   static bool canSearch(SiteContext siteContext) =>
       siteContext.isLoggedIn || (siteContext.configDataOutput?.guestSearch ?? false);
 
+  /// Whether to offer the members screen: members, and guests where the
+  /// forum lets guests view its member lists (XenForo's "View member lists",
+  /// getConfig's guestWhosOnline). A member without that permission is told
+  /// so on the screen.
+  static bool canViewMembers(SiteContext siteContext) =>
+      siteContext.isLoggedIn || (siteContext.configDataOutput?.guestWhosOnline ?? false);
+
   /// Asks, then marks every forum read (the Home and Forums tabs' action).
   static Future<void> confirmMarkAllRead(BuildContext context) async {
     final colorScheme = Theme.of(context).colorScheme;

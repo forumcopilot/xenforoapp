@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
+import '../members_page.dart';
 import '../search_page.dart';
 import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import '../../utils/app_navigation.dart';
 
-/// The Forums tab's bar. Search is offered to guests where the forum lets
-/// them search; New Topic is the floating button.
+/// The Forums tab's bar. Search and members are offered to guests where the
+/// forum lets them search or view its member lists; New Topic is the
+/// floating button.
 class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
   final SiteContext siteContext;
@@ -44,6 +46,12 @@ class ForumsTabAppBar extends StatelessWidget implements PreferredSizeWidget {
             icon: const Icon(Icons.manage_search_rounded),
             tooltip: l10n.search,
             onPressed: () => AppNavigation.push(context, SearchPage(siteContext: siteContext)),
+          ),
+        if (ForumActions.canViewMembers(siteContext))
+          IconButton(
+            icon: const Icon(Icons.people_alt_rounded),
+            tooltip: l10n.members,
+            onPressed: () => AppNavigation.push(context, MembersPage(siteContext: siteContext)),
           ),
         if (isLoggedIn)
           IconButton(

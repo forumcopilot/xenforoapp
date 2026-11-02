@@ -65,10 +65,12 @@ class PusherService extends XFCP_PusherService
             $senderId
         ));
 
+        // The forum on top; XenForo's own line ("X added you to the direct
+        // message Y.") already names the sender.
         $router = new \ForumCopilot\Service\Push\DispatchRouter();
         $router->dispatch(
             [(int) $user->user_id],
-            $sender ? (string) $sender->username : (string) $options->boardTitle,
+            (string) $options->boardTitle,
             $body,
             (string) $this->getNotificationUrl(),
             [

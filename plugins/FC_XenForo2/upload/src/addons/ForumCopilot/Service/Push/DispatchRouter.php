@@ -19,13 +19,19 @@ namespace ForumCopilot\Service\Push;
  * The hosted dispatcher is called inline (it's just an HTTP POST to the push
  * backend, which itself queues async). The direct dispatcher is enqueued as
  * an XF Job so the in-process FCM round-trip doesn't block the request.
+ *
+ * Wording: the hosted app holds many forums, so $title is the forum's name and
+ * $body says the rest. A fork is one forum already; $direct, when given, is
+ * what it shows instead (['title' => ..., 'body' => ...]), such as a direct
+ * message titled with its sender.
  */
 class DispatchRouter
 {
     /**
      * @param int[] $userIds
+     * @param array{title: string, body: string}|null $direct
      */
-    public function dispatch(array $userIds, string $title, string $body, string $url, array $data = []): void
+    public function dispatch(array $userIds, string $title, string $body, string $url, array $data = [], ?array $direct = null): void
     {
         // The notification channel (messages, replies, reactions, other), for
         // the app to file the push under.
@@ -85,6 +91,10 @@ class DispatchRouter
         // ("ok", "ok") stay two jobs; enqueueUnique replaces a pending job
         // with the same key.
         if ($directEnabled) {
+            if ($direct !== null) {
+                $title = (string)($direct['title'] ?? $title);
+                $body = (string)($direct['body'] ?? $body);
+            }
             try {
                 \XF::app()->jobManager()->enqueueUnique(
                     'fcDirectPush:' . md5(implode(',', $userIds) . ':' . $contentType . ':'

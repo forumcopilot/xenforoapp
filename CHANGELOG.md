@@ -6,6 +6,11 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+### Bundled addon (unreleased)
+- Pushes name the forum. In the official app, which holds many forums, every push is titled with the forum's name (its board title): direct messages read "Sender: message" below it, where they used to be titled with the sender, and "X added you to the direct message Y" no longer has the sender as its title as well. A fork (direct mode) is one forum, so its direct messages keep the sender as the title and the message as the body. Alerts keep XenForo's own push text exactly as the forum words it.
+- The message line is XenForo's snippet of the message: quotes, images and attachments are left out, censored words are censored, and it is cut on a whole word at 140 characters. A message with nothing left to quote (an image only) gets XenForo's own line in each recipient's language, "X replied to the direct message Y." (2.2: "conversation"), instead of an English "New message".
+- Hosted pushes carry `push_format: 2`, which tells the push backend their title is already the forum's name.
+
 ## [1.1.0] - 2026-11-02
 
 A minor release: the official Forum Copilot app 1.2's forum screens and fixes, without its multi-forum home page and brand (a fork keeps its own). Posts are drawn from the forum's own HTML, so custom BBCodes, media and smilies look as on the website; members can ignore others; alerts stay unread until opened; watching, sorting and filtering, and new threads work as on the website; moderators approve and undelete in place; the members screen opens on who's online; and threads that don't load say why. Nothing changes for a fork: no config fields or build steps, and the features that need add-on 1.11.0 or 1.12.0 stay off with an older add-on. Ships with bundled ForumCopilot addon **v1.12.0**.

@@ -175,25 +175,10 @@ class Listener
                     continue;
                 }
 
-                // Sender display name for title
-                $sender = $em->find('XF:User', $senderId);
-                $senderName = $sender ? (string) $sender->username : 'Someone';
-
-                // Title = sender username; Body = message excerpt
-                $title = $senderName;
-
-                $rawBody = (string) $message->message;
-                // Strip BB codes and HTML tags to get a plain-text preview
-                $body = preg_replace('/\[\/?[^\]]+\]/', '', $rawBody);
-                $body = trim(html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-                if (function_exists('mb_strlen') && mb_strlen($body, 'UTF-8') > 140) {
-                    $body = mb_substr($body, 0, 140, 'UTF-8') . '…';
-                } elseif (strlen($body) > 140) {
-                    $body = substr($body, 0, 140) . '…';
-                }
-                if ($body === '') {
-                    $body = 'New message';
-                }
+                // The message as XenForo snippets it: quotes, images and
+                // attachments left out, censored, cut on a whole word.
+                $senderName = $message->User ? (string) $message->User->username : (string) $message->username;
+                $snippet = self::messageSnippet((string) $message->message);
 
                 // URL to the conversation
                 $url = '';
@@ -215,21 +200,42 @@ class Listener
                 ];
 
                 \ForumCopilot\Util\Log::debug(sprintf(
-                    '[FC PM] dispatching conv=%d msg=%d to %d user(s) title="%s" body_len=%d',
+                    '[FC PM] dispatching conv=%d msg=%d to %d user(s) snippet_len=%d',
                     $conversationId, $messageId,
                     count($appInstalledIds),
-                    $title,
-                    strlen($body)
+                    strlen($snippet)
                 ));
 
+                $boardTitle = (string) $app->options()->boardTitle;
                 $router = new \ForumCopilot\Service\Push\DispatchRouter();
-                $router->dispatch(
-                    array_values(array_map('intval', $appInstalledIds)),
-                    $title,
-                    $body,
-                    $url,
-                    $additionalData
-                );
+
+                if ($snippet !== '') {
+                    // The forum on top, "Sender: message" below. A fork is one
+                    // forum already, so it titles the message with its sender.
+                    $router->dispatch(
+                        array_values(array_map('intval', $appInstalledIds)),
+                        $boardTitle,
+                        $senderName . ': ' . $snippet,
+                        $url,
+                        $additionalData,
+                        ['title' => $senderName, 'body' => $snippet]
+                    );
+                    continue;
+                }
+
+                // Nothing to quote (an image, say): XenForo's own direct
+                // message line, in each recipient's language.
+                $isCreate = (int) $conversation->first_message_id === $messageId;
+                $phrase = (\XF::$versionId >= 2030000 ? 'push_direct_message_' : 'push_conversation_')
+                    . ($isCreate ? 'create' : 'reply');
+                foreach (\ForumCopilot\Service\Push\Recipients::byLanguage($appInstalledIds) as $languageId => $languageUserIds) {
+                    $body = $app->language($languageId)->phrase($phrase, [
+                        'boardTitle' => $boardTitle,
+                        'title' => $conversation->title,
+                        'sender' => $senderName,
+                    ])->render('raw');
+                    $router->dispatch($languageUserIds, $boardTitle, $body, $url, $additionalData);
+                }
             }
         } catch (\Throwable $e) {
             \XF::logError('[FC PM] processPendingConversationPushes error: '
@@ -237,6 +243,17 @@ class Listener
         } finally {
             self::$pendingConversationPushes = [];
         }
+    }
+
+    /**
+     * A direct message as one push line: XenForo's snippet of it (quotes,
+     * images and attachments left out, censored, cut on a whole word at 140
+     * characters). Empty when nothing readable is left.
+     */
+    public static function messageSnippet(string $message): string
+    {
+        $snippet = \XF::app()->stringFormatter()->snippetString($message, 140, ['stripQuote' => true]);
+        return trim(preg_replace('/\s+/u', ' ', $snippet));
     }
 
     /**

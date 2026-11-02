@@ -75,7 +75,11 @@ class ForumCopilotPush
             'target_user_ids' => array_map('intval', $userIds),
             'data' => [
                 'site_id' => $siteId,
-                'event_date' => time()
+                'event_date' => time(),
+                // The title is the forum's name and the body is complete, so
+                // the push backend shows them as they are. Earlier add-ons
+                // (1.6.0 to 1.12.0) titled direct messages with the sender.
+                'push_format' => 2
             ]
         ];
 

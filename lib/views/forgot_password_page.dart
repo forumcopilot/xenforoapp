@@ -3,6 +3,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:get/get.dart';
+import 'package:forumcopilot_flutter/utils/url_utils.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
 import '../theme/design_tokens.dart';
 
@@ -56,8 +57,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           _showForgotPasswordSuccessDialog(result.resultText);
         } else {
           debugPrint('[ForgotPasswordPage] Password reset request failed: ${result.resultText}');
-          // Show error dialog with actual error message from server
-          _showForgotPasswordErrorDialog(result.resultText);
+          // Show error dialog with actual error message from server. A forum
+          // that shows guests a captcha on its lost-password page sends that
+          // page instead (add-on 1.11.0+).
+          _showForgotPasswordErrorDialog(result.resultText, resetUrl: result.resetViaWebUrl);
         }
       } catch (e) {
         debugPrint('[ForgotPasswordPage] forgetPassword API exception: ${e.toString()}');
@@ -158,9 +161,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  void _showForgotPasswordErrorDialog(String? errorMessage) {
+  void _showForgotPasswordErrorDialog(String? errorMessage, {String? resetUrl}) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final onWebsite = resetUrl != null && resetUrl.isNotEmpty;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -172,14 +176,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           title: Row(
             children: [
               Icon(
-                Icons.error_outline_rounded,
-                color: colorScheme.error,
+                onWebsite ? Icons.open_in_browser_rounded : Icons.error_outline_rounded,
+                color: onWebsite ? colorScheme.primary : colorScheme.error,
                 size: 24,
               ),
               const SizedBox(width: DesignTokens.spacingM),
               Expanded(
                 child: Text(
-                  l10n.resetFailed,
+                  onWebsite ? l10n.forgotPasswordTitle : l10n.resetFailed,
                   style: TextStyle(
                     color: colorScheme.onSurface,
                     fontWeight: DesignTokens.fontWeightBold,
@@ -202,9 +206,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ],
           ),
           actions: [
+            if (onWebsite)
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n.cancel),
+              ),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                if (onWebsite) UrlUtils.openUrl(resetUrl);
               },
               style: FilledButton.styleFrom(
                 backgroundColor: colorScheme.primary,
@@ -219,7 +229,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 elevation: DesignTokens.elevationMedium,
               ),
               child: Text(
-                l10n.okButton,
+                onWebsite ? l10n.openWebsite : l10n.okButton,
                 style: TextStyle(
                   color: colorScheme.onPrimary,
                   fontWeight: DesignTokens.fontWeightBold,

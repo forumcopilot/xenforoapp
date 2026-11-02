@@ -6,6 +6,10 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-02
+
+A minor release: the official Forum Copilot app 1.2's forum screens and fixes, without its multi-forum home page and brand (a fork keeps its own). Posts are drawn from the forum's own HTML, so custom BBCodes, media and smilies look as on the website; members can ignore others; alerts stay unread until opened; watching, sorting and filtering, and new threads work as on the website; moderators approve and undelete in place; the members screen opens on who's online; and threads that don't load say why. Nothing changes for a fork: no config fields or build steps, and the features that need add-on 1.11.0 or 1.12.0 stay off with an older add-on. Ships with bundled ForumCopilot addon **v1.12.0**.
+
 ### Bundled addon (v1.11.0 → v1.12.0, the `addon-v1.12.0` release)
 - Verified by building the release ZIP with XenForo's packer (186 files, identical to `upload/`) and upgrading 1.11.0 → 1.12.0 from it with `xf-addon:upgrade` on XenForo 2.2.19 and 2.3.7: XenForo's file health check passes for the add-on on both. Live suites on both: basic 49/49, interface 100/100 (no failures; the methods XenForo has no counterpart for report not implemented). The test data was removed by restoring the databases. No new options, permissions, upgrade steps or tables.
 - `getConfig` names the forum, so the app can add a forum from its address alone: `boardTitle` and `boardUrl` (XenForo's options), `boardIcon` (the default style's app icon, large first, else its favicon, as an absolute URL; empty when the style has none) and `siteId` (the site id forumcopilot.com gave the forum; empty until the add-on's options are saved). Checked on XenForo 2.2.19 and 2.3.7, with and without an icon set.
@@ -53,6 +57,12 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 - Signing out and changing the password name the device, so the forum stops sending it pushes.
 - Strings use XenForo's own wording in all 11 languages. The template's lowercase "this forum" (the address stand-in on the login form) is now `thisForumInSentence`, since `thisForum` is the "This forum" heading.
 - CI also runs the packages' offline suites. YouTube and X cards still make no forumcopilot.com calls in this template: a YouTube video shows its picture without a title.
+
+### App: the official app 1.2's fixes
+- Forgot password: on a forum that shows guests a captcha on its lost-password page, add-on 1.11.0+ refuses the app's request and sends the address of the forum's own reset page; the app offers to open it instead of showing the refusal as an error. Test: `test/forgot_password_web_reset_test.dart`.
+- A thread that doesn't load says why, with Retry, instead of loading forever: the forum's own words (or "Couldn't load this thread") when it refuses or sends a page without posts, and "The forum didn't answer in time." after 30 seconds. A load that ends after a newer one started changes nothing. Test: `test/thread_load_error_test.dart`.
+- Guests open members' profiles: tapping a member's avatar or name no longer asks a guest to log in first. The add-on answers with what the forum's "View member profiles" permission and the member's privacy allow.
+- The members screen opens on who's online, with "N members online", what each member is doing and pull to refresh. A forum that keeps its member lists from the visitor (XenForo's "View member lists") says so, with Log in for guests, instead of "No users online". The online dot is one size everywhere, with a ring. The Forums tab's bar has the Members button too. Test: `test/members_page_test.dart`.
 
 ### Fixed
 - Closing the Reply page with ✕ (or Back) with something written asks what to do with it: Discard, Save draft or Cancel. It used to keep it without asking and put it back in the thread's quick-reply bar, where the only way to remove it was to select it all and delete it. Discard now empties the bar and removes the draft, on this device and on the forum; Save draft puts it back in the bar. The same for a direct-message reply. Tests: `test/reply_editor_close_test.dart`, `test/discard_changes_scope_test.dart`.
@@ -352,7 +362,8 @@ First public release of the standalone XenForo Flutter template — a fork-frien
 - Added `LICENSE` (MIT) and `CLAUDE.md` guidance for AI-assisted contributors.
 - Documented Forum Copilot Push as a managed alternative to running your own FCM backend.
 
-[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/forumcopilot/xenforoapp/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.1.0
 [1.0.1]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.0.1
 [1.0.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v1.0.0
 [0.6.0]: https://github.com/forumcopilot/xenforoapp/releases/tag/v0.6.0

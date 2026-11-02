@@ -1,7 +1,7 @@
 name: forumcopilot_flutter
 description: "ForumCopilot"
 publish_to: 'none'
-version: 1.0.1+43
+version: 1.1.0+44
 
 environment:
   sdk: ^3.6.1

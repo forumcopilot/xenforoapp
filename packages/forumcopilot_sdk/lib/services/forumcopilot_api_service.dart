@@ -50,6 +50,27 @@ class ForumCopilotApiService {
     }
   }
 
+  /// The forumcopilot.com site registered for the forum at [address],
+  /// whether or not the directory lists it; null when there is none, or the
+  /// server has no such lookup (404: servers before 2026-11). Pushes go by
+  /// this site's id. Throws when the server couldn't be asked (offline, an
+  /// error), so a caller can try again sooner than for "none".
+  static Future<Site?> getSiteByAddress(String address) async {
+    final uri = Uri.parse('$_baseUrl/site-by-address?url=${Uri.encodeComponent(address)}');
+
+    if (kDebugMode) {
+      print('ForumCopilotApiService: GET ' + uri.toString());
+    }
+
+    final response = await _makeHttpCall(uri);
+    if (response.statusCode == 404) return null;
+    if (response.statusCode != 200) {
+      throw Exception('site-by-address answered ${response.statusCode}');
+    }
+    final site = jsonDecode(response.body)['site'];
+    return site is Map<String, dynamic> ? _siteFromApiJson(site) : null;
+  }
+
   /// Fetches explore sites from the server
   static Future<List<Site>> getExploreSites({
     required String language,

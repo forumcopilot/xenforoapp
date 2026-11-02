@@ -19,11 +19,11 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
 import 'package:xenforo_core/xenforo_core.dart' show XenForoDraftProxy;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import '../../../login_page.dart';
 import '../../../../utils/snackbar_helper.dart';
 import '../../../../utils/app_navigation.dart';
 import '../../../../utils/network_utils.dart';
 import '../../../../services/notification_service.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class ConversationPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -210,7 +210,7 @@ class _ConversationPageState extends State<ConversationPage> with WidgetsBinding
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await AppNavigation.push(context, LoginPage(siteContext: widget.siteContext));
+          await SignIn.start(widget.siteContext);
         }
       }
       if (mounted) {

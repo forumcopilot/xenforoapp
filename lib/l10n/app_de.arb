@@ -1279,7 +1279,6 @@
   "deleteAccountNoPassword": "Kein Passwort? Mit Benutzernamen bestätigen",
   "deleteAccountUsePassword": "Mit Passwort bestätigen",
   "accountDeleted": "Dein Konto wurde gelöscht.",
-  "signInOnWebsite": "Auf der Website des Forums anmelden",
   "signInOnWebsiteHint": "Für Google, Facebook und andere Anmeldearten dort",
   "browserLoginFailed": "Die Anmeldung über die Website hat nicht geklappt. Bitte versuche es erneut.",
   "subForums": "Unterforen",
@@ -1374,5 +1373,8 @@
   "membersOnlineCount": "{count, plural, =1{1 Mitglied online} other{{count} Mitglieder online}}",
   "memberListsPrivate": "Die Mitgliederlisten dieses Forums sind für Sie nicht sichtbar",
   "memberListsPrivateGuest": "Melden Sie sich an, um zu sehen, wer online ist, sofern das Forum es Mitgliedern zeigt.",
-  "memberListsPrivateMember": "Ihr Konto hat keine Berechtigung, sie anzusehen."
+  "memberListsPrivateMember": "Ihr Konto hat keine Berechtigung, sie anzusehen.",
+  "signUpFinishedTitle": "Konto erstellt?",
+  "signUpFinishedContinue": "Tippe auf Weiter, um die App damit anzumelden.",
+  "signUpFinishedSignIn": "Melde dich mit dem gerade gewählten Benutzernamen und Passwort an."
 }

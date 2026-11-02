@@ -2924,9 +2924,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get accountDeleted => 'Sua conta foi excluída.';
 
   @override
-  String get signInOnWebsite => 'Entrar pelo site do fórum';
-
-  @override
   String get signInOnWebsiteHint =>
       'Para Google, Facebook e as outras formas de entrar lá';
 
@@ -3346,4 +3343,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get memberListsPrivateMember =>
       'Sua conta não tem permissão para vê-las.';
+
+  @override
+  String get signUpFinishedTitle => 'Criou sua conta?';
+
+  @override
+  String get signUpFinishedContinue => 'Continue para entrar no app com ela.';
+
+  @override
+  String get signUpFinishedSignIn =>
+      'Entre com o nome de usuário e a senha que você acabou de escolher.';
 }

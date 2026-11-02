@@ -17,6 +17,10 @@ import '../theme/style_builders.dart';
 import '../utils/app_navigation.dart';
 import '../services/browser_login.dart';
 
+/// The app's own sign-in form: user name and password, and on iOS and
+/// Android the app's passkey sign-in. For forums that don't offer website
+/// sign-in, and for a phone where the website's sheet won't open. Open it
+/// through SignIn.start, which takes the other forums to their website.
 class LoginPage extends StatefulWidget {
   final SiteContext siteContext;
   const LoginPage({Key? key, required this.siteContext}) : super(key: key);
@@ -36,6 +40,12 @@ class _LoginPageState extends State<LoginPage>
   late Animation<double> _fadeAnimation;
   Future<PasskeyValidationResult>? _passkeyValidationFuture;
 
+  /// The app's passkey sign-in, on a forum whose passkeys aren't used on its
+  /// website instead (BrowserLogin).
+  late final bool _passkeyOffered = !BrowserLogin.isOffered(widget.siteContext) &&
+      widget.siteContext.siteType == 'xenforo' &&
+      LoginController.isPasskeySupportedByPlatform;
+
   @override
   void initState() {
     super.initState();
@@ -53,8 +63,7 @@ class _LoginPageState extends State<LoginPage>
     );
     _animationController.forward();
 
-    if (widget.siteContext.siteType == 'xenforo' &&
-        LoginController.isPasskeySupportedByPlatform) {
+    if (_passkeyOffered) {
       _passkeyValidationFuture = _validatePasskeyAvailability();
     }
   }
@@ -113,13 +122,7 @@ class _LoginPageState extends State<LoginPage>
     if (success) _afterSignIn();
   }
 
-  Future<void> _handleBrowserLogin() async {
-    final loginController = Get.put(LoginController());
-    final success = await loginController.handleBrowserLogin(siteContext: widget.siteContext);
-    if (success) _afterSignIn();
-  }
-
-  /// Signed in another way than the form (passkey, website): leave this page.
+  /// Signed in another way than the form (passkey): leave this page.
   void _afterSignIn() {
     if (mounted) {
       if (Get.isRegistered<GlobalLoaderController>()) {
@@ -408,8 +411,7 @@ class _LoginPageState extends State<LoginPage>
                           ),
                         ),
                       ),
-                      if (widget.siteContext.siteType == 'xenforo' &&
-                          LoginController.isPasskeySupportedByPlatform) ...[
+                      if (_passkeyOffered) ...[
                         const SizedBox(height: DesignTokens.spacingM),
                         if (_passkeyValidationFuture != null)
                           FutureBuilder<PasskeyValidationResult>(
@@ -435,28 +437,6 @@ class _LoginPageState extends State<LoginPage>
                             l10n: l10n,
                             enabled: true,
                           ),
-                      ],
-                      // Members who sign in on the website with Google,
-                      // Facebook, a passkey or two-step have no password here.
-                      if (BrowserLogin.isOffered(widget.siteContext)) ...[
-                        const SizedBox(height: DesignTokens.spacingM),
-                        OutlinedButton.icon(
-                          onPressed: _handleBrowserLogin,
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: DesignTokens.spacingL),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-                            ),
-                          ),
-                          icon: const Icon(Icons.open_in_browser_rounded),
-                          label: Text(l10n.signInOnWebsite),
-                        ),
-                        const SizedBox(height: DesignTokens.spacingXS),
-                        Text(
-                          l10n.signInOnWebsiteHint,
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                        ),
                       ],
                       const SizedBox(height: DesignTokens.spacingXL),
                       // Advisory text about credentials being sent to forum domain

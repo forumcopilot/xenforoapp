@@ -1302,7 +1302,6 @@
   "deleteAccountNoPassword": "没有密码？用用户名确认",
   "deleteAccountUsePassword": "用密码确认",
   "accountDeleted": "你的账户已删除。",
-  "signInOnWebsite": "在论坛网站上登录",
   "signInOnWebsiteHint": "适用于 Google、Facebook 及你在网站上使用的其他登录方式",
   "browserLoginFailed": "网站登录未成功，请重试。",
   "subForums": "子论坛",
@@ -1397,5 +1396,8 @@
   "membersOnlineCount": "{count, plural, other{{count} 位会员在线}}",
   "memberListsPrivate": "你无法查看此论坛的会员列表",
   "memberListsPrivateGuest": "登录后，如果论坛向会员开放，即可查看谁在线。",
-  "memberListsPrivateMember": "你的账号没有查看权限。"
+  "memberListsPrivateMember": "你的账号没有查看权限。",
+  "signUpFinishedTitle": "已创建帐户？",
+  "signUpFinishedContinue": "继续即可用此帐户登录应用。",
+  "signUpFinishedSignIn": "请用刚才设置的用户名和密码登录。"
 }

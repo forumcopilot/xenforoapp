@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/utils/time_utils.dart';
@@ -13,6 +12,7 @@ import 'package:forumcopilot_flutter/utils/number_utils.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class UserRepliedPosts extends StatefulWidget {
   final SiteContext siteContext;
@@ -166,7 +166,7 @@ class _UserRepliedPostsState extends State<UserRepliedPosts> {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+          await SignIn.start(widget.siteContext);
         }
         if (!widget.siteContext.isLoggedIn) {
           AppLogger.debug('UserRepliedPosts: proceeding to thread as guest after login screen');

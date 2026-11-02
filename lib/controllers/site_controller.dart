@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/services/site_proxy_service.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/models/domain/site.dart';
@@ -17,8 +16,8 @@ import 'global_loader_controller.dart';
 import '../models/site_visit_history.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import '../l10n/generated/app_localizations.dart';
-import '../utils/app_navigation.dart';
 import '../theme/app_theme.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 /// SiteController manages site initialization with timeout support
 class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
@@ -311,7 +310,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
       if (loginResult.hadCredentials) {
         if (Get.context != null) {
           AppLogger.info('Showing login screen after auto-login failure');
-          await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+          await SignIn.start(siteContext);
         } else {
           AppLogger.warning('No context available to show login screen after auto-login failure');
         }
@@ -361,7 +360,7 @@ class SiteController extends GlobalLoaderController with ErrorHandlingMixin {
         if (loginResult.hadCredentials) {
           if (Get.context != null) {
             AppLogger.info('Showing login screen after auto-login failure (initialized site)');
-            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+            await SignIn.start(siteContext);
           } else {
             AppLogger.warning('No context available to show login screen after auto-login failure (initialized site)');
           }

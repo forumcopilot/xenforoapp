@@ -44,11 +44,29 @@ abstract class PushLoginReasonCode {
   static const String signInDeclined = 'sign_in_declined';
 }
 
+/// How a sign-in on the forum's website ended.
+enum BrowserLoginOutcome {
+  signedIn,
+
+  /// The member closed the sheet without signing in.
+  closed,
+
+  /// It went wrong; already said in a dialog.
+  failed,
+
+  /// The sheet wouldn't open on this phone; nothing was said (SignIn then
+  /// opens the app's own sign-in page).
+  unavailable,
+}
+
 /// Result of automatic login attempt
 class AutoLoginResult {
   final bool success;
   final String? errorMessage;
-  final bool hadCredentials; // Whether credentials were attempted
+  /// Whether saved credentials were tried and failed, so callers offer the
+  /// sign-in page. False where the forum signs in on its website
+  /// (attemptAutomaticLogin), and where the member backed out.
+  final bool hadCredentials;
   /// Stable reason code for diagnostics (e.g. no_cookies, tfa_required).
   final String reasonCode;
 
@@ -532,16 +550,22 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   }
 
   /// Signs in through the forum's website (BrowserLogin), any way the website
-  /// signs members in: Google, Facebook, passkeys, two-step. True when
-  /// signed in; false when the member closed the sheet or it failed (said in
-  /// a dialog).
-  Future<bool> handleBrowserLogin({required SiteContext siteContext}) async {
+  /// signs members in: password, Google, Facebook, passkeys, two-step (SignIn).
+  /// With [signUp], the sheet opens on the forum's register page
+  /// (WebsiteSignUp).
+  Future<BrowserLoginOutcome> browserLogin({required SiteContext siteContext, bool signUp = false}) async {
     _clearAutoSignInDeclined(siteContext);
     final userProxy = SiteProxyService.getUserProxy();
-    if (userProxy is! IFCBrowserLogin) return false;
+    if (userProxy is! IFCBrowserLogin) return BrowserLoginOutcome.failed;
     try {
-      final code = await BrowserLogin.requestCode(siteContext);
-      if (code == null) return false;
+      final BrowserLoginCode? code;
+      try {
+        code = await BrowserLogin.requestCode(siteContext, signUp: signUp);
+      } on PlatformException catch (e) {
+        AppLogger.warning('[LoginController] browser sheet unavailable (${e.code}: ${e.message})');
+        return BrowserLoginOutcome.unavailable;
+      }
+      if (code == null) return BrowserLoginOutcome.closed;
 
       GlobalLoaderController.to.show();
       final loginResult = await (userProxy as IFCBrowserLogin)
@@ -555,7 +579,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
           reason != null && reason.isNotEmpty ? reason : l10nNow().browserLoginFailed,
           Get.theme.colorScheme,
         );
-        return false;
+        return BrowserLoginOutcome.failed;
       }
 
       siteContext.loginDataOutput = loginResult;
@@ -564,6 +588,9 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       siteContext.username = user.username;
       siteContext.password = null;
       await siteContext.saveToDevice();
+      // A password saved by an earlier sign-in in the app goes: from now on
+      // the member signs in on the website.
+      await _forgetSavedPassword(siteContext);
       await _recordVisitForPasskeyLogin(siteContext, username: user.username);
       siteContext.updateLoginState();
 
@@ -572,12 +599,12 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         final site = siteController.currentSite.value;
         if (site != null) await _registerForPushNotifications(site, loginResult);
       });
-      return true;
+      return BrowserLoginOutcome.signedIn;
     } catch (e, stackTrace) {
       if (GlobalLoaderController.to.isLoading) GlobalLoaderController.to.hide();
-      await handleError(e, stackTrace, context: 'LoginController.handleBrowserLogin', showToUser: false);
+      await handleError(e, stackTrace, context: 'LoginController.browserLogin', showToUser: false);
       await _showLoginErrorDialog(l10nNow().browserLoginFailed, Get.theme.colorScheme);
-      return false;
+      return BrowserLoginOutcome.failed;
     }
   }
 
@@ -591,11 +618,19 @@ class LoginController extends GetxController with ErrorHandlingMixin {
   /// When [sessionCheckedByConfig] is true, the forum's config was fetched for
   /// [siteContext] a moment ago (opening the forum), and its fc_is_login
   /// answers whether the cookie session is valid: no second getConfig.
+  ///
+  /// Where the forum offers website sign-in (SignIn), a password saved by an
+  /// earlier sign-in in the app still renews the session, but nothing of the
+  /// app's own shows: no two-step screen, no failure bar, and hadCredentials
+  /// is false so callers open no sign-in page. When the forum asks for a
+  /// second step or turns the password down, the password is forgotten and
+  /// the member's next sign-in is on the website.
   Future<AutoLoginResult> attemptAutomaticLogin(
     SiteContext siteContext, {
     bool silentRelogin = false,
     bool sessionCheckedByConfig = false,
   }) async {
+    final websiteOnly = BrowserLogin.isOffered(siteContext);
     try {
       // Step 1: Check if we have valid cookies and session first
       final pluginUrl = siteContext.site.pluginUrl;
@@ -685,7 +720,10 @@ class LoginController extends GetxController with ErrorHandlingMixin {
 
       // Step 2: If no valid session, use the last successful login method.
       // When silentRelogin is true (proxy session-expired), skip passkey to avoid showing auth UI.
+      // Where the forum offers website sign-in the app has no passkey sign-in
+      // of its own (passkeys are used on the website), so no passkey prompt.
       final shouldUsePasskeyAutoLogin = !silentRelogin &&
+          !BrowserLogin.isOffered(siteContext) &&
           (siteContext.lastSuccessfulLoginMethod ==
                   SiteContext.loginMethodPasskey ||
               (siteContext.lastSuccessfulLoginMethod == null &&
@@ -778,8 +816,19 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       // "Password right, now the second step" comes back as result false
       // with tfaRequired: not a failure (a "Login failed" bar flashed before
       // the two-step screen).
-      if (!loginResult.result && loginResult.tfaRequired != true) {
+      if (!loginResult.result && loginResult.tfaRequired != true && !websiteOnly) {
         _showLoginFailureSnackbar(loginResultMessage);
+      }
+
+      // The second step is the website's to ask for.
+      if (loginResult.tfaRequired == true && websiteOnly) {
+        await _handleInvalidCredentials(siteContext, reason: 'two_step_on_website_sign_in_forum');
+        return AutoLoginResult(
+          success: false,
+          errorMessage: 'Two-step verification is on the website',
+          hadCredentials: false,
+          reasonCode: PushLoginReasonCode.tfaRequired,
+        );
       }
 
       // Check if 2FA is required for auto-login
@@ -962,7 +1011,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
         return AutoLoginResult(
           success: false,
           errorMessage: errorMessage,
-          hadCredentials: true,
+          hadCredentials: !websiteOnly,
           reasonCode: reasonCode,
         );
       }
@@ -975,7 +1024,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       return AutoLoginResult(
         success: false,
         errorMessage: e.toString(),
-        hadCredentials: true,
+        hadCredentials: !websiteOnly,
         reasonCode: PushLoginReasonCode.apiAuthInvalid,
       );
     } on FCApiException catch (e, stackTrace) {
@@ -1007,7 +1056,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       return AutoLoginResult(
         success: false,
         errorMessage: apiMessage,
-        hadCredentials: true,
+        hadCredentials: !websiteOnly,
         reasonCode: reasonCode,
       );
     } catch (e, stackTrace) {
@@ -1018,7 +1067,7 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       return AutoLoginResult(
         success: false,
         errorMessage: 'Login failed due to network error',
-        hadCredentials: true,
+        hadCredentials: !websiteOnly,
         reasonCode: PushLoginReasonCode.transientError,
       );
     }
@@ -1306,6 +1355,18 @@ class LoginController extends GetxController with ErrorHandlingMixin {
       await handleError(e, stackTrace,
           context: 'LoginController._recordVisitWithCredentials',
           showToUser: false);
+    }
+  }
+
+  /// Deletes the password saved for [siteContext]'s forum, if there is one.
+  Future<void> _forgetSavedPassword(SiteContext siteContext) async {
+    try {
+      final site = Get.isRegistered<SiteController>()
+          ? Get.find<SiteController>().currentSite.value ?? siteContext.site
+          : siteContext.site;
+      await SiteVisitTracker.instance.removeCredentials(site);
+    } catch (e, stackTrace) {
+      await handleError(e, stackTrace, context: 'LoginController._forgetSavedPassword', showToUser: false);
     }
   }
 

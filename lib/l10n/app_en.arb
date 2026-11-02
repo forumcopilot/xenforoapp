@@ -1901,7 +1901,6 @@
   "@deleteAccountNoPassword": {"description": "For members who signed up with Google or Facebook"},
   "deleteAccountUsePassword": "Confirm with your password",
   "accountDeleted": "Your account has been deleted.",
-  "signInOnWebsite": "Log in on the forum's website",
   "signInOnWebsiteHint": "For Google, Facebook and the other ways you log in there",
   "browserLoginFailed": "Logging in on the website didn't work. Please try again.",
   "subForums": "Sub-forums",
@@ -2030,5 +2029,11 @@
   "memberListsPrivateGuest": "Log in to see who's online, if the forum shows it to members.",
   "@memberListsPrivateGuest": {"description": "Under memberListsPrivate for a guest, above a Log in button"},
   "memberListsPrivateMember": "Your account doesn't have permission to view them.",
-  "@memberListsPrivateMember": {"description": "Under memberListsPrivate for a signed-in member"}
+  "@memberListsPrivateMember": {"description": "Under memberListsPrivate for a signed-in member"},
+  "signUpFinishedTitle": "Created your account?",
+  "@signUpFinishedTitle": {"description": "Asked after the forum's register page was closed"},
+  "signUpFinishedContinue": "Continue to sign the app in with it.",
+  "@signUpFinishedContinue": {"description": "After signing up on the forum's website: Continue signs the app in with the new account"},
+  "signUpFinishedSignIn": "Log in with the user name and password you just chose.",
+  "@signUpFinishedSignIn": {"description": "After signing up on a forum whose add-on cannot hand the account back to the app"}
 }

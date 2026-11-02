@@ -1279,7 +1279,6 @@
   "deleteAccountNoPassword": "Pas de mot de passe ? Confirmez avec votre nom d’utilisateur",
   "deleteAccountUsePassword": "Confirmer avec votre mot de passe",
   "accountDeleted": "Votre compte a été supprimé.",
-  "signInOnWebsite": "Se connecter sur le site du forum",
   "signInOnWebsiteHint": "Pour Google, Facebook et les autres façons de vous y connecter",
   "browserLoginFailed": "La connexion via le site n’a pas abouti. Veuillez réessayer.",
   "subForums": "Sous-forums",
@@ -1374,5 +1373,8 @@
   "membersOnlineCount": "{count, plural, =1{1 membre en ligne} other{{count} membres en ligne}}",
   "memberListsPrivate": "Les listes de membres de ce forum ne vous sont pas accessibles",
   "memberListsPrivateGuest": "Connectez-vous pour voir qui est en ligne, si le forum le montre aux membres.",
-  "memberListsPrivateMember": "Votre compte n'a pas l'autorisation de les voir."
+  "memberListsPrivateMember": "Votre compte n'a pas l'autorisation de les voir.",
+  "signUpFinishedTitle": "Compte créé ?",
+  "signUpFinishedContinue": "Continuez pour connecter l'application avec ce compte.",
+  "signUpFinishedSignIn": "Connectez-vous avec le nom d'utilisateur et le mot de passe que vous venez de choisir."
 }

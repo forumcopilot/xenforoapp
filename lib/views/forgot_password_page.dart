@@ -3,7 +3,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
 import 'package:get/get.dart';
-import 'package:forumcopilot_flutter/utils/url_utils.dart';
+import 'package:forumcopilot_flutter/services/browser_login.dart';
 import 'package:forumcopilot_flutter/views/widgets/forum_header_widget.dart';
 import '../theme/design_tokens.dart';
 
@@ -214,7 +214,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                if (onWebsite) UrlUtils.openUrl(resetUrl);
+                // In the browser sheet where there is one, like the
+                // forum's other pages: the member stays in the app.
+                if (onWebsite) BrowserLogin.openPage(resetUrl);
               },
               style: FilledButton.styleFrom(
                 backgroundColor: colorScheme.primary,

@@ -2903,9 +2903,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountDeleted => 'Your account has been deleted.';
 
   @override
-  String get signInOnWebsite => 'Log in on the forum\'s website';
-
-  @override
   String get signInOnWebsiteHint =>
       'For Google, Facebook and the other ways you log in there';
 
@@ -3324,4 +3321,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get memberListsPrivateMember =>
       'Your account doesn\'t have permission to view them.';
+
+  @override
+  String get signUpFinishedTitle => 'Created your account?';
+
+  @override
+  String get signUpFinishedContinue => 'Continue to sign the app in with it.';
+
+  @override
+  String get signUpFinishedSignIn =>
+      'Log in with the user name and password you just chose.';
 }

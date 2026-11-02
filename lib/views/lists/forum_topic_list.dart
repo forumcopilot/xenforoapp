@@ -10,7 +10,6 @@ import 'package:forumcopilot_flutter/utils/forum_navigation.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../listitems/topic_list_item.dart';
 import '../listitems/forum_list_item.dart';
 import '../widgets/subforum_masthead.dart';
@@ -20,6 +19,7 @@ import '../../utils/snackbar_helper.dart';
 import '../widgets/forum_watch_sheet.dart';
 import '../widgets/thread_filters_sheet.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class ForumTopicList extends StatefulWidget {
   final SiteContext siteContext;
@@ -549,7 +549,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                        await SignIn.start(widget.siteContext);
                       }
                     }
                     AppNavigation.pushGlobal(PostPage(
@@ -573,7 +573,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                        await SignIn.start(widget.siteContext);
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).
@@ -594,7 +594,7 @@ class _ForumTopicListState extends State<ForumTopicList> {
                       final loginController = Get.find<LoginController>();
                       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                        await SignIn.start(widget.siteContext);
                       }
                     }
                     // At the first unread post, as the Latest list opens topics (signed in only).

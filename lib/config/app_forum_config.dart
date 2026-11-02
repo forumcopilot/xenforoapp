@@ -63,12 +63,14 @@ class AppForumConfig {
   /// Android package name used for passkey assetlinks validation.
   static const String androidPackageName = 'com.example.forumapp';
 
-  /// This app's URL scheme for signing in through the forum's website (for
-  /// members who sign in there with Google, Facebook, a passkey or two-step).
-  /// Use one of your own (not "forumcopilot", the official app's), set the
-  /// same value in AndroidManifest.xml (flutter_web_auth_2 CallbackActivity),
-  /// and add it to the add-on option "App sign-in schemes" in the forum's
-  /// admin panel; until the forum lists it, the button does not show.
+  /// This app's URL scheme for signing in and up on the forum's website, in
+  /// the browser sheet: the forum's log-in page hands the sign-in back to the
+  /// app through it. Use a lowercase one of your own (not "forumcopilot", the
+  /// official app's), set the same value in AndroidManifest.xml
+  /// (flutter_web_auth_2 CallbackActivity), and add it to the add-on option
+  /// "App sign-in schemes" in the forum's admin panel (add-on 1.9.0+). Until
+  /// the forum lists it, Log in opens the app's own password form instead
+  /// (README, "Configure your forum").
   static const String browserLoginScheme = 'forumapp';
 
   /// SHA256 certificate fingerprint used for passkey validation.

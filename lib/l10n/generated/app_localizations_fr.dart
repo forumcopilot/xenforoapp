@@ -2960,9 +2960,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountDeleted => 'Votre compte a été supprimé.';
 
   @override
-  String get signInOnWebsite => 'Se connecter sur le site du forum';
-
-  @override
   String get signInOnWebsiteHint =>
       'Pour Google, Facebook et les autres façons de vous y connecter';
 
@@ -3384,4 +3381,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get memberListsPrivateMember =>
       'Votre compte n\'a pas l\'autorisation de les voir.';
+
+  @override
+  String get signUpFinishedTitle => 'Compte créé ?';
+
+  @override
+  String get signUpFinishedContinue =>
+      'Continuez pour connecter l\'application avec ce compte.';
+
+  @override
+  String get signUpFinishedSignIn =>
+      'Connectez-vous avec le nom d\'utilisateur et le mot de passe que vous venez de choisir.';
 }

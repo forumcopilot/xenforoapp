@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:forumcopilot_flutter/controllers/site_controller.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
 import 'package:forumcopilot_flutter/services/site_proxy_service.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/core/async/async_utils.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:forumcopilot_flutter/models/site_visit_history.dart';
@@ -11,8 +10,8 @@ import 'package:forumcopilot_sdk/models/domain/site.dart';
 import 'package:forumcopilot_sdk/models/results/fc_config_result.dart';
 import 'package:get/get.dart';
 import '../utils/l10n_now.dart';
-import '../utils/app_navigation.dart';
 import '../theme/app_theme.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 /// Result of site initialization
 class SiteInitializationResult {
@@ -165,7 +164,7 @@ class SiteInitializationService {
         } else {
           AppLogger.info('🔍 [INIT_SERVICE] ❌ Automatic login failed: ${loginResult.errorMessage ?? "unknown error"}, hadCredentials=${loginResult.hadCredentials}');
           if (loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-            await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+            await SignIn.start(siteContext);
           }
         }
       } else {

@@ -1751,7 +1751,6 @@
   "deleteAccountNoPassword": "Geen wachtwoord? Bevestig met je gebruikersnaam",
   "deleteAccountUsePassword": "Bevestig met je wachtwoord",
   "accountDeleted": "Je account is verwijderd.",
-  "signInOnWebsite": "Inloggen op de website van het forum",
   "signInOnWebsiteHint": "Voor Google, Facebook en de andere manieren waarop je daar inlogt",
   "browserLoginFailed": "Inloggen via de website is niet gelukt. Probeer het opnieuw.",
   "subForums": "Subforums",
@@ -1846,5 +1845,8 @@
   "membersOnlineCount": "{count, plural, =1{1 lid online} other{{count} leden online}}",
   "memberListsPrivate": "De ledenlijsten van dit forum zijn niet voor u zichtbaar",
   "memberListsPrivateGuest": "Log in om te zien wie er online is, als het forum dat aan leden toont.",
-  "memberListsPrivateMember": "Uw account heeft geen toestemming om ze te bekijken."
+  "memberListsPrivateMember": "Uw account heeft geen toestemming om ze te bekijken.",
+  "signUpFinishedTitle": "Account aangemaakt?",
+  "signUpFinishedContinue": "Ga verder om de app ermee in te loggen.",
+  "signUpFinishedSignIn": "Log in met de gebruikersnaam en het wachtwoord die je net hebt gekozen."
 }

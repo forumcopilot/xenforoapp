@@ -4964,12 +4964,6 @@ abstract class AppLocalizations {
   /// **'Your account has been deleted.'**
   String get accountDeleted;
 
-  /// No description provided for @signInOnWebsite.
-  ///
-  /// In en, this message translates to:
-  /// **'Log in on the forum\'s website'**
-  String get signInOnWebsite;
-
   /// No description provided for @signInOnWebsiteHint.
   ///
   /// In en, this message translates to:
@@ -5539,6 +5533,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account doesn\'t have permission to view them.'**
   String get memberListsPrivateMember;
+
+  /// Asked after the forum's register page was closed
+  ///
+  /// In en, this message translates to:
+  /// **'Created your account?'**
+  String get signUpFinishedTitle;
+
+  /// After signing up on the forum's website: Continue signs the app in with the new account
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to sign the app in with it.'**
+  String get signUpFinishedContinue;
+
+  /// After signing up on a forum whose add-on cannot hand the account back to the app
+  ///
+  /// In en, this message translates to:
+  /// **'Log in with the user name and password you just chose.'**
+  String get signUpFinishedSignIn;
 }
 
 class _AppLocalizationsDelegate

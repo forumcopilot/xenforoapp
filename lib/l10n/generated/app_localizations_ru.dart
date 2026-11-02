@@ -2949,9 +2949,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accountDeleted => 'Ваш аккаунт удалён.';
 
   @override
-  String get signInOnWebsite => 'Войти на сайте форума';
-
-  @override
   String get signInOnWebsiteHint =>
       'Для Google, Facebook и других способов входа на сайте';
 
@@ -3392,4 +3389,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get memberListsPrivateMember =>
       'У вашей учётной записи нет прав на их просмотр.';
+
+  @override
+  String get signUpFinishedTitle => 'Создали аккаунт?';
+
+  @override
+  String get signUpFinishedContinue =>
+      'Продолжите, чтобы войти с ним в приложение.';
+
+  @override
+  String get signUpFinishedSignIn =>
+      'Войдите с только что выбранными именем пользователя и паролем.';
 }

@@ -8,7 +8,6 @@ import 'package:forumcopilot_sdk/models/results/fc_private_conversation_result.d
 import 'package:forumcopilot_flutter/controllers/post_controller.dart';
 import 'package:forumcopilot_flutter/views/reply_page.dart';
 import 'package:forumcopilot_flutter/views/edit_post_page.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/views/post_page.dart';
 import 'package:forumcopilot_flutter/views/lists/posts_list.dart';
 // AuthController functionality now in SiteContext
@@ -17,6 +16,7 @@ import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/snackbar_helper.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class PostActionsHandler {
   final SiteContext siteContext;
@@ -857,7 +857,7 @@ class PostActionsHandler {
             onPressed: () async {
               Navigator.pop(context);
               // Navigate to login page and wait for result
-              final result = await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+              final result = await SignIn.start(siteContext);
               // If login was successful, refresh the post view
               if (result == true && refreshCallback != null) {
                 // Wait for authentication state to be fully updated

@@ -11,9 +11,9 @@ import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/views/tabs/topic_list_tab.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class ParticipatedTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -243,7 +243,7 @@ class ParticipatedTopicsListState extends FCStatefulWidget<ParticipatedTopicsLis
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                await SignIn.start(widget.siteContext);
               }
             }
             // At the first unread post, as the Latest list opens topics (signed in only).

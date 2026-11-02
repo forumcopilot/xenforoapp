@@ -16,7 +16,6 @@ import '../settings_page.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import '../login_page.dart';
 import '../../utils/app_navigation.dart';
 import '../user_profile_page.dart';
 import '../account/change_email_page.dart';
@@ -24,6 +23,7 @@ import '../account/change_password_page.dart';
 import '../app_settings_page.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../widgets/forum_pages_section.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class ProfileTab extends StatefulWidget {
   final SiteContext siteContext;
@@ -117,7 +117,7 @@ class ProfileTabState extends FCStatefulWidget<ProfileTab> with FCTabStatefulWid
       final loginController = Get.find<LoginController>();
       final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
       if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-        await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+        await SignIn.start(widget.siteContext);
       }
     });
   }

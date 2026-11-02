@@ -2793,9 +2793,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get accountDeleted => 'アカウントを削除しました。';
 
   @override
-  String get signInOnWebsite => 'フォーラムのウェブサイトでログイン';
-
-  @override
   String get signInOnWebsiteHint => 'Google、Facebook など、サイトで使っている方法でログインできます';
 
   @override
@@ -3193,4 +3190,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get memberListsPrivateMember => 'お使いのアカウントには表示する権限がありません。';
+
+  @override
+  String get signUpFinishedTitle => 'アカウントを作成しましたか？';
+
+  @override
+  String get signUpFinishedContinue => '続行すると、そのアカウントでアプリにログインします。';
+
+  @override
+  String get signUpFinishedSignIn => '先ほど決めたユーザー名とパスワードでログインしてください。';
 }

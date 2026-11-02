@@ -6,11 +6,11 @@ import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
 import '../search_page.dart';
 import '../members_page.dart';
-import '../login_page.dart';
-import '../register_page.dart';
+import '../../services/website_sign_up.dart';
 import '../widgets/forum_actions.dart';
 import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isLoggedIn;
@@ -150,10 +150,10 @@ class ForumAppBar extends StatelessWidget implements PreferredSizeWidget {
   Future<void> _handleMenuAction(BuildContext context, String value) async {
     switch (value) {
       case 'sign_in':
-        AppNavigation.push(context, LoginPage(siteContext: siteContext));
+        SignIn.start(siteContext);
         break;
       case 'register':
-        AppNavigation.push(context, RegisterPage(siteContext: siteContext));
+        await WebsiteSignUp.start(context, siteContext);
         break;
       case 'mark_read':
         ForumActions().markAllAsRead(context, '0');

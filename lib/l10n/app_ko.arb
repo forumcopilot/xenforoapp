@@ -1298,7 +1298,6 @@
   "deleteAccountNoPassword": "비밀번호가 없나요? 사용자 이름으로 확인",
   "deleteAccountUsePassword": "비밀번호로 확인",
   "accountDeleted": "계정이 삭제되었습니다.",
-  "signInOnWebsite": "포럼 웹사이트에서 로그인",
   "signInOnWebsiteHint": "Google, Facebook 등 사이트에서 쓰는 방법으로 로그인",
   "browserLoginFailed": "웹사이트 로그인에 실패했습니다. 다시 시도하세요.",
   "subForums": "하위 포럼",
@@ -1393,5 +1392,8 @@
   "membersOnlineCount": "{count, plural, other{온라인 회원 {count}명}}",
   "memberListsPrivate": "이 포럼의 회원 목록을 볼 수 없습니다",
   "memberListsPrivateGuest": "로그인하면 포럼이 회원에게 공개하는 경우 온라인 회원을 볼 수 있습니다.",
-  "memberListsPrivateMember": "계정에 볼 수 있는 권한이 없습니다."
+  "memberListsPrivateMember": "계정에 볼 수 있는 권한이 없습니다.",
+  "signUpFinishedTitle": "계정을 만드셨나요?",
+  "signUpFinishedContinue": "계속하면 이 계정으로 앱에 로그인합니다.",
+  "signUpFinishedSignIn": "방금 정한 사용자 이름과 비밀번호로 로그인하세요."
 }

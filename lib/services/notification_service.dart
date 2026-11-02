@@ -15,7 +15,6 @@ import '../views/single_forum_bootstrap_page.dart';
 import '../views/site_home_page.dart';
 import '../controllers/site_controller.dart';
 import '../controllers/login_controller.dart';
-import '../views/login_page.dart';
 import '../views/post_page.dart';
 import '../views/lists/posts_list.dart';
 import '../views/private_messaging/conversation/pages/conversation_page.dart';
@@ -30,6 +29,7 @@ import '../utils/l10n_now.dart';
 import 'notification_channels.dart';
 import '../utils/app_navigation.dart';
 import '../utils/forum_links.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class NotificationService with ServiceErrorHandlingMixin {
   static final NotificationService _instance = NotificationService._internal();
@@ -712,7 +712,7 @@ class NotificationService with ServiceErrorHandlingMixin {
         final loginController = Get.find<LoginController>();
         final loginResult = await loginController.attemptAutomaticLogin(siteContext);
         if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+          await SignIn.start(siteContext);
         }
         if (!siteContext.isLoggedIn) {
           AppLogger.debug('⚠️ [NotificationService] Proceeding to thread as guest after login screen');

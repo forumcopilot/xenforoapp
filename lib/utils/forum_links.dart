@@ -7,13 +7,13 @@ import '../controllers/login_controller.dart';
 import '../controllers/site_manager.dart';
 import '../core/logging/app_logger.dart';
 import '../views/lists/posts_list.dart';
-import '../views/login_page.dart';
 import '../views/post_page.dart';
 import '../views/private_messaging/conversation/pages/conversation_page.dart';
 import '../views/user_profile_page.dart';
 import 'app_navigation.dart';
 import 'forum_navigation.dart';
 import 'url_utils.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 /// A page of the open forum that the app has a screen for.
 sealed class ForumLinkTarget {
@@ -236,7 +236,7 @@ class ForumLinks {
     if (!Get.isRegistered<LoginController>()) Get.put(LoginController());
     final result = await Get.find<LoginController>().attemptAutomaticLogin(siteContext);
     if (!result.success && result.hadCredentials && Get.currentRoute != '/LoginPage') {
-      await AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+      await SignIn.start(siteContext);
     }
   }
 }

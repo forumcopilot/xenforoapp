@@ -1279,7 +1279,6 @@
   "deleteAccountNoPassword": "パスワードがない場合はユーザー名で確認",
   "deleteAccountUsePassword": "パスワードで確認",
   "accountDeleted": "アカウントを削除しました。",
-  "signInOnWebsite": "フォーラムのウェブサイトでログイン",
   "signInOnWebsiteHint": "Google、Facebook など、サイトで使っている方法でログインできます",
   "browserLoginFailed": "ウェブサイトでのログインに失敗しました。もう一度お試しください。",
   "subForums": "サブフォーラム",
@@ -1374,5 +1373,8 @@
   "membersOnlineCount": "{count, plural, other{オンラインのメンバー {count} 人}}",
   "memberListsPrivate": "このフォーラムのメンバー一覧は表示できません",
   "memberListsPrivateGuest": "ログインすると、フォーラムがメンバーに公開している場合はオンラインのメンバーを見られます。",
-  "memberListsPrivateMember": "お使いのアカウントには表示する権限がありません。"
+  "memberListsPrivateMember": "お使いのアカウントには表示する権限がありません。",
+  "signUpFinishedTitle": "アカウントを作成しましたか？",
+  "signUpFinishedContinue": "続行すると、そのアカウントでアプリにログインします。",
+  "signUpFinishedSignIn": "先ほど決めたユーザー名とパスワードでログインしてください。"
 }

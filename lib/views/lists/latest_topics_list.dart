@@ -11,10 +11,10 @@ import 'package:forumcopilot_flutter/views/widgets/not_signed_in_view.dart';
 import 'package:forumcopilot_flutter/views/tabs/topic_list_tab.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart' as forumcopilot_sdk;
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import '../../theme/design_tokens.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
 import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class LatestTopicsList extends StatefulWidget {
   final SiteContext siteContext;
@@ -247,7 +247,7 @@ class LatestTopicsListState extends FCStatefulWidget<LatestTopicsList> with FCLi
               final loginController = Get.find<LoginController>();
               final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
               if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                await SignIn.start(widget.siteContext);
               }
             }
             // Only use first_unread mode if user is logged in (it requires authentication)

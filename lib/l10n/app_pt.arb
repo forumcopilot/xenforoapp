@@ -1302,7 +1302,6 @@
   "deleteAccountNoPassword": "Sem senha? Confirme com seu nome de usuário",
   "deleteAccountUsePassword": "Confirmar com sua senha",
   "accountDeleted": "Sua conta foi excluída.",
-  "signInOnWebsite": "Entrar pelo site do fórum",
   "signInOnWebsiteHint": "Para Google, Facebook e as outras formas de entrar lá",
   "browserLoginFailed": "Não foi possível entrar pelo site. Tente novamente.",
   "subForums": "Subfóruns",
@@ -1397,5 +1396,8 @@
   "membersOnlineCount": "{count, plural, =1{1 membro online} other{{count} membros online}}",
   "memberListsPrivate": "As listas de membros deste fórum não estão disponíveis para você",
   "memberListsPrivateGuest": "Entre para ver quem está online, se o fórum mostrar isso aos membros.",
-  "memberListsPrivateMember": "Sua conta não tem permissão para vê-las."
+  "memberListsPrivateMember": "Sua conta não tem permissão para vê-las.",
+  "signUpFinishedTitle": "Criou sua conta?",
+  "signUpFinishedContinue": "Continue para entrar no app com ela.",
+  "signUpFinishedSignIn": "Entre com o nome de usuário e a senha que você acabou de escolher."
 }

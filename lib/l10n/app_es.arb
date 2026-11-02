@@ -1302,7 +1302,6 @@
   "deleteAccountNoPassword": "¿Sin contraseña? Confirma con tu nombre de usuario",
   "deleteAccountUsePassword": "Confirmar con tu contraseña",
   "accountDeleted": "Tu cuenta se ha eliminado.",
-  "signInOnWebsite": "Iniciar sesión en el sitio web del foro",
   "signInOnWebsiteHint": "Para Google, Facebook y las demás formas de entrar allí",
   "browserLoginFailed": "No se pudo iniciar sesión en el sitio web. Inténtalo de nuevo.",
   "subForums": "Subforos",
@@ -1397,5 +1396,8 @@
   "membersOnlineCount": "{count, plural, =1{1 miembro conectado} other{{count} miembros conectados}}",
   "memberListsPrivate": "Las listas de miembros de este foro no están disponibles para ti",
   "memberListsPrivateGuest": "Inicia sesión para ver quién está conectado, si el foro lo muestra a los miembros.",
-  "memberListsPrivateMember": "Tu cuenta no tiene permiso para verlas."
+  "memberListsPrivateMember": "Tu cuenta no tiene permiso para verlas.",
+  "signUpFinishedTitle": "¿Has creado tu cuenta?",
+  "signUpFinishedContinue": "Continúa para iniciar sesión en la app con ella.",
+  "signUpFinishedSignIn": "Inicia sesión con el nombre de usuario y la contraseña que acabas de elegir."
 }

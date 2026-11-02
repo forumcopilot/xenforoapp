@@ -1302,7 +1302,6 @@
   "deleteAccountNoPassword": "Нет пароля? Подтвердите именем пользователя",
   "deleteAccountUsePassword": "Подтвердить паролем",
   "accountDeleted": "Ваш аккаунт удалён.",
-  "signInOnWebsite": "Войти на сайте форума",
   "signInOnWebsiteHint": "Для Google, Facebook и других способов входа на сайте",
   "browserLoginFailed": "Не удалось войти через сайт. Попробуйте ещё раз.",
   "subForums": "Подфорумы",
@@ -1397,5 +1396,8 @@
   "membersOnlineCount": "{count, plural, one{{count} участник в сети} few{{count} участника в сети} many{{count} участников в сети} other{{count} участника в сети}}",
   "memberListsPrivate": "Списки участников этого форума вам недоступны",
   "memberListsPrivateGuest": "Войдите, чтобы увидеть, кто в сети, если форум показывает это участникам.",
-  "memberListsPrivateMember": "У вашей учётной записи нет прав на их просмотр."
+  "memberListsPrivateMember": "У вашей учётной записи нет прав на их просмотр.",
+  "signUpFinishedTitle": "Создали аккаунт?",
+  "signUpFinishedContinue": "Продолжите, чтобы войти с ним в приложение.",
+  "signUpFinishedSignIn": "Войдите с только что выбранными именем пользователя и паролем."
 }

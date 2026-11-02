@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:forumcopilot_flutter/controllers/global_loader_controller.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
+import 'package:forumcopilot_flutter/services/browser_login.dart';
 import 'package:forumcopilot_flutter/services/site_proxy_service.dart';
 import 'package:forumcopilot_flutter/views/forgot_password_page.dart';
 import 'package:forumcopilot_sdk/forumcopilot_sdk.dart';
@@ -79,6 +81,30 @@ void main() {
     await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsNothing);
+  });
+
+  testWidgets("Open Website opens the forum's page in the browser sheet, like its other pages", (tester) async {
+    final opened = <String>[];
+    BrowserLogin.debugHasSystemSheet = true;
+    addTearDown(() => BrowserLogin.debugHasSystemSheet = null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(const MethodChannel('flutter_web_auth_2'), (call) async {
+      opened.add((call.arguments as Map)['url'] as String);
+      throw PlatformException(code: 'CANCELED'); // the member closes it
+    });
+
+    await _send(
+      tester,
+      FCForgetPasswordResult(
+        result: false,
+        resultText: "Please reset your password on the forum's website.",
+        resetViaWebUrl: 'https://example.com/lost-password/',
+      ),
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Open Website'));
+    await tester.pumpAndSettle();
+
+    expect(opened, ['https://example.com/lost-password/']);
   });
 
   testWidgets('any other refusal still reads as a failure with OK', (tester) async {

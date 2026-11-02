@@ -2915,9 +2915,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get accountDeleted => 'Je account is verwijderd.';
 
   @override
-  String get signInOnWebsite => 'Inloggen op de website van het forum';
-
-  @override
   String get signInOnWebsiteHint =>
       'Voor Google, Facebook en de andere manieren waarop je daar inlogt';
 
@@ -3337,4 +3334,15 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get memberListsPrivateMember =>
       'Uw account heeft geen toestemming om ze te bekijken.';
+
+  @override
+  String get signUpFinishedTitle => 'Account aangemaakt?';
+
+  @override
+  String get signUpFinishedContinue =>
+      'Ga verder om de app ermee in te loggen.';
+
+  @override
+  String get signUpFinishedSignIn =>
+      'Log in met de gebruikersnaam en het wachtwoord die je net hebt gekozen.';
 }

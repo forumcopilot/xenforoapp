@@ -26,16 +26,40 @@ void main() {
     });
   });
 
-  test('offered only where the forum lists this app', () {
+  test("signing up: the forum's register page, then the sign-in page", () {
+    final signIn = BrowserLogin.signInUrl(Uri.parse('https://example.com/community/'),
+        state: 'state-123456789012', challenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM');
+    final url = Uri.parse(BrowserLogin.signUpUrl(Uri.parse('https://example.com/community/'), then: signIn));
+    expect('${url.scheme}://${url.host}${url.path}', 'https://example.com/community/index.php');
+    expect(url.query, startsWith('register/&'));
+    expect(Uri.splitQueryString(url.query.substring('register/&'.length)), {'_xfRedirect': signIn});
+
+    // A forum whose add-on predates website sign-in: the page alone.
+    expect(BrowserLogin.signUpUrl(Uri.parse('https://example.com/')), 'https://example.com/index.php?register/');
+  });
+
+  group('offered', () {
     SiteContext site(List<String>? schemes) => SiteContext(
           siteType: 'xenforo',
           site: const Site(name: 'A', url: 'https://a.example', description: '', siteType: 'xenforo'),
         )..configDataOutput = FCConfigResult(
             jsonSupport: true, systemVersion: '2.3', version: '1.9', hookVersion: '1', apiLevel: '4',
             releaseTimestamp: '0', pushSlug: 'xenforo', smartBannerInfo: '', browserLoginSchemes: schemes);
-    expect(BrowserLogin.isOffered(site([BrowserLogin.scheme])), isTrue);
-    expect(BrowserLogin.isOffered(site(['someotherapp'])), isFalse);
-    expect(BrowserLogin.isOffered(site([])), isFalse);
-    expect(BrowserLogin.isOffered(site(null)), isFalse);
+
+    tearDown(() => BrowserLogin.debugHasSystemSheet = null);
+
+    test('only where the forum lists this app', () {
+      BrowserLogin.debugHasSystemSheet = true;
+      expect(BrowserLogin.isOffered(site([BrowserLogin.scheme])), isTrue);
+      expect(BrowserLogin.isOffered(site(['someotherapp'])), isFalse);
+      expect(BrowserLogin.isOffered(site([])), isFalse);
+      // Add-ons before 1.9.0 send no list: the app's own sign-in.
+      expect(BrowserLogin.isOffered(site(null)), isFalse);
+    });
+
+    test('not where the sheet cannot come back to the app (Windows, Linux, web)', () {
+      BrowserLogin.debugHasSystemSheet = false;
+      expect(BrowserLogin.isOffered(site([BrowserLogin.scheme])), isFalse);
+    });
   });
 }

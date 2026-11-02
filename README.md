@@ -74,13 +74,12 @@ This app provides a full-featured forum experience for a single XenForo site:
 - **Compose** – New conversation or PM, reply, edit; attachments and BBCode.
 
 ### Account & profile
-- **Login / logout** – Username and password, with two-step verification (authenticator app, email, backup codes or a passkey) and “Trust this device”.
-- **Registration** – Create account with custom registration fields when enabled.
-- **Forgot password** – Password reset flow.
+- **Login / logout** – On the forum's own website, in the system browser sheet, once your forum lists the app's sign-in scheme (see [Configure your forum](#3-configure-your-forum)): any way the website signs members in (password, passkey, Google, Facebook, two-step), with the browser's saved passwords. Otherwise, and on Windows, Linux and the web, the app's own form: username and password, with two-step verification (authenticator app, email, backup codes or a passkey) and “Trust this device”.
+- **Registration** – On the forum's own register page, in the browser sheet, with everything the forum asks for there (its profile fields, captcha and terms).
+- **Forgot password** – XenForo's own link on its log-in page; from the app's form, a reset email, or the forum's page where it shows guests a captcha.
 - **Profile** – View profile, avatar, recent posts, and custom profile fields.
 - **Profile picture** – Change avatar from device or camera.
-- **Passkeys** – Sign in with a passkey on the phone, or on another phone by QR code (requires Android/iOS app and assetlinks/AASA configured; on iOS, your forum's domain in two files, see [step 5 of the checklist](#open-source-safety-checklist)).
-- **Sign in on the website** – For members who use Google, Facebook or another way your website offers (see [Configure your forum](#3-configure-your-forum)).
+- **Passkeys** – Sign in with a passkey on the phone, or on another phone by QR code, on the website once your forum lists the app's sign-in scheme, otherwise in the app (the app's own passkey sign-in requires Android/iOS app and assetlinks/AASA configured; on iOS, your forum's domain in two files, see [step 5 of the checklist](#open-source-safety-checklist)).
 - **Delete account** – In Settings, where the add-on allows it (App Store guideline 5.1.1(v)).
 
 ### Notifications & alerts
@@ -150,7 +149,13 @@ static const String pluginEndpoint = 'forumcopilot.php';
 
 Optionally set `forumDescription`, `logoUrl`, `backgroundUrl`, `androidPackageName`, and `androidSha256CertFingerprint` as needed. Push has its own section: [Push notifications](#push-notifications-optional).
 
-Members who sign in on your website with Google, Facebook, a passkey or two-step have no password to type into the app; they sign in through the website instead ("Sign in on the forum's website", in the system browser sheet). For that, give the app a URL scheme of its own in `browserLoginScheme` (not `forumcopilot`, which the official app uses), put the same scheme in `android/app/src/main/AndroidManifest.xml` (the `flutter_web_auth_2` CallbackActivity), and add it to the add-on option **App sign-in schemes** in your admin panel (Options > ForumCopilot Options). The button shows once the forum lists the app's scheme.
+**List the app's sign-in scheme on your forum.** Members sign in and sign up on your forum's own website, in the system browser sheet (iOS, Android and macOS): Log in opens the forum's log-in page straight away, with every way your website signs members in (password, passkey, Google, Facebook, two-step), the browser's saved passwords and XenForo's own "Forgot your password?" link; Register opens its register page. The sheet hands the sign-in back to the app through a URL scheme, so:
+
+1. Give the app a scheme of its own, in lowercase, in `browserLoginScheme` (the template's is `forumapp`; not `forumcopilot`, which the official app uses).
+2. Put the same scheme in `android/app/src/main/AndroidManifest.xml` (the `flutter_web_auth_2` CallbackActivity).
+3. Add it to the add-on option **App sign-in schemes** in your admin panel (Options > ForumCopilot Options), after `forumcopilot` and a comma: `forumcopilot, forumapp`. The option needs add-on 1.9.0 or newer.
+
+Until the forum lists the scheme (or with an older add-on), Log in opens the app's own username and password form instead, and Register opens the register page with no way back, so members then log in with the name and password they chose. The app's form is also what Windows, Linux and the web get, and a phone where the sheet won't open. Once the scheme is listed, members who logged in with the app's form before stay logged in with their saved password; if the forum turns it down or asks for two-step, the app forgets it, shows nothing, and their next Log in is on the website.
 
 `forumName` and `forumBaseUrl` can also be overridden at build time without editing the file, which is handy for a CI build, a preview against a staging forum, or the benchmark harness:
 

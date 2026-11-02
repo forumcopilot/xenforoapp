@@ -12,9 +12,9 @@ import 'lists/posts_list.dart';
 import 'post_page.dart';
 import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
-import 'login_page.dart';
 import 'widgets/filter_chip_bar.dart';
 import '../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class SearchPage extends StatefulWidget {
   final SiteContext siteContext;
@@ -593,7 +593,7 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                  await SignIn.start(widget.siteContext);
                 }
               }
               AppNavigation.push(context, PostPage(
@@ -680,7 +680,7 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                  await SignIn.start(widget.siteContext);
                 }
               }
               AppNavigation.push(context, PostPage(
@@ -755,7 +755,7 @@ class _SearchPageState extends State<SearchPage> {
                 final loginController = Get.find<LoginController>();
                 final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
                 if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                  await SignIn.start(widget.siteContext);
                 }
               }
               AppNavigation.push(context, PostPage(

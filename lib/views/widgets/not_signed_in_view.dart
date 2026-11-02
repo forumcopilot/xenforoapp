@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:get/get.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
-import 'package:forumcopilot_flutter/views/register_page.dart';
+import 'package:forumcopilot_flutter/services/website_sign_up.dart';
 import 'empty_state_view.dart';
-import '../../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class NotSignedInView extends StatelessWidget {
   final SiteContext siteContext;
@@ -28,7 +27,7 @@ class NotSignedInView extends StatelessWidget {
     if (autoShowLogin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Get.currentRoute != '/LoginPage') {
-          AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
+          SignIn.start(siteContext);
         }
       });
     }
@@ -41,11 +40,12 @@ class NotSignedInView extends StatelessWidget {
       hint: message,
       actions: [
         FilledButton(
-          onPressed: () => AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage'),
+          onPressed: () => SignIn.start(siteContext),
           child: Text(AppLocalizations.of(context).loginButton),
         ),
         OutlinedButton(
-          onPressed: () => AppNavigation.pushGlobal(RegisterPage(siteContext: siteContext), name: '/RegisterPage'),
+          // On the forum's register page (WebsiteSignUp).
+          onPressed: () => WebsiteSignUp.start(context, siteContext),
           child: Text(AppLocalizations.of(context).register),
         ),
       ],

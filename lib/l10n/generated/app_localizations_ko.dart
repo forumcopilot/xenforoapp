@@ -2786,9 +2786,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get accountDeleted => '계정이 삭제되었습니다.';
 
   @override
-  String get signInOnWebsite => '포럼 웹사이트에서 로그인';
-
-  @override
   String get signInOnWebsiteHint => 'Google, Facebook 등 사이트에서 쓰는 방법으로 로그인';
 
   @override
@@ -3186,4 +3183,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get memberListsPrivateMember => '계정에 볼 수 있는 권한이 없습니다.';
+
+  @override
+  String get signUpFinishedTitle => '계정을 만드셨나요?';
+
+  @override
+  String get signUpFinishedContinue => '계속하면 이 계정으로 앱에 로그인합니다.';
+
+  @override
+  String get signUpFinishedSignIn => '방금 정한 사용자 이름과 비밀번호로 로그인하세요.';
 }

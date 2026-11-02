@@ -2750,9 +2750,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get accountDeleted => '你的账户已删除。';
 
   @override
-  String get signInOnWebsite => '在论坛网站上登录';
-
-  @override
   String get signInOnWebsiteHint => '适用于 Google、Facebook 及你在网站上使用的其他登录方式';
 
   @override
@@ -3145,4 +3142,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get memberListsPrivateMember => '你的账号没有查看权限。';
+
+  @override
+  String get signUpFinishedTitle => '已创建帐户？';
+
+  @override
+  String get signUpFinishedContinue => '继续即可用此帐户登录应用。';
+
+  @override
+  String get signUpFinishedSignIn => '请用刚才设置的用户名和密码登录。';
 }

@@ -4,7 +4,6 @@ import 'package:forumcopilot_flutter/views/widgets/search_text_field.dart';
 import 'package:forumcopilot_flutter/views/widgets/empty_state_widget.dart';
 import 'package:forumcopilot_flutter/views/widgets/error_state_widget.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
-import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
@@ -15,6 +14,7 @@ import '../utils/number_utils.dart';
 import '../utils/time_utils.dart';
 import 'widgets/filter_chip_bar.dart';
 import '../utils/app_navigation.dart';
+import 'package:forumcopilot_flutter/services/sign_in.dart';
 
 class MembersPage extends StatefulWidget {
   const MembersPage({
@@ -293,7 +293,7 @@ class _MembersPageState extends State<MembersPage> {
             if (isGuest)
               FilledButton.tonal(
                 onPressed: () async {
-                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                  await SignIn.start(widget.siteContext);
                   if (mounted && widget.siteContext.isLoggedIn) _loadOnlineUsers(reset: true);
                 },
                 child: Text(l10n.logIn),

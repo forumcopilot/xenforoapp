@@ -103,10 +103,16 @@ class FCForgetPasswordResult extends FCBaseResult with FCForgetPasswordResultMap
   /// Whether the password reset was verified
   bool verified;
 
+  /// The forum's own lost-password page, when the forum asks members to
+  /// reset there instead (add-on 1.11.0+, while the forum shows guests a
+  /// captcha on that page).
+  String? resetViaWebUrl;
+
   FCForgetPasswordResult({
     required bool result,
     String? resultText,
     this.verified = false,
+    this.resetViaWebUrl,
   }) : super(result: result, resultText: resultText);
 }
 

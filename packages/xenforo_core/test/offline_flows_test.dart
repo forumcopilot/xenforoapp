@@ -1009,5 +1009,28 @@ void main() {
       expect(client.requests[0]['params'], contains('endDate'));
       expect(client.requests[1]['params'], isNot(contains('endTime')), reason: 'a permanent ban has no end');
     });
+
+    test('a forum that resets passwords on its website sends that page', () async {
+      final client = _ScriptedClient({
+        'forgotPassword': (params) => _ok(params['usernameOrEmail'] == 'web'
+            ? {
+                'result': false,
+                'resultText': "Please reset your password on the forum's website.",
+                'errorCode': 'error',
+                'resetViaWebUrl': 'https://forum.example/lost-password/',
+              }
+            : {'result': true, 'resultText': 'An email has been sent.'}),
+      });
+      final account = XenForoProxyFactory(client: client).createAccountProxy(_context());
+
+      final web = await account.forgetPassword('web', '', '');
+      expect(web.result, isFalse);
+      expect(web.resultText, "Please reset your password on the forum's website.");
+      expect(web.resetViaWebUrl, 'https://forum.example/lost-password/');
+
+      final mailed = await account.forgetPassword('dan', '', '');
+      expect(mailed.result, isTrue);
+      expect(mailed.resetViaWebUrl, isNull, reason: 'older add-ons and forums without the captcha send none');
+    });
   });
 }

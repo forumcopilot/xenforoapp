@@ -447,12 +447,19 @@ class FCForgetPasswordResultMapper
     opt: true,
     def: false,
   );
+  static String? _$resetViaWebUrl(FCForgetPasswordResult v) => v.resetViaWebUrl;
+  static const Field<FCForgetPasswordResult, String> _f$resetViaWebUrl = Field(
+    'resetViaWebUrl',
+    _$resetViaWebUrl,
+    opt: true,
+  );
 
   @override
   final MappableFields<FCForgetPasswordResult> fields = const {
     #result: _f$result,
     #resultText: _f$resultText,
     #verified: _f$verified,
+    #resetViaWebUrl: _f$resetViaWebUrl,
   };
 
   static FCForgetPasswordResult _instantiate(DecodingData data) {
@@ -460,6 +467,7 @@ class FCForgetPasswordResultMapper
       result: data.dec(_f$result),
       resultText: data.dec(_f$resultText),
       verified: data.dec(_f$verified),
+      resetViaWebUrl: data.dec(_f$resetViaWebUrl),
     );
   }
 
@@ -534,7 +542,12 @@ abstract class FCForgetPasswordResultCopyWith<
 >
     implements FCBaseResultCopyWith<$R, $In, $Out> {
   @override
-  $R call({bool? result, String? resultText, bool? verified});
+  $R call({
+    bool? result,
+    String? resultText,
+    bool? verified,
+    String? resetViaWebUrl,
+  });
   FCForgetPasswordResultCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
     Then<$Out2, $R2> t,
   );
@@ -550,11 +563,17 @@ class _FCForgetPasswordResultCopyWithImpl<$R, $Out>
   late final ClassMapperBase<FCForgetPasswordResult> $mapper =
       FCForgetPasswordResultMapper.ensureInitialized();
   @override
-  $R call({bool? result, Object? resultText = $none, bool? verified}) => $apply(
+  $R call({
+    bool? result,
+    Object? resultText = $none,
+    bool? verified,
+    Object? resetViaWebUrl = $none,
+  }) => $apply(
     FieldCopyWithData({
       if (result != null) #result: result,
       if (resultText != $none) #resultText: resultText,
       if (verified != null) #verified: verified,
+      if (resetViaWebUrl != $none) #resetViaWebUrl: resetViaWebUrl,
     }),
   );
   @override
@@ -562,6 +581,7 @@ class _FCForgetPasswordResultCopyWithImpl<$R, $Out>
     result: data.get(#result, or: $value.result),
     resultText: data.get(#resultText, or: $value.resultText),
     verified: data.get(#verified, or: $value.verified),
+    resetViaWebUrl: data.get(#resetViaWebUrl, or: $value.resetViaWebUrl),
   );
 
   @override

@@ -36,6 +36,7 @@ class XenForoAccountProxy extends BaseXenForoProxy implements IFCAccountProxy, I
         result: response['result'] ?? false,
         resultText: response['resultText']?.toString(),
         verified: response['verified'] ?? false,
+        resetViaWebUrl: response['resetViaWebUrl']?.toString(),
       );
     } catch (e) {
       xfDebug('❌ [XENFORO_ACCOUNT] forgetPassword error: $e');

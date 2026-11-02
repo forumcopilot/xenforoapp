@@ -6,7 +6,8 @@ The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0
 
 ## [Unreleased]
 
-### Bundled addon (unreleased)
+### Bundled addon (v1.12.0 → v1.12.1, the `addon-v1.12.1` release)
+- Verified by building the release ZIP with XenForo's packer (its `upload/` identical to the repo's) and upgrading 1.12.0 → 1.12.1 from it with `xf-addon:upgrade` on XenForo 2.2.19 and 2.3.7: XenForo's file health check passes for the add-on on both, and `scripts/xf_push_wording_check.php` passes on both. Checked on a Pixel 4a with the official app through staging.
 - Pushes name the forum. In the official app, which holds many forums, every push is titled with the forum's name (its board title): direct messages read "Sender: message" below it, where they used to be titled with the sender, and "X added you to the direct message Y" no longer has the sender as its title as well. A fork (direct mode) is one forum, so its direct messages keep the sender as the title and the message as the body. Alerts keep XenForo's own push text exactly as the forum words it.
 - The message line is XenForo's snippet of the message: quotes, images and attachments are left out, censored words are censored, and it is cut on a whole word at 140 characters. A message with nothing left to quote (an image only) gets XenForo's own line in each recipient's language, "X replied to the direct message Y." (2.2: "conversation"), instead of an English "New message".
 - Hosted pushes carry `push_format: 2`, which tells the push backend their title is already the forum's name.

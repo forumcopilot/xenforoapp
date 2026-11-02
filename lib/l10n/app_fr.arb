@@ -1369,5 +1369,7 @@
   "topicMapReplies": "{count, plural, =1{réponse} other{réponses}}",
   "thisForum": "Ce forum",
   "postLastEdited": "Dernière modification : {date}",
-  "postLastEditedByModerator": "Dernière modification par un modérateur : {date}"
+  "postLastEditedByModerator": "Dernière modification par un modérateur : {date}",
+  "threadLoadFailed": "Impossible de charger le fil",
+  "threadLoadTimedOut": "Le forum n'a pas répondu à temps."
 }

@@ -3163,4 +3163,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return '운영자의 마지막 수정: $date';
   }
+
+  @override
+  String get threadLoadFailed => '스레드를 불러올 수 없습니다';
+
+  @override
+  String get threadLoadTimedOut => '포럼이 제때 응답하지 않았습니다.';
 }

@@ -1392,5 +1392,7 @@
   "topicMapReplies": "{count, plural, =1{resposta} other{respostas}}",
   "thisForum": "Este fórum",
   "postLastEdited": "Última edição: {date}",
-  "postLastEditedByModerator": "Última edição por um moderador: {date}"
+  "postLastEditedByModerator": "Última edição por um moderador: {date}",
+  "threadLoadFailed": "Não foi possível carregar o tópico",
+  "threadLoadTimedOut": "O fórum não respondeu a tempo."
 }

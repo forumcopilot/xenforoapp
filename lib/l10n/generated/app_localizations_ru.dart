@@ -3365,4 +3365,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return 'Последнее редактирование модератором: $date';
   }
+
+  @override
+  String get threadLoadFailed => 'Не удалось загрузить тему';
+
+  @override
+  String get threadLoadTimedOut => 'Форум не ответил вовремя.';
 }

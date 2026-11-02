@@ -3312,4 +3312,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return 'Laatst bewerkt door een moderator: $date';
   }
+
+  @override
+  String get threadLoadFailed => 'Het onderwerp kon niet worden geladen';
+
+  @override
+  String get threadLoadTimedOut => 'Het forum reageerde niet op tijd.';
 }

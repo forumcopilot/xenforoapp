@@ -1369,5 +1369,7 @@
   "topicMapReplies": "{count, plural, other{返信}}",
   "thisForum": "このフォーラム",
   "postLastEdited": "最終編集: {date}",
-  "postLastEditedByModerator": "モデレーターによる最終編集: {date}"
+  "postLastEditedByModerator": "モデレーターによる最終編集: {date}",
+  "threadLoadFailed": "スレッドを読み込めませんでした",
+  "threadLoadTimedOut": "フォーラムから時間内に応答がありませんでした。"
 }

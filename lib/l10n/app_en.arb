@@ -2019,5 +2019,9 @@
   "postLastEdited": "Last edited: {date}",
   "@postLastEdited": {"description": "XenForo's line under an edited post, as a tooltip on the pencil after its date: when it was last edited", "placeholders": {"date": {"type": "String"}}},
   "postLastEditedByModerator": "Last edited by a moderator: {date}",
-  "@postLastEditedByModerator": {"description": "As postLastEdited, when someone other than the author made the edit (XenForo never names the editor)", "placeholders": {"date": {"type": "String"}}}
+  "@postLastEditedByModerator": {"description": "As postLastEdited, when someone other than the author made the edit (XenForo never names the editor)", "placeholders": {"date": {"type": "String"}}},
+  "threadLoadFailed": "Couldn't load this thread",
+  "@threadLoadFailed": {"description": "Heading in place of a thread whose first page did not load, above the reason and a Retry button"},
+  "threadLoadTimedOut": "The forum didn't answer in time.",
+  "@threadLoadTimedOut": {"description": "Under threadLoadFailed when the forum did not answer within 30 seconds"}
 }

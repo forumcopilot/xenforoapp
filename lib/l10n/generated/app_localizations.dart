@@ -5509,6 +5509,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last edited by a moderator: {date}'**
   String postLastEditedByModerator(String date);
+
+  /// Heading in place of a thread whose first page did not load, above the reason and a Retry button
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this thread'**
+  String get threadLoadFailed;
+
+  /// Under threadLoadFailed when the forum did not answer within 30 seconds
+  ///
+  /// In en, this message translates to:
+  /// **'The forum didn\'t answer in time.'**
+  String get threadLoadTimedOut;
 }
 
 class _AppLocalizationsDelegate

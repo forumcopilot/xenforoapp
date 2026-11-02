@@ -3356,4 +3356,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return 'Zuletzt von einem Moderator bearbeitet: $date';
   }
+
+  @override
+  String get threadLoadFailed => 'Der Thread konnte nicht geladen werden';
+
+  @override
+  String get threadLoadTimedOut =>
+      'Das Forum hat nicht rechtzeitig geantwortet.';
 }

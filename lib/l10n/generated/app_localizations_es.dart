@@ -3334,4 +3334,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return 'Última edición por un moderador: $date';
   }
+
+  @override
+  String get threadLoadFailed => 'No se pudo cargar el hilo';
+
+  @override
+  String get threadLoadTimedOut => 'El foro no respondió a tiempo.';
 }

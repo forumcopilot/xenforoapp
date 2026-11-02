@@ -1388,5 +1388,7 @@
   "topicMapReplies": "{count, plural, other{답글}}",
   "thisForum": "이 포럼",
   "postLastEdited": "마지막 수정: {date}",
-  "postLastEditedByModerator": "운영자의 마지막 수정: {date}"
+  "postLastEditedByModerator": "운영자의 마지막 수정: {date}",
+  "threadLoadFailed": "스레드를 불러올 수 없습니다",
+  "threadLoadTimedOut": "포럼이 제때 응답하지 않았습니다."
 }

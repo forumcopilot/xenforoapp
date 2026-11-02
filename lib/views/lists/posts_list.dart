@@ -4,6 +4,7 @@ import '../../l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_flutter/models/thread_view_data.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_post.dart';
 import 'package:forumcopilot_sdk/models/entities/fc_topic.dart';
+import 'package:forumcopilot_sdk/models/results/fc_post_result.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_flutter/controllers/post_controller.dart';
@@ -140,6 +141,26 @@ class _PostsState extends State<PostsList> {
   // Track when we last loaded earlier posts to prevent endless loading
   DateTime? _lastEarlierLoadTime;
 
+  /// Why the first page didn't load: the forum's words, the request's
+  /// error or a time-out. Shown with Retry in place of the list; null while
+  /// loading and once loaded.
+  String? _loadError;
+
+  /// True while the first page loads: the list shows placeholders, not a
+  /// half-answered page (an unread open that is falling back).
+  bool _initialLoading = false;
+
+  /// Counts first-page loads, so one that ends after a newer one started,
+  /// or after it timed out, changes nothing.
+  int _loadGeneration = 0;
+
+  /// The last first-page load's arguments, for Retry.
+  ({int startNum, int lastNum, PostsListMode mode, int gotoPost})? _lastInitialLoad;
+
+  /// The first page gives up after this. Its request may still be waiting on
+  /// the network or on signing in again; Retry starts afresh.
+  static const _initialLoadTimeout = Duration(seconds: 30);
+
   _PostsState(topicId, [anchorPostId, gotoPage]) {
     _anchorPostId = anchorPostId;
     _gotoPage = gotoPage;
@@ -249,6 +270,13 @@ class _PostsState extends State<PostsList> {
   Future<void> _loadInitialPosts(int startNum, int lastNum, PostsListMode mode, {int gotoPost = 0}) async {
     if (!mounted) return;
 
+    final generation = ++_loadGeneration;
+    _lastInitialLoad = (startNum: startNum, lastNum: lastNum, mode: mode, gotoPost: gotoPost);
+    setState(() {
+      _loadError = null;
+      _initialLoading = true;
+    });
+
     // Clear the controller's data first to prevent showing old posts during loading
     _postsController.threadDataOutput.value = null;
 
@@ -258,46 +286,13 @@ class _PostsState extends State<PostsList> {
     AppLogger.debug('PostsList: _loadInitialPosts called: mode=$mode, topicId=${widget.topicId}');
 
     try {
-      // --- Check for announcement first, regardless of mode ---
-      if (mode == PostsListMode.first_unread) {
-        // Jump to the first unread post using the special API
-        // If this fails due to authentication, fall back to normal mode
-        try {
-          await _postsController.getThreadByUnreadAsync(widget.topicId, _pageSize, _retriveHtml);
-        } catch (e, stackTrace) {
-          AppLogger.debug('🔍 [PostsList] getThreadByUnreadAsync failed: $e');
-          AppLogger.debug('🔍 [PostsList] Stack trace: $stackTrace');
-          // Check if error is due to authentication
-          final errorString = e.toString().toLowerCase();
-          if (errorString.contains('authentication') || errorString.contains('log in') || errorString.contains('401')) {
-            // Fall back to normal mode if authentication is required
-            // startNum and lastNum are 0-based, but getThreadAsync expects 1-based for the API
-            final startNum1Based = startNum + 1; // Convert to 1-based
-            final lastNum1Based = lastNum + 1; // Convert to 1-based
-            AppLogger.debug('⚠️ [POSTS_LIST] getThreadByUnread requires authentication, falling back to normal mode');
-            await _postsController.getThreadAsync(widget.topicId, startNum1Based, lastNum1Based, _retriveHtml, mode: LoadMode.initial);
-          } else {
-            // Re-throw other errors
-            rethrow;
-          }
-        }
-      } else if (mode == PostsListMode.thread_by_post) {
-        // Jump to a specific anchor post using the special API
-        if (_anchorPostId == null) throw Exception('anchorPostId is required for thread_by_post mode');
-        await _postsController.getThreadByPostAsync(_anchorPostId!, _pageSize, _retriveHtml);
-      } else if (mode == PostsListMode.goto_page) {
-        // Jump to a specific page using the special API
-        if (_gotoPage == null) throw Exception('gotoPage is required for goto_page mode');
-        await _postsController.getThreadByPageAsync(widget.topicId, _gotoPage!, _pageSize, false);
-      } else {
-        // Normal initial load
-        // startNum and lastNum are 0-based, but getThreadAsync expects 1-based for the API
-        final startNum1Based = startNum + 1; // Convert to 1-based
-        final lastNum1Based = lastNum + 1; // Convert to 1-based
-        AppLogger.debug('🔍 [PostsList] Mode is normal, calling getThreadAsync (mode=$mode)');
-        await _postsController.getThreadAsync(widget.topicId, startNum1Based, lastNum1Based, _retriveHtml, mode: LoadMode.initial);
+      final failure = await _fetchInitialPage(startNum, lastNum, mode).timeout(_initialLoadTimeout);
+      if (!mounted || generation != _loadGeneration) return;
+      if (failure != null) {
+        _showLoadError(generation, failure);
+        return;
       }
-      // --- End special initial load ---
+      setState(() => _initialLoading = false);
 
       if (!mounted) return;
       final data = _postsController.threadDataOutput.value;
@@ -485,22 +480,115 @@ class _PostsState extends State<PostsList> {
           });
         });
       }
+    } on TimeoutException {
+      AppLogger.warning('PostsList: the first page of ${widget.topicId} timed out after ${_initialLoadTimeout.inSeconds}s');
+      if (mounted) _showLoadError(generation, AppLocalizations.of(context).threadLoadTimedOut);
     } catch (e) {
-      // Re-enable scroll loading even on error
-      if (mounted) {
-        _isScrollLoadingEnabled = true;
-      }
-
-      // Show user-friendly error message
-      if (mounted) {
-        final errorMessage = extractErrorMessage(e);
-
-        SnackbarHelper.showInfo(context, errorMessage);
-      }
-
-      // Still rethrow to allow upper layers to handle if needed
-      rethrow;
+      AppLogger.warning('PostsList: the first page of ${widget.topicId} failed: $e');
+      if (mounted) _showLoadError(generation, extractErrorMessage(e));
     }
+  }
+
+  /// Loads the first page as [mode] asks. Returns why it failed (the forum's
+  /// words where it gave them), or null once the controller holds the page.
+  ///
+  /// Opening at the first unread post needs a signed-in session, which may
+  /// have expired since the forum was opened: when it fails for any reason,
+  /// the thread opens at its first page instead. (The proxies report a
+  /// refusal as a result, not an error, so a check for an "authentication"
+  /// error here never fired.)
+  Future<String?> _fetchInitialPage(int startNum, int lastNum, PostsListMode mode) async {
+    // startNum and lastNum are 0-based; getThreadAsync takes 1-based
+    Future<void> firstPage() =>
+        _postsController.getThreadAsync(widget.topicId, startNum + 1, lastNum + 1, _retriveHtml, mode: LoadMode.initial);
+
+    switch (mode) {
+      case PostsListMode.first_unread:
+        try {
+          await _postsController.getThreadByUnreadAsync(widget.topicId, _pageSize, _retriveHtml);
+          if (_loadedPageFailure() == null) return null;
+        } catch (e) {
+          AppLogger.debug('🔍 [PostsList] getThreadByUnreadAsync threw: $e');
+        }
+        AppLogger.debug('⚠️ [PostsList] Opening at the first unread post failed; opening at the first page');
+        await firstPage();
+      case PostsListMode.thread_by_post:
+        if (_anchorPostId == null) throw Exception('anchorPostId is required for thread_by_post mode');
+        await _postsController.getThreadByPostAsync(_anchorPostId!, _pageSize, _retriveHtml);
+      case PostsListMode.goto_page:
+        if (_gotoPage == null) throw Exception('gotoPage is required for goto_page mode');
+        await _postsController.getThreadByPageAsync(widget.topicId, _gotoPage!, _pageSize, false);
+      case PostsListMode.normal:
+        await firstPage();
+    }
+    return _loadedPageFailure();
+  }
+
+  /// Why the page the controller holds is not a page: the forum refused or
+  /// the request failed (both arrive as a result with `result: false`), or
+  /// it counts posts but sent none, which used to leave the placeholders up
+  /// for good. Null for a page to show.
+  String? _loadedPageFailure() {
+    final fallback = AppLocalizations.of(context).threadLoadFailed;
+    final data = _postsController.threadDataOutput.value;
+    if (data == null) return fallback;
+    final (ok, text) = switch (data.topic) {
+      FCThreadResult t => (t.result, t.resultText),
+      FCThreadByUnreadResult t => (t.result, t.resultText),
+      FCThreadByPostResult t => (t.result, t.resultText),
+      _ => (true, null),
+    };
+    if (!ok) return (text == null || text.trim().isEmpty) ? fallback : text.trim();
+    if (data.posts.isEmpty && data.totalPosts > 0) return fallback;
+    return null;
+  }
+
+  void _showLoadError(int generation, String message) {
+    if (!mounted || generation != _loadGeneration) return;
+    _isScrollLoadingEnabled = true;
+    setState(() {
+      _initialLoading = false;
+      _loadError = message;
+    });
+  }
+
+  void _retryInitialLoad() {
+    final last = _lastInitialLoad;
+    if (last == null) return;
+    _loadInitialPosts(last.startNum, last.lastNum, last.mode, gotoPost: last.gotoPost);
+  }
+
+  /// In place of the list when the first page didn't load: what went wrong
+  /// and Retry, instead of placeholders that never go.
+  Widget _buildLoadError(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final detail = _loadError!;
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.cloud_off_outlined, size: 48, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(height: 16),
+            Text(l10n.threadLoadFailed, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+            if (detail != l10n.threadLoadFailed) ...[
+              const SizedBox(height: 8),
+              Text(
+                detail,
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+                maxLines: 6,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            const SizedBox(height: 24),
+            FilledButton.tonal(onPressed: _retryInitialLoad, child: Text(l10n.retry)),
+          ],
+        ),
+      ),
+    );
   }
 
   void _onScroll() {
@@ -1339,6 +1427,8 @@ class _PostsState extends State<PostsList> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loadError != null) return _buildLoadError(context);
+    if (_initialLoading) return _buildInitialShimmerList(context);
     return Obx(() {
       final data = _postsController.threadDataOutput.value;
       if (_postsController.isInitialized.value && data != null) {

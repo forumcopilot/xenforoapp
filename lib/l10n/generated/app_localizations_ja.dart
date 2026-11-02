@@ -3170,4 +3170,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return 'モデレーターによる最終編集: $date';
   }
+
+  @override
+  String get threadLoadFailed => 'スレッドを読み込めませんでした';
+
+  @override
+  String get threadLoadTimedOut => 'フォーラムから時間内に応答がありませんでした。';
 }

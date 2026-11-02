@@ -1392,5 +1392,7 @@
   "topicMapReplies": "{count, plural, one{ответ} few{ответа} many{ответов} other{ответа}}",
   "thisForum": "Этот форум",
   "postLastEdited": "Последнее редактирование: {date}",
-  "postLastEditedByModerator": "Последнее редактирование модератором: {date}"
+  "postLastEditedByModerator": "Последнее редактирование модератором: {date}",
+  "threadLoadFailed": "Не удалось загрузить тему",
+  "threadLoadTimedOut": "Форум не ответил вовремя."
 }

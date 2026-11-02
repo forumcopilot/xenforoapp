@@ -3123,4 +3123,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String postLastEditedByModerator(String date) {
     return '最后由版主编辑：$date';
   }
+
+  @override
+  String get threadLoadFailed => '无法加载主题';
+
+  @override
+  String get threadLoadTimedOut => '论坛未能及时响应。';
 }

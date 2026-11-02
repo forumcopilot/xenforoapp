@@ -4,6 +4,7 @@ import 'package:forumcopilot_flutter/views/widgets/search_text_field.dart';
 import 'package:forumcopilot_flutter/views/widgets/empty_state_widget.dart';
 import 'package:forumcopilot_flutter/views/widgets/error_state_widget.dart';
 import 'package:forumcopilot_flutter/views/user_profile_page.dart';
+import 'package:forumcopilot_flutter/views/login_page.dart';
 import 'package:forumcopilot_flutter/l10n/generated/app_localizations.dart';
 import 'package:forumcopilot_sdk/context/site_context.dart';
 import 'package:forumcopilot_sdk/factory/site_proxy_factory.dart';
@@ -11,6 +12,7 @@ import 'package:forumcopilot_sdk/models/entities/fc_user.dart';
 import 'package:forumcopilot_sdk/models/results/fc_user_result.dart';
 import '../theme/design_tokens.dart';
 import '../utils/number_utils.dart';
+import '../utils/time_utils.dart';
 import 'widgets/filter_chip_bar.dart';
 import '../utils/app_navigation.dart';
 
@@ -25,13 +27,19 @@ class MembersPage extends StatefulWidget {
   State<MembersPage> createState() => _MembersPageState();
 }
 
+/// The forum's members: who is online now (first, as the screen opens) and
+/// all members, by name. Both follow XenForo's "View member lists"
+/// permission, which the add-on checks; a visitor without it sees why, and a
+/// guest can log in.
 class _MembersPageState extends State<MembersPage> {
-  // Filter chip selection: 0 = All Members, 1 = Online
-  int _selectedFilterIndex = 0;
+  static const _onlineTab = 0;
+  static const _allTab = 1;
+
+  int _selectedFilterIndex = _onlineTab;
   List<String> _getFilterLabels(BuildContext context) {
     return [
-      AppLocalizations.of(context).allMembers,
       AppLocalizations.of(context).online,
+      AppLocalizations.of(context).allMembers,
     ];
   }
 
@@ -54,39 +62,40 @@ class _MembersPageState extends State<MembersPage> {
   bool _onlineIsLoading = false;
   String? _onlineError;
 
+  /// The forum keeps its member lists from this visitor (XenForo's "View
+  /// member lists" permission): the add-on refuses getOnlineUsers.
+  bool _onlinePrivate = false;
+
+  /// Members online now, as the forum counts them (guests and robots not
+  /// included, nor members who hide their online status).
+  int _onlineTotal = 0;
+
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    // Load default list of most active users on init
+    // Who's online first, as XenForo's members page leads with it
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadDefaultUsers();
+      _loadOnlineUsers(reset: true);
     });
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_selectedFilterIndex == 0) {
-        // All Members mode
+      if (_selectedFilterIndex == _allTab) {
         if (!_searchIsLoading && _searchHasMore) {
           _performSearch();
         }
       } else {
-        // Online mode
-        if (!_onlineIsLoading && _onlineHasMore) {
+        if (!_onlineIsLoading && _onlineHasMore && !_onlinePrivate) {
           _loadOnlineUsers();
         }
       }
     }
   }
 
-  Future<void> _loadDefaultUsers() async {
-    if (_selectedFilterIndex == 0) {
-      await _performSearch(reset: true);
-    }
-  }
 
   Future<void> _performSearch({bool reset = false}) async {
     final query = _searchController.text.trim();
@@ -157,10 +166,14 @@ class _MembersPageState extends State<MembersPage> {
     }
   }
 
-  Future<void> _loadOnlineUsers() async {
+  Future<void> _loadOnlineUsers({bool reset = false}) async {
     if (_onlineIsLoading) return;
 
     setState(() {
+      if (reset) {
+        _onlineCurrentPage = 1;
+        _onlineHasMore = true;
+      }
       _onlineIsLoading = true;
       _onlineError = null;
     });
@@ -176,7 +189,21 @@ class _MembersPageState extends State<MembersPage> {
 
       if (!mounted) return;
 
+      if (!result.result) {
+        // The forum refuses ("Cannot view member list"): it keeps its member
+        // lists from this visitor. It used to read as "No users online".
+        setState(() {
+          _onlineIsLoading = false;
+          _onlineHasMore = false;
+          _onlinePrivate = true;
+          _onlineUsers = [];
+        });
+        return;
+      }
+
       setState(() {
+        _onlinePrivate = false;
+        _onlineTotal = result.total;
         if (_onlineCurrentPage == 1) {
           _onlineUsers = result.list;
         } else {
@@ -222,12 +249,10 @@ class _MembersPageState extends State<MembersPage> {
     });
 
     // Load data for the selected filter if needed
-    if (index == 0 && _searchResults.isEmpty && !_hasSearched) {
-      _loadDefaultUsers();
-    } else if (index == 1 && _onlineUsers.isEmpty) {
-      _onlineCurrentPage = 1;
-      _onlineHasMore = true;
-      _loadOnlineUsers();
+    if (index == _allTab && _searchResults.isEmpty && !_hasSearched) {
+      _performSearch(reset: true);
+    } else if (index == _onlineTab && _onlineUsers.isEmpty && !_onlinePrivate) {
+      _loadOnlineUsers(reset: true);
     }
   }
 
@@ -245,13 +270,38 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Widget _buildContent(ColorScheme colorScheme, TextTheme textTheme) {
-    if (_selectedFilterIndex == 0) {
-      // All Members mode
-      return _buildSearchResults(colorScheme, textTheme);
-    } else {
-      // Online mode
-      return _buildOnlineUsers(colorScheme, textTheme);
-    }
+    return _selectedFilterIndex == _allTab
+        ? _buildSearchResults(colorScheme, textTheme)
+        : _buildOnlineUsers(colorScheme, textTheme);
+  }
+
+  /// What a visitor without "View member lists" sees: why, and for a guest,
+  /// Log in (members may have the permission when guests don't).
+  Widget _buildPrivateState() {
+    final l10n = AppLocalizations.of(context);
+    final isGuest = !widget.siteContext.isLoggedIn;
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EmptyStateWidget(
+              icon: Icons.lock_outline_rounded,
+              title: l10n.memberListsPrivate,
+              description: isGuest ? l10n.memberListsPrivateGuest : l10n.memberListsPrivateMember,
+            ),
+            if (isGuest)
+              FilledButton.tonal(
+                onPressed: () async {
+                  await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
+                  if (mounted && widget.siteContext.isLoggedIn) _loadOnlineUsers(reset: true);
+                },
+                child: Text(l10n.logIn),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSearchResults(ColorScheme colorScheme, TextTheme textTheme) {
@@ -328,6 +378,8 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Widget _buildOnlineUsers(ColorScheme colorScheme, TextTheme textTheme) {
+    if (_onlinePrivate) return _buildPrivateState();
+
     if (_onlineError != null) {
       return ErrorStateWidget(
         title: AppLocalizations.of(context).failedToLoadOnlineUsers,
@@ -341,18 +393,48 @@ class _MembersPageState extends State<MembersPage> {
       );
     }
 
+    // Pull to refresh: who's online changes by the minute
+    Future<void> refresh() => _loadOnlineUsers(reset: true);
+
     if (_onlineUsers.isEmpty && !_onlineIsLoading) {
-      return EmptyStateWidget(
-        icon: Icons.people_outline_rounded,
-        title: AppLocalizations.of(context).noUsersOnline,
-        description: AppLocalizations.of(context).noMembersOnline,
+      return RefreshIndicator(
+        onRefresh: refresh,
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Center(
+                child: EmptyStateWidget(
+                  icon: Icons.people_outline_rounded,
+                  title: AppLocalizations.of(context).noUsersOnline,
+                  description: AppLocalizations.of(context).noMembersOnline,
+                ),
+              ),
+            ),
+          ),
+        ),
       );
     }
 
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: ListView.builder(
       controller: _scrollController,
-      itemCount: _onlineUsers.length + (_onlineHasMore ? 1 : 0),
+      physics: const AlwaysScrollableScrollPhysics(),
+      // The count first, as XenForo's "Members online" heading
+      itemCount: 1 + _onlineUsers.length + (_onlineHasMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(DesignTokens.spacingL, DesignTokens.spacingM, DesignTokens.spacingL, DesignTokens.spacingXS),
+            child: Text(
+              AppLocalizations.of(context).membersOnlineCount(_onlineTotal > 0 ? _onlineTotal : _onlineUsers.length),
+              style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
+          );
+        }
+        index -= 1;
         if (index == _onlineUsers.length) {
           return Center(
             child: Padding(
@@ -370,6 +452,7 @@ class _MembersPageState extends State<MembersPage> {
           subtitle: _buildOnlineUserSubtitle(user, colorScheme, textTheme),
         );
       },
+      ),
     );
   }
 
@@ -388,10 +471,14 @@ class _MembersPageState extends State<MembersPage> {
   ) {
     final activity = user.currentActivity;
     final fallback = user.displayText;
-    final text = (activity != null && activity.isNotEmpty)
+    final what = (activity != null && activity.isNotEmpty)
         ? activity
         : (fallback != null && fallback.isNotEmpty ? fallback : null);
-    if (text == null) return null;
+    // When, as XenForo's online list shows it beside the activity
+    final seen = user.lastActivityTime;
+    final when = seen != null ? formatTimeAgo(seen, context) : null;
+    final text = [if (what != null) what, if (when != null) when].join(' · ');
+    if (text.isEmpty) return null;
     return Text(
       text,
       style: textTheme.bodySmall?.copyWith(
@@ -433,10 +520,6 @@ class _MembersPageState extends State<MembersPage> {
               child: subtitle,
             )
           : null,
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        color: colorScheme.onSurfaceVariant,
-      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DesignTokens.radiusM),
       ),
@@ -476,7 +559,7 @@ class _MembersPageState extends State<MembersPage> {
           // Filter Chips
           _buildFilterChips(),
           // Search TextField (only for All Members)
-          if (_selectedFilterIndex == 0)
+          if (_selectedFilterIndex == _allTab)
             Container(
               padding: DesignTokens.paddingL,
               decoration: BoxDecoration(

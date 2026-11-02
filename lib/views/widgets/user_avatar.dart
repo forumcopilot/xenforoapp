@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forumcopilot_flutter/views/widgets/cached_redirect_image.dart';
 import 'package:forumcopilot_flutter/utils/avatar_color_utils.dart';
+import 'package:forumcopilot_flutter/theme/design_tokens.dart';
 
 class _ShimmerLoadingCircle extends StatefulWidget {
   final double size;
@@ -81,7 +82,8 @@ class UserAvatar extends StatelessWidget {
     this.onTap,
     this.showOnlineIndicator = false,
     this.isOnline = false,
-    this.onlineIndicatorSizeMultiplier = 0.4,
+    // 12 dp at the usual 20 radius, as the post header's dot
+    this.onlineIndicatorSizeMultiplier = 0.6,
     this.cacheKey,
   });
 
@@ -193,15 +195,8 @@ class UserAvatar extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: colorScheme.surface,
-                    width: 2,
+                    width: DesignTokens.borderWidthMedium,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 2,
-                      spreadRadius: 0,
-                    ),
-                  ],
                 ),
               ),
             ),

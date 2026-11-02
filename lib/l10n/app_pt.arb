@@ -1393,5 +1393,9 @@
   "postLastEdited": "Última edição: {date}",
   "postLastEditedByModerator": "Última edição por um moderador: {date}",
   "threadLoadFailed": "Não foi possível carregar o tópico",
-  "threadLoadTimedOut": "O fórum não respondeu a tempo."
+  "threadLoadTimedOut": "O fórum não respondeu a tempo.",
+  "membersOnlineCount": "{count, plural, =1{1 membro online} other{{count} membros online}}",
+  "memberListsPrivate": "As listas de membros deste fórum não estão disponíveis para você",
+  "memberListsPrivateGuest": "Entre para ver quem está online, se o fórum mostrar isso aos membros.",
+  "memberListsPrivateMember": "Sua conta não tem permissão para vê-las."
 }

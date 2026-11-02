@@ -3173,4 +3173,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get threadLoadTimedOut => 'フォーラムから時間内に応答がありませんでした。';
+
+  @override
+  String membersOnlineCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'オンラインのメンバー $count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memberListsPrivate => 'このフォーラムのメンバー一覧は表示できません';
+
+  @override
+  String get memberListsPrivateGuest =>
+      'ログインすると、フォーラムがメンバーに公開している場合はオンラインのメンバーを見られます。';
+
+  @override
+  String get memberListsPrivateMember => 'お使いのアカウントには表示する権限がありません。';
 }

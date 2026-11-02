@@ -1842,5 +1842,9 @@
   "postLastEdited": "Laatst bewerkt: {date}",
   "postLastEditedByModerator": "Laatst bewerkt door een moderator: {date}",
   "threadLoadFailed": "Het onderwerp kon niet worden geladen",
-  "threadLoadTimedOut": "Het forum reageerde niet op tijd."
+  "threadLoadTimedOut": "Het forum reageerde niet op tijd.",
+  "membersOnlineCount": "{count, plural, =1{1 lid online} other{{count} leden online}}",
+  "memberListsPrivate": "De ledenlijsten van dit forum zijn niet voor u zichtbaar",
+  "memberListsPrivateGuest": "Log in om te zien wie er online is, als het forum dat aan leden toont.",
+  "memberListsPrivateMember": "Uw account heeft geen toestemming om ze te bekijken."
 }

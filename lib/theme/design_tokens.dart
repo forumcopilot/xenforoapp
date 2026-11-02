@@ -108,7 +108,7 @@ class DesignTokens {
   static const double avatarSizeL = 48.0;
   static const double avatarSizeXL = 64.0;
   static const double avatarRadiusM = 20.0; // Common avatar radius for list items
-  static const double statusDotSize = 10.0; // Online status indicator dot size
+  static const double statusDotSize = 12.0; // Online status dot on a 40 dp avatar (UserAvatar's too)
 
   // ============================================================================
   // ELEVATION

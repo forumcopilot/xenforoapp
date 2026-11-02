@@ -77,7 +77,7 @@ class PostListItemHeader extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: colorScheme.surface,
-                      width: DesignTokens.borderWidthThinMedium,
+                      width: DesignTokens.borderWidthMedium,
                     ),
                   ),
                 ),

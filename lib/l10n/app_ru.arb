@@ -1393,5 +1393,9 @@
   "postLastEdited": "Последнее редактирование: {date}",
   "postLastEditedByModerator": "Последнее редактирование модератором: {date}",
   "threadLoadFailed": "Не удалось загрузить тему",
-  "threadLoadTimedOut": "Форум не ответил вовремя."
+  "threadLoadTimedOut": "Форум не ответил вовремя.",
+  "membersOnlineCount": "{count, plural, one{{count} участник в сети} few{{count} участника в сети} many{{count} участников в сети} other{{count} участника в сети}}",
+  "memberListsPrivate": "Списки участников этого форума вам недоступны",
+  "memberListsPrivateGuest": "Войдите, чтобы увидеть, кто в сети, если форум показывает это участникам.",
+  "memberListsPrivateMember": "У вашей учётной записи нет прав на их просмотр."
 }

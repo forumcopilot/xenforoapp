@@ -3332,4 +3332,27 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get threadLoadTimedOut => 'Il forum non ha risposto in tempo.';
+
+  @override
+  String membersOnlineCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count membri online',
+      one: '1 membro online',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memberListsPrivate =>
+      'Gli elenchi dei membri di questo forum non sono visibili per te';
+
+  @override
+  String get memberListsPrivateGuest =>
+      'Accedi per vedere chi è online, se il forum lo mostra ai membri.';
+
+  @override
+  String get memberListsPrivateMember =>
+      'Il tuo account non ha il permesso di vederli.';
 }

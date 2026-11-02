@@ -1370,5 +1370,9 @@
   "postLastEdited": "Dernière modification : {date}",
   "postLastEditedByModerator": "Dernière modification par un modérateur : {date}",
   "threadLoadFailed": "Impossible de charger le fil",
-  "threadLoadTimedOut": "Le forum n'a pas répondu à temps."
+  "threadLoadTimedOut": "Le forum n'a pas répondu à temps.",
+  "membersOnlineCount": "{count, plural, =1{1 membre en ligne} other{{count} membres en ligne}}",
+  "memberListsPrivate": "Les listes de membres de ce forum ne vous sont pas accessibles",
+  "memberListsPrivateGuest": "Connectez-vous pour voir qui est en ligne, si le forum le montre aux membres.",
+  "memberListsPrivateMember": "Votre compte n'a pas l'autorisation de les voir."
 }

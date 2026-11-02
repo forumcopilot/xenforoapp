@@ -1389,5 +1389,9 @@
   "postLastEdited": "마지막 수정: {date}",
   "postLastEditedByModerator": "운영자의 마지막 수정: {date}",
   "threadLoadFailed": "스레드를 불러올 수 없습니다",
-  "threadLoadTimedOut": "포럼이 제때 응답하지 않았습니다."
+  "threadLoadTimedOut": "포럼이 제때 응답하지 않았습니다.",
+  "membersOnlineCount": "{count, plural, other{온라인 회원 {count}명}}",
+  "memberListsPrivate": "이 포럼의 회원 목록을 볼 수 없습니다",
+  "memberListsPrivateGuest": "로그인하면 포럼이 회원에게 공개하는 경우 온라인 회원을 볼 수 있습니다.",
+  "memberListsPrivateMember": "계정에 볼 수 있는 권한이 없습니다."
 }

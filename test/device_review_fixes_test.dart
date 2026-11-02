@@ -115,6 +115,9 @@ void main() {
       SiteProxyFactory.register('xenforo', _Factory(users: _Users(answer)));
       await tester.pumpWidget(_app(MembersPage(siteContext: site)));
       await tester.pumpAndSettle();
+      // The screen opens on who is online; these are about All Members
+      await tester.tap(find.text('All Members'));
+      await tester.pumpAndSettle();
     }
 
     testWidgets('a forum that keeps its member list hidden: a search prompt, not "No members found"', (tester) async {

@@ -5515,6 +5515,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The forum didn\'t answer in time.'**
   String get threadLoadTimedOut;
+
+  /// Heading of the members screen's Online list: the members online now (guests and robots not counted)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member online} other{{count} members online}}'**
+  String membersOnlineCount(int count);
+
+  /// Members screen, when the forum refuses its member lists to the visitor (XenForo's View member lists permission)
+  ///
+  /// In en, this message translates to:
+  /// **'This forum\'s member lists aren\'t open to you'**
+  String get memberListsPrivate;
+
+  /// Under memberListsPrivate for a guest, above a Log in button
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to see who\'s online, if the forum shows it to members.'**
+  String get memberListsPrivateGuest;
+
+  /// Under memberListsPrivate for a signed-in member
+  ///
+  /// In en, this message translates to:
+  /// **'Your account doesn\'t have permission to view them.'**
+  String get memberListsPrivateMember;
 }
 
 class _AppLocalizationsDelegate

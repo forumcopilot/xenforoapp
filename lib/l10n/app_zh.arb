@@ -1393,5 +1393,9 @@
   "postLastEdited": "最后编辑：{date}",
   "postLastEditedByModerator": "最后由版主编辑：{date}",
   "threadLoadFailed": "无法加载主题",
-  "threadLoadTimedOut": "论坛未能及时响应。"
+  "threadLoadTimedOut": "论坛未能及时响应。",
+  "membersOnlineCount": "{count, plural, other{{count} 位会员在线}}",
+  "memberListsPrivate": "你无法查看此论坛的会员列表",
+  "memberListsPrivateGuest": "登录后，如果论坛向会员开放，即可查看谁在线。",
+  "memberListsPrivateMember": "你的账号没有查看权限。"
 }

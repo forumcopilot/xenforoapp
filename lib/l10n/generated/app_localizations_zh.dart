@@ -3126,4 +3126,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get threadLoadTimedOut => '论坛未能及时响应。';
+
+  @override
+  String membersOnlineCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 位会员在线',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memberListsPrivate => '你无法查看此论坛的会员列表';
+
+  @override
+  String get memberListsPrivateGuest => '登录后，如果论坛向会员开放，即可查看谁在线。';
+
+  @override
+  String get memberListsPrivateMember => '你的账号没有查看权限。';
 }

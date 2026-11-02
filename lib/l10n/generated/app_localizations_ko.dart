@@ -3166,4 +3166,24 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get threadLoadTimedOut => '포럼이 제때 응답하지 않았습니다.';
+
+  @override
+  String membersOnlineCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '온라인 회원 $count명',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memberListsPrivate => '이 포럼의 회원 목록을 볼 수 없습니다';
+
+  @override
+  String get memberListsPrivateGuest =>
+      '로그인하면 포럼이 회원에게 공개하는 경우 온라인 회원을 볼 수 있습니다.';
+
+  @override
+  String get memberListsPrivateMember => '계정에 볼 수 있는 권한이 없습니다.';
 }

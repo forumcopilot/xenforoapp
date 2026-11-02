@@ -1370,5 +1370,9 @@
   "postLastEdited": "最終編集: {date}",
   "postLastEditedByModerator": "モデレーターによる最終編集: {date}",
   "threadLoadFailed": "スレッドを読み込めませんでした",
-  "threadLoadTimedOut": "フォーラムから時間内に応答がありませんでした。"
+  "threadLoadTimedOut": "フォーラムから時間内に応答がありませんでした。",
+  "membersOnlineCount": "{count, plural, other{オンラインのメンバー {count} 人}}",
+  "memberListsPrivate": "このフォーラムのメンバー一覧は表示できません",
+  "memberListsPrivateGuest": "ログインすると、フォーラムがメンバーに公開している場合はオンラインのメンバーを見られます。",
+  "memberListsPrivateMember": "お使いのアカウントには表示する権限がありません。"
 }

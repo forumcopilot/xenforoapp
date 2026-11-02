@@ -1370,5 +1370,9 @@
   "postLastEdited": "Zuletzt bearbeitet: {date}",
   "postLastEditedByModerator": "Zuletzt von einem Moderator bearbeitet: {date}",
   "threadLoadFailed": "Der Thread konnte nicht geladen werden",
-  "threadLoadTimedOut": "Das Forum hat nicht rechtzeitig geantwortet."
+  "threadLoadTimedOut": "Das Forum hat nicht rechtzeitig geantwortet.",
+  "membersOnlineCount": "{count, plural, =1{1 Mitglied online} other{{count} Mitglieder online}}",
+  "memberListsPrivate": "Die Mitgliederlisten dieses Forums sind für Sie nicht sichtbar",
+  "memberListsPrivateGuest": "Melden Sie sich an, um zu sehen, wer online ist, sofern das Forum es Mitgliedern zeigt.",
+  "memberListsPrivateMember": "Ihr Konto hat keine Berechtigung, sie anzusehen."
 }

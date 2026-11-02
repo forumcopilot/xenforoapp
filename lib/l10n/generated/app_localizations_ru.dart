@@ -3367,4 +3367,29 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get threadLoadTimedOut => 'Форум не ответил вовремя.';
+
+  @override
+  String membersOnlineCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участника в сети',
+      many: '$count участников в сети',
+      few: '$count участника в сети',
+      one: '$count участник в сети',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get memberListsPrivate =>
+      'Списки участников этого форума вам недоступны';
+
+  @override
+  String get memberListsPrivateGuest =>
+      'Войдите, чтобы увидеть, кто в сети, если форум показывает это участникам.';
+
+  @override
+  String get memberListsPrivateMember =>
+      'У вашей учётной записи нет прав на их просмотр.';
 }

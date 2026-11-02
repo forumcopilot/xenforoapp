@@ -1145,7 +1145,6 @@
   "successfullyCleanedSpamFor": "Спам пользователя {username} очищен",
   "failedToCleanSpam": "Не удалось очистить спам",
   "imagesCount": "Изображения ({count})",
-  "pleaseLoginToViewProfiles": "Войдите, чтобы просматривать профили.",
   "tapToOpen": "Нажмите, чтобы открыть",
   "imageNotAvailable": "Изображение недоступно",
   "tapToViewFullSizeImage": "Нажмите, чтобы открыть изображение целиком",

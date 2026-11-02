@@ -2335,10 +2335,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles =>
-      'Bitte melden Sie sich an, um Benutzerprofile anzuzeigen.';
-
-  @override
   String get tapToOpen => 'Zum Öffnen tippen';
 
   @override

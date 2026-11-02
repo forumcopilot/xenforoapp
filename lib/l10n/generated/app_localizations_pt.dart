@@ -2314,10 +2314,6 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles =>
-      'Faça login para ver os perfis de usuários.';
-
-  @override
   String get tapToOpen => 'Toque para abrir';
 
   @override

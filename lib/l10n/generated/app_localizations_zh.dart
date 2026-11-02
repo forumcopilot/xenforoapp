@@ -2188,9 +2188,6 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles => '请登录以查看用户资料。';
-
-  @override
   String get tapToOpen => '点按以打开';
 
   @override

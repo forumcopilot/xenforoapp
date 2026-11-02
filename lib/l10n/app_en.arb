@@ -1706,7 +1706,6 @@
   "failedToCleanSpam": "Failed to clean spam",
   "imagesCount": "Images ({count})",
   "@imagesCount": {"placeholders": {"count": {"type": "int"}}},
-  "pleaseLoginToViewProfiles": "Please log in to view user profiles.",
   "tapToOpen": "Tap to open",
   "imageNotAvailable": "Image not available",
   "tapToViewFullSizeImage": "Tap to view full size image",

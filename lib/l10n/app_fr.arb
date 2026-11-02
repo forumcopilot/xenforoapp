@@ -1122,7 +1122,6 @@
   "successfullyCleanedSpamFor": "Le spam de {username} a été nettoyé",
   "failedToCleanSpam": "Impossible de nettoyer le spam",
   "imagesCount": "Images ({count})",
-  "pleaseLoginToViewProfiles": "Veuillez vous connecter pour voir les profils des utilisateurs.",
   "tapToOpen": "Touchez pour ouvrir",
   "imageNotAvailable": "Image non disponible",
   "tapToViewFullSizeImage": "Touchez pour voir l'image en taille réelle",

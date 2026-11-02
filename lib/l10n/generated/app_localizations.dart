@@ -4058,12 +4058,6 @@ abstract class AppLocalizations {
   /// **'Images ({count})'**
   String imagesCount(int count);
 
-  /// No description provided for @pleaseLoginToViewProfiles.
-  ///
-  /// In en, this message translates to:
-  /// **'Please log in to view user profiles.'**
-  String get pleaseLoginToViewProfiles;
-
   /// No description provided for @tapToOpen.
   ///
   /// In en, this message translates to:

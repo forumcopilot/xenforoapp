@@ -16,7 +16,6 @@ import 'package:forumcopilot_flutter/utils/signature_processor.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 import 'package:forumcopilot_flutter/controllers/login_controller.dart';
-import 'login_page.dart';
 import '../theme/design_tokens.dart';
 import '../theme/style_builders.dart';
 import 'package:forumcopilot_flutter/core/logging/app_logger.dart';
@@ -72,10 +71,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
           Get.put(LoginController());
         }
         final loginController = Get.find<LoginController>();
-        final loginResult = await loginController.attemptAutomaticLogin(widget.siteContext);
-        if (!loginResult.success && loginResult.hadCredentials && Get.currentRoute != '/LoginPage') {
-          await AppNavigation.pushGlobal(LoginPage(siteContext: widget.siteContext), name: '/LoginPage');
-        }
+        // A lapsed session comes back quietly; otherwise the profile shows
+        // as the forum shows it to guests, without sending them to sign in.
+        await loginController.attemptAutomaticLogin(widget.siteContext, silentRelogin: true);
       }
       if (!mounted) {
         return;

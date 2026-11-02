@@ -1145,7 +1145,6 @@
   "successfullyCleanedSpamFor": "已清理 {username} 的垃圾内容",
   "failedToCleanSpam": "清理垃圾内容失败",
   "imagesCount": "图片（{count}）",
-  "pleaseLoginToViewProfiles": "请登录以查看用户资料。",
   "tapToOpen": "点按以打开",
   "imageNotAvailable": "图片不可用",
   "tapToViewFullSizeImage": "点按查看原图",

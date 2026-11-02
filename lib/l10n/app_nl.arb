@@ -1594,7 +1594,6 @@
   "successfullyCleanedSpamFor": "De spam van {username} is opgeruimd",
   "failedToCleanSpam": "Kan spam niet opruimen",
   "imagesCount": "Afbeeldingen ({count})",
-  "pleaseLoginToViewProfiles": "Log in om gebruikersprofielen te bekijken.",
   "tapToOpen": "Tik om te openen",
   "imageNotAvailable": "Afbeelding niet beschikbaar",
   "tapToViewFullSizeImage": "Tik om de afbeelding op volledige grootte te bekijken",

@@ -2212,9 +2212,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles => '사용자 프로필을 보려면 로그인하세요.';
-
-  @override
   String get tapToOpen => '탭하여 열기';
 
   @override

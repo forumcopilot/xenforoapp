@@ -1122,7 +1122,6 @@
   "successfullyCleanedSpamFor": "{username} のスパムを一掃しました",
   "failedToCleanSpam": "スパムを一掃できませんでした",
   "imagesCount": "画像 ({count})",
-  "pleaseLoginToViewProfiles": "ユーザープロフィールを表示するにはログインしてください。",
   "tapToOpen": "タップして開く",
   "imageNotAvailable": "画像を表示できません",
   "tapToViewFullSizeImage": "タップして画像を原寸で表示",

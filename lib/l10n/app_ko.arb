@@ -1141,7 +1141,6 @@
   "successfullyCleanedSpamFor": "{username}님의 스팸을 정리했습니다",
   "failedToCleanSpam": "스팸을 정리하지 못했습니다",
   "imagesCount": "이미지 ({count})",
-  "pleaseLoginToViewProfiles": "사용자 프로필을 보려면 로그인하세요.",
   "tapToOpen": "탭하여 열기",
   "imageNotAvailable": "이미지를 사용할 수 없습니다",
   "tapToViewFullSizeImage": "탭하여 원본 크기로 보기",

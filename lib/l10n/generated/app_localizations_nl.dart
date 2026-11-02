@@ -2307,10 +2307,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles =>
-      'Log in om gebruikersprofielen te bekijken.';
-
-  @override
   String get tapToOpen => 'Tik om te openen';
 
   @override

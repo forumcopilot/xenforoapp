@@ -2219,9 +2219,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles => 'ユーザープロフィールを表示するにはログインしてください。';
-
-  @override
   String get tapToOpen => 'タップして開く';
 
   @override

@@ -6,7 +6,6 @@ import '../user_profile_page.dart';
 // import '../widgets/cached_redirect_image.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/post_actions.dart';
-import '../login_page.dart';
 import '../../utils/avatar_cache_utils.dart';
 import '../../theme/design_tokens.dart';
 import '../../theme/style_builders.dart';
@@ -94,20 +93,9 @@ class PostListItemHeader extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
+                      // For guests too: the forum decides what they see
+                      // (AvatarActions.handleAvatarTap).
                       onTap: () {
-                        // Check if user is logged in
-                        if (!siteContext.isLoggedIn) {
-                          // Show login popup if not logged in
-                          if (postActionsHandler != null) {
-                            postActionsHandler!.showPostLoginPrompt(this.context, onRefresh: onRefresh);
-                          } else {
-                            // Fallback to simple login prompt
-                            _showSimpleLoginPrompt(this.context);
-                          }
-                          return;
-                        }
-
-                        // Navigate to user profile if logged in
                         AppNavigation.push(this.context, UserProfilePage(
                               siteContext: siteContext,
                               userName: post.authorName,
@@ -325,47 +313,6 @@ class PostListItemHeader extends StatelessWidget {
     );
   }
 
-  void _showSimpleLoginPrompt(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          AppLocalizations.of(context).loginRequired,
-          style: textTheme.titleLarge?.copyWith(
-            color: colorScheme.onSurface,
-          ),
-        ),
-        content: Text(
-          AppLocalizations.of(context).pleaseLoginToViewProfiles,
-          style: textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurface,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              AppLocalizations.of(context).cancel,
-              style: TextStyle(color: colorScheme.primary),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              AppNavigation.pushGlobal(LoginPage(siteContext: siteContext), name: '/LoginPage');
-            },
-            child: Text(
-              AppLocalizations.of(context).loginTitle,
-              style: TextStyle(color: colorScheme.primary),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 /// The pencil after an edited post's date, saying XenForo's "Last edited:

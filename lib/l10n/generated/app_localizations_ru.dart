@@ -2321,10 +2321,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles =>
-      'Войдите, чтобы просматривать профили.';
-
-  @override
   String get tapToOpen => 'Нажмите, чтобы открыть';
 
   @override

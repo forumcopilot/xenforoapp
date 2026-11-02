@@ -2299,10 +2299,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get pleaseLoginToViewProfiles =>
-      'Please log in to view user profiles.';
-
-  @override
   String get tapToOpen => 'Tap to open';
 
   @override

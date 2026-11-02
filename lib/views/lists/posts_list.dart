@@ -1118,7 +1118,7 @@ class _PostsState extends State<PostsList> {
     // widgets and does not rebuild the list.
     Widget postWidget = PostListItem(
       siteContext: widget.siteContext,
-      onAvatarTap: (userId, userName) => avatarActions.handleAvatarTap(context, widget.siteContext, userId, userName, postActionsHandler: postActionsHandler, onRefresh: _refreshCurrentPage),
+      onAvatarTap: (userId, userName) => avatarActions.handleAvatarTap(context, widget.siteContext, userId, userName),
       post: post,
       threadId: widget.topicId,
       topicTitle: widget.topicTitle,

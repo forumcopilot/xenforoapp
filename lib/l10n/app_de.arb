@@ -1122,7 +1122,6 @@
   "successfullyCleanedSpamFor": "Spam von {username} wurde bereinigt",
   "failedToCleanSpam": "Spam konnte nicht bereinigt werden",
   "imagesCount": "Bilder ({count})",
-  "pleaseLoginToViewProfiles": "Bitte melden Sie sich an, um Benutzerprofile anzuzeigen.",
   "tapToOpen": "Zum Öffnen tippen",
   "imageNotAvailable": "Bild nicht verfügbar",
   "tapToViewFullSizeImage": "Tippen, um das Bild in voller Größe anzuzeigen",
